@@ -134,9 +134,9 @@
     <string name="payment_method">Type</string>
     <string name="orders">Orders</string>
     <string name="orders_label">Orders</string>
-    <string name="new_orders">Purchase orders</string>
-    <string name="purchase_orders">Purchase orders</string>
-    <string name="purchase_orders_history">Purchase orders / History</string>
+    <string name="new_orders">Online Orders</string>
+    <string name="purchase_orders">Online Orders</string>
+    <string name="purchase_orders_history">Online Orders / History</string>
     <string name="orders_history">PO history</string>
     <string name="search_orders">Search orders</string>
     <string name="cancel">Cancel</string>
@@ -265,7 +265,7 @@
     <string name="mb_10">10 MB</string>
     <string name="my_invoices">My Invoices</string>
     <string name="invoices">Invoices</string>
-    <string name="po_invoices">PO Invoices</string>
+    <string name="po_invoices">Online Invoices</string>
     <string name="download">Download</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
@@ -282,8 +282,8 @@
     <string name="copyright">© medicostores.com 2021</string>
     <string name="missing_notifications">No Notification Found!</string>
     <string name="missing_orders">No orders placed to any Stockist or Sub-Stockist</string>
-    <string name="missing_history_orders">No Purchase Orders  accepted to view history</string>
-    <string name="missing_po_orders">No Purchase Orders from any of your connected Users</string>
+    <string name="missing_history_orders">No Online Orders accepted to view history</string>
+    <string name="missing_po_orders">No Online Orders from any of your connected Users</string>
     <string name="missing_invoices">No Invoices found.</string>
     <string name="missing_stockists">Not Connected to any Stockist</string>
     <string name="missing_hospitals">No Hospitals connected yet</string>
@@ -464,7 +464,9 @@
     <string name="ptr_more_warning">PTR is greater than MRP</string>
     <string name="margin_perc">Margin Percentage</string>
     <string name="stock_status">Stock Status</string>
+    <string name="previous">Previous</string>
     <string name="expires_in">Expires in</string>
+    <string name="total_amount_message">Amount entered should not be more than the Outstanding amount (Out. Amount : $)</string>
 
     <!-- Termrs and Cond -->
 
@@ -617,6 +619,5 @@
     <string name="E0056">Document/Image Not found</string>
     <string name="E0057">Please enter a valid Food License</string>
     <string name="E0058">Food License already registered. Please try again.</string>
-    <string name="previous">Previous</string>
 
 </resources>

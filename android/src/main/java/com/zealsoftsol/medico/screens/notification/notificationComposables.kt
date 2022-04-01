@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.notification
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ContentAlpha
+import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
@@ -76,11 +79,14 @@ import org.joda.time.PeriodType
 import org.joda.time.format.PeriodFormatter
 import org.joda.time.format.PeriodFormatterBuilder
 
+@ExperimentalMaterialApi
 @Composable
 fun NotificationScreen(scope: NotificationScope, listState: LazyListState) {
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(horizontal = 16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+    ) {
         Space(16.dp)
         when (scope) {
             is NotificationScope.All -> AllNotifications(scope, listState)
@@ -89,6 +95,7 @@ fun NotificationScreen(scope: NotificationScope, listState: LazyListState) {
     }
 }
 
+@ExperimentalMaterialApi
 @Composable
 private fun AllNotifications(scope: NotificationScope.All, listState: LazyListState) {
     val search = scope.searchText.flow.collectAsState()
@@ -165,7 +172,8 @@ private fun AllNotifications(scope: NotificationScope.All, listState: LazyListSt
             itemsIndexed(
                 items = items.value,
                 itemContent = { index, item ->
-                    NotificationItem(item) { scope.selectItem(item) }
+                    NotificationItem(item, { scope.selectItem(item) },
+                        { scope.deleteNotification(item.id) })
                     if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
                         scope.loadItems()
                     }
@@ -175,8 +183,13 @@ private fun AllNotifications(scope: NotificationScope.All, listState: LazyListSt
     }
 }
 
+@ExperimentalMaterialApi
 @Composable
-private fun NotificationItem(item: NotificationData, onClick: () -> Unit) {
+private fun NotificationItem(
+    item: NotificationData,
+    onClick: () -> Unit,
+    onDeleteClick: () -> Unit
+) {
     Surface(
         color = Color.White,
         shape = MaterialTheme.shapes.medium,
@@ -204,20 +217,46 @@ private fun NotificationItem(item: NotificationData, onClick: () -> Unit) {
                         color = ConstColors.gray,
                     )
                     Space(16.dp)
-                    Text(
-                        text = stringResourceByName(name = item.status.stringId),
-                        fontWeight = FontWeight.W600,
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colors.background.copy(alpha = if (item.status == NotificationStatus.READ) 0.6f else 1f),
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = stringResourceByName(name = item.status.stringId),
+                            fontWeight = FontWeight.W600,
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colors.background.copy(alpha = if (item.status == NotificationStatus.READ) 0.6f else 1f),
+                        )
+                        Space(8.dp)
+                        Divider(
+                            modifier = Modifier
+                                .height(20.dp)
+                                .width(1.dp)
+                        )
+                        Space(8.dp)
+                        Text(
+                            text = Duration(Time.now - item.sentAt).format(),
+                            fontSize = 14.sp,
+                            color = ConstColors.gray,
+                        )
+                    }
+                }
+            }
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.TopEnd),
+                color = Color.White,
+                onClick = onDeleteClick,
+                indication = null
+            ) {
+                Row(
+                    modifier = Modifier.padding(start = 10.dp, bottom = 10.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_cross),
+                        modifier = Modifier
+                            .size(20.dp),
+                        contentDescription = ""
                     )
                 }
             }
-            Text(
-                text = Duration(Time.now - item.sentAt).format(),
-                fontSize = 14.sp,
-                color = ConstColors.gray,
-                modifier = Modifier.align(Alignment.TopEnd),
-            )
             MedicoSmallButton(
                 text = stringResourceByName(
                     name = item.selectedAction?.completedActionStringId
@@ -351,7 +390,7 @@ private fun SubscriptionDeatails(
         }
         Space(24.dp)
         //DataWithLabel(R.string.phone_number, details.customerData.phoneNumber)
-       // DataWithLabel(R.string.gstin_num, details.customerData.gstin.orEmpty())
+        // DataWithLabel(R.string.gstin_num, details.customerData.gstin.orEmpty())
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,

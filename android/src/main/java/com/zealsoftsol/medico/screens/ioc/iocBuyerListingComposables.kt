@@ -71,6 +71,7 @@ import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.formatIndia
 import com.zealsoftsol.medico.screens.common.scrollOnFocus
+import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 
 
@@ -229,27 +230,30 @@ private fun InvBuyerDetails(scope: IocBuyerScope.InvDetails) {
             }
         }
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.Bottom
-        ) {
-            MedicoRoundButton(
-                text = stringResource(id = R.string.pay_now),
-                isEnabled = true,
-                elevation = null,
-                onClick = {
-                    scope.openPaymentMethod(
-                        data.value?.unitCode ?: "",
-                        data.value?.invoiceId ?: ""
-                    )
-                },
-                contentColor = MaterialTheme.colors.background,
-                wrapTextSize = true,
-            )
+        if (data.value?.invoiceOutstdAmount?.value != 0.0 && data.value?.viewStatus?.uppercase() != "COMPLETED") {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Bottom
+            ) {
+                MedicoRoundButton(
+                    text = stringResource(id = R.string.pay_now),
+                    isEnabled = true,
+                    elevation = null,
+                    onClick = {
+                        scope.openPaymentMethod(
+                            data.value?.unitCode ?: "",
+                            data.value?.invoiceId ?: "",
+                            data.value?.invoiceOutstdAmount?.value ?: 0.0
+                        )
+                    },
+                    contentColor = MaterialTheme.colors.background,
+                    wrapTextSize = true,
+                )
+            }
         }
     }
 }
@@ -986,12 +990,124 @@ private fun IocPayNow(
     val mobileNumber = scope.mobileNumber.flow.collectAsState()
     val validPhone = scope.validPhone(mobileNumber.value)
     val enable = scope.enableButton.flow.collectAsState()
+    val showError = scope.showError.flow.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
             .verticalScroll(rememberScrollState())
     ) {
+        Column(
+            modifier = Modifier
+                .padding(all = 16.dp)
+                .fillMaxWidth()
+        ) {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = scope.details?.invoiceNo ?: "",
+                    modifier = Modifier.weight(0.5f),
+                    color = ConstColors.lightBlue,
+                    fontWeight = FontWeight.W800,
+                    fontSize = 16.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = scope.details?.invoiceAmount?.formatted ?: "",
+                    modifier = Modifier.weight(0.5f),
+                    color = ConstColors.lightBlue,
+                    fontWeight = FontWeight.W800,
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.End
+                )
+            }
+
+            Space(4.dp)
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = scope.details?.invoiceDate?.formatted ?: "",
+                    modifier = Modifier.weight(0.5f),
+                    color = ConstColors.txtGrey,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 12.sp,
+                )
+                Text(
+                    text = scope.details?.viewStatus ?: "",
+                    modifier = Modifier.weight(0.5f),
+                    color =
+                    if (scope.details?.viewStatus.isNullOrEmpty()) {
+                        MaterialTheme.colors.background
+                    } else {
+                        when ((scope.details?.viewStatus ?: "").uppercase()) {
+                            "COMPLETED" -> ConstColors.lightGreen
+                            "PENDING" -> ConstColors.orange
+                            else -> MaterialTheme.colors.background
+                        }
+                    },
+                    fontWeight = FontWeight.W600,
+                    fontSize = 12.sp,
+                    textAlign = TextAlign.End
+                )
+
+            }
+
+            Space(4.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+
+                Text(
+                    text = buildAnnotatedString {
+                        append(stringResource(id = R.string.out_amount))
+                        append(" ")
+                        append(scope.details?.invoiceOutstdAmount?.formatted ?: "")
+                    },
+                    color = ConstColors.marron,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.End
+                )
+            }
+            Space(8.dp)
+            Divider(thickness = 0.5.dp)
+            Space(8.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { scope.previewImage(scope.details?.viewInvoiceUrl ?: "") },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Icon(
+                    modifier = Modifier.size(15.dp),
+                    painter = painterResource(id = R.drawable.ic_eye),
+                    contentDescription = null,
+                    tint = ConstColors.txtGrey
+                )
+                Space(dp = 4.dp)
+                Text(
+                    text = stringResource(id = R.string.view_invoice),
+                    color = ConstColors.txtGrey,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W700
+                )
+            }
+        }
+        Space(16.dp)
+
+        Text(
+            text = stringResourceByName(name = scope.method.stringId),
+            color = ConstColors.lightBlue,
+            fontWeight = FontWeight.W800,
+            fontSize = 14.sp,
+            modifier = Modifier
+                .padding(start = 16.dp),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -1024,54 +1140,61 @@ private fun IocPayNow(
             }
 
             Space(12.dp)
-            InputField(
-                modifier = Modifier
-                    .align(Alignment.Start)
-                    .scrollOnFocus(scrollState, coroutineScope),
-                hint = stringResource(id = R.string.enter_total_amount),
-                text = totalAmount.value,
-                isValid = true,
-                onValueChange = {
-                    val split =
-                        it.replace(",", ".").split(".")
-                    val beforeDot = split[0]
-                    val afterDot = split.getOrNull(1)
-                    var modBefore =
-                        beforeDot.toIntOrNull() ?: 0
-                    val modAfter = when (afterDot?.length) {
-                        0 -> "."
-                        in 1..Int.MAX_VALUE -> when (afterDot!!.take(
-                            1
-                        ).toIntOrNull()) {
-                            0 -> ".0"
-                            in 1..4 -> ".0"
-                            5 -> ".5"
-                            in 6..9 -> {
-                                modBefore++
-                                ".0"
+            InputWithError(
+                errorText = if (showError.value) stringResource(id = R.string.total_amount_message).replace(
+                    "$",
+                    scope.outStand.toString()
+                ) else null
+            ) {
+                InputField(
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .scrollOnFocus(scrollState, coroutineScope),
+                    hint = stringResource(id = R.string.enter_total_amount),
+                    text = totalAmount.value,
+                    isValid = true,
+                    onValueChange = {
+                        val split =
+                            it.replace(",", ".").split(".")
+                        val beforeDot = split[0]
+                        val afterDot = split.getOrNull(1)
+                        var modBefore =
+                            beforeDot.toIntOrNull() ?: 0
+                        val modAfter = when (afterDot?.length) {
+                            0 -> "."
+                            in 1..Int.MAX_VALUE -> when (afterDot!!.take(
+                                1
+                            ).toIntOrNull()) {
+                                0 -> ".0"
+                                in 1..4 -> ".0"
+                                5 -> ".5"
+                                in 6..9 -> {
+                                    modBefore++
+                                    ".0"
+                                }
+                                null -> ""
+                                else -> throw UnsupportedOperationException(
+                                    "cant be that"
+                                )
                             }
                             null -> ""
                             else -> throw UnsupportedOperationException(
                                 "cant be that"
                             )
                         }
-                        null -> ""
-                        else -> throw UnsupportedOperationException(
-                            "cant be that"
-                        )
-                    }
-                    total.value = "$modBefore$modAfter"
-                    scope.updateTotalAmount(total.value)
-                },
-                mandatory = true,
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(onDone = {
-                    keyboardController?.hide()
-                })
-            )
+                        total.value = "$modBefore$modAfter"
+                        scope.updateTotalAmount(total.value)
+                    },
+                    mandatory = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(onDone = {
+                        keyboardController?.hide()
+                    })
+                )
+            }
             Space(12.dp)
             InputWithError(errorText = if (!validPhone) stringResource(id = R.string.phone_validation) else null) {
                 PhoneFormatInputFieldForRegister(
@@ -1133,7 +1256,7 @@ private fun IocPaymentMethod(
                 items = items.value,
                 itemContent = { index, item ->
                     SelectPaymentOptionItem(item, indexOld == index) {
-                        scope.openPayNow(scope.unitCode, scope.invoiceId, index, item)
+                        scope.openPayNow(index, item)
                     }
                 },
             )

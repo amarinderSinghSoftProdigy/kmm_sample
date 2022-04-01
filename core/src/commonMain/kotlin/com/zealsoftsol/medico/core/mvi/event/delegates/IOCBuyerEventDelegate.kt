@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.BuyerDetailsData
 import com.zealsoftsol.medico.data.InvUserData
+import com.zealsoftsol.medico.data.InvoiceDetails
 import com.zealsoftsol.medico.data.SubmitPaymentRequest
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -39,12 +40,16 @@ internal class IOCBuyerEventDelegate(
         is Event.Action.IOCBuyer.LoadInvDetails -> getInvoiceDetails(event.invoiceId)
         is Event.Action.IOCBuyer.OpenPaymentMethod -> openPaymentMethod(
             event.unitCode,
-            event.invoiceId
+            event.invoiceId,
+            event.outStand,
+            event.details
         )
         is Event.Action.IOCBuyer.OpenPayNow -> openPayNow(
             event.unitCode,
             event.invoiceId,
-            event.type
+            event.outStand,
+            event.type,
+            event.details
         )
         is Event.Action.IOCBuyer.SubmitPayment -> submitPayment(event.item, event.mobile)
         is Event.Action.IOCBuyer.ClearScopes -> clearScopes()
@@ -84,18 +89,29 @@ internal class IOCBuyerEventDelegate(
     }
 
 
-    private fun openPayNow(unitCode: String, invoiceId: String, type: IocBuyerScope.PaymentTypes) {
+    private fun openPayNow(
+        unitCode: String,
+        invoiceId: String,
+        outStand: Double,
+        type: IocBuyerScope.PaymentTypes,
+        details: InvoiceDetails?
+    ) {
         navigator.withScope<IocBuyerScope.IOCPaymentMethod> {
             setScope(
-                IocBuyerScope.IOCPayNow(unitCode, invoiceId, type)
+                IocBuyerScope.IOCPayNow(unitCode, invoiceId, outStand, type, details)
             )
         }
     }
 
-    private fun openPaymentMethod(unitCode: String, invoiceId: String) {
+    private fun openPaymentMethod(
+        unitCode: String,
+        invoiceId: String,
+        outStand: Double,
+        details: InvoiceDetails?
+    ) {
         navigator.withScope<IocBuyerScope.InvDetails> {
             setScope(
-                IocBuyerScope.IOCPaymentMethod(unitCode, invoiceId)
+                IocBuyerScope.IOCPaymentMethod(unitCode, invoiceId, outStand, details)
             )
         }
     }

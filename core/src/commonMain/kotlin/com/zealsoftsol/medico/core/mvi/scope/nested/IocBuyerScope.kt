@@ -9,7 +9,6 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.BuyerDetailsData
-import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.FormattedData
 import com.zealsoftsol.medico.data.HeaderData
@@ -22,19 +21,14 @@ import com.zealsoftsol.medico.data.SubmitPaymentRequest
 
 sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
     override val supportedFileTypes: Array<FileType> = FileType.forProfile()
-    var b2bData: DataSource<HeaderData?> = DataSource(null)
-
     val paymentTypes: List<PaymentTypes> = listOf(
         PaymentTypes.CASH_IN_HAND,
-        PaymentTypes.PAYTM,
+        /*PaymentTypes.PAYTM,
         PaymentTypes.GOOGLE_PAY,
         PaymentTypes.AMAZON_PAY,
         PaymentTypes.PHONE_PE,
         PaymentTypes.BHIM_UPI,
-        PaymentTypes.NET_BANKING,
-    )
-    val paymentTypesCash: List<PaymentTypes> = listOf(
-        PaymentTypes.CASH_IN_HAND,
+        PaymentTypes.NET_BANKING,*/
     )
 
     class InvUserListing : IocBuyerScope(), Loadable<InvUserData>, CommonScope.CanGoBack {
@@ -123,8 +117,15 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
             )
         }
 
-        fun openPaymentMethod(unitCode: String, invoiceId: String) {
-            EventCollector.sendEvent(Event.Action.IOCBuyer.OpenPaymentMethod(unitCode, invoiceId))
+        fun openPaymentMethod(unitCode: String, invoiceId: String, outStand: Double) {
+            EventCollector.sendEvent(
+                Event.Action.IOCBuyer.OpenPaymentMethod(
+                    unitCode,
+                    invoiceId,
+                    outStand,
+                    data.value
+                )
+            )
         }
 
         fun loadData(invoiceId: String) {
@@ -134,18 +135,32 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
     }
 
 
-    class IOCPaymentMethod(val unitCode: String, val invoiceId: String) : IocBuyerScope(),
+    class IOCPaymentMethod(
+        val unitCode: String,
+        val invoiceId: String,
+        val outStand: Double,
+        val details: InvoiceDetails?
+    ) :
+        IocBuyerScope(),
         CommonScope.CanGoBack {
         val items: DataSource<List<PaymentTypes>> = DataSource(emptyList())
         val selected: DataSource<Int> = DataSource(-1)
 
         init {
-            items.value = paymentTypesCash
+            items.value = paymentTypes
         }
 
-        fun openPayNow(unitCode: String, invoiceId: String, index: Int, type: PaymentTypes) {
+        fun openPayNow(index: Int, type: PaymentTypes) {
             selected.value = index
-            EventCollector.sendEvent(Event.Action.IOCBuyer.OpenPayNow(unitCode, invoiceId, type))
+            EventCollector.sendEvent(
+                Event.Action.IOCBuyer.OpenPayNow(
+                    unitCode,
+                    invoiceId,
+                    outStand,
+                    type,
+                    details
+                )
+            )
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
@@ -153,11 +168,18 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         }
     }
 
-    class IOCPayNow(val unitCode: String, val invoiceId: String, val method: PaymentTypes) :
+    class IOCPayNow(
+        val unitCode: String,
+        val invoiceId: String,
+        val outStand: Double,
+        val method: PaymentTypes,
+        val details: InvoiceDetails?
+    ) :
         IocBuyerScope(),
         CommonScope.CanGoBack, CommonScope.PhoneVerificationEntryPoint {
 
         val enableButton: DataSource<Boolean> = DataSource(false)
+        val showError: DataSource<Boolean> = DataSource(false)
         val lineManName: DataSource<String> = DataSource("")
         val mobileNumber: DataSource<String> = DataSource("")
         val totalAmount: DataSource<String> = DataSource("")
@@ -182,8 +204,10 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         fun updateTotalAmount(data: String) {
             if (data == "0" || data == "0.0") {
                 totalAmount.value = ""
+                showError.value = false
             } else {
                 totalAmount.value = data
+                showError.value = totalAmount.value.toDouble() > outStand
             }
             validate()
         }
@@ -201,13 +225,18 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
 
         private fun validate() {
             enableButton.value = totalAmount.value.isNotEmpty()
+                    && totalAmount.value.toDouble() <= outStand
                     && lineManName.value.isNotEmpty()
                     && validPhone(mobileNumber.value)
                     && mobileNumber.value.isNotEmpty()
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
-            return TabBarInfo.OnlyBackHeader(title = method.stringId)
+            return TabBarInfo.StoreTitle(
+                storeName = details?.tradeName ?: "",
+                showNotifications = false,
+                event = Event.Action.Management.GetDetails(details?.unitCode ?: "")
+            )
         }
 
         fun startOtp(phoneNumber: String) =

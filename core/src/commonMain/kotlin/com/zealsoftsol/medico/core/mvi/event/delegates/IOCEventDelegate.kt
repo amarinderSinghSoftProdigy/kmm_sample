@@ -44,6 +44,7 @@ internal class IOCEventDelegate(
         is Event.Action.IOC.OpenCreateIOC -> openCreateIOC()
         is Event.Action.IOC.OpenEditIOCBottomSheet -> showEditIOCBottomSheets(
             event.item,
+            event.outStand,
             event.sellerScope
         )
         is Event.Action.IOC.UpdateIOC -> updateInvoice(event.request, event.sellerScope)
@@ -106,10 +107,10 @@ internal class IOCEventDelegate(
         }
     }
 
-    private fun showEditIOCBottomSheets(type: BuyerDetailsData, sellerScopeFrom: IocSellerScope) {
+    private fun showEditIOCBottomSheets(type: BuyerDetailsData,outStand: Double, sellerScopeFrom: IocSellerScope) {
         navigator.withScope<IocSellerScope> {
             val scope = scope.value
-            scope.bottomSheet.value = BottomSheet.EditIOC(type, sellerScopeFrom)
+            scope.bottomSheet.value = BottomSheet.EditIOC(type,outStand, sellerScopeFrom)
         }
     }
 

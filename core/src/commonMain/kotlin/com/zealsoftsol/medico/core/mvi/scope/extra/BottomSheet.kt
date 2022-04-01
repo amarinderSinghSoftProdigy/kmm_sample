@@ -443,9 +443,11 @@ sealed class BottomSheet {
 
     class EditIOC(
         val info: BuyerDetailsData,
+        val outStand: Double,
         val sellerScope: IocSellerScope,
     ) : BottomSheet() {
 
+        val showError: DataSource<Boolean> = DataSource(false)
         val enableButton: DataSource<Boolean> = DataSource(false)
         val dateMili = DataSource(0L)
         val date = DataSource("")
@@ -461,6 +463,7 @@ sealed class BottomSheet {
 
         fun updateAmount(data: String) {
             this.amount.value = data
+            showError.value = (data.isNotEmpty() && outStand < data.toDouble())
             validate()
         }
 

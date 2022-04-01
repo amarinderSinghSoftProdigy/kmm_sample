@@ -31,6 +31,7 @@ internal class NotificationEventDelegate(
         is Event.Action.Notification.SelectAction -> selectAction(event.action)
         is Event.Action.Notification.ChangeOptions -> changeOption(event.option)
         is Event.Action.Notification.SelectFilter -> selectFilter(event.filter)
+        is Event.Action.Notification.DeleteNotification -> deleteNotification(event.notificationId)
 //        is Event.Action.Notification.UpdateUnreadMessages -> updateUnreadMessages()
     }
 
@@ -150,4 +151,17 @@ internal class NotificationEventDelegate(
 //    private suspend fun updateUnreadMessages() {
 //        notificationRepo.loadUnreadMessagesFromServer()
 //    }
+
+    private suspend fun deleteNotification(id: String) {
+        navigator.withScope<NotificationScope> {
+            withProgress {
+                notificationRepo.deleteNotification(
+                    id = id,
+                )
+            }.onSuccess {
+                //dropScope()
+                load(isFirstLoad = true)
+            }.onError(navigator)
+        }
+    }
 }

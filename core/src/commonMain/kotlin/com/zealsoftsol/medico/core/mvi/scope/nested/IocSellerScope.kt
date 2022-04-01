@@ -220,8 +220,8 @@ sealed class IocSellerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
     fun previewImage(item: String) =
         EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(item))
 
-    fun openEditInvoice(item: BuyerDetailsData, sellerScope: IocSellerScope) {
-        EventCollector.sendEvent(Event.Action.IOC.OpenEditIOCBottomSheet(item, sellerScope))
+    fun openEditInvoice(item: BuyerDetailsData, outStand: Double, sellerScope: IocSellerScope) {
+        EventCollector.sendEvent(Event.Action.IOC.OpenEditIOCBottomSheet(item,outStand, sellerScope))
     }
 
     enum class PaymentTypes(val stringId: String, val type: String) {

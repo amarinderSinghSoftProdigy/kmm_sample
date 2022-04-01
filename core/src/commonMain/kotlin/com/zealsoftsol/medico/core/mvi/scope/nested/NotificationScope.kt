@@ -40,6 +40,10 @@ sealed class NotificationScope : Scope.Child.TabBar() {
             return EventCollector.sendEvent(Event.Action.Notification.Select(item))
         }
 
+        fun deleteNotification(item: String) {
+            EventCollector.sendEvent(Event.Action.Notification.DeleteNotification(item))
+        }
+
         fun search(value: String) =
             EventCollector.sendEvent(Event.Action.Notification.Search(value))
 
