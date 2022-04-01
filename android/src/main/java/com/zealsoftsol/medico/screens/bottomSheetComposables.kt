@@ -107,6 +107,7 @@ import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.EditText
 import com.zealsoftsol.medico.screens.common.FoldableItem
+import com.zealsoftsol.medico.screens.common.InputWithError
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
@@ -3922,6 +3923,7 @@ private fun EditIOCBottomSheet(
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
+    val showError = scope.showError.flow.collectAsState()
     val enableButton = scope.enableButton.flow.collectAsState()
     val date = scope.date.flow.collectAsState()
     val amount = scope.amount.flow.collectAsState()
@@ -4017,57 +4019,65 @@ private fun EditIOCBottomSheet(
                                         .first() else amount.value
                                 )
                             }
-                            BasicTextField(
-                                value = if (total.value.isNotEmpty()) total.value else "0.0",
-                                modifier = Modifier
-                                    .align(Alignment.Start)
-                                    .scrollOnFocus(scrollState, coroutineScope),
-                                onValueChange = {
-                                    val split = it.replace(",", ".").split(".")
-                                    val beforeDot = split[0]
-                                    val afterDot = split.getOrNull(1)
-                                    var modBefore =
-                                        beforeDot.toIntOrNull() ?: 0
-                                    val modAfter = when (afterDot?.length) {
-                                        0 -> "."
-                                        in 1..Int.MAX_VALUE -> when (afterDot!!.take(
-                                            1
-                                        ).toIntOrNull()) {
-                                            0 -> ".0"
-                                            in 1..4 -> ".0"
-                                            5 -> ".5"
-                                            in 6..9 -> {
-                                                modBefore++
-                                                ".0"
+                            InputWithError(
+                                padding = 0.dp,
+                                errorText = if (showError.value) stringResource(id = R.string.total_amount_message).replace(
+                                    "$",
+                                    scope.outStand.toString()
+                                ) else null
+                            ) {
+                                BasicTextField(
+                                    value = if (total.value.isNotEmpty()) total.value else "0.0",
+                                    modifier = Modifier
+                                        .align(Alignment.Start)
+                                        .scrollOnFocus(scrollState, coroutineScope),
+                                    onValueChange = {
+                                        val split = it.replace(",", ".").split(".")
+                                        val beforeDot = split[0]
+                                        val afterDot = split.getOrNull(1)
+                                        var modBefore =
+                                            beforeDot.toIntOrNull() ?: 0
+                                        val modAfter = when (afterDot?.length) {
+                                            0 -> "."
+                                            in 1..Int.MAX_VALUE -> when (afterDot!!.take(
+                                                1
+                                            ).toIntOrNull()) {
+                                                0 -> ".0"
+                                                in 1..4 -> ".0"
+                                                5 -> ".5"
+                                                in 6..9 -> {
+                                                    modBefore++
+                                                    ".0"
+                                                }
+                                                null -> ""
+                                                else -> throw UnsupportedOperationException(
+                                                    "cant be that"
+                                                )
                                             }
                                             null -> ""
                                             else -> throw UnsupportedOperationException(
                                                 "cant be that"
                                             )
                                         }
-                                        null -> ""
-                                        else -> throw UnsupportedOperationException(
-                                            "cant be that"
-                                        )
-                                    }
-                                    total.value = "$modBefore$modAfter"
-                                    scope.updateAmount(total.value)
-                                },
-                                keyboardOptions = KeyboardOptions.Default.copy(
-                                    keyboardType = KeyboardType.Number,
-                                    imeAction = ImeAction.Done
-                                ),
-                                keyboardActions = KeyboardActions(onDone = {
-                                    keyboardController?.hide()
-                                }),
-                                singleLine = true,
-                                readOnly = false,
-                                enabled = true,
-                            )
-                            Space(dp = 8.dp)
-                            Divider(
-                                thickness = 0.5.dp, color = ConstColors.lightBlue,
-                            )
+                                        total.value = "$modBefore$modAfter"
+                                        scope.updateAmount(total.value)
+                                    },
+                                    keyboardOptions = KeyboardOptions.Default.copy(
+                                        keyboardType = KeyboardType.Number,
+                                        imeAction = ImeAction.Done
+                                    ),
+                                    keyboardActions = KeyboardActions(onDone = {
+                                        keyboardController?.hide()
+                                    }),
+                                    singleLine = true,
+                                    readOnly = false,
+                                    enabled = true,
+                                )
+                                Space(dp = 8.dp)
+                                Divider(
+                                    thickness = 0.5.dp, color = ConstColors.lightBlue,
+                                )
+                            }
                         }
                     }
                     Space(dp = 16.dp)

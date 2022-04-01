@@ -29,6 +29,7 @@ import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.HeaderData
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvUserData
+import com.zealsoftsol.medico.data.InvoiceDetails
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.NotificationData
@@ -196,6 +197,7 @@ sealed class Event {
 
         sealed class Management : Action() {
             override val typeClazz: KClass<*> = Management::class
+
             data class Search(val value: String) : Management()
             data class Load(val isFirstLoad: Boolean) : Management()
             data class GetDetails(val item: String) : Management()
@@ -569,7 +571,7 @@ sealed class Event {
             data class LoadInvDetails(val invoiceId: String) : IOC()
 
             data class OpenEditIOCBottomSheet(
-                val item: BuyerDetailsData, val sellerScope: IocSellerScope
+                val item: BuyerDetailsData, val outStand: Double, val sellerScope: IocSellerScope
             ) : IOC()
 
         }
@@ -582,7 +584,8 @@ sealed class Event {
                 val unitCode: String,
                 val invoiceId: String,
                 val outStand: Double,
-                val type: IocBuyerScope.PaymentTypes
+                val type: IocBuyerScope.PaymentTypes,
+                val details: InvoiceDetails?
             ) : IOCBuyer()
 
             data class SubmitPayment(val item: SubmitPaymentRequest, val mobile: String) :
@@ -595,13 +598,21 @@ sealed class Event {
 
             //Methods for InvLisitng
             data class LoadInvListing(val unitCode: String) : IOCBuyer()
-            data class OpenIOCDetails(val unitCode: String,val tradeName: String,val invoiceId:String) : IOCBuyer()
+            data class OpenIOCDetails(
+                val unitCode: String,
+                val tradeName: String,
+                val invoiceId: String
+            ) : IOCBuyer()
 
             //Methods for InvDetails
             data class LoadInvDetails(val invoiceId: String) : IOCBuyer()
-            data class OpenPaymentMethod(val unitCode: String,
-                                         val invoiceId: String,
-                                         val outStand: Double) : IOCBuyer()
+            data class OpenPaymentMethod(
+                val unitCode: String,
+                val invoiceId: String,
+                val outStand: Double,
+                val details: InvoiceDetails?
+            ) : IOCBuyer()
+
             object ClearScopes : IOCBuyer()
         }
     }

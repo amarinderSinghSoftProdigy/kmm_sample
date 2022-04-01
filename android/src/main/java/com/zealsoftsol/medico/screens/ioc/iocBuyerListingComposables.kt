@@ -71,6 +71,7 @@ import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.formatIndia
 import com.zealsoftsol.medico.screens.common.scrollOnFocus
+import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 
 
@@ -996,6 +997,117 @@ private fun IocPayNow(
             .background(Color.White)
             .verticalScroll(rememberScrollState())
     ) {
+        Column(
+            modifier = Modifier
+                .padding(all = 16.dp)
+                .fillMaxWidth()
+        ) {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = scope.details?.invoiceNo ?: "",
+                    modifier = Modifier.weight(0.5f),
+                    color = ConstColors.lightBlue,
+                    fontWeight = FontWeight.W800,
+                    fontSize = 16.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = scope.details?.invoiceAmount?.formatted ?: "",
+                    modifier = Modifier.weight(0.5f),
+                    color = ConstColors.lightBlue,
+                    fontWeight = FontWeight.W800,
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.End
+                )
+            }
+
+            Space(4.dp)
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = scope.details?.invoiceDate?.formatted ?: "",
+                    modifier = Modifier.weight(0.5f),
+                    color = ConstColors.txtGrey,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 12.sp,
+                )
+                Text(
+                    text = scope.details?.viewStatus ?: "",
+                    modifier = Modifier.weight(0.5f),
+                    color =
+                    if (scope.details?.viewStatus.isNullOrEmpty()) {
+                        MaterialTheme.colors.background
+                    } else {
+                        when ((scope.details?.viewStatus ?: "").uppercase()) {
+                            "COMPLETED" -> ConstColors.lightGreen
+                            "PENDING" -> ConstColors.orange
+                            else -> MaterialTheme.colors.background
+                        }
+                    },
+                    fontWeight = FontWeight.W600,
+                    fontSize = 12.sp,
+                    textAlign = TextAlign.End
+                )
+
+            }
+
+            Space(4.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+
+                Text(
+                    text = buildAnnotatedString {
+                        append(stringResource(id = R.string.out_amount))
+                        append(" ")
+                        append(scope.details?.invoiceOutstdAmount?.formatted ?: "")
+                    },
+                    color = ConstColors.marron,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.End
+                )
+            }
+            Space(8.dp)
+            Divider(thickness = 0.5.dp)
+            Space(8.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { scope.previewImage(scope.details?.viewInvoiceUrl ?: "") },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Icon(
+                    modifier = Modifier.size(15.dp),
+                    painter = painterResource(id = R.drawable.ic_eye),
+                    contentDescription = null,
+                    tint = ConstColors.txtGrey
+                )
+                Space(dp = 4.dp)
+                Text(
+                    text = stringResource(id = R.string.view_invoice),
+                    color = ConstColors.txtGrey,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W700
+                )
+            }
+        }
+        Space(16.dp)
+
+        Text(
+            text = stringResourceByName(name = scope.method.stringId),
+            color = ConstColors.lightBlue,
+            fontWeight = FontWeight.W800,
+            fontSize = 14.sp,
+            modifier = Modifier
+                .padding(start = 16.dp),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()

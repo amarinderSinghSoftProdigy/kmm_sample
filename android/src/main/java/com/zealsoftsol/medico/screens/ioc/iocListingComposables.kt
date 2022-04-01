@@ -187,6 +187,7 @@ private fun InvSellerDetails(sellerScope: IocSellerScope.InvDetails) {
                                         data.value?.invoiceId ?: "",
                                         data.value?.invoiceDate ?: FormattedData("0", 0L),
                                     ),
+                                    data.value?.invoiceOutstdAmount?.value ?: 0.0,
                                     sellerScope
                                 )
                             },

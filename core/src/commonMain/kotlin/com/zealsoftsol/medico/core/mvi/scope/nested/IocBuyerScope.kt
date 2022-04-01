@@ -122,7 +122,8 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
                 Event.Action.IOCBuyer.OpenPaymentMethod(
                     unitCode,
                     invoiceId,
-                    outStand
+                    outStand,
+                    data.value
                 )
             )
         }
@@ -134,7 +135,12 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
     }
 
 
-    class IOCPaymentMethod(val unitCode: String, val invoiceId: String, val outStand: Double) :
+    class IOCPaymentMethod(
+        val unitCode: String,
+        val invoiceId: String,
+        val outStand: Double,
+        val details: InvoiceDetails?
+    ) :
         IocBuyerScope(),
         CommonScope.CanGoBack {
         val items: DataSource<List<PaymentTypes>> = DataSource(emptyList())
@@ -151,7 +157,8 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
                     unitCode,
                     invoiceId,
                     outStand,
-                    type
+                    type,
+                    details
                 )
             )
         }
@@ -165,7 +172,8 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         val unitCode: String,
         val invoiceId: String,
         val outStand: Double,
-        val method: PaymentTypes
+        val method: PaymentTypes,
+        val details: InvoiceDetails?
     ) :
         IocBuyerScope(),
         CommonScope.CanGoBack, CommonScope.PhoneVerificationEntryPoint {
@@ -224,7 +232,11 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
-            return TabBarInfo.OnlyBackHeader(title = method.stringId)
+            return TabBarInfo.StoreTitle(
+                storeName = details?.tradeName ?: "",
+                showNotifications = false,
+                event = Event.Action.Management.GetDetails(details?.unitCode ?: "")
+            )
         }
 
         fun startOtp(phoneNumber: String) =

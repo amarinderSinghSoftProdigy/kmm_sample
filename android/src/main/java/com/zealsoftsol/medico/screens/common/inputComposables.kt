@@ -39,6 +39,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
@@ -57,7 +58,7 @@ fun PasswordFormatInputField(
     leadingIcon: @Composable (() -> Unit)? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions(),
-    ) {
+) {
     Box(
         contentAlignment = Alignment.CenterEnd,
         modifier = Modifier.onGloballyPositioned { onPositioned?.invoke(it) },
@@ -121,12 +122,15 @@ fun PhoneFormatInputFieldForRegister(
     leadingIcon: @Composable (() -> Unit)? = null,
     mandatory: Boolean = false,
     keyboardActions: KeyboardActions = KeyboardActions(),
-    ) {
+) {
     InputField(
         modifier = modifier,
         hint = hint,
         text = text,
-        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone,imeAction = ImeAction.Done),
+        keyboardOptions = KeyboardOptions.Default.copy(
+            keyboardType = KeyboardType.Phone,
+            imeAction = ImeAction.Done
+        ),
         maxLines = 1,
         onValueChange = onValueChange,
         leadingIcon = leadingIcon,
@@ -134,6 +138,7 @@ fun PhoneFormatInputFieldForRegister(
         keyboardActions = keyboardActions,
     )
 }
+
 /*
 *  keyboardOptions = KeyboardOptions.Default.copy(
                                                         keyboardType = KeyboardType.Number,
@@ -312,7 +317,7 @@ fun Modifier.scrollOnFocus(
 }
 
 @Composable
-fun InputWithError(errorText: String?, input: @Composable () -> Unit) {
+fun InputWithError(errorText: String?, padding: Dp = 16.dp, input: @Composable () -> Unit) {
     input()
     errorText?.let {
         Spacer(modifier = Modifier.size(4.dp))
@@ -320,7 +325,7 @@ fun InputWithError(errorText: String?, input: @Composable () -> Unit) {
             text = it,
             style = MaterialTheme.typography.body2,
             color = MaterialTheme.colors.error,
-            modifier = Modifier.padding(start = 16.dp),
+            modifier = Modifier.padding(start = padding),
         )
     }
 }
