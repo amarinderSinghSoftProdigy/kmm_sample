@@ -21,8 +21,13 @@ data class DashboardData(
 
 @Serializable
 data class OffersData(
-    val total: Int, val status: String
+    val total: Int, val status: OfferStatus
 )
+
+
+enum class OfferStatus {
+    CREATED, ENDED, RUNNING
+}
 
 @Serializable
 data class BannerData(
