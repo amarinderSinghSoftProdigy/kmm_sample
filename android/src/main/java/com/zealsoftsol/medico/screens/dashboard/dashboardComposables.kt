@@ -60,6 +60,7 @@ import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.data.BannerData
 import com.zealsoftsol.medico.data.BrandsData
 import com.zealsoftsol.medico.data.DashboardData
+import com.zealsoftsol.medico.data.OfferStatus
 import com.zealsoftsol.medico.data.ProductSold
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.common.CoilImageBrands
@@ -535,9 +536,9 @@ private fun ShowStockistDashBoard(
                             painter = painterResource(id = R.drawable.ic_offer)
                         )
                         Space(dp = 8.dp)
-                        dash?.offers?.let {
+                        dash?.offers?.let { it ->
                             Text(
-                                text = if (it.isNotEmpty() && it.size > 1) it[1].total.toString() else "0",
+                                text = it.find { it.status == OfferStatus.RUNNING }?.total.toString() ?: "0",
                                 color = MaterialTheme.colors.background,
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.W700,
@@ -576,7 +577,7 @@ private fun ShowStockistDashBoard(
                         Space(dp = 8.dp)
                         dash?.offers?.let {
                             Text(
-                                text = if (it.isNotEmpty()) it[0].total.toString() else "0",
+                                text = it.find { it.status == OfferStatus.ENDED }?.total.toString() ?: "0",
                                 color = MaterialTheme.colors.background,
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.W700,
@@ -593,7 +594,7 @@ private fun ShowStockistDashBoard(
             }
             Space(16.dp)
 
-            if(dash?.productInfo != null && dash.productInfo?.mostSold?.isNotEmpty()!!) {
+            if (dash?.productInfo != null && dash.productInfo?.mostSold?.isNotEmpty()!!) {
                 Text(
                     text = stringResource(id = R.string.today_sold),
                     color = ConstColors.lightBlue,
@@ -615,7 +616,7 @@ private fun ShowStockistDashBoard(
             }
 
             Space(8.dp)
-            if(dash?.productInfo != null && dash.productInfo?.mostSearched?.isNotEmpty()!!){
+            if (dash?.productInfo != null && dash.productInfo?.mostSearched?.isNotEmpty()!!) {
                 Text(
                     text = stringResource(id = R.string.most_searched),
                     color = ConstColors.lightBlue,
