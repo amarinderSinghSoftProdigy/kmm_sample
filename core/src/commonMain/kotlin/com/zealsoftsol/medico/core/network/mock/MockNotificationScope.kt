@@ -66,6 +66,12 @@ class MockNotificationScope : NetworkScope.Notification {
     ) = mockResponse {
         mockEmptyMapBody()
     }
+
+    override suspend fun deleteNotification(
+        id: String,
+    ) = mockResponse {
+        mockEmptyMapBody()
+    }
 }
 
 private fun longPaginatedData(size: Int, rnd: Random) =

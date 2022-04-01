@@ -7,6 +7,11 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 @Serializable
+data class InfoResponse(
+    val info: String,
+)
+
+@Serializable
 data class HeaderData(
     val unitCode: String = "",
     val name: String,

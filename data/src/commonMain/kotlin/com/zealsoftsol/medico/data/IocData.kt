@@ -9,12 +9,6 @@ data class IOCResponse(
 )
 
 @Serializable
-data class AddInvoiceResponse(
-    val info: String,
-)
-
-
-@Serializable
 data class RetailerData(
     val unitCode: String,
     val tradeName: String,

@@ -4,7 +4,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AddInvoice
-import com.zealsoftsol.medico.data.AddInvoiceResponse
+import com.zealsoftsol.medico.data.InfoResponse
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
@@ -204,6 +204,10 @@ interface NetworkScope {
         suspend fun selectNotificationAction(
             id: String,
             actionRequest: NotificationActionRequest
+        ): AnyResponse
+
+        suspend fun deleteNotification(
+            id: String,
         ): AnyResponse
 
         suspend fun getNotificationDetails(id: String): BodyResponse<NotificationDetails>
@@ -478,7 +482,7 @@ interface NetworkScope {
 
         suspend fun submitInvoice(
             request: AddInvoice
-        ): BodyResponse<AddInvoiceResponse>
+        ): BodyResponse<InfoResponse>
 
         suspend fun updateInvoice(
             request: UpdateInvoiceRequest

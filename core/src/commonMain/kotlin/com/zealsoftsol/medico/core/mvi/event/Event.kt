@@ -212,6 +212,7 @@ sealed class Event {
             data class Load(val isFirstLoad: Boolean) : Notification()
             data class Search(val value: String) : Notification()
             data class Select(val notification: NotificationData) : Notification()
+            data class DeleteNotification(val notificationId: String) : Notification()
             data class SelectAction(val action: NotificationAction) : Notification()
             data class ChangeOptions(val option: NotificationOption) : Notification()
             data class SelectFilter(val filter: NotificationFilter) : Notification()

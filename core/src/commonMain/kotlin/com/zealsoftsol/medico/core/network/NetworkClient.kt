@@ -13,7 +13,7 @@ import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AddInvoice
-import com.zealsoftsol.medico.data.AddInvoiceResponse
+import com.zealsoftsol.medico.data.InfoResponse
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
@@ -563,6 +563,14 @@ class NetworkClient(
         simpleRequest {
             client.get<BodyResponse<NotificationDetails>>("${baseUrl.url}/notifications/$id/detail") {
                 withMainToken()
+            }
+        }
+
+    override suspend fun deleteNotification(id: String) =
+        simpleRequest {
+            client.post<AnyResponse>("${baseUrl.url}/notifications/delete") {
+                withMainToken()
+                jsonBody(mapOf("notificationId" to id))
             }
         }
 
@@ -1204,7 +1212,7 @@ class NetworkClient(
     override suspend fun submitInvoice(
         request: AddInvoice
     ) = simpleRequest {
-        client.post<BodyResponse<AddInvoiceResponse>>("${baseUrl.url}/ioc/add/invoice") {
+        client.post<BodyResponse<InfoResponse>>("${baseUrl.url}/ioc/add/invoice") {
             withMainToken()
             jsonBody(request)
         }
