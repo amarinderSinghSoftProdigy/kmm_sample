@@ -13,6 +13,7 @@ import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.OfferProductRequest
+import com.zealsoftsol.medico.data.OfferStatus
 import com.zealsoftsol.medico.data.PromotionUpdateRequest
 import com.zealsoftsol.medico.data.Promotions
 import kotlinx.coroutines.Job
@@ -34,7 +35,7 @@ internal class OffersEventDelegate(
             event.active
         )
         is Event.Action.Offers.ShowEditBottomSheet -> showEditBottomSheet(event.promotion)
-        is Event.Action.Offers.GetOffers -> getOffers(event.search, event.query)
+        is Event.Action.Offers.GetOffers -> getOffers(event.search, event.query, event.status)
         is Event.Action.Offers.UpdateOffer -> updateOffer(event.promotionType, event.active)
         is Event.Action.Offers.LoadMoreProducts -> loadMoreProducts()
         is Event.Action.Offers.OpenCreateOffer -> loadMoreProducts()
@@ -48,6 +49,8 @@ internal class OffersEventDelegate(
         is Event.Action.Offers.ShowManufacturers -> showManufacturersList(event.showManufacturers)
     }
 
+    private var status: OfferStatus = OfferStatus.ALL
+
     /**
      * Hide/show manufacturers list in UI
      */
@@ -57,7 +60,8 @@ internal class OffersEventDelegate(
         }
     }
 
-    private suspend fun getOffers(search: String?, query: ArrayList<String>) {
+    private suspend fun getOffers(search: String?, query: ArrayList<String>, status: OfferStatus) {
+        this.status = status
         navigator.withScope<OffersScope.ViewOffers> {
             it.pagination.reset()
             it.productSearch.value = search ?: ""
@@ -68,7 +72,8 @@ internal class OffersEventDelegate(
                 withDelay = false,
                 withProgress = isWildcardSearch,
                 extraFilters = search,
-                manufacturers = query
+                manufacturers = query,
+                status = status
             )
         }
     }
@@ -82,7 +87,8 @@ internal class OffersEventDelegate(
                     withDelay = false,
                     withProgress = true,
                     "",
-                    ArrayList()
+                    ArrayList(),
+                    status = status
                 )
             }
         }
@@ -98,7 +104,8 @@ internal class OffersEventDelegate(
             navigator.withScope<OffersScope.ViewOffers> {
                 getOffers(
                     it.productSearch.value,
-                    it.manufacturerSearch.value
+                    it.manufacturerSearch.value,
+                    status
                 )
             }
         }.onError(navigator)
@@ -136,6 +143,7 @@ internal class OffersEventDelegate(
         withProgress: Boolean,
         extraFilters: String? = "",
         manufacturers: ArrayList<String>?,
+        status: OfferStatus,
         crossinline onEnd: () -> Unit = {}
     ) {
         searchAsync(withDelay = withDelay, withProgress = withProgress) {
@@ -145,6 +153,7 @@ internal class OffersEventDelegate(
                 search = extraFilters,
                 manufacturer = manufacturers,
                 pagination = pagination,
+                status = status
             ).onSuccess { body ->
                 pagination.setTotal(body.totalResults)
                 statuses.value = body.promotionStatusDatas
@@ -242,7 +251,8 @@ internal class OffersEventDelegate(
                     navigator.withScope<OffersScope.ViewOffers> {
                         getOffers(
                             it.productSearch.value,
-                            it.manufacturerSearch.value
+                            it.manufacturerSearch.value,
+                            status
                         )
                     }
                 }.onError(navigator)
@@ -258,7 +268,8 @@ internal class OffersEventDelegate(
             navigator.withScope<OffersScope.CreateOffer> {
                 getOffers(
                     it.productSearch.value,
-                    arrayListOf("")
+                    arrayListOf(""),
+                    status
                 )
             }
         }.onError(navigator)

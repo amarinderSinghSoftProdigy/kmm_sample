@@ -25,8 +25,8 @@ data class OffersData(
 )
 
 
-enum class OfferStatus {
-    CREATED, ENDED, RUNNING
+enum class OfferStatus(val value: String) {
+    ALL(""), CREATED("CREATED"), ENDED("ENDED"), RUNNING("RUNNING")
 }
 
 @Serializable

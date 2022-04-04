@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.Manufacturer
 import com.zealsoftsol.medico.data.OfferProduct
 import com.zealsoftsol.medico.data.OfferProductRequest
+import com.zealsoftsol.medico.data.OfferStatus
 import com.zealsoftsol.medico.data.PromotionStatusData
 import com.zealsoftsol.medico.data.PromotionType
 import com.zealsoftsol.medico.data.Promotions
@@ -19,7 +20,8 @@ import com.zealsoftsol.medico.data.Promotions
 sealed class OffersScope : Scope.Child.TabBar() {
 
     class ViewOffers(
-        private val title: String
+        private val title: String,
+        val status: DataSource<OfferStatus> = DataSource(OfferStatus.ALL)
     ) : OffersScope(), CommonScope.CanGoBack {
         val productSearch: DataSource<String> = DataSource("")
         val manufacturerSearch: DataSource<ArrayList<String>> = DataSource(ArrayList())
@@ -39,6 +41,10 @@ sealed class OffersScope : Scope.Child.TabBar() {
             return TabBarInfo.OfferHeader(title)
         }
 
+        fun updateStatus(status: OfferStatus) {
+            this.status.value = status
+        }
+
         fun loadMoreProducts() =
             EventCollector.sendEvent(Event.Action.Offers.LoadMoreProducts)
 
@@ -47,20 +53,30 @@ sealed class OffersScope : Scope.Child.TabBar() {
 
         fun startSearch() {
             reset()
-            EventCollector.sendEvent(Event.Action.Offers.GetOffers())
+            EventCollector.sendEvent(Event.Action.Offers.GetOffers(status = status.value))
         }
 
-        fun reset() {
+        private fun reset() {
             productSearch.value = ""
             manufacturerSearch.value = ArrayList()
         }
 
         fun startSearch(search: String) {
-            EventCollector.sendEvent(Event.Action.Offers.GetOffers(search = search))
+            EventCollector.sendEvent(
+                Event.Action.Offers.GetOffers(
+                    search = search,
+                    status = status.value
+                )
+            )
         }
 
         fun startSearch(query: ArrayList<String>) {
-            EventCollector.sendEvent(Event.Action.Offers.GetOffers(query = query))
+            EventCollector.sendEvent(
+                Event.Action.Offers.GetOffers(
+                    query = query,
+                    status = status.value
+                )
+            )
         }
 
         //Open the dialog for update status

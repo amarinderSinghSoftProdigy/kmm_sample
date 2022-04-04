@@ -4,7 +4,6 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AddInvoice
-import com.zealsoftsol.medico.data.InfoResponse
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
@@ -35,6 +34,7 @@ import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InStoreSeller
 import com.zealsoftsol.medico.data.InStoreUser
 import com.zealsoftsol.medico.data.InStoreUserRegistration
+import com.zealsoftsol.medico.data.InfoResponse
 import com.zealsoftsol.medico.data.InvListingData
 import com.zealsoftsol.medico.data.InventoryData
 import com.zealsoftsol.medico.data.Invoice
@@ -50,6 +50,7 @@ import com.zealsoftsol.medico.data.NotificationFilter
 import com.zealsoftsol.medico.data.OfferData
 import com.zealsoftsol.medico.data.OfferProduct
 import com.zealsoftsol.medico.data.OfferProductRequest
+import com.zealsoftsol.medico.data.OfferStatus
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderNewQtyRequest
 import com.zealsoftsol.medico.data.OrderResponse
@@ -417,6 +418,7 @@ interface NetworkScope {
             unitCode: String,
             search: String?,
             manufacturer: ArrayList<String>?,
+            status: OfferStatus,
             pagination: Pagination
         ): BodyResponse<OfferData>
 

@@ -181,7 +181,7 @@ internal class TransitionEventDelegate(
                     )
                 )
                 is Event.Transition.Offers -> setScope(
-                    OffersScope.ViewOffers("deal_offer")
+                    OffersScope.ViewOffers("deal_offer", DataSource(event.status))
                 )
                 is Event.Transition.CreateOffers -> setScope(
                     OffersScope.CreateOffer("create_offer")
