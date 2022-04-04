@@ -5,9 +5,7 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.Scope
-import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
-import com.zealsoftsol.medico.core.mvi.scope.nested.IocBuyerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
@@ -32,7 +30,10 @@ internal class ManagementEventDelegate(
     override suspend fun handleEvent(event: Event.Action.Management) = when (event) {
         is Event.Action.Management.Load -> loadUserManagement(event.isFirstLoad)
         is Event.Action.Management.Search -> searchUserManagement(event.value)
-        is Event.Action.Management.RequestSubscribe -> requestSubscribe(event.item)
+        is Event.Action.Management.RequestSubscribe -> requestSubscribe(
+            event.item,
+            event.connectingStockistUnitCode
+        )
         is Event.Action.Management.GetDetails -> openRetailerDetails(event.item)
         is Event.Action.Management.ChoosePayment -> choosePayment(
             event.paymentMethod,
@@ -52,7 +53,8 @@ internal class ManagementEventDelegate(
                 hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(
                     body,
                     isSeasonBoy = false,
-                    canSubscribe = false,
+                    canSubscribe = it is ManagementScope.User && it.activeTab.value == ManagementScope.Tab.ALL_STOCKISTS,
+                    connectingStockistUnitCode = item
                 )
             }
         }.onError(navigator)
@@ -87,12 +89,12 @@ internal class ManagementEventDelegate(
     }
 
 
-    private fun requestSubscribe(entityInfo: HeaderData) {
+    private fun requestSubscribe(entityInfo: HeaderData, connectingStockistUnitCode: String) {
         navigator.withScope<ManagementScope.User.Stockist> {
             val user = userRepo.requireUser()
             subscribeRequest = SubscribeRequest(
                 buyerUnitCode = user.unitCode,
-                sellerUnitCode = entityInfo.unitCode,
+                sellerUnitCode = connectingStockistUnitCode,
                 paymentMethod = "",
                 noOfCreditDays = 0,
                 customerType = user.type.serverValue,

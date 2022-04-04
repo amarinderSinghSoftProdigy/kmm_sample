@@ -23,7 +23,6 @@ import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.DeclineReason
-import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.HeaderData
@@ -201,7 +200,11 @@ sealed class Event {
             data class Search(val value: String) : Management()
             data class Load(val isFirstLoad: Boolean) : Management()
             data class GetDetails(val item: String) : Management()
-            data class RequestSubscribe(val item: HeaderData) : Management()
+            data class RequestSubscribe(
+                val item: HeaderData,
+                val connectingStockistUnitCode: String
+            ) : Management()
+
             data class ChoosePayment(val paymentMethod: PaymentMethod, val creditDays: Int?) :
                 Management()
 
