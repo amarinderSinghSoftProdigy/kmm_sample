@@ -15,7 +15,6 @@ import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.BuyerDetailsData
 import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.ConnectedStockist
-import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.HeaderData
 import com.zealsoftsol.medico.data.InStoreProduct
@@ -162,10 +161,11 @@ sealed class BottomSheet {
         val headerData: HeaderData,
         val isSeasonBoy: Boolean,
         val canSubscribe: Boolean,
+        val connectingStockistUnitCode: String
     ) : BottomSheet() {
 
         fun subscribe() =
-            EventCollector.sendEvent(Event.Action.Management.RequestSubscribe(headerData))
+            EventCollector.sendEvent(Event.Action.Management.RequestSubscribe(headerData, connectingStockistUnitCode))
     }
 
     class UpdateOfferStatus(
