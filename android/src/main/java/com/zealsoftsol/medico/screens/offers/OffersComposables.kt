@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.screens.offers
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -115,27 +116,31 @@ fun OffersScreen(scope: OffersScope.ViewOffers) {
                     statuses.value.let { list ->
                         var total = 0
                         list.forEachIndexed { _, item ->
-                            total = item.total
+                            total += item.total
                         }
                         StatusItem(
+                            scope = scope,
                             status = OfferStatus.ALL,
                             total = total,
                             modifier = Modifier.width(itemSize)
                         )
 
                         StatusItem(
+                            scope = scope,
                             status = OfferStatus.CREATED,
                             total = returnCount(list, OfferStatus.CREATED),
                             modifier = Modifier.width(itemSize)
                         )
 
                         StatusItem(
+                            scope = scope,
                             status = OfferStatus.RUNNING,
                             total = returnCount(list, OfferStatus.RUNNING),
                             modifier = Modifier.width(itemSize)
                         )
 
                         StatusItem(
+                            scope = scope,
                             status = OfferStatus.ENDED,
                             total = returnCount(list, OfferStatus.ENDED),
                             modifier = Modifier.width(itemSize)
@@ -198,7 +203,10 @@ fun OffersScreen(scope: OffersScope.ViewOffers) {
                 text = R.string.missing_offers,
                 subtitle = "",
                 buttonText = stringResource(id = R.string.clear),
-                onHome = { scope.reset() },
+                onHome = {
+                    scope.updateStatus(OfferStatus.ALL)
+                    scope.startSearch()
+                },
             )
         } else {
             LazyColumn {
@@ -216,6 +224,9 @@ fun OffersScreen(scope: OffersScope.ViewOffers) {
     }
 }
 
+/**
+ * return count of item for a status
+ */
 fun returnCount(list: List<PromotionStatusData>, status: OfferStatus): Int {
     val item = list.firstOrNull { it.status == status.value }
     return item?.total ?: 0
@@ -442,12 +453,23 @@ private fun SectionButton(
 }
 
 @Composable
-fun StatusItem(status: OfferStatus, total: Int, modifier: Modifier) {
+fun StatusItem(
+    scope: OffersScope.ViewOffers,
+    status: OfferStatus,
+    total: Int,
+    modifier: Modifier
+) {
+    val selectedStatus = scope.status.flow.collectAsState().value
+
     Row {
         Surface(
-            color = Color.Transparent,
+            color = if (selectedStatus == status) Color.White else Color.Transparent,
             modifier = modifier
-                .padding(8.dp),
+                .padding(8.dp)
+                .clickable {
+                    scope.updateStatus(status)
+                    scope.startSearch()
+                },
             border = BorderStroke(1.dp, Color.Black),
             shape = MaterialTheme.shapes.medium,
         ) {

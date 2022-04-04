@@ -52,15 +52,13 @@ sealed class OffersScope : Scope.Child.TabBar() {
             EventCollector.sendEvent(Event.Transition.CreateOffers)
 
         fun startSearch() {
-            productSearch.value = ""
-            manufacturerSearch.value = ArrayList()
+            reset()
             EventCollector.sendEvent(Event.Action.Offers.GetOffers(status = status.value))
         }
 
-        fun reset() {
+        private fun reset() {
             productSearch.value = ""
             manufacturerSearch.value = ArrayList()
-            EventCollector.sendEvent(Event.Action.Offers.GetOffers(status = OfferStatus.ALL))
         }
 
         fun startSearch(search: String) {
