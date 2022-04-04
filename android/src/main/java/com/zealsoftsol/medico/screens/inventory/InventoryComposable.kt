@@ -343,7 +343,7 @@ fun InventoryMainComposable(scope: InventoryScope) {
                         itemsIndexed(
                             items = productsList,
                             key = { index, _ -> index },
-                            itemContent = { index, item ->
+                            itemContent = { _, item ->
                                 ProductsItem(item, scope)
                             },
                         )

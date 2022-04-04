@@ -20,7 +20,6 @@ class InventoryScope(
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.OnlyBackHeader("")
 
     private var mCurrentPage = 0
-    val mCurrentManufacturerName = DataSource("")
     val stockStatusData: DataSource<StocksStatusData?> = DataSource(null)
     val onlineStatusData: DataSource<OnlineStatusData?> = DataSource(null)
     val stockExpiredData: DataSource<StockExpiredData?> = DataSource(null)
@@ -61,10 +60,7 @@ class InventoryScope(
      */
     fun updateManufacturersList(list: List<ManufacturerData>) {
         if (manufacturersList.value.isEmpty() && list.isNotEmpty()) {
-            mCurrentManufacturerName.value = list[0].name
-            mManufacturerCode = list[0].code
             manufacturersList.value = list
-            manufacturersList.value[0].isChecked = true
         }
     }
 
@@ -122,7 +118,6 @@ class InventoryScope(
      */
     fun updateManufacturer(manufacturerName: String, manufacturerCode: String) {
         productsList.value.clear()
-        mCurrentManufacturerName.value = manufacturerName
         mManufacturerCode = manufacturerCode
         getInventory(true)
     }
