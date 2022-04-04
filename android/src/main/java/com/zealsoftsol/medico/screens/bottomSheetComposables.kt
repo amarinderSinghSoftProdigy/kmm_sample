@@ -1964,7 +1964,7 @@ private fun PreviewItemBottomSheet(
                             color = MaterialTheme.colors.background,
                             modifier = Modifier.padding(end = 10.dp),
                         )
-                        if (headerData.isVerified == true) {
+                        if (headerData.isVerified) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Image(
                                     painter = painterResource(id = R.drawable.ic_verified),
