@@ -13,7 +13,6 @@ import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AddInvoice
-import com.zealsoftsol.medico.data.InfoResponse
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
@@ -46,6 +45,7 @@ import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InStoreSeller
 import com.zealsoftsol.medico.data.InStoreUser
 import com.zealsoftsol.medico.data.InStoreUserRegistration
+import com.zealsoftsol.medico.data.InfoResponse
 import com.zealsoftsol.medico.data.InvListingData
 import com.zealsoftsol.medico.data.InventoryData
 import com.zealsoftsol.medico.data.Invoice
@@ -1314,9 +1314,9 @@ class NetworkClient(
             header("X-TENANT-ID", unitCode)
             url {
                 parameters.apply {
-                    if (search != null)
+                    if (!search.isNullOrEmpty())
                         append("search", search)
-                    if (manufacturer != null)
+                    if (!manufacturer.isNullOrEmpty())
                         append("manufacturer", manufacturer)
                     append("status", status.toString())
                     append("stockStatus", stockStatus.toString())
