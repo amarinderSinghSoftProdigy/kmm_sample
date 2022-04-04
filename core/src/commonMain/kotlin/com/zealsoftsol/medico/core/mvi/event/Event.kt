@@ -23,7 +23,6 @@ import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.DeclineReason
-import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.HeaderData
@@ -36,6 +35,7 @@ import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationFilter
 import com.zealsoftsol.medico.data.NotificationOption
 import com.zealsoftsol.medico.data.OfferProductRequest
+import com.zealsoftsol.medico.data.OfferStatus
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderTaxInfo
@@ -489,7 +489,8 @@ sealed class Event {
             data class GetOffers(
                 val search: String? = null,
                 val query: ArrayList<String> = ArrayList(),
-            ) : Offers()
+                val status: OfferStatus,
+                ) : Offers()
 
             data class UpdateOffer(val promotionType: String, val active: Boolean) : Offers()
             data class EditOffer(val promoCode: String, val request: OfferProductRequest) : Offers()
@@ -647,7 +648,7 @@ sealed class Event {
         object Orders : Transition()
         object PoOrdersAndHistory : Transition()
         object MyInvoices : Transition()
-        object Offers : Transition()
+        data class Offers(val status: OfferStatus) : Transition()
         object CreateOffers : Transition()
         object PoInvoices : Transition()
         object InStore : Transition()

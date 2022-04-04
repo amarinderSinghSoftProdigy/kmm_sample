@@ -521,7 +521,7 @@ private fun ShowStockistDashBoard(
                         .weight(1f)
                         .background(Color.White, shape1)
                         .clickable {
-                            scope.moveToOffersScreen()
+                            scope.moveToOffersScreen(OfferStatus.RUNNING)
                         }
                         .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape1)
                         .padding(20.dp),
@@ -537,8 +537,9 @@ private fun ShowStockistDashBoard(
                         )
                         Space(dp = 8.dp)
                         dash?.offers?.let { it ->
+                            val total: String = it.find { data-> data.status == OfferStatus.RUNNING }?.total.toString()
                             Text(
-                                text = it.find { it.status == OfferStatus.RUNNING }?.total.toString() ?: "0",
+                                text = if (total == "null") "0" else total,
                                 color = MaterialTheme.colors.background,
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.W700,
@@ -561,7 +562,7 @@ private fun ShowStockistDashBoard(
                         .weight(1f)
                         .background(Color.White, shape2)
                         .clickable {
-                            scope.moveToOffersScreen()
+                            scope.moveToOffersScreen(OfferStatus.ENDED)
                         }
                         .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape2)
                         .padding(20.dp),
@@ -576,8 +577,9 @@ private fun ShowStockistDashBoard(
                         )
                         Space(dp = 8.dp)
                         dash?.offers?.let {
+                            val total: String = it.find { data-> data.status == OfferStatus.ENDED }?.total.toString()
                             Text(
-                                text = it.find { it.status == OfferStatus.ENDED }?.total.toString() ?: "0",
+                                text = if (total == "null") "0" else total,
                                 color = MaterialTheme.colors.background,
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.W700,

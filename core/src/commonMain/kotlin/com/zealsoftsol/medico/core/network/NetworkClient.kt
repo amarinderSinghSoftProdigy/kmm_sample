@@ -62,6 +62,7 @@ import com.zealsoftsol.medico.data.NotificationFilter
 import com.zealsoftsol.medico.data.OfferData
 import com.zealsoftsol.medico.data.OfferProduct
 import com.zealsoftsol.medico.data.OfferProductRequest
+import com.zealsoftsol.medico.data.OfferStatus
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderNewQtyRequest
 import com.zealsoftsol.medico.data.OrderResponse
@@ -1052,6 +1053,7 @@ class NetworkClient(
         unitCode: String,
         search: String?,
         manufacturer: ArrayList<String>?,
+        status: OfferStatus,
         pagination: Pagination
     ): BodyResponse<OfferData> = simpleRequest {
         client.get("${baseUrl.url}/promotions") {
@@ -1061,6 +1063,7 @@ class NetworkClient(
                 parameters.apply {
                     append("page", pagination.nextPage().toString())
                     append("pageSize", pagination.itemsPerPage.toString())
+                    append("status", status.value)
                     if (!search.isNullOrEmpty()) append("search", search)
                     manufacturer?.forEach {
                         append("manufacturers", it)

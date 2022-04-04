@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
+import com.zealsoftsol.medico.data.OfferStatus
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserV2
 
@@ -40,7 +41,7 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
 
     object MyInvoices : NavigationOption(Event.Transition.MyInvoices, "invoices")
 
-    object Offers : NavigationOption(Event.Transition.Offers, "deal_offer")
+    object Offers : NavigationOption(Event.Transition.Offers(OfferStatus.ALL), "deal_offer")
 
     object PoInvoices : NavigationOption(Event.Transition.PoInvoices, "po_invoices")
 

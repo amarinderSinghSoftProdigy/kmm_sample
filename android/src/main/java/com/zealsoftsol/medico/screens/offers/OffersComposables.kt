@@ -50,6 +50,7 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.Manufacturer
+import com.zealsoftsol.medico.data.OfferStatus
 import com.zealsoftsol.medico.data.PromotionStatusData
 import com.zealsoftsol.medico.data.Promotions
 import com.zealsoftsol.medico.screens.common.CoilImageBrands
@@ -66,6 +67,7 @@ fun OffersScreen(scope: OffersScope.ViewOffers) {
     val manufacturerList = scope.manufacturerSearch.flow.collectAsState()
     val switchEnabled = remember { mutableStateOf(false) }
     val showManufacturersList = scope.showManufacturers.flow.collectAsState()
+    val status = scope.status.flow.collectAsState().value
 
     remember {
         scope.startSearch()
@@ -110,31 +112,54 @@ fun OffersScreen(scope: OffersScope.ViewOffers) {
                     mainAxisSize = SizeMode.Expand,
                     mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
                 ) {
-                    statuses.value.let {
-                        it.forEachIndexed { _, item ->
-                            StatusItem(item, modifier = Modifier.width(itemSize))
+                    statuses.value.let { list ->
+                        var total = 0
+                        list.forEachIndexed { _, item ->
+                            total = item.total
                         }
+                        StatusItem(
+                            status = OfferStatus.ALL,
+                            total = total,
+                            modifier = Modifier.width(itemSize)
+                        )
+
+                        StatusItem(
+                            status = OfferStatus.CREATED,
+                            total = returnCount(list, OfferStatus.CREATED),
+                            modifier = Modifier.width(itemSize)
+                        )
+
+                        StatusItem(
+                            status = OfferStatus.RUNNING,
+                            total = returnCount(list, OfferStatus.RUNNING),
+                            modifier = Modifier.width(itemSize)
+                        )
+
+                        StatusItem(
+                            status = OfferStatus.ENDED,
+                            total = returnCount(list, OfferStatus.ENDED),
+                            modifier = Modifier.width(itemSize)
+                        )
                     }
                 }
             }
             Space(dp = 16.dp)
         }
-        //dasdsad
-      /*  BasicSearchBar(
-            input = search.value,
-            hint = R.string.search_by_product,
-            icon = null,
-            horizontalPadding = 12.dp,
-            onIconClick = null,
-            isSearchFocused = false,
-            onSearch = { value, _ ->
-                scope.startSearch(search = value)
-            },
-            isSearchCross = false
-        )
-        Space(dp = 16.dp)
-        Divider(thickness = 0.5.dp)*/
-        if(showManufacturersList.value) {
+        /*  BasicSearchBar(
+              input = search.value,
+              hint = R.string.search_by_product,
+              icon = null,
+              horizontalPadding = 12.dp,
+              onIconClick = null,
+              isSearchFocused = false,
+              onSearch = { value, _ ->
+                  scope.startSearch(search = value)
+              },
+              isSearchCross = false
+          )
+          Space(dp = 16.dp)
+          Divider(thickness = 0.5.dp)*/
+        if (showManufacturersList.value) {
             Space(dp = 8.dp)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
@@ -173,7 +198,7 @@ fun OffersScreen(scope: OffersScope.ViewOffers) {
                 text = R.string.missing_offers,
                 subtitle = "",
                 buttonText = stringResource(id = R.string.clear),
-                onHome = { scope.startSearch() },
+                onHome = { scope.reset() },
             )
         } else {
             LazyColumn {
@@ -191,8 +216,13 @@ fun OffersScreen(scope: OffersScope.ViewOffers) {
     }
 }
 
+fun returnCount(list: List<PromotionStatusData>, status: OfferStatus): Int {
+    val item = list.firstOrNull { it.status == status.value }
+    return item?.total ?: 0
+}
+
 /**
- * ui item for manufaturer listing
+ * ui item for manufacturer listing
  */
 @Composable
 fun ManufacturerItem(item: Manufacturer, scope: OffersScope.ViewOffers, list: ArrayList<String>) {
@@ -412,7 +442,7 @@ private fun SectionButton(
 }
 
 @Composable
-fun StatusItem(item: PromotionStatusData, modifier: Modifier) {
+fun StatusItem(status: OfferStatus, total: Int, modifier: Modifier) {
     Row {
         Surface(
             color = Color.Transparent,
@@ -426,17 +456,17 @@ fun StatusItem(item: PromotionStatusData, modifier: Modifier) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = item.status,
+                    text = status.toString(),
                     color = Color.Black,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.W800,
                     modifier = Modifier.padding(all = 8.dp),
                 )
                 Text(
-                    text = item.total.toString(),
-                    color = when (item.status.uppercase()) {
-                        "ENDED" -> ConstColors.red
-                        "RUNNING" -> ConstColors.lightGreen
+                    text = total.toString(),
+                    color = when (status) {
+                        OfferStatus.ENDED -> ConstColors.red
+                        OfferStatus.RUNNING -> ConstColors.lightGreen
                         else -> MaterialTheme.colors.background
                     },
                     fontSize = 18.sp,

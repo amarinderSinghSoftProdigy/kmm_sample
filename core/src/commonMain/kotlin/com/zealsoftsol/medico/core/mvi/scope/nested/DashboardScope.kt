@@ -11,6 +11,7 @@ import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.DashboardData
+import com.zealsoftsol.medico.data.OfferStatus
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserV2
 
@@ -61,8 +62,8 @@ class DashboardScope private constructor(
     /**
      * Move to offers screens
      */
-    fun moveToOffersScreen() {
-        EventCollector.sendEvent(Event.Transition.Offers)
+    fun moveToOffersScreen(status: OfferStatus) {
+        EventCollector.sendEvent(Event.Transition.Offers(status))
     }
 
     /**
