@@ -627,7 +627,7 @@ fun EditField(
     isEnabled: Boolean = true,
     isError: Boolean = false,
     formattingRule: Boolean = true,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     showThinDivider: Boolean = false,
     textStyle: TextStyle? = null,
     keyboardActions: KeyboardActions = KeyboardActions.Default
@@ -694,7 +694,8 @@ fun EditField(
                         onChange(it.text)
                     }
                 },
-                keyboardOptions = keyboardOptions,
+                keyboardOptions = keyboardOptions.copy(keyboardType = KeyboardType.Number),
+                keyboardActions = keyboardActions,
                 maxLines = 1,
                 singleLine = true,
                 readOnly = !isEnabled,
