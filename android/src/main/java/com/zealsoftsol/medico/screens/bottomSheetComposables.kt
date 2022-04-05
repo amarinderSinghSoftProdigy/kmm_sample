@@ -415,12 +415,14 @@ private fun ShowConnectedStockist(stockist: List<ConnectedStockist>, onDismiss: 
 
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun InStoreViewProductBottomSheet(
     product: InStoreProduct,
     onSaveQty: (Double, Double) -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
     BaseBottomSheet(onDismiss) {
         Column {
             Row(
@@ -526,6 +528,19 @@ private fun InStoreViewProductBottomSheet(
                                     onFocus = {
                                         if (!wasErrorSaved && isError) focusedError.value = 0
                                     },
+                                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                                    keyboardActions = KeyboardActions(
+                                        onDone = {
+                                            keyboardController?.hide()
+                                            if (qty.value > 0 && !isError) {
+                                                mode.value =
+                                                    if (qty.value > 0 || freeQty.value > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart
+                                                onSaveQty(qty.value, freeQty.value)
+                                                onDismiss()
+                                            }
+
+                                        }
+                                    )
                                 )
                             }
                             Box(
@@ -542,6 +557,18 @@ private fun InStoreViewProductBottomSheet(
                                     onFocus = {
                                         if (!wasErrorSaved && isError) focusedError.value = 1
                                     },
+                                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                                    keyboardActions = KeyboardActions(
+                                        onDone = {
+                                            keyboardController?.hide()
+                                            if (qty.value > 0 && !isError) {
+                                                mode.value =
+                                                    if (qty.value > 0 || freeQty.value > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart
+                                                onSaveQty(qty.value, freeQty.value)
+                                                onDismiss()
+                                            }
+                                        }
+                                    )
                                 )
                             }
                         }
@@ -597,6 +624,7 @@ private fun InStoreViewProductBottomSheet(
                                     mode.value =
                                         if (qty.value > 0 || freeQty.value > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart
                                     onSaveQty(qty.value, freeQty.value)
+                                    onDismiss()
                                 },
                                 modifier = Modifier.weight(1f),
                             )
