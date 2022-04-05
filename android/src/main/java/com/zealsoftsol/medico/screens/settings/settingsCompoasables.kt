@@ -417,31 +417,26 @@ fun GstinDetailsComposable(
         ReadOnlyField(details.license1, R.string.drug_license_1)
         Space(12.dp)
         ReadOnlyField(details.license2, R.string.drug_license_2)
-        if (drugLicense.value != null) {
-            Space(12.dp)
-            ImageLabel(value = drugLicense.value?.cdnUrl ?: "", direct = true, verified = true) { scope.previewImage(drugLicense.value?.cdnUrl ?: "") }
-        } else if (details.dlExpiryDate != null) {
+        if (details.dlExpiryDate != null) {
             Space(12.dp)
             if (!details.dlExpiryDate?.licenseUrl.isNullOrEmpty()) {
                 ImageLabel(
                     details.dlExpiryDate?.licenseUrl!!, direct = true, verified = true,
                 ) { scope.previewImage(details.dlExpiryDate?.licenseUrl!!) }
             }
-            Space(12.dp)
             ReadOnlyFieldTwoValues(
                 details.dlExpiryDate?.expiry ?: "",
                 R.string.drug_licence_expiry, details.dlExpiryDate?.expiresIn ?: ""
             )
 
         }
-        Space(12.dp)
         if (details.flExpiryDate != null) {
+            Space(12.dp)
             if (!details.flExpiryDate?.licenseUrl.isNullOrEmpty()) {
                 ImageLabel(
                     details.flExpiryDate?.licenseUrl!!, direct = true, verified = true,
                 ) { scope.previewImage(details.flExpiryDate?.licenseUrl!!) }
             }
-            Space(12.dp)
             ReadOnlyFieldTwoValues(
                 details.flExpiryDate?.expiry ?: "",
                 R.string.food_licence_expiry, details.flExpiryDate?.expiresIn ?: ""

@@ -70,7 +70,7 @@ internal class ProfileEventDelegate(
                     }
                     "DRUG_LICENSE" -> {//The case to handle the response for drug license upload
                         navigator.withScope<SettingsScope.GstinDetails> {
-                            it.drugLicense.value = body
+                            it.details.dlExpiryDate?.licenseUrl = body.cdnUrl
                         }
                     }
                 }

@@ -53,5 +53,5 @@ data class User(
 data class ExpiryObject(
     val expiry: String,
     val expiresIn: String,
-    val licenseUrl: String
+    var licenseUrl: String
 )

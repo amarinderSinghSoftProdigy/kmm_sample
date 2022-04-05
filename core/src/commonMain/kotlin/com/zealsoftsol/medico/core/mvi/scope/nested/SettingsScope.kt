@@ -92,6 +92,7 @@ sealed class SettingsScope(
 
     class GstinDetails(val details: User.Details.DrugLicense, val user: User) : Child.TabBar(),
         CommonScope.CanGoBack, CommonScope.UploadDocument {
+
         var drugLicense: DataSource<ProfileResponseData?> = DataSource(null)
 
         fun previewImage(item: String) =
