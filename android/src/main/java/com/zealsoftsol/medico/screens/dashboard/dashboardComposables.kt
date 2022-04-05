@@ -68,6 +68,7 @@ import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.ShimmerItem
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.stringResourceByName
+import com.zealsoftsol.medico.screens.inventory.ManufacturersItem
 import kotlinx.coroutines.delay
 
 @Composable
@@ -178,7 +179,9 @@ private fun ShowRetailerAndHospitalDashboard(
                         items = it,
                         key = { index, _ -> index },
                         itemContent = { _, item ->
-                            BrandsItem(item, scope)
+                            BrandsItem(item, scope) {
+                                scope.startBrandSearch(item.searchTerm, item.field)
+                            }
                         },
                     )
                 }
@@ -239,7 +242,7 @@ private fun BannerItem(item: BannerData, scope: DashboardScope, modifier: Modifi
  * ui item for brands listing
  */
 @Composable
-private fun BrandsItem(item: BrandsData, scope: DashboardScope) {
+private fun BrandsItem(item: BrandsData, scope: DashboardScope, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .height(90.dp)
@@ -247,10 +250,8 @@ private fun BrandsItem(item: BrandsData, scope: DashboardScope) {
             .padding(start = 2.dp)
             .selectable(
                 selected = true,
-                onClick = {
-                    //send parameters for search based on category
-                    scope.startBrandSearch(item.searchTerm, item.field)
-                }),
+                onClick = onClick
+            ),
         elevation = 3.dp,
         shape = RoundedCornerShape(5.dp),
         backgroundColor = Color.White,
@@ -414,6 +415,27 @@ private fun ShowStockistDashBoard(
                     )
                 }
             }
+            Space(dp = 16.dp)
+            Text(
+                text = stringResource(id = R.string.manufacturers),
+                color = ConstColors.lightBlue,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+            )
+            Space(dp = 16.dp)
+            LazyRow{
+                dashboard.value?.manufacturers?.let {
+                    itemsIndexed(
+                        items = it,
+                        key = { index, _ -> index },
+                        itemContent = { _, item ->
+                            ManufacturersItem(item) {
+                                scope.moveToInventoryScreen(manufacturerCode = item.code)
+                            }
+                        },
+                    )
+                }
+            }
             Space(16.dp)
             Text(
                 text = stringResource(id = R.string.inventory),
@@ -537,7 +559,8 @@ private fun ShowStockistDashBoard(
                         )
                         Space(dp = 8.dp)
                         dash?.offers?.let { it ->
-                            val total: String = it.find { data-> data.status == OfferStatus.RUNNING }?.total.toString()
+                            val total: String =
+                                it.find { data -> data.status == OfferStatus.RUNNING }?.total.toString()
                             Text(
                                 text = if (total == "null") "0" else total,
                                 color = MaterialTheme.colors.background,
@@ -577,7 +600,8 @@ private fun ShowStockistDashBoard(
                         )
                         Space(dp = 8.dp)
                         dash?.offers?.let {
-                            val total: String = it.find { data-> data.status == OfferStatus.ENDED }?.total.toString()
+                            val total: String =
+                                it.find { data -> data.status == OfferStatus.ENDED }?.total.toString()
                             Text(
                                 text = if (total == "null") "0" else total,
                                 color = MaterialTheme.colors.background,

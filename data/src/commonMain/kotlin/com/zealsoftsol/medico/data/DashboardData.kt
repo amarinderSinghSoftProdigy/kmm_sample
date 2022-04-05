@@ -17,6 +17,7 @@ data class DashboardData(
     val categories: List<BrandsData> = emptyList(),
     val banners: List<BannerData> = emptyList(),
     val offers: List<OffersData> = emptyList(),
+    val manufacturers: List<ManufacturerData> = emptyList()
 )
 
 @Serializable

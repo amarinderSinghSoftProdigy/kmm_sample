@@ -310,12 +310,12 @@ fun InventoryMainComposable(scope: InventoryScope) {
                         items = it,
                         key = { index, _ -> index },
                         itemContent = { index, item ->
-                            ManufacturersItem(item, scope) {
+                            ManufacturersItem(item) {
                                 it.forEachIndexed { _, it ->
                                     it.isChecked = false
                                 }
                                 it[index].isChecked = true
-                                scope.updateManufacturer(item.name, item.code)
+                                scope.updateManufacturer(item.code)
                             }
                         },
                     )
@@ -674,9 +674,8 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
  * ui item for manufacturer listing
  */
 @Composable
-private fun ManufacturersItem(
+fun ManufacturersItem(
     item: ManufacturerData,
-    scope: InventoryScope,
     onClick: () -> Unit
 ) {
     Column {
