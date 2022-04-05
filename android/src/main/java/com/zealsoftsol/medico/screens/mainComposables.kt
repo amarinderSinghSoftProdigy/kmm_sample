@@ -394,7 +394,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     is SettingsScope.Profile -> ProfileComposable(it.user)
                     is SettingsScope.Address -> AddressComposable(it.user.addressData)
                     is SettingsScope.GstinDetails -> GstinDetailsComposable(
-                        it.user.details as User.Details.DrugLicense,
+                        it.user.details as User.Details.DrugLicense, it, scaffoldState
                     )
                     is MenuScope -> {
                         MenuScreen(it)
@@ -815,7 +815,8 @@ private fun NoIconHeader(
             }
             is InStoreSellerScope -> {
                 Row(modifier = Modifier.weight(0.7f)) {
-                    val scopeCustom = scope.childScope.flow.collectAsState().value as InStoreSellerScope
+                    val scopeCustom =
+                        scope.childScope.flow.collectAsState().value as InStoreSellerScope
                     BasicSearchBar(
                         start = 0.dp,
                         input = scopeCustom.searchText.flow.collectAsState().value,

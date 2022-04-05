@@ -40,9 +40,18 @@ data class User(
             val license1: String,
             val license2: String,
             val url: String?,
+            val dlExpiryDate: ExpiryObject? = null,
+            val flExpiryDate: ExpiryObject? = null,
         ) : Details()
 
         @Serializable
         data class Aadhaar(val cardNumber: String, val shareCode: String) : Details()
     }
 }
+
+@Serializable
+data class ExpiryObject(
+    val expiry: String,
+    val expiresIn: String,
+    val licenseUrl: String
+)

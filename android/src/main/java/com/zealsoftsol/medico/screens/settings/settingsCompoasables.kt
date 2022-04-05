@@ -23,7 +23,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ExperimentalComposeApi
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,8 +46,11 @@ import com.zealsoftsol.medico.data.AddressData
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.common.CoilImage
+import com.zealsoftsol.medico.screens.common.ImageLabel
+import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Placeholder
 import com.zealsoftsol.medico.screens.common.ReadOnlyField
+import com.zealsoftsol.medico.screens.common.ReadOnlyFieldTwoValues
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.formatIndia
@@ -390,12 +392,21 @@ fun AddressComposable(addressData: AddressData) {
 }
 
 @Composable
-fun GstinDetailsComposable(details: User.Details.DrugLicense) {
+fun GstinDetailsComposable(
+    details: User.Details.DrugLicense,
+    scope: SettingsScope.GstinDetails,
+    scaffoldState: ScaffoldState
+) {
+    val permissionViewModel = PermissionViewModel()
+    val drugLicense = scope.drugLicense.flow.collectAsState()
+    PermissionCheckUI(scaffoldState, permissionViewModel)
+
     Column(
         modifier = Modifier
             .padding(16.dp)
             .background(Color.White)
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
     ) {
         ReadOnlyField(details.tradeName, R.string.trade_name)
         Space(12.dp)
@@ -406,11 +417,47 @@ fun GstinDetailsComposable(details: User.Details.DrugLicense) {
         ReadOnlyField(details.license1, R.string.drug_license_1)
         Space(12.dp)
         ReadOnlyField(details.license2, R.string.drug_license_2)
+        if (drugLicense.value != null) {
+            Space(12.dp)
+            ImageLabel(value = drugLicense.value?.cdnUrl ?: "", direct = true, verified = true) { scope.previewImage(drugLicense.value?.cdnUrl ?: "") }
+        } else if (details.dlExpiryDate != null) {
+            Space(12.dp)
+            if (!details.dlExpiryDate?.licenseUrl.isNullOrEmpty()) {
+                ImageLabel(
+                    details.dlExpiryDate?.licenseUrl!!, direct = true, verified = true,
+                ) { scope.previewImage(details.dlExpiryDate?.licenseUrl!!) }
+            }
+            Space(12.dp)
+            ReadOnlyFieldTwoValues(
+                details.dlExpiryDate?.expiry ?: "",
+                R.string.drug_licence_expiry, details.dlExpiryDate?.expiresIn ?: ""
+            )
+
+        }
+        Space(12.dp)
+        if (details.flExpiryDate != null) {
+            if (!details.flExpiryDate?.licenseUrl.isNullOrEmpty()) {
+                ImageLabel(
+                    details.flExpiryDate?.licenseUrl!!, direct = true, verified = true,
+                ) { scope.previewImage(details.flExpiryDate?.licenseUrl!!) }
+            }
+            Space(12.dp)
+            ReadOnlyFieldTwoValues(
+                details.flExpiryDate?.expiry ?: "",
+                R.string.food_licence_expiry, details.flExpiryDate?.expiresIn ?: ""
+            )
+        }
+        Space(12.dp)
+        MedicoButton(
+            modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+            text = stringResource(R.string.upload_drug_license),
+            isEnabled = true,
+            elevation = null,
+            onClick = {
+                permissionViewModel.setPerformLocationAction(true, "DRUG_LICENSE")
+            },
+        )
+        Space(12.dp)
     }
 }
 
-@ExperimentalComposeApi
-@Composable
-fun CheckPermission() {
-
-}

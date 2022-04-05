@@ -4,11 +4,11 @@ import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
+import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
-import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.repository.requireUserOld
 import com.zealsoftsol.medico.data.ErrorCode
 
@@ -39,7 +39,7 @@ internal class ProfileEventDelegate(
     }
 
     private suspend fun uploadDocument(event: Event.Action.Profile) {
-        navigator.withScope<SettingsScope> {
+        navigator.withScope<Scope> {
             val result = withProgress {
                 when (event) {
                     is Event.Action.Profile.UploadUserProfile -> {
@@ -57,12 +57,21 @@ internal class ProfileEventDelegate(
             result.onSuccess { body ->
                 when (body.documentType) {
                     "USER_PROFILE_PIC" -> {
-                        it.profileData.value =
-                            it.profileData.value?.copy(userProfile = body.cdnUrl)
+                        navigator.withScope<SettingsScope> {
+                            it.profileData.value =
+                                it.profileData.value?.copy(userProfile = body.cdnUrl)
+                        }
                     }
                     "TRADE_PROFILE" -> {
-                        it.profileData.value =
-                            it.profileData.value?.copy(tradeProfile = body.cdnUrl)
+                        navigator.withScope<SettingsScope> {
+                            it.profileData.value =
+                                it.profileData.value?.copy(tradeProfile = body.cdnUrl)
+                        }
+                    }
+                    "DRUG_LICENSE" -> {//The case to handle the response for drug license upload
+                        navigator.withScope<SettingsScope.GstinDetails> {
+                            it.drugLicense.value = body
+                        }
                     }
                 }
             }.onError(navigator)
