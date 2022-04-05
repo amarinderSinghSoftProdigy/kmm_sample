@@ -43,9 +43,7 @@ class InventoryScope(
 
     init {
         if(manufacturerCode.isNotEmpty()){
-            manufacturersList.value.forEach {
-
-            }
+//            val item = list.firstOrNull { it.status == status.value }
         }
         getInventory(true)
     }

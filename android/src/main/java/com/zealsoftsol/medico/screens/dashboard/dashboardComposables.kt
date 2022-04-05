@@ -68,6 +68,7 @@ import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.ShimmerItem
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.stringResourceByName
+import com.zealsoftsol.medico.screens.inventory.ManufacturersItem
 import kotlinx.coroutines.delay
 
 @Composable
@@ -423,13 +424,13 @@ private fun ShowStockistDashBoard(
             )
             Space(dp = 16.dp)
             LazyRow{
-                dashboard.value?.brands?.let {
+                dashboard.value?.manufacturers?.let {
                     itemsIndexed(
                         items = it,
                         key = { index, _ -> index },
                         itemContent = { _, item ->
-                            BrandsItem(item, scope) {
-                                scope.moveToInventoryScreen(manufacturerCode = "MNF000149")
+                            ManufacturersItem(item) {
+                                scope.moveToInventoryScreen(manufacturerCode = item.code)
                             }
                         },
                     )
