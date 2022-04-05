@@ -462,7 +462,7 @@
     <string name="payment_method_">Payment Method</string>
     <string name="pay_now">Pay Now</string>
     <string name="ptr_more_warning">PTR is greater than MRP</string>
-    <string name="margin_perc">Margin Percentage</string>
+    <string name="margin_perc">Margin %</string>
     <string name="stock_status">Stock Status</string>
     <string name="previous">Previous</string>
     <string name="expires_in">Expires in</string>

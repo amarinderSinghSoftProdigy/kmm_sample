@@ -139,11 +139,15 @@ fun ViewBatchesScreen(scope: BatchesScope) {
                             text = it.manufacturerName,
                             color = Color.Black,
                             fontSize = 15.sp,
-                            fontWeight = FontWeight.W500
+                            fontWeight = FontWeight.W500,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(0.65f)
                         )
                         Row(
                             horizontalArrangement = Arrangement.End,
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(0.35f)
                         ) {
 
                             Text(
@@ -201,50 +205,74 @@ fun BatchesItem(item: Batch, scope: BatchesScope) {
         elevation = 5.dp,
     ) {
         val selectData = scope.selectedBatchData.flow.collectAsState()
+        val switchEnabled =
+            remember { mutableStateOf(item.status == Batch.Status.ONLINE) }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            if (item.promotionData.promotionActive) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 5.dp, top = 5.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.End,
-                ) {
-                    Text(
-                        text = "${stringResource(id = R.string.offer_deals_running)}:",
-                        fontSize = 14.sp,
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(end = 10.dp)
-                    )
-                    Card(
-                        modifier = Modifier
-                            .padding(end = 10.dp),
-                        elevation = 3.dp,
-                        shape = RoundedCornerShape(5.dp),
-                        backgroundColor = ConstColors.red,
-                    ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 5.dp, top = 5.dp, end = 5.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                if (item.promotionData.promotionActive) {
+                    Row(horizontalArrangement = Arrangement.Start) {
                         Text(
-                            text = item.promotionData.displayOffer,
+                            text = "${stringResource(id = R.string.offer_deals_running)}:",
                             fontSize = 14.sp,
-                            color = Color.White,
+                            color = Color.Black,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(
-                                start = 12.dp,
-                                end = 12.dp,
-                                top = 4.dp,
-                                bottom = 4.dp
+                            modifier = Modifier.padding(end = 10.dp)
+                        )
+                        Card(
+                            modifier = Modifier
+                                .padding(end = 10.dp),
+                            elevation = 3.dp,
+                            shape = RoundedCornerShape(5.dp),
+                            backgroundColor = ConstColors.red,
+                        ) {
+                            Text(
+                                text = item.promotionData.displayOffer,
+                                fontSize = 14.sp,
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(
+                                    start = 12.dp,
+                                    end = 12.dp,
+                                    top = 4.dp,
+                                    bottom = 4.dp
+                                )
+                            )
+                        }
+                    }
+                }else{
+                    Box{}
+                }
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = if (switchEnabled.value) stringResource(id = R.string.online)
+                        else stringResource(id = R.string.offline),
+                        color = if (switchEnabled.value) ConstColors.lightGreen else ConstColors.red,
+                        fontSize = 12.sp,
+                    )
+                    Space(dp = 12.dp)
+                    if (selectData.value == null) {
+                        Switch(
+                            checked = switchEnabled.value, onCheckedChange = {
+                                switchEnabled.value = it
+                                scope.updateBatchStatus(item, it)
+                            }, colors = SwitchDefaults.colors(
+                                checkedThumbColor = ConstColors.green
                             )
                         )
                     }
                 }
-            }
 
-            val switchEnabled =
-                remember { mutableStateOf(item.status == Batch.Status.ONLINE) }
+            }
 
             Row(
                 modifier = Modifier
@@ -350,32 +378,6 @@ fun BatchesItem(item: Batch, scope: BatchesScope) {
                 }
 
                 Column(modifier = Modifier.weight(0.8f), horizontalAlignment = Alignment.End) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 5.dp),
-                        horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-
-                        Text(
-                            text = if (switchEnabled.value) stringResource(id = R.string.online)
-                            else stringResource(id = R.string.offline),
-                            color = if (switchEnabled.value) ConstColors.lightGreen else ConstColors.red,
-                            fontSize = 12.sp,
-                        )
-                        Space(dp = 12.dp)
-                        if (selectData.value == null){
-                            Switch(
-                                checked = switchEnabled.value, onCheckedChange = {
-                                    switchEnabled.value = it
-                                    scope.updateBatchStatus(item, it)
-                                }, colors = SwitchDefaults.colors(
-                                    checkedThumbColor = ConstColors.green
-                                )
-                            )
-                        }
-                    }
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
