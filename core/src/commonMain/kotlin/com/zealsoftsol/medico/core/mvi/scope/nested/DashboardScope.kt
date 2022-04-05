@@ -69,8 +69,8 @@ class DashboardScope private constructor(
     /**
      * Move to Inventory screens
      */
-    fun moveToInventoryScreen(type: InventoryScope.InventoryType) {
-        EventCollector.sendEvent(Event.Transition.Inventory(type))
+    fun moveToInventoryScreen(type: InventoryScope.InventoryType = InventoryScope.InventoryType.ALL, manufacturerCode: String = "") {
+        EventCollector.sendEvent(Event.Transition.Inventory(type, manufacturerCode))
     }
 
     /**

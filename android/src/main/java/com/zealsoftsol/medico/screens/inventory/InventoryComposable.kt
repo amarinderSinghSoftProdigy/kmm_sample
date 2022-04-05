@@ -315,7 +315,7 @@ fun InventoryMainComposable(scope: InventoryScope) {
                                     it.isChecked = false
                                 }
                                 it[index].isChecked = true
-                                scope.updateManufacturer(item.name, item.code)
+                                scope.updateManufacturer(item.code)
                             }
                         },
                     )

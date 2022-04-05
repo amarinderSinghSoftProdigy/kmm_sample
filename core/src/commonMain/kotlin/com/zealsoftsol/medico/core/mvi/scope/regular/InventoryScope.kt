@@ -14,7 +14,8 @@ import com.zealsoftsol.medico.data.StocksStatusData
 
 class InventoryScope(
     var inventoryType: DataSource<InventoryType> = DataSource(InventoryType.ALL),
-    var stockStatus: DataSource<StockStatus> = DataSource(StockStatus.ALL)
+    var stockStatus: DataSource<StockStatus> = DataSource(StockStatus.ALL),
+    manufacturerCode: String = ""
 ) : Scope.Child.TabBar(), CommonScope.CanGoBack {
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.OnlyBackHeader("")
@@ -28,7 +29,7 @@ class InventoryScope(
     val showNoBatchesDialog = DataSource(false)
 
     var totalProducts = 0
-    private var mManufacturerCode = ""
+    private var mManufacturerCode = manufacturerCode
 
     enum class InventoryType(val title: String) {
         ALL("All"), LIMITED_STOCK("Limited Stock"), IN_STOCK("In Stock"),
@@ -41,6 +42,11 @@ class InventoryScope(
 
 
     init {
+        if(manufacturerCode.isNotEmpty()){
+            manufacturersList.value.forEach {
+
+            }
+        }
         getInventory(true)
     }
 
@@ -116,7 +122,7 @@ class InventoryScope(
     /**
      * update current manufacturer and get new results
      */
-    fun updateManufacturer(manufacturerName: String, manufacturerCode: String) {
+    fun updateManufacturer(manufacturerCode: String) {
         productsList.value.clear()
         mManufacturerCode = manufacturerCode
         getInventory(true)

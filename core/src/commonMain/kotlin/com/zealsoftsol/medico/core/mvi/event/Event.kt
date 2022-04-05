@@ -665,7 +665,7 @@ sealed class Event {
             val phoneNumber: String
         ) : Transition()
 
-        data class Inventory(val type: InventoryScope.InventoryType) : Transition()
+        data class Inventory(val type: InventoryScope.InventoryType, val manufacturer: String = "") : Transition()
         object Menu : Transition()
         data class Batches(
             val spid: String,
