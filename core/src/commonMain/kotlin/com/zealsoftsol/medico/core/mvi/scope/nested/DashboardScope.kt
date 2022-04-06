@@ -51,6 +51,14 @@ class DashboardScope private constructor(
             Section.STOCKIST_ADD,
             Section.STOCKIST_COUNT,
         )
+        else ->  listOf(
+//            Section.NOTIFICATIONS,
+//            Section.ORDERS,
+            Section.RETAILER_ADD,
+            Section.RETAILER_COUNT,
+            Section.STOCKIST_ADD,
+            Section.STOCKIST_COUNT,
+        )
     }
 
     override val isRoot: Boolean = true
