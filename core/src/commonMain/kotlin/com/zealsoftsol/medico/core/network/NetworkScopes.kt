@@ -419,7 +419,7 @@ interface NetworkScope {
             search: String?,
             manufacturer: ArrayList<String>?,
             status: OfferStatus,
-            pagination: Pagination
+            page: Int
         ): BodyResponse<OfferData>
 
         suspend fun updateOffer(

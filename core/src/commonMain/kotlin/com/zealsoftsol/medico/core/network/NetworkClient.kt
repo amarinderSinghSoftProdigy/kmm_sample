@@ -1054,15 +1054,15 @@ class NetworkClient(
         search: String?,
         manufacturer: ArrayList<String>?,
         status: OfferStatus,
-        pagination: Pagination
+        page: Int
     ): BodyResponse<OfferData> = simpleRequest {
         client.get("${baseUrl.url}/promotions") {
             withMainToken()
             withB2bCodeToken(unitCode)
             url {
                 parameters.apply {
-                    append("page", pagination.nextPage().toString())
-                    append("pageSize", pagination.itemsPerPage.toString())
+                    append("page", page.toString())
+                    append("pageSize", "10")
                     append("status", status.value)
                     if (!search.isNullOrEmpty()) append("search", search)
                     manufacturer?.forEach {
