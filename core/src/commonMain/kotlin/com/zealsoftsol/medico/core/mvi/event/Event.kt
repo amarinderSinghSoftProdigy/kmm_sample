@@ -620,6 +620,13 @@ sealed class Event {
 
             object ClearScopes : IOCBuyer()
         }
+
+        sealed class AddEmployee: Action(){
+            override val typeClazz: KClass<*> = AddEmployee::class
+
+            data class SelectUserType(val userType: UserType) : AddEmployee()
+
+        }
     }
 
 

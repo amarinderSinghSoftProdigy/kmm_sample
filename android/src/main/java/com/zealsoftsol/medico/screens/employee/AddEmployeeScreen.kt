@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.mvi.scope.regular.AddEmployeeScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.AddEmployeeScope
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Space
@@ -40,7 +40,7 @@ import com.zealsoftsol.medico.screens.common.Space
 fun AddEmployeeScreen(scope: AddEmployeeScope) {
 
     val selectedUserType = scope.selectedUserType.flow.collectAsState()
-    val optionSelected = remember { mutableStateOf<AddEmployeeScope.OptionSelected?>(null)}
+    val optionSelected = remember { mutableStateOf<AddEmployeeScope.OptionSelected?>(null) }
 
     Box(
         modifier = Modifier
@@ -61,7 +61,7 @@ fun AddEmployeeScreen(scope: AddEmployeeScope) {
                     modifier = Modifier.weight(1f),
                     titleId = R.string.add_employee,
                     icon = R.drawable.ic_add_employee,
-                    isSelected = optionSelected.value!=null && optionSelected.value == AddEmployeeScope.OptionSelected.ADD_EMPLOYEE
+                    isSelected = optionSelected.value != null && optionSelected.value == AddEmployeeScope.OptionSelected.ADD_EMPLOYEE
                 ) {
                     scope.selectUserType(UserType.EMPLOYEE)
                     optionSelected.value = AddEmployeeScope.OptionSelected.ADD_EMPLOYEE
@@ -71,7 +71,7 @@ fun AddEmployeeScreen(scope: AddEmployeeScope) {
                     modifier = Modifier.weight(1f),
                     titleId = R.string.view_employee,
                     icon = R.drawable.ic_view_employee,
-                    isSelected = optionSelected.value!=null && optionSelected.value == AddEmployeeScope.OptionSelected.VIEW_EMPLOYEE
+                    isSelected = optionSelected.value != null && optionSelected.value == AddEmployeeScope.OptionSelected.VIEW_EMPLOYEE
                 ) {
                     optionSelected.value = AddEmployeeScope.OptionSelected.VIEW_EMPLOYEE
                 }
@@ -83,7 +83,7 @@ fun AddEmployeeScreen(scope: AddEmployeeScope) {
                 .align(Alignment.BottomCenter)
                 .padding(16.dp)
         ) {
-
+            scope.goToPersonalData()
         }
     }
 }
