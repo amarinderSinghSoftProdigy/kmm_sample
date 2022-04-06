@@ -80,7 +80,7 @@ internal class OffersEventDelegate(
 
     private suspend fun loadMoreProducts() {
         navigator.withScope<OffersScope.ViewOffers> {
-            if (!navigator.scope.value.isInProgress.value && it.canLoadMore()) {
+            if (it.canLoadMore()) {
                 it.mCurrentPage = it.mCurrentPage + 1
                 setHostProgress(true)
                 it.search(
