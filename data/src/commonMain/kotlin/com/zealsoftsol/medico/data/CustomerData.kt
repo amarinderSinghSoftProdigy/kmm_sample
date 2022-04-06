@@ -25,6 +25,7 @@ data class CustomerData(
     val subscription: Subscription? = null,
     val dlExpiryDate: ExpiryObject? = null,
     val flExpiryDate: ExpiryObject? = null,
+    val foodLicense: String = ""
 )
 
 @Serializable

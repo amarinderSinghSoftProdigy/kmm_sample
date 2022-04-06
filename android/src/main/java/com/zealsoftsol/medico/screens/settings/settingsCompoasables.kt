@@ -398,7 +398,6 @@ fun GstinDetailsComposable(
     scaffoldState: ScaffoldState
 ) {
     val permissionViewModel = PermissionViewModel()
-    val drugLicense = scope.drugLicense.flow.collectAsState()
     PermissionCheckUI(scaffoldState, permissionViewModel)
 
     Column(
@@ -430,6 +429,21 @@ fun GstinDetailsComposable(
             )
 
         }
+        Space(12.dp)
+        MedicoButton(
+            modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+            text = stringResource(R.string.upload_drug_license),
+            isEnabled = true,
+            elevation = null,
+            onClick = {
+                permissionViewModel.setPerformLocationAction(true, "DRUG_LICENSE")
+            },
+        )
+        if (details.foodLicense.isNotEmpty()) {
+            Space(12.dp)
+            ReadOnlyField(details.foodLicense, R.string.food_license_number)
+        }
+        Space(12.dp)
         if (details.flExpiryDate != null) {
             Space(12.dp)
             if (!details.flExpiryDate?.licenseUrl.isNullOrEmpty()) {
@@ -445,14 +459,13 @@ fun GstinDetailsComposable(
         Space(12.dp)
         MedicoButton(
             modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-            text = stringResource(R.string.upload_drug_license),
+            text = stringResource(R.string.upload_food_license),
             isEnabled = true,
             elevation = null,
             onClick = {
-                permissionViewModel.setPerformLocationAction(true, "DRUG_LICENSE")
+                permissionViewModel.setPerformLocationAction(true, "FOOD_LICENSE")
             },
         )
-        Space(12.dp)
     }
 }
 

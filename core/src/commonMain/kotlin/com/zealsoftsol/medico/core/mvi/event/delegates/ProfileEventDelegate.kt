@@ -73,6 +73,11 @@ internal class ProfileEventDelegate(
                             it.details.dlExpiryDate?.licenseUrl = body.cdnUrl
                         }
                     }
+                    "FOOD_LICENSE" -> {//The case to handle the response for food license upload
+                        navigator.withScope<SettingsScope.GstinDetails> {
+                            it.details.flExpiryDate?.licenseUrl = body.cdnUrl
+                        }
+                    }
                 }
             }.onError(navigator)
         }

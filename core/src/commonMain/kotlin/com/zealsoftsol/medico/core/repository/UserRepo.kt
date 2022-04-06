@@ -150,7 +150,8 @@ class UserRepo(
                         it.drugLicenseNo2!!,
                         it.drugLicenseUrl,
                         it.dlExpiryDate,
-                        it.flExpiryDate
+                        it.flExpiryDate,
+                        it.foodLicense
                     )
                 },
                 it.metaData!!.activated,

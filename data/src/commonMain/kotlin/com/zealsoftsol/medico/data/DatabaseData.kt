@@ -42,6 +42,7 @@ data class User(
             val url: String?,
             val dlExpiryDate: ExpiryObject? = null,
             val flExpiryDate: ExpiryObject? = null,
+            val foodLicense: String = ""
         ) : Details()
 
         @Serializable
