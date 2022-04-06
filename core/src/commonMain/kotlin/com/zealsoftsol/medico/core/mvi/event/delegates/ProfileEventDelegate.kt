@@ -55,6 +55,9 @@ internal class ProfileEventDelegate(
 
             }
             result.onSuccess { body ->
+                navigator.withScope<SettingsScope.GstinDetails> {
+                    it.showSuccessMsg.value = true
+                }
                 when (body.documentType) {
                     "USER_PROFILE_PIC" -> {
                         navigator.withScope<SettingsScope> {

@@ -24,6 +24,7 @@ sealed class SettingsScope(
 ) : Scope.Child.TabBar(), CommonScope.UploadDocument {
     val userDetails: DataSource<User?> = DataSource(null)
 
+
     init {
         sendEvent(action = Event.Action.Profile.GetProfileData)
     }
@@ -99,6 +100,10 @@ sealed class SettingsScope(
             EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(item))
 
         override val supportedFileTypes: Array<FileType> = FileType.forDrugLicense()
+
+        val showSuccessMsg = DataSource(false)
+
+        fun hideSuccessMsg() {showSuccessMsg.value = false}
 
     }
 
