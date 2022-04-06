@@ -148,7 +148,10 @@ class UserRepo(
                         it.panNumber ?: "",
                         it.drugLicenseNo1!!,
                         it.drugLicenseNo2!!,
-                        it.drugLicenseUrl
+                        it.drugLicenseUrl,
+                        it.dlExpiryDate,
+                        it.flExpiryDate,
+                        it.foodLicense
                     )
                 },
                 it.metaData!!.activated,

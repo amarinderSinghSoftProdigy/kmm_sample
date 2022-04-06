@@ -21,7 +21,7 @@ sealed class Scope : Scopable {
         open val isRoot = false
 
         abstract class TabBar : Child() {
-            override val scopeId: KClass<*> = Child.TabBar::class
+            override val scopeId: KClass<*> = TabBar::class
             override val parentScopeId: KClass<*> = Host::class
 
             open fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? = null

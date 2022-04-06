@@ -23,7 +23,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ExperimentalComposeApi
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,8 +46,12 @@ import com.zealsoftsol.medico.data.AddressData
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.common.CoilImage
+import com.zealsoftsol.medico.screens.common.ImageLabel
+import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Placeholder
 import com.zealsoftsol.medico.screens.common.ReadOnlyField
+import com.zealsoftsol.medico.screens.common.ReadOnlyFieldTwoValues
+import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.formatIndia
@@ -390,27 +393,87 @@ fun AddressComposable(addressData: AddressData) {
 }
 
 @Composable
-fun GstinDetailsComposable(details: User.Details.DrugLicense) {
-    Column(
-        modifier = Modifier
-            .padding(16.dp)
-            .background(Color.White)
-            .fillMaxSize()
-    ) {
-        ReadOnlyField(details.tradeName, R.string.trade_name)
-        Space(12.dp)
-        ReadOnlyField(details.gstin, R.string.gstin)
-        Space(12.dp)
-        ReadOnlyField(details.pan, R.string.pan_number)
-        Space(12.dp)
-        ReadOnlyField(details.license1, R.string.drug_license_1)
-        Space(12.dp)
-        ReadOnlyField(details.license2, R.string.drug_license_2)
+fun GstinDetailsComposable(
+    details: User.Details.DrugLicense,
+    scope: SettingsScope.GstinDetails,
+    scaffoldState: ScaffoldState
+) {
+    val permissionViewModel = PermissionViewModel()
+    PermissionCheckUI(scaffoldState, permissionViewModel)
+
+    Box {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .background(Color.White)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+            ReadOnlyField(details.tradeName, R.string.trade_name)
+            Space(12.dp)
+            ReadOnlyField(details.gstin, R.string.gstin)
+            Space(12.dp)
+            ReadOnlyField(details.pan, R.string.pan_number)
+            Space(12.dp)
+            ReadOnlyField(details.license1, R.string.drug_license_1)
+            Space(12.dp)
+            ReadOnlyField(details.license2, R.string.drug_license_2)
+            if (details.dlExpiryDate != null) {
+                Space(12.dp)
+                if (!details.dlExpiryDate?.licenseUrl.isNullOrEmpty()) {
+                    ImageLabel(
+                        details.dlExpiryDate?.licenseUrl!!, direct = true, verified = true,
+                    ) { scope.previewImage(details.dlExpiryDate?.licenseUrl!!) }
+                }
+                ReadOnlyFieldTwoValues(
+                    details.dlExpiryDate?.expiry ?: "",
+                    R.string.drug_licence_expiry, details.dlExpiryDate?.expiresIn ?: ""
+                )
+
+            }
+            Space(12.dp)
+            MedicoButton(
+                modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+                text = stringResource(R.string.upload_drug_license),
+                isEnabled = true,
+                elevation = null,
+                onClick = {
+                    permissionViewModel.setPerformLocationAction(true, "DRUG_LICENSE")
+                },
+            )
+            if (details.foodLicense.isNotEmpty()) {
+                Space(12.dp)
+                ReadOnlyField(details.foodLicense, R.string.food_license_number)
+            }
+            Space(12.dp)
+            if (details.flExpiryDate != null) {
+                Space(12.dp)
+                if (!details.flExpiryDate?.licenseUrl.isNullOrEmpty()) {
+                    ImageLabel(
+                        details.flExpiryDate?.licenseUrl!!, direct = true, verified = true,
+                    ) { scope.previewImage(details.flExpiryDate?.licenseUrl!!) }
+                }
+                ReadOnlyFieldTwoValues(
+                    details.flExpiryDate?.expiry ?: "",
+                    R.string.food_licence_expiry, details.flExpiryDate?.expiresIn ?: ""
+                )
+            }
+            Space(12.dp)
+            MedicoButton(
+                modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+                text = stringResource(R.string.upload_food_license),
+                isEnabled = true,
+                elevation = null,
+                onClick = {
+                    permissionViewModel.setPerformLocationAction(true, "FOOD_LICENSE")
+                },
+            )
+        }
+        if (scope.showSuccessMsg.flow.collectAsState().value) {
+            ShowAlert(message = stringResource(id = R.string.update_successfull)) {
+                scope.hideSuccessMsg()
+            }
+        }
     }
 }
 
-@ExperimentalComposeApi
-@Composable
-fun CheckPermission() {
-
-}

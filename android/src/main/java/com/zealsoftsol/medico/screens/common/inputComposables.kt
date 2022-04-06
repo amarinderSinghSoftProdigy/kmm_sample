@@ -33,7 +33,9 @@ import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -43,6 +45,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
+import com.zealsoftsol.medico.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -368,6 +371,51 @@ fun ReadOnlyField(text: String, labelId: Int) {
         maxLines = 1,
         modifier = Modifier.fillMaxWidth(),
     )
+}
+
+@Composable
+fun ReadOnlyFieldTwoValues(text: String, labelId: Int, expiry: String) {
+    Box {
+        TextField(
+            value = text,
+            label = {
+                Text(
+                    text = stringResource(id = labelId),
+                    style = TextStyle.Default,
+                )
+            },
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color.White,
+                cursorColor = ConstColors.lightBlue,
+                disabledLabelColor = if (text.isNotEmpty()) ConstColors.lightBlue else MaterialTheme.colors.onSurface.copy(
+                    ContentAlpha.medium
+                ),
+                disabledTextColor = ConstColors.gray,
+            ),
+            enabled = false,
+            onValueChange = { },
+            singleLine = true,
+            maxLines = 1,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        Text(
+            text = buildAnnotatedString {
+                append(stringResource(id = R.string.expires_in))
+                val startIndex = length
+                append(": ")
+                append(expiry)
+                addStyle(
+                    SpanStyle(color = ConstColors.gray),
+                    startIndex,
+                    length,
+                )
+            },
+            color = ConstColors.lightBlue,
+            fontSize = 16.sp,
+            modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 16.dp, end = 10.dp)
+        )
+    }
 }
 
 inline fun String.formatIndia() = "91$this"
