@@ -56,6 +56,7 @@ import com.zealsoftsol.medico.data.PromotionStatusData
 import com.zealsoftsol.medico.data.Promotions
 import com.zealsoftsol.medico.screens.common.CoilImageBrands
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
+import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.Space
 
@@ -68,7 +69,7 @@ fun OffersScreen(scope: OffersScope.ViewOffers) {
     val manufacturerList = scope.manufacturerSearch.flow.collectAsState()
     val switchEnabled = remember { mutableStateOf(false) }
     val showManufacturersList = scope.showManufacturers.flow.collectAsState()
-    val status = scope.status.flow.collectAsState().value
+    val totalResults = scope.totalItems
 
     remember {
         scope.startSearch()
@@ -214,11 +215,23 @@ fun OffersScreen(scope: OffersScope.ViewOffers) {
                     items = offers.value,
                     itemContent = { index, item ->
                         OfferItem(item, scope)
-                        if (index == offers.value.lastIndex && scope.pagination.canLoadMore()) {
-                            scope.loadMoreProducts()
-                        }
                     },
                 )
+
+                item {
+                    if (offers.value.size < totalResults) {
+                        MedicoButton(
+                            modifier = Modifier
+                                .padding(horizontal = 20.dp)
+                                .padding(top = 5.dp, bottom = 5.dp)
+                                .height(40.dp),
+                            text = stringResource(id = R.string.more),
+                            isEnabled = true,
+                        ) {
+                            scope.loadMoreProducts()
+                        }
+                    }
+                }
             }
         }
     }

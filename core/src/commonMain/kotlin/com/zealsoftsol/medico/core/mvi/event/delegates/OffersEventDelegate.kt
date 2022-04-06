@@ -63,7 +63,7 @@ internal class OffersEventDelegate(
     private suspend fun getOffers(search: String?, query: ArrayList<String>, status: OfferStatus) {
         this.status = status
         navigator.withScope<OffersScope.ViewOffers> {
-            it.pagination.reset()
+            it.resetPagination()
             it.productSearch.value = search ?: ""
             if (!query.isNullOrEmpty()) it.manufacturerSearch.value = query
             val isWildcardSearch = search.isNullOrBlank()
@@ -80,7 +80,8 @@ internal class OffersEventDelegate(
 
     private suspend fun loadMoreProducts() {
         navigator.withScope<OffersScope.ViewOffers> {
-            if (!navigator.scope.value.isInProgress.value && it.pagination.canLoadMore()) {
+            if (!navigator.scope.value.isInProgress.value && it.canLoadMore()) {
+                it.mCurrentPage = it.mCurrentPage + 1
                 setHostProgress(true)
                 it.search(
                     addPage = true,
@@ -152,13 +153,13 @@ internal class OffersEventDelegate(
                 unitCode = user.unitCode,
                 search = extraFilters,
                 manufacturer = manufacturers,
-                pagination = pagination,
+                page = mCurrentPage,
                 status = status
             ).onSuccess { body ->
-                pagination.setTotal(body.totalResults)
                 statuses.value = body.promotionStatusDatas
                 manufacturer.value = body.manufacturers
                 items.value = if (!addPage) body.promotions else items.value + body.promotions
+                totalItems = body.totalResults
             }.onError(navigator)
             onEnd()
         }

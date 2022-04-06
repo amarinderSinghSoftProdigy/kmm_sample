@@ -7,7 +7,6 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
-import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.Manufacturer
 import com.zealsoftsol.medico.data.OfferProduct
@@ -27,11 +26,15 @@ sealed class OffersScope : Scope.Child.TabBar() {
         val manufacturerSearch: DataSource<ArrayList<String>> = DataSource(ArrayList())
         val statuses: DataSource<List<PromotionStatusData>> = DataSource(emptyList())
         val manufacturer: DataSource<List<Manufacturer>> = DataSource(emptyList())
-        val items: DataSource<List<Promotions>> = DataSource(emptyList())
-        val totalItems: DataSource<Int> = DataSource(0)
-        val searchText: DataSource<String> = DataSource("")
-        val pagination: Pagination = Pagination()
         val showManufacturers = DataSource(false)
+
+        /**
+         * values used for pagination
+         */
+        var mCurrentPage: Int = 0
+        val items: DataSource<List<Promotions>> = DataSource(emptyList())
+        var totalItems: Int = 0
+        val searchText: DataSource<String> = DataSource("")
 
         init {
             startSearch()
@@ -57,6 +60,8 @@ sealed class OffersScope : Scope.Child.TabBar() {
         }
 
         private fun reset() {
+            mCurrentPage = 0
+            items.value = emptyList()
             productSearch.value = ""
             manufacturerSearch.value = ArrayList()
         }
@@ -85,6 +90,14 @@ sealed class OffersScope : Scope.Child.TabBar() {
 
         fun showEditBottomSheet(promotion: Promotions) =
             EventCollector.sendEvent(Event.Action.Offers.ShowEditBottomSheet(promotion))
+
+        fun resetPagination() {
+            mCurrentPage = 0
+        }
+
+        fun canLoadMore(): Boolean {
+            return items.value.size < totalItems
+        }
     }
 
 
