@@ -8,20 +8,25 @@ import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
+import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataComponent
 import com.zealsoftsol.medico.core.mvi.scope.extra.AddressComponent
-import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope.LegalDocuments
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.core.utils.trimInput
+import com.zealsoftsol.medico.data.AadhaarData
+import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
+import com.zealsoftsol.medico.data.UserRegistration3
+import com.zealsoftsol.medico.data.UserRegistration4
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 
-open class AddEmployeeScope(private val titleId: String) : Scope.Child.TabBar(), CommonScope.CanGoBack {
+open class AddEmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
+    CommonScope.CanGoBack {
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
         return (tabBarInfo as? TabBarInfo.Simple)?.copy(
@@ -202,4 +207,71 @@ open class AddEmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
 
     }
 
+    sealed class Details(
+        titleId: String,
+        val registrationStep1: UserRegistration1,
+        internal val registrationStep2: UserRegistration2,
+    ) : AddEmployeeScope(titleId) {
+
+        abstract val inputFields: List<Fields>
+
+        class Aadhaar(
+            registrationStep1: UserRegistration1,
+            registrationStep2: UserRegistration2,
+            override val aadhaarData: DataSource<AadhaarData> = DataSource(AadhaarData("", "")),
+        ) : Details("details", registrationStep1, registrationStep2),
+            AadhaarDataComponent {
+
+            override val isVerified: DataSource<Boolean> = canGoNext
+
+            override val inputFields: List<Fields> = listOf(
+                Fields.AADHAAR_CARD,
+                Fields.SHARE_CODE,
+            )
+
+            /**
+             * Transition to [LegalDocuments] if successful
+             */
+            fun addAadhaar() =
+                EventCollector.sendEvent(Event.Action.AddEmployee.AddAadhaar(aadhaarData.value))
+        }
+
+        enum class Fields {
+            TRADE_NAME, GSTIN, PAN, LICENSE1, LICENSE2, AADHAAR_CARD, SHARE_CODE, FOOD_LICENSE, FOOD_LICENSE_NUMBER;
+        }
+    }
+
+    sealed class LegalDocuments(
+        val registrationStep1: UserRegistration1,
+        internal val registrationStep2: UserRegistration2,
+        val registrationStep3: UserRegistration3,
+    ) : AddEmployeeScope("legal_documents"),
+        CommonScope.PhoneVerificationEntryPoint,
+        CommonScope.UploadDocument {
+
+        val registrationStep4: DataSource<UserRegistration4> = DataSource(UserRegistration4())
+
+        fun validate(userRegistration: UserRegistration4) =
+            EventCollector.sendEvent(Event.Action.AddEmployee.Validate(userRegistration))
+
+//        fun skip() = EventCollector.sendEvent(Event.Action.AddEmployee.Skip)
+
+        class Aadhaar(
+            registrationStep1: UserRegistration1,
+            registrationStep2: UserRegistration2,
+            internal val aadhaarData: AadhaarData,
+            internal var aadhaarFile: String? = null,
+        ) : LegalDocuments(
+            registrationStep1, registrationStep2,
+            UserRegistration3()
+        ) {
+
+            fun onDataValid(isValid: Boolean) {
+                canGoNext.value = isValid
+            }
+
+            override val supportedFileTypes: Array<FileType> = FileType.forAadhaar()
+            override val isSeasonBoy = true
+        }
+    }
 }

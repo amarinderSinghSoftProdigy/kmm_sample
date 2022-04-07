@@ -131,6 +131,7 @@ import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.showNotificationAlert
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.dashboard.DashboardScreen
+import com.zealsoftsol.medico.screens.employee.AddEmployeeAadharInfoScreen
 import com.zealsoftsol.medico.screens.employee.AddEmployeeAddressDetailsScreen
 import com.zealsoftsol.medico.screens.employee.AddEmployeeScreen
 import com.zealsoftsol.medico.screens.employee.AddEmployeeStepOneScreen
@@ -419,6 +420,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     is AddEmployeeScope.SelectUserType -> AddEmployeeScreen(it)
                     is AddEmployeeScope.PersonalData -> AddEmployeeStepOneScreen(it)
                     is AddEmployeeScope.AddressData -> AddEmployeeAddressDetailsScreen(it)
+                    is AddEmployeeScope.Details.Aadhaar -> AddEmployeeAadharInfoScreen(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }

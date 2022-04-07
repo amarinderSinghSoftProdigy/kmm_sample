@@ -3,9 +3,15 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.onError
+import com.zealsoftsol.medico.core.mvi.scope.CommonScope
+import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataComponent
 import com.zealsoftsol.medico.core.mvi.scope.nested.AddEmployeeScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -22,6 +28,8 @@ internal class AddEmployeeEventDelegate(
         when (event) {
             is Event.Action.AddEmployee.SelectUserType -> moveToPersonalDetailsScreen(event.userType)
             is Event.Action.AddEmployee.Validate -> validate(event.userRegistration)
+            is Event.Action.AddEmployee.AddAadhaar -> addAadhaar(event.aadhaarData)
+            is Event.Action.AddEmployee.UploadAadhaar -> uploadDocument(event)
         }
 
     private fun moveToPersonalDetailsScreen(userType: UserType) {
@@ -70,6 +78,11 @@ internal class AddEmployeeEventDelegate(
                 }
                 it.userValidation.value = result.validations
 
+                setScope( AddEmployeeScope.Details.Aadhaar(
+                    registrationStep1 = it.registrationStep1,
+                    registrationStep2 = it.registration.value,
+                ))
+
                 /*result.onSuccess { _ ->
                     val nextScope =
                         if (it.registrationStep1.userType == UserType.SEASON_BOY.serverValue) {
@@ -114,6 +127,58 @@ internal class AddEmployeeEventDelegate(
                         )
                     )
                 }*/
+            }
+        }
+    }
+
+    private fun addAadhaar(aadhaarData: AadhaarData) {
+        navigator.withScope<AddEmployeeScope.Details.Aadhaar> {
+            it.aadhaarData.value = aadhaarData
+            setScope(
+                SignUpScope.LegalDocuments.Aadhaar(
+                    registrationStep1 = it.registrationStep1,
+                    registrationStep2 = it.registrationStep2,
+                    aadhaarData = aadhaarData,
+                )
+            )
+        }
+    }
+
+    private suspend fun uploadDocument(event: Event.Action.AddEmployee) {
+        navigator.withScope<CommonScope.UploadDocument> {
+            var storageKey: String? = null
+            val isSuccess = withProgress {
+                when (event) {
+                    is Event.Action.AddEmployee.UploadAadhaar -> {
+                        val userReg = (it as? SignUpScope.LegalDocuments.Aadhaar)?.registrationStep1
+                        userRepo.uploadAadhaar(
+                            aadhaar = requireNotNull(searchQueuesFor<AadhaarDataComponent>()).aadhaarData.value,
+                            fileString = event.aadhaarAsBase64,
+                            phoneNumber = userReg?.phoneNumber
+                                ?: ""/*userRepo.requireUser().phoneNumber*/,
+                            email = userReg?.email ?: ""/*userRepo.requireUser().email*/,
+                        ).onError(navigator)
+                            .isSuccess
+                    }
+                    else -> throw UnsupportedOperationException("unsupported event $event for uploadDocument()")
+                }
+
+            }
+            if (isSuccess) {
+                when (it) {
+                    is AddEmployeeScope.LegalDocuments -> {
+                        if (it is SignUpScope.LegalDocuments.Aadhaar) {
+                                it.aadhaarFile =
+                                    (event as Event.Action.AddEmployee.UploadAadhaar).aadhaarAsBase64
+                                it.onDataValid(true)
+                        }
+                        //startOtp(it.registrationStep1.phoneNumber)
+                    }
+                    is LimitedAccessScope -> {
+                        userRepo.loadUserFromServerV2().onError(navigator)
+                    }
+                    else -> throw UnsupportedOperationException("unknown UploadDocument common scope")
+                }
             }
         }
     }

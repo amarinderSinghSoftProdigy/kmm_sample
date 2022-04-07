@@ -626,6 +626,8 @@ sealed class Event {
 
             data class SelectUserType(val userType: UserType) : AddEmployee()
             data class Validate(val userRegistration: UserRegistration) : AddEmployee()
+            data class AddAadhaar(val aadhaarData: AadhaarData) : AddEmployee()
+            data class UploadAadhaar(val aadhaarAsBase64: String) : AddEmployee()
 
         }
     }
