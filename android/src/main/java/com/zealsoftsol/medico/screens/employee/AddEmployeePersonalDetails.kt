@@ -77,7 +77,7 @@ fun AddEmployeeStepOneScreen(scope: AddEmployeeScope.PersonalData) {
 
     BasicAuthSignUpScreenWithButton(
         userType = registration.value.userType,
-        progress = 2.0,//0.4,
+        progress = 1.0,//0.4,
         scrollState = scrollState,
         baseScope = scope,
         buttonText = stringResource(id = R.string.next),
