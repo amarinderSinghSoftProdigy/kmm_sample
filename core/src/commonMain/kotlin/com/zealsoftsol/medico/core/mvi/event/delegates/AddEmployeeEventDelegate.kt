@@ -3,9 +3,7 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
-import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.nested.AddEmployeeScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.data.UserRegistration
@@ -44,68 +42,78 @@ internal class AddEmployeeEventDelegate(
 
     private suspend fun validate(userRegistration: UserRegistration) {
         when (userRegistration) {
-            is UserRegistration1 -> navigator.withScope<SignUpScope.PersonalData> {
-                val result = withProgress {
+            is UserRegistration1 -> navigator.withScope<AddEmployeeScope.PersonalData> {
+                setScope(
+                    AddEmployeeScope.AddressData(
+                        registrationStep1 = it.registration.value,
+                        locationData = DataSource(null),
+                        registration = DataSource(UserRegistration2()),
+                    )
+                )
+              /*  val result = withProgress {
                     userRepo.signUpValidation1(userRegistration)
                 }
                 it.validation.value = result.validations
                 result.onSuccess { _ ->
                     setScope(
-                        SignUpScope.AddressData(
+                        AddEmployeeScope.AddressData(
                             registrationStep1 = it.registration.value,
                             locationData = DataSource(null),
                             registration = DataSource(UserRegistration2()),
                         )
                     )
-                }.onError(navigator)
+                }.onError(navigator)*/
             }
-            is UserRegistration2 -> navigator.withScope<SignUpScope.AddressData> {
+            is UserRegistration2 -> navigator.withScope<AddEmployeeScope.AddressData> {
                 val result = withProgress {
                     userRepo.signUpValidation2(userRegistration)
                 }
                 it.userValidation.value = result.validations
-                result.onSuccess { _ ->
+
+                /*result.onSuccess { _ ->
                     val nextScope =
                         if (it.registrationStep1.userType == UserType.SEASON_BOY.serverValue) {
-                            SignUpScope.Details.Aadhaar(
+                            AddEmployeeScope.Details.Aadhaar(
                                 registrationStep1 = it.registrationStep1,
                                 registrationStep2 = it.registration.value,
                             )
                         } else {
-                            SignUpScope.Details.TraderData(
+                            AddEmployeeScope.Details.TraderData(
                                 registrationStep1 = it.registrationStep1,
                                 registrationStep2 = it.registration.value,
                             )
                         }
                     setScope(nextScope)
-                }.onError(navigator)
+                }.onError(navigator)*/
             }
-            is UserRegistration3 -> navigator.withScope<SignUpScope.Details.TraderData> {
+            is UserRegistration3 -> {
+                /*navigator.withScope<AddEmployeeScope.Details.TraderData> {
                 val result = withProgress {
                     userRepo.signUpValidation3(userRegistration)
                 }
                 it.validation.value = result.validations
                 result.onSuccess { _ ->
                     setScope(
-                        SignUpScope.LegalDocuments.DrugLicense(
+                        AddEmployeeScope.LegalDocuments.DrugLicense(
                             registrationStep1 = it.registrationStep1,
                             registrationStep2 = it.registrationStep2,
                             registrationStep3 = it.registration.value,
                         )
                     )
                 }.onError(navigator)
+            }*/
             }
             is UserRegistration4 -> {
-                navigator.withScope<SignUpScope.LegalDocuments.DrugLicense> {
+              /*  navigator.withScope<AddEmployeeScope.LegalDocuments.DrugLicense> {
                     setScope(
-                        SignUpScope.PreviewDetails(
+                        AddEmployeeScope.PreviewDetails(
                             registrationStep1 = it.registrationStep1,
                             registrationStep2 = it.registrationStep2,
                             registrationStep3 = it.registrationStep3,
                             registrationStep4 = it.registrationStep4.value,
                         )
                     )
-                }
+                }*/
             }
         }
     }

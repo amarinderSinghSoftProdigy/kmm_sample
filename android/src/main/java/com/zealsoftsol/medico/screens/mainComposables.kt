@@ -131,6 +131,7 @@ import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.showNotificationAlert
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.dashboard.DashboardScreen
+import com.zealsoftsol.medico.screens.employee.AddEmployeeAddressDetailsScreen
 import com.zealsoftsol.medico.screens.employee.AddEmployeeScreen
 import com.zealsoftsol.medico.screens.employee.AddEmployeeStepOneScreen
 import com.zealsoftsol.medico.screens.help.HelpScreens
@@ -417,6 +418,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     is IocBuyerScope.IOCPayNow -> IocBuyerListingScreen(it)
                     is AddEmployeeScope.SelectUserType -> AddEmployeeScreen(it)
                     is AddEmployeeScope.PersonalData -> AddEmployeeStepOneScreen(it)
+                    is AddEmployeeScope.AddressData -> AddEmployeeAddressDetailsScreen(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }

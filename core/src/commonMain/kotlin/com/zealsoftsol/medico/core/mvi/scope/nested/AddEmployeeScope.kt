@@ -163,7 +163,7 @@ open class AddEmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
          * Transition to [AddressData] if successful
          */
         fun validate(userRegistration: UserRegistration1) =
-            EventCollector.sendEvent(Event.Action.Registration.Validate(userRegistration))
+            EventCollector.sendEvent(Event.Action.AddEmployee.Validate(userRegistration))
 
         override fun checkCanGoNext() {
             canGoNext.value = registration.value.run {
