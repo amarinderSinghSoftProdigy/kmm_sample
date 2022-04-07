@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.mvi.scope.nested.AddEmployeeScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.EmployeeScope
 import com.zealsoftsol.medico.screens.common.Dropdown
 import com.zealsoftsol.medico.screens.common.InputField
 import com.zealsoftsol.medico.screens.common.InputWithError
@@ -29,7 +29,7 @@ import com.zealsoftsol.medico.screens.common.scrollOnFocus
 
 @ExperimentalComposeUiApi
 @Composable
-fun AddEmployeeAddressDetailsScreen(scope: AddEmployeeScope.AddressData) {
+fun AddEmployeeAddressDetailsScreen(scope: EmployeeScope.AddressData) {
     val registration = scope.registration.flow.collectAsState()
     val userValidation = scope.userValidation.flow.collectAsState()
     val pincodeValidation = scope.pincodeValidation.flow.collectAsState()

@@ -621,14 +621,15 @@ sealed class Event {
             object ClearScopes : IOCBuyer()
         }
 
-        sealed class AddEmployee: Action(){
-            override val typeClazz: KClass<*> = AddEmployee::class
+        sealed class Employee: Action(){
+            override val typeClazz: KClass<*> = Employee::class
 
-            data class SelectUserType(val userType: UserType) : AddEmployee()
-            data class Validate(val userRegistration: UserRegistration) : AddEmployee()
-            data class AddAadhaar(val aadhaarData: AadhaarData) : AddEmployee()
-            data class UploadAadhaar(val aadhaarAsBase64: String) : AddEmployee()
-
+            data class SelectUserType(val userType: UserType) : Employee()
+            data class Validate(val userRegistration: UserRegistration) : Employee()
+            data class Aadhaar(val aadhaarData: AadhaarData) : Employee()
+            data class UploadAadhaar(val aadhaarAsBase64: String) : Employee()
+            object MoveToViewEmployee : Employee()
+            object ViewEmployee : Employee()
         }
     }
 

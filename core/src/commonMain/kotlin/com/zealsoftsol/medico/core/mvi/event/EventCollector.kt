@@ -180,7 +180,7 @@ class EventCollector(
             userRepo,
             iocBuyerNetworkScope
         ),
-        Event.Action.AddEmployee::class to AddEmployeeEventDelegate(
+        Event.Action.Employee::class to AddEmployeeEventDelegate(
             navigator,
             userRepo
         )

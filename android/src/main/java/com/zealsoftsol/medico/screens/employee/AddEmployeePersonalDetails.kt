@@ -49,7 +49,7 @@ import androidx.core.net.toUri
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.toast
-import com.zealsoftsol.medico.core.mvi.scope.nested.AddEmployeeScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.EmployeeScope
 import com.zealsoftsol.medico.screens.auth.ProgressItem
 import com.zealsoftsol.medico.screens.common.InputField
 import com.zealsoftsol.medico.screens.common.InputWithError
@@ -62,7 +62,7 @@ import com.zealsoftsol.medico.screens.common.scrollOnFocus
 
 @ExperimentalComposeUiApi
 @Composable
-fun AddEmployeeStepOneScreen(scope: AddEmployeeScope.PersonalData) {
+fun AddEmployeeStepOneScreen(scope: EmployeeScope.PersonalData) {
 
     val registration = scope.registration.flow.collectAsState()
     val scrollState = rememberScrollState()
@@ -298,7 +298,7 @@ fun AddEmployeeStepOneScreen(scope: AddEmployeeScope.PersonalData) {
 fun BasicAuthSignUpScreenWithButton(
     userType: String,
     progress: Double,
-    baseScope: AddEmployeeScope,
+    baseScope: EmployeeScope,
     scrollState: ScrollState = rememberScrollState(),
     verticalArrangement: Arrangement.Vertical = Arrangement.Bottom,
     horizontalAlignment: Alignment.Horizontal = Alignment.Start,

@@ -469,6 +469,7 @@
     <string name="total_amount_message">Amount entered should not be more than the Outstanding amount (Out. Amount : $)</string>
     <string name="add_employee">Add Employee</string>
     <string name="view_employee">View Employee</string>
+    <string name="employees">Employees</string>
 
     <!-- Termrs and Cond -->
 

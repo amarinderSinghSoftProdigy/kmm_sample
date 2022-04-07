@@ -66,13 +66,13 @@ import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataComponent
-import com.zealsoftsol.medico.core.mvi.scope.nested.AddEmployeeScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.BuyProductScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartOrderCompletedScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartPreviewScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ConfirmOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.EmployeeScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.HelpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreAddUserScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreCartScope
@@ -135,6 +135,7 @@ import com.zealsoftsol.medico.screens.employee.AddEmployeeAadharInfoScreen
 import com.zealsoftsol.medico.screens.employee.AddEmployeeAddressDetailsScreen
 import com.zealsoftsol.medico.screens.employee.AddEmployeeScreen
 import com.zealsoftsol.medico.screens.employee.AddEmployeeStepOneScreen
+import com.zealsoftsol.medico.screens.employee.ViewEmployees
 import com.zealsoftsol.medico.screens.help.HelpScreens
 import com.zealsoftsol.medico.screens.instore.InStoreAddUserScreen
 import com.zealsoftsol.medico.screens.instore.InStoreCartScreen
@@ -417,10 +418,11 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     is IocBuyerScope.InvDetails -> IocBuyerListingScreen(it)
                     is IocBuyerScope.IOCPaymentMethod -> IocBuyerListingScreen(it)
                     is IocBuyerScope.IOCPayNow -> IocBuyerListingScreen(it)
-                    is AddEmployeeScope.SelectUserType -> AddEmployeeScreen(it)
-                    is AddEmployeeScope.PersonalData -> AddEmployeeStepOneScreen(it)
-                    is AddEmployeeScope.AddressData -> AddEmployeeAddressDetailsScreen(it)
-                    is AddEmployeeScope.Details.Aadhaar -> AddEmployeeAadharInfoScreen(it)
+                    is EmployeeScope.SelectUserType -> AddEmployeeScreen(it)
+                    is EmployeeScope.PersonalData -> AddEmployeeStepOneScreen(it)
+                    is EmployeeScope.AddressData -> AddEmployeeAddressDetailsScreen(it)
+                    is EmployeeScope.Details.Aadhaar -> AddEmployeeAadharInfoScreen(it)
+                    is EmployeeScope.ViewEmployee -> ViewEmployees(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }

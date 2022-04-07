@@ -4,9 +4,9 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
-import com.zealsoftsol.medico.core.mvi.scope.nested.AddEmployeeScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.EmployeeScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreAddUserScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreCartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreSellerScope
@@ -116,7 +116,7 @@ internal class TransitionEventDelegate(
                         )
                         UserType.HOSPITAL -> ManagementScope.User.Hospital()
                         UserType.SEASON_BOY -> ManagementScope.User.SeasonBoy()
-                        UserType.EMPLOYEE -> AddEmployeeScope.SelectUserType.get()
+                        UserType.EMPLOYEE -> EmployeeScope.SelectUserType.get()
                     }
                 )
                 is Event.Transition.RequestCreateRetailer -> setScope(
@@ -228,7 +228,7 @@ internal class TransitionEventDelegate(
                 is Event.Transition.QrCode -> setScope(QrCodeScope())
                 is Event.Transition.IOCSeller -> setScope(IocSellerScope.InvUserListing())
                 is Event.Transition.IOCBuyer -> setScope(IocBuyerScope.InvUserListing())
-                is Event.Transition.AddEmployee -> setScope(AddEmployeeScope.SelectUserType.get())
+                is Event.Transition.AddEmployee -> setScope(EmployeeScope.SelectUserType.get())
             }
         }
     }

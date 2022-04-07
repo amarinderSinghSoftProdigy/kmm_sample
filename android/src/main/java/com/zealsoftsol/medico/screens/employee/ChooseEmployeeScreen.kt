@@ -30,15 +30,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.mvi.scope.nested.AddEmployeeScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.EmployeeScope
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Space
 
 @Composable
-fun AddEmployeeScreen(scope: AddEmployeeScope.SelectUserType) {
+fun AddEmployeeScreen(scope: EmployeeScope.SelectUserType) {
 
-    val optionSelected = remember { mutableStateOf<AddEmployeeScope.OptionSelected?>(null) }
+    val optionSelected = remember { mutableStateOf<EmployeeScope.OptionSelected?>(null) }
 
     Box(
         modifier = Modifier
@@ -59,19 +59,19 @@ fun AddEmployeeScreen(scope: AddEmployeeScope.SelectUserType) {
                     modifier = Modifier.weight(1f),
                     titleId = R.string.add_employee,
                     icon = R.drawable.ic_add_employee,
-                    isSelected = optionSelected.value != null && optionSelected.value == AddEmployeeScope.OptionSelected.ADD_EMPLOYEE
+                    isSelected = optionSelected.value != null && optionSelected.value == EmployeeScope.OptionSelected.ADD_EMPLOYEE
                 ) {
                     scope.chooseUserType(UserType.EMPLOYEE)
-                    optionSelected.value = AddEmployeeScope.OptionSelected.ADD_EMPLOYEE
+                    optionSelected.value = EmployeeScope.OptionSelected.ADD_EMPLOYEE
                 }
                 Space(20.dp)
                 ChooseOption(
                     modifier = Modifier.weight(1f),
                     titleId = R.string.view_employee,
                     icon = R.drawable.ic_view_employee,
-                    isSelected = optionSelected.value != null && optionSelected.value == AddEmployeeScope.OptionSelected.VIEW_EMPLOYEE
+                    isSelected = optionSelected.value != null && optionSelected.value == EmployeeScope.OptionSelected.VIEW_EMPLOYEE
                 ) {
-                    optionSelected.value = AddEmployeeScope.OptionSelected.VIEW_EMPLOYEE
+                    optionSelected.value = EmployeeScope.OptionSelected.VIEW_EMPLOYEE
                 }
             }
         }
@@ -81,7 +81,7 @@ fun AddEmployeeScreen(scope: AddEmployeeScope.SelectUserType) {
                 .align(Alignment.BottomCenter)
                 .padding(16.dp)
         ) {
-            if (optionSelected.value == AddEmployeeScope.OptionSelected.ADD_EMPLOYEE)
+            if (optionSelected.value == EmployeeScope.OptionSelected.ADD_EMPLOYEE)
                 scope.goToPersonalData()
             else{
                 //handle view employee case

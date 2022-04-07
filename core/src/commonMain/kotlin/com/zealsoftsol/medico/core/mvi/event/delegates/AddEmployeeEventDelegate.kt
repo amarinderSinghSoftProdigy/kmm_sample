@@ -6,7 +6,7 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataComponent
-import com.zealsoftsol.medico.core.mvi.scope.nested.AddEmployeeScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.EmployeeScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.withProgress
@@ -22,21 +22,33 @@ import com.zealsoftsol.medico.data.UserType
 internal class AddEmployeeEventDelegate(
     navigator: Navigator,
     private val userRepo: UserRepo,
-) : EventDelegate<Event.Action.AddEmployee>(navigator) {
+) : EventDelegate<Event.Action.Employee>(navigator) {
 
-    override suspend fun handleEvent(event: Event.Action.AddEmployee) =
+    override suspend fun handleEvent(event: Event.Action.Employee) =
         when (event) {
-            is Event.Action.AddEmployee.SelectUserType -> moveToPersonalDetailsScreen(event.userType)
-            is Event.Action.AddEmployee.Validate -> validate(event.userRegistration)
-            is Event.Action.AddEmployee.AddAadhaar -> addAadhaar(event.aadhaarData)
-            is Event.Action.AddEmployee.UploadAadhaar -> uploadDocument(event)
+            is Event.Action.Employee.SelectUserType -> moveToPersonalDetailsScreen(event.userType)
+            is Event.Action.Employee.Validate -> validate(event.userRegistration)
+            is Event.Action.Employee.Aadhaar -> addAadhaar(event.aadhaarData)
+            is Event.Action.Employee.UploadAadhaar -> uploadDocument(event)
+            is Event.Action.Employee.MoveToViewEmployee -> moveToEmployeeScreen()
+            is Event.Action.Employee.ViewEmployee -> viewEmployee()
         }
 
+    private fun moveToEmployeeScreen(){
+        navigator.withScope<EmployeeScope.Details.Aadhaar> {
+            setScope(EmployeeScope.ViewEmployee())
+        }
+    }
+
+    private fun viewEmployee() {
+
+    }
+
     private fun moveToPersonalDetailsScreen(userType: UserType) {
-        navigator.withScope<AddEmployeeScope.SelectUserType> {
+        navigator.withScope<EmployeeScope.SelectUserType> {
             it.userType.value = userType
             setScope(
-                AddEmployeeScope.PersonalData(
+                EmployeeScope.PersonalData(
                     registration = DataSource(
                         UserRegistration1(
                             userType = it.userType.value.serverValue,
@@ -50,9 +62,9 @@ internal class AddEmployeeEventDelegate(
 
     private suspend fun validate(userRegistration: UserRegistration) {
         when (userRegistration) {
-            is UserRegistration1 -> navigator.withScope<AddEmployeeScope.PersonalData> {
+            is UserRegistration1 -> navigator.withScope<EmployeeScope.PersonalData> {
                 setScope(
-                    AddEmployeeScope.AddressData(
+                    EmployeeScope.AddressData(
                         registrationStep1 = it.registration.value,
                         locationData = DataSource(null),
                         registration = DataSource(UserRegistration2()),
@@ -72,13 +84,13 @@ internal class AddEmployeeEventDelegate(
                     )
                 }.onError(navigator)*/
             }
-            is UserRegistration2 -> navigator.withScope<AddEmployeeScope.AddressData> {
+            is UserRegistration2 -> navigator.withScope<EmployeeScope.AddressData> {
                 val result = withProgress {
                     userRepo.signUpValidation2(userRegistration)
                 }
                 it.userValidation.value = result.validations
 
-                setScope( AddEmployeeScope.Details.Aadhaar(
+                setScope( EmployeeScope.Details.Aadhaar(
                     registrationStep1 = it.registrationStep1,
                     registrationStep2 = it.registration.value,
                 ))
@@ -132,7 +144,7 @@ internal class AddEmployeeEventDelegate(
     }
 
     private fun addAadhaar(aadhaarData: AadhaarData) {
-        navigator.withScope<AddEmployeeScope.Details.Aadhaar> {
+        navigator.withScope<EmployeeScope.Details.Aadhaar> {
             it.aadhaarData.value = aadhaarData
             setScope(
                 SignUpScope.LegalDocuments.Aadhaar(
@@ -144,12 +156,12 @@ internal class AddEmployeeEventDelegate(
         }
     }
 
-    private suspend fun uploadDocument(event: Event.Action.AddEmployee) {
+    private suspend fun uploadDocument(event: Event.Action.Employee) {
         navigator.withScope<CommonScope.UploadDocument> {
             var storageKey: String? = null
             val isSuccess = withProgress {
                 when (event) {
-                    is Event.Action.AddEmployee.UploadAadhaar -> {
+                    is Event.Action.Employee.UploadAadhaar -> {
                         val userReg = (it as? SignUpScope.LegalDocuments.Aadhaar)?.registrationStep1
                         userRepo.uploadAadhaar(
                             aadhaar = requireNotNull(searchQueuesFor<AadhaarDataComponent>()).aadhaarData.value,
@@ -166,10 +178,10 @@ internal class AddEmployeeEventDelegate(
             }
             if (isSuccess) {
                 when (it) {
-                    is AddEmployeeScope.LegalDocuments -> {
+                    is EmployeeScope.LegalDocuments -> {
                         if (it is SignUpScope.LegalDocuments.Aadhaar) {
                                 it.aadhaarFile =
-                                    (event as Event.Action.AddEmployee.UploadAadhaar).aadhaarAsBase64
+                                    (event as Event.Action.Employee.UploadAadhaar).aadhaarAsBase64
                                 it.onDataValid(true)
                         }
                         //startOtp(it.registrationStep1.phoneNumber)
