@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.nested.AddEmployeeScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.data.UserRegistration1
+import com.zealsoftsol.medico.data.UserType
 
 internal class AddEmployeeEventDelegate(
     navigator: Navigator,
@@ -14,16 +15,17 @@ internal class AddEmployeeEventDelegate(
 
     override suspend fun handleEvent(event: Event.Action.AddEmployee) =
         when (event) {
-            is Event.Action.AddEmployee.SelectUserType -> moveToPersonalDetailsScreen()
+            is Event.Action.AddEmployee.SelectUserType -> moveToPersonalDetailsScreen(event.userType)
         }
 
-    private fun moveToPersonalDetailsScreen() {
-        navigator.withScope<AddEmployeeScope> {
+    private fun moveToPersonalDetailsScreen(userType: UserType) {
+        navigator.withScope<AddEmployeeScope.SelectUserType> {
+            it.userType.value = userType
             setScope(
                 AddEmployeeScope.PersonalData(
                     registration = DataSource(
                         UserRegistration1(
-                            userType = it.selectedUserType.value!!.serverValue,
+                            userType = it.userType.value.serverValue,
                         )
                     ),
                     validation = DataSource(null),

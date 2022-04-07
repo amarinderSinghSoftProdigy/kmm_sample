@@ -18,7 +18,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -37,9 +36,8 @@ import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Space
 
 @Composable
-fun AddEmployeeScreen(scope: AddEmployeeScope) {
+fun AddEmployeeScreen(scope: AddEmployeeScope.SelectUserType) {
 
-    val selectedUserType = scope.selectedUserType.flow.collectAsState()
     val optionSelected = remember { mutableStateOf<AddEmployeeScope.OptionSelected?>(null) }
 
     Box(
@@ -63,7 +61,7 @@ fun AddEmployeeScreen(scope: AddEmployeeScope) {
                     icon = R.drawable.ic_add_employee,
                     isSelected = optionSelected.value != null && optionSelected.value == AddEmployeeScope.OptionSelected.ADD_EMPLOYEE
                 ) {
-                    scope.selectUserType(UserType.EMPLOYEE)
+                    scope.chooseUserType(UserType.EMPLOYEE)
                     optionSelected.value = AddEmployeeScope.OptionSelected.ADD_EMPLOYEE
                 }
                 Space(20.dp)
@@ -83,7 +81,11 @@ fun AddEmployeeScreen(scope: AddEmployeeScope) {
                 .align(Alignment.BottomCenter)
                 .padding(16.dp)
         ) {
-            scope.goToPersonalData()
+            if (optionSelected.value == AddEmployeeScope.OptionSelected.ADD_EMPLOYEE)
+                scope.goToPersonalData()
+            else{
+                //handle view employee case
+            }
         }
     }
 }

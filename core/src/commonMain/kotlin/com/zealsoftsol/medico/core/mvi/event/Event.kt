@@ -625,6 +625,7 @@ sealed class Event {
             override val typeClazz: KClass<*> = AddEmployee::class
 
             data class SelectUserType(val userType: UserType) : AddEmployee()
+            data class Validate(val userRegistration: UserRegistration) : Registration()
 
         }
     }

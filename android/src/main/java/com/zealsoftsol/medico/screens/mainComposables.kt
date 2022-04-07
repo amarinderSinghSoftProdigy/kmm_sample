@@ -415,7 +415,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     is IocBuyerScope.InvDetails -> IocBuyerListingScreen(it)
                     is IocBuyerScope.IOCPaymentMethod -> IocBuyerListingScreen(it)
                     is IocBuyerScope.IOCPayNow -> IocBuyerListingScreen(it)
-                    is AddEmployeeScope -> AddEmployeeScreen(it)
+                    is AddEmployeeScope.SelectUserType -> AddEmployeeScreen(it)
                     is AddEmployeeScope.PersonalData -> AddEmployeeStepOneScreen(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()

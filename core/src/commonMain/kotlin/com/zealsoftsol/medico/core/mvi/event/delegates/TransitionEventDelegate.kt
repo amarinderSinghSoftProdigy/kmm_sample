@@ -116,7 +116,7 @@ internal class TransitionEventDelegate(
                         )
                         UserType.HOSPITAL -> ManagementScope.User.Hospital()
                         UserType.SEASON_BOY -> ManagementScope.User.SeasonBoy()
-                        UserType.EMPLOYEE -> AddEmployeeScope()
+                        UserType.EMPLOYEE -> AddEmployeeScope.SelectUserType.get()
                     }
                 )
                 is Event.Transition.RequestCreateRetailer -> setScope(
@@ -228,7 +228,7 @@ internal class TransitionEventDelegate(
                 is Event.Transition.QrCode -> setScope(QrCodeScope())
                 is Event.Transition.IOCSeller -> setScope(IocSellerScope.InvUserListing())
                 is Event.Transition.IOCBuyer -> setScope(IocBuyerScope.InvUserListing())
-                is Event.Transition.AddEmployee -> setScope(AddEmployeeScope())
+                is Event.Transition.AddEmployee -> setScope(AddEmployeeScope.SelectUserType.get())
             }
         }
     }
