@@ -13,6 +13,7 @@ class PreferenceScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
     }
 
     val showAlert = DataSource(false)
+    val showAlertText = DataSource("")
     val isAutoApproved = DataSource(false)
 
     /**

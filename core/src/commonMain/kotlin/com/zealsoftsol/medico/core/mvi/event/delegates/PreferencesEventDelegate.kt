@@ -35,7 +35,8 @@ internal class PreferencesEventDelegate(
         navigator.withScope<PreferenceScope> {
             withProgress {
                 preferenceScope.setAutoApprovePreference(value)
-            }.onSuccess { _ ->
+            }.onSuccess { body ->
+                it.showAlertText.value = body.autoApprove.formatted
                 it.showAlert.value = true
             }.onError(navigator)
         }

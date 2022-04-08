@@ -31,6 +31,7 @@ import com.zealsoftsol.medico.screens.common.Space
 fun PreferenceScreen(scope: PreferenceScope) {
 
     val showAlert = scope.showAlert.flow.collectAsState()
+    val showAlertText = scope.showAlertText.flow.collectAsState()
     val isAutoApproved = scope.isAutoApproved.flow.collectAsState()
 
     Box {
@@ -84,7 +85,7 @@ fun PreferenceScreen(scope: PreferenceScope) {
         }
 
         if (showAlert.value)
-            ShowAlert(message = stringResource(id = R.string.update_successfull)) {
+            ShowAlert(message = showAlertText.value) {
                 scope.showAlertBottomSheet(false)
             }
     }
