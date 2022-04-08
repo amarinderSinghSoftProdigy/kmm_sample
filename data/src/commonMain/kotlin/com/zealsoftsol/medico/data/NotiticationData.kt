@@ -24,7 +24,7 @@ data class UnreadNotifications(
 
 @Serializable
 data class NotificationDetails(
-    val customerData: CustomerDataV2? = null,
+    val customerData: CustomerData? = null,
     val subscriptionOption: NotificationOption.Subscription? = null,
     val orderOption: NotificationOption.Order? = null,
     val invoiceOption: NotificationOption.Invoice? = null,
@@ -37,7 +37,7 @@ data class NotificationDetails(
 
         data class Subscription(
             val isReadOnly: Boolean,
-            val customerData: CustomerDataV2,
+            val customerData: CustomerData,
             override val option: NotificationOption.Subscription,
         ) : TypeSafe() {
 
