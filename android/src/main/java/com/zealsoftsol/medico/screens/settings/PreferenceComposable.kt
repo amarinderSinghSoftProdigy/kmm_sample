@@ -24,12 +24,14 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.regular.PreferenceScope
 import com.zealsoftsol.medico.screens.common.MedicoButton
+import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.Space
 
 @Composable
 fun PreferenceScreen(scope: PreferenceScope) {
 
     val showAlert = scope.showAlert.flow.collectAsState()
+    val isAutoApproved = scope.isAutoApproved.flow.collectAsState()
 
     Box {
         Column(
@@ -39,12 +41,20 @@ fun PreferenceScreen(scope: PreferenceScope) {
                 .padding(16.dp)
         ) {
 
+            Space(dp = 20.dp)
+            Text(
+                text = stringResource(id = R.string.connection_req),
+                color = Color.Black,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.W700
+            )
+            Space(dp = 20.dp)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 20.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = stringResource(id = R.string.auto_approve),
@@ -54,7 +64,9 @@ fun PreferenceScreen(scope: PreferenceScope) {
                 )
 
                 Switch(
-                    checked = true, onCheckedChange = {
+                    checked = isAutoApproved.value,
+                    onCheckedChange = {
+                        scope.updateAutoApprovePreference(it)
                     }, colors = SwitchDefaults.colors(
                         checkedThumbColor = ConstColors.green
                     )
@@ -66,9 +78,14 @@ fun PreferenceScreen(scope: PreferenceScope) {
                 text = stringResource(id = R.string.save),
                 isEnabled = true
             ) {
-                scope.submit(false)
+                scope.submitPreference()
             }
 
         }
+
+        if (showAlert.value)
+            ShowAlert(message = stringResource(id = R.string.update_successfull)) {
+                scope.showAlertBottomSheet(false)
+            }
     }
 }

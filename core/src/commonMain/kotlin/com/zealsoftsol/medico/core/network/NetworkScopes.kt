@@ -5,6 +5,7 @@ import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.AnyResponse
+import com.zealsoftsol.medico.data.AutoApprove
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
 import com.zealsoftsol.medico.data.BatchUpdateRequest
@@ -520,4 +521,10 @@ interface NetworkScope {
         ): BodyResponse<HeaderData>
     }
 
+    interface PreferencesStore : NetworkScope {
+        suspend fun getAutoApprovePreference(
+        ): BodyResponse<AutoApprove>
+
+        suspend fun setAutoApprovePreference(isEnabled: Boolean): BodyResponse<AutoApprove>
+    }
 }

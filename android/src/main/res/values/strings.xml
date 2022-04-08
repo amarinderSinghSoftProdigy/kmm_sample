@@ -470,6 +470,7 @@
     <string name="drug_licence_expiry">Drug License Expiry</string>
     <string name="food_licence_expiry">Food License Expiry</string>
     <string name="auto_approve">Auto Approve</string>
+    <string name="connection_req">Connection Requests</string>
 
     <!-- Termrs and Cond -->
 

@@ -21,6 +21,7 @@ import com.zealsoftsol.medico.core.mvi.event.delegates.OrdersEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.OrdersHsnEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.OtpEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.PasswordEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.PreferencesEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ProductEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ProfileEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.QrCodeEventDelegate
@@ -73,6 +74,7 @@ class EventCollector(
     qrCodeScope: NetworkScope.QrCodeStore,
     iocNetworkScope: NetworkScope.IOCStore,
     iocBuyerNetworkScope: NetworkScope.IOCBuyerStore,
+    preferenceNetworkScope: NetworkScope.PreferencesStore,
     private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
     private val cartRepo: CartRepo,
@@ -178,7 +180,12 @@ class EventCollector(
             navigator,
             userRepo,
             iocBuyerNetworkScope
-        )
+        ),
+        Event.Action.Preferences::class to PreferencesEventDelegate(
+            navigator,
+            userRepo,
+            preferenceNetworkScope
+        ),
     )
 
     init {
