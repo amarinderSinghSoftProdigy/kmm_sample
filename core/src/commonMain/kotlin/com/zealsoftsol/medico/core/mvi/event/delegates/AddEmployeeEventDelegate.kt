@@ -15,7 +15,6 @@ import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
-import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserRegistration4
 import com.zealsoftsol.medico.data.UserType
 
@@ -70,26 +69,13 @@ internal class AddEmployeeEventDelegate(
                         registration = DataSource(UserRegistration2()),
                     )
                 )
-              /*  val result = withProgress {
-                    userRepo.signUpValidation1(userRegistration)
-                }
-                it.validation.value = result.validations
-                result.onSuccess { _ ->
-                    setScope(
-                        AddEmployeeScope.AddressData(
-                            registrationStep1 = it.registration.value,
-                            locationData = DataSource(null),
-                            registration = DataSource(UserRegistration2()),
-                        )
-                    )
-                }.onError(navigator)*/
             }
             is UserRegistration2 -> navigator.withScope<EmployeeScope.AddressData> {
-                val result = withProgress {
+               /* val result = withProgress {
                     userRepo.signUpValidation2(userRegistration)
                 }
                 it.userValidation.value = result.validations
-
+*/
                 setScope( EmployeeScope.Details.Aadhaar(
                     registrationStep1 = it.registrationStep1,
                     registrationStep2 = it.registration.value,
@@ -110,23 +96,6 @@ internal class AddEmployeeEventDelegate(
                         }
                     setScope(nextScope)
                 }.onError(navigator)*/
-            }
-            is UserRegistration3 -> {
-                /*navigator.withScope<AddEmployeeScope.Details.TraderData> {
-                val result = withProgress {
-                    userRepo.signUpValidation3(userRegistration)
-                }
-                it.validation.value = result.validations
-                result.onSuccess { _ ->
-                    setScope(
-                        AddEmployeeScope.LegalDocuments.DrugLicense(
-                            registrationStep1 = it.registrationStep1,
-                            registrationStep2 = it.registrationStep2,
-                            registrationStep3 = it.registration.value,
-                        )
-                    )
-                }.onError(navigator)
-            }*/
             }
             is UserRegistration4 -> {
               /*  navigator.withScope<AddEmployeeScope.LegalDocuments.DrugLicense> {
@@ -179,7 +148,7 @@ internal class AddEmployeeEventDelegate(
             if (isSuccess) {
                 when (it) {
                     is EmployeeScope.LegalDocuments -> {
-                        if (it is SignUpScope.LegalDocuments.Aadhaar) {
+                        if (it is EmployeeScope.LegalDocuments.Aadhaar) {
                                 it.aadhaarFile =
                                     (event as Event.Action.Employee.UploadAadhaar).aadhaarAsBase64
                                 it.onDataValid(true)

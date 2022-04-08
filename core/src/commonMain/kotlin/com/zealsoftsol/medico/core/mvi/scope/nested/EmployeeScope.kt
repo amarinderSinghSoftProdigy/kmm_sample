@@ -223,6 +223,7 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
             AadhaarDataComponent {
 
             override val isVerified: DataSource<Boolean> = canGoNext
+            val showSuccess: DataSource<Boolean> = DataSource(false)
 
             override val inputFields: List<Fields> = listOf(
                 Fields.AADHAAR_CARD,
@@ -236,9 +237,7 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
                 EventCollector.sendEvent(Event.Action.Employee.Aadhaar(aadhaarData.value))
         }
 
-        enum class Fields {
-            TRADE_NAME, GSTIN, PAN, LICENSE1, LICENSE2, AADHAAR_CARD, SHARE_CODE, FOOD_LICENSE, FOOD_LICENSE_NUMBER;
-        }
+        enum class Fields {AADHAAR_CARD, SHARE_CODE }
     }
 
     sealed class LegalDocuments(
@@ -249,12 +248,8 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
         CommonScope.PhoneVerificationEntryPoint,
         CommonScope.UploadDocument {
 
-        val registrationStep4: DataSource<UserRegistration4> = DataSource(UserRegistration4())
-
         fun validate(userRegistration: UserRegistration4) =
             EventCollector.sendEvent(Event.Action.Employee.Validate(userRegistration))
-
-//        fun skip() = EventCollector.sendEvent(Event.Action.AddEmployee.Skip)
 
         class Aadhaar(
             registrationStep1: UserRegistration1,
@@ -277,5 +272,6 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
 
     class ViewEmployee : EmployeeScope("employees"){
 
+        val employeeData = DataSource<String?>(null)
     }
 }

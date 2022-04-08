@@ -470,6 +470,8 @@
     <string name="add_employee">Add Employee</string>
     <string name="view_employee">View Employee</string>
     <string name="employees">Employees</string>
+    <string name="employee_reg_success">Employee Registration Successful</string>
+    <string name="done">Done</string>
 
     <!-- Termrs and Cond -->
 
