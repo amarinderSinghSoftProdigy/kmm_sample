@@ -74,8 +74,8 @@ fun UserLogoPlaceholder(fullName: String) {
             .background(MaterialTheme.colors.primary, CircleShape)
     ) {
         Text(
-            text = fullName.split(" ").take(2).map { it.first().toString() }
-                .reduce { acc, s -> "$acc$s" },
+            text = if(fullName.isNotEmpty())fullName.split(" ").take(2).map { it.first().toString() }
+                .reduce { acc, s -> "$acc$s" } else "",
             color = MaterialTheme.colors.background,
             fontSize = 36.sp,
             fontWeight = FontWeight.W700,
