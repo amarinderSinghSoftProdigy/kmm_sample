@@ -494,7 +494,7 @@ sealed class Event {
                 val search: String? = null,
                 val query: ArrayList<String> = ArrayList(),
                 val status: OfferStatus,
-                ) : Offers()
+            ) : Offers()
 
             data class UpdateOffer(val promotionType: String, val active: Boolean) : Offers()
             data class EditOffer(val promoCode: String, val request: OfferProductRequest) : Offers()
@@ -620,6 +620,14 @@ sealed class Event {
 
             object ClearScopes : IOCBuyer()
         }
+
+        sealed class Preferences : Action() {
+            override val typeClazz: KClass<*> = Preferences::class
+
+            object GetPreferences: Preferences()
+            data class SetAutoConnectPreferences(val isEnabled: Boolean): Preferences()
+        }
+
     }
 
 
@@ -665,7 +673,11 @@ sealed class Event {
             val phoneNumber: String
         ) : Transition()
 
-        data class Inventory(val type: InventoryScope.InventoryType, val manufacturer: String = "") : Transition()
+        data class Inventory(
+            val type: InventoryScope.InventoryType,
+            val manufacturer: String = ""
+        ) : Transition()
+
         object Menu : Transition()
         data class Batches(
             val spid: String,
@@ -677,6 +689,6 @@ sealed class Event {
         object QrCode : Transition()
         object IOCSeller : Transition()
         object IOCBuyer : Transition()
-
+        object Preference : Transition()
     }
 }

@@ -26,6 +26,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.BatchesScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.PreferenceScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.QrCodeScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.WhatsappPreferenceScope
 import com.zealsoftsol.medico.core.repository.CartRepo
@@ -226,6 +227,7 @@ internal class TransitionEventDelegate(
                 is Event.Transition.QrCode -> setScope(QrCodeScope())
                 is Event.Transition.IOCSeller -> setScope(IocSellerScope.InvUserListing())
                 is Event.Transition.IOCBuyer -> setScope(IocBuyerScope.InvUserListing())
+                is Event.Transition.Preference -> setScope(PreferenceScope())
             }
         }
     }

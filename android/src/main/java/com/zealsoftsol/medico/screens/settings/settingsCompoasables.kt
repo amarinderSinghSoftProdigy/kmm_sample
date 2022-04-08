@@ -187,6 +187,13 @@ fun SettingsScreen(scope: SettingsScope, scaffoldState: ScaffoldState) {
                     stringResourceId = R.string.whatsapp,
                     scope = scope
                 )
+                Separator(thickness = 0.5f)
+                AccountContentItem(
+                    route = Event.Transition.Preference,
+                    drawableResourceId = R.drawable.ic_personal,
+                    stringResourceId = R.string.preference,
+                    scope = scope
+                )
             } else {
                 AccountContentItem(
                     route = Event.Transition.WhatsappPreference,
@@ -432,15 +439,15 @@ fun GstinDetailsComposable(
 
             }
             Space(12.dp)
-            MedicoButton(
-                modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-                text = stringResource(R.string.upload_drug_license),
-                isEnabled = true,
-                elevation = null,
-                onClick = {
-                    permissionViewModel.setPerformLocationAction(true, "DRUG_LICENSE")
-                },
-            )
+//            MedicoButton(
+//                modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+//                text = stringResource(R.string.upload_drug_license),
+//                isEnabled = true,
+//                elevation = null,
+//                onClick = {
+//                    permissionViewModel.setPerformLocationAction(true, "DRUG_LICENSE")
+//                },
+//            )
             if (details.foodLicense.isNotEmpty()) {
                 Space(12.dp)
                 ReadOnlyField(details.foodLicense, R.string.food_license_number)
@@ -459,15 +466,15 @@ fun GstinDetailsComposable(
                 )
             }
             Space(12.dp)
-            MedicoButton(
-                modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-                text = stringResource(R.string.upload_food_license),
-                isEnabled = true,
-                elevation = null,
-                onClick = {
-                    permissionViewModel.setPerformLocationAction(true, "FOOD_LICENSE")
-                },
-            )
+//            MedicoButton(
+//                modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+//                text = stringResource(R.string.upload_food_license),
+//                isEnabled = true,
+//                elevation = null,
+//                onClick = {
+//                    permissionViewModel.setPerformLocationAction(true, "FOOD_LICENSE")
+//                },
+//            )
         }
         if (scope.showSuccessMsg.flow.collectAsState().value) {
             ShowAlert(message = stringResource(id = R.string.update_successfull)) {

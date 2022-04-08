@@ -14,6 +14,7 @@ import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.AnyResponse
+import com.zealsoftsol.medico.data.AutoApprove
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
 import com.zealsoftsol.medico.data.BatchUpdateRequest
@@ -158,7 +159,8 @@ class NetworkClient(
     NetworkScope.IOCStore,
     NetworkScope.IOCBuyerStore,
     NetworkScope.BottomSheetStore,
-    NetworkScope.QrCodeStore {
+    NetworkScope.QrCodeStore,
+    NetworkScope.PreferencesStore {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -1343,6 +1345,19 @@ class NetworkClient(
                 url {
                     parameters.append("qrCode", qrCode)
                 }
+            }
+        }
+
+    override suspend fun getAutoApprovePreference(): BodyResponse<AutoApprove> =
+        client.get("${baseUrl.url}/b2bapp/preference/autoapprove"){
+            withMainToken()
+        }
+
+    override suspend fun setAutoApprovePreference(isEnabled: Boolean): BodyResponse<AutoApprove> =
+        simpleRequest {
+            client.post("${baseUrl.url}/b2bapp/preference/autoapprove/save") {
+                withMainToken()
+                jsonBody(mapOf("autoApprove" to isEnabled))
             }
         }
 
