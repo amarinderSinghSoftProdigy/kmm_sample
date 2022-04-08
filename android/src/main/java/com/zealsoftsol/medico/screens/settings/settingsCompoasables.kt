@@ -187,6 +187,13 @@ fun SettingsScreen(scope: SettingsScope, scaffoldState: ScaffoldState) {
                     stringResourceId = R.string.whatsapp,
                     scope = scope
                 )
+                Separator(thickness = 0.5f)
+                AccountContentItem(
+                    route = Event.Transition.Preference,
+                    drawableResourceId = R.drawable.ic_personal,
+                    stringResourceId = R.string.preference,
+                    scope = scope
+                )
             } else {
                 AccountContentItem(
                     route = Event.Transition.WhatsappPreference,

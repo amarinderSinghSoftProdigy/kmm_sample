@@ -677,6 +677,6 @@ sealed class Event {
         object QrCode : Transition()
         object IOCSeller : Transition()
         object IOCBuyer : Transition()
-
+        object Preference : Transition()
     }
 }

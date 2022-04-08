@@ -102,6 +102,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.BatchesScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.PreferenceScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.QrCodeScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.WhatsappPreferenceScope
@@ -166,6 +167,7 @@ import com.zealsoftsol.medico.screens.search.SearchBarEnd
 import com.zealsoftsol.medico.screens.search.SearchScreen
 import com.zealsoftsol.medico.screens.settings.AddressComposable
 import com.zealsoftsol.medico.screens.settings.GstinDetailsComposable
+import com.zealsoftsol.medico.screens.settings.PreferenceScreen
 import com.zealsoftsol.medico.screens.settings.ProfileComposable
 import com.zealsoftsol.medico.screens.settings.SettingsScreen
 import com.zealsoftsol.medico.screens.whatsappComposables.WhatsappPreference
@@ -412,6 +414,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     is IocBuyerScope.InvDetails -> IocBuyerListingScreen(it)
                     is IocBuyerScope.IOCPaymentMethod -> IocBuyerListingScreen(it)
                     is IocBuyerScope.IOCPayNow -> IocBuyerListingScreen(it)
+                    is PreferenceScope -> PreferenceScreen(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }
