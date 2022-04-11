@@ -19,15 +19,12 @@ import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
-import com.zealsoftsol.medico.data.UserRegistration3
-import com.zealsoftsol.medico.data.UserRegistration4
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 
 open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
     CommonScope.CanGoBack {
-
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
         return (tabBarInfo as? TabBarInfo.Simple)?.copy(
             title = StringResource.Static(titleId),
@@ -37,17 +34,15 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
 
     val canGoNext: DataSource<Boolean> = DataSource(false)
     protected open fun checkCanGoNext() = Unit
-    val inputProgress: List<Int> = listOfNotNull(1, 2, 3,)
+    val inputProgress: List<Int> = listOfNotNull(1, 2, 3, 4)
 
     enum class OptionSelected {
         ADD_EMPLOYEE, VIEW_EMPLOYEE
     }
 
-
     class SelectUserType private constructor(
         val userType: DataSource<UserType> = DataSource(UserType.EMPLOYEE),
     ) : EmployeeScope("user_type") {
-
         init {
             canGoNext.value = true
         }
@@ -77,7 +72,6 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
         val validation: DataSource<UserValidation1?> = DataSource(null),
     ) : EmployeeScope("personal_profile") {
         //private var isPhoneValid = false
-
         init {
             checkCanGoNext()
         }
@@ -120,9 +114,7 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
             isPhoneValid = isValid
             checkCanGoNext()
         }*/
-
         fun changePassword(password: String) {
-
             trimInput(password, registration.value.password) {
                 registration.value = registration.value.copy(password = it)
                 checkCanGoNext()
@@ -151,7 +143,6 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
             return phone.length == 10
         }
 
-
         fun isValidPassword(str: String): Boolean {
             if (str.isEmpty()) {
                 return true
@@ -159,7 +150,6 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
             val regex = ("^(?=.*[a-z])(?=."
                     + "*[A-Z])(?=.*\\d)"
                     + "(?=.*[-+_!@#$%^&*., ?]).+$")
-
             val p = regex.toRegex()
             return p.matches(str) && str.length >= 8
         }
@@ -188,7 +178,6 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
         val userValidation: DataSource<UserValidation2?> = DataSource(null),
         override val pincodeValidation: DataSource<PincodeValidation?> = DataSource(null),
     ) : EmployeeScope("address"), AddressComponent {
-
         val landmarkLimit = 30
 
         init {
@@ -204,7 +193,6 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
          */
         fun validate(userRegistration: UserRegistration2) =
             EventCollector.sendEvent(Event.Action.Employee.Validate(userRegistration))
-
     }
 
     sealed class Details(
@@ -212,7 +200,6 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
         val registrationStep1: UserRegistration1,
         internal val registrationStep2: UserRegistration2,
     ) : EmployeeScope(titleId) {
-
         abstract val inputFields: List<Fields>
 
         class Aadhaar(
@@ -220,58 +207,31 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
             registrationStep2: UserRegistration2,
             override val aadhaarData: DataSource<AadhaarData> = DataSource(AadhaarData("", "")),
         ) : Details("details", registrationStep1, registrationStep2),
-            AadhaarDataComponent {
-
+            AadhaarDataComponent, CommonScope.PhoneVerificationEntryPoint,
+            CommonScope.UploadDocument {
             override val isVerified: DataSource<Boolean> = canGoNext
-            val showSuccess: DataSource<Boolean> = DataSource(false)
-
             override val inputFields: List<Fields> = listOf(
                 Fields.AADHAAR_CARD,
                 Fields.SHARE_CODE,
             )
 
-            /**
-             * Transition to [LegalDocuments] if successful
-             */
-            fun addAadhaar() =
+            fun addAadhaar() {
                 EventCollector.sendEvent(Event.Action.Employee.Aadhaar(aadhaarData.value))
-        }
+            }
 
-        enum class Fields {AADHAAR_CARD, SHARE_CODE }
-    }
-
-    sealed class LegalDocuments(
-        val registrationStep1: UserRegistration1,
-        internal val registrationStep2: UserRegistration2,
-        val registrationStep3: UserRegistration3,
-    ) : EmployeeScope("legal_documents"),
-        CommonScope.PhoneVerificationEntryPoint,
-        CommonScope.UploadDocument {
-
-        fun validate(userRegistration: UserRegistration4) =
-            EventCollector.sendEvent(Event.Action.Employee.Validate(userRegistration))
-
-        class Aadhaar(
-            registrationStep1: UserRegistration1,
-            registrationStep2: UserRegistration2,
-            internal val aadhaarData: AadhaarData,
-            internal var aadhaarFile: String? = null,
-        ) : LegalDocuments(
-            registrationStep1, registrationStep2,
-            UserRegistration3()
-        ) {
-
-            fun onDataValid(isValid: Boolean) {
-                canGoNext.value = isValid
+            fun validate() {
+                canGoNext.value = isVerified.value
             }
 
             override val supportedFileTypes: Array<FileType> = FileType.forAadhaar()
             override val isSeasonBoy = true
         }
+
+        enum class Fields { AADHAAR_CARD, SHARE_CODE }
     }
 
-    class ViewEmployee : EmployeeScope("employees"){
-
+    class SuccessEmployee : EmployeeScope("employees")
+    class ViewEmployee : EmployeeScope("employees") {
         val employeeData = DataSource<String?>(null)
     }
 }

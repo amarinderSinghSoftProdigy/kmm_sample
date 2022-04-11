@@ -1,5 +1,4 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
-
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
@@ -17,12 +16,10 @@ import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration4
 import com.zealsoftsol.medico.data.UserType
-
 internal class AddEmployeeEventDelegate(
     navigator: Navigator,
     private val userRepo: UserRepo,
 ) : EventDelegate<Event.Action.Employee>(navigator) {
-
     override suspend fun handleEvent(event: Event.Action.Employee) =
         when (event) {
             is Event.Action.Employee.SelectUserType -> moveToPersonalDetailsScreen(event.userType)
@@ -32,17 +29,13 @@ internal class AddEmployeeEventDelegate(
             is Event.Action.Employee.MoveToViewEmployee -> moveToEmployeeScreen()
             is Event.Action.Employee.ViewEmployee -> viewEmployee()
         }
-
-    private fun moveToEmployeeScreen(){
+    private fun moveToEmployeeScreen() {
         navigator.withScope<EmployeeScope.Details.Aadhaar> {
             setScope(EmployeeScope.ViewEmployee())
         }
     }
-
     private fun viewEmployee() {
-
     }
-
     private fun moveToPersonalDetailsScreen(userType: UserType) {
         navigator.withScope<EmployeeScope.SelectUserType> {
             it.userType.value = userType
@@ -58,7 +51,6 @@ internal class AddEmployeeEventDelegate(
             )
         }
     }
-
     private suspend fun validate(userRegistration: UserRegistration) {
         when (userRegistration) {
             is UserRegistration1 -> navigator.withScope<EmployeeScope.PersonalData> {
@@ -71,16 +63,17 @@ internal class AddEmployeeEventDelegate(
                 )
             }
             is UserRegistration2 -> navigator.withScope<EmployeeScope.AddressData> {
-               /* val result = withProgress {
-                    userRepo.signUpValidation2(userRegistration)
-                }
-                it.userValidation.value = result.validations
-*/
-                setScope( EmployeeScope.Details.Aadhaar(
-                    registrationStep1 = it.registrationStep1,
-                    registrationStep2 = it.registration.value,
-                ))
-
+                /* val result = withProgress {
+                     userRepo.signUpValidation2(userRegistration)
+                 }
+                 it.userValidation.value = result.validations
+ */
+                setScope(
+                    EmployeeScope.Details.Aadhaar(
+                        registrationStep1 = it.registrationStep1,
+                        registrationStep2 = it.registration.value,
+                    )
+                )
                 /*result.onSuccess { _ ->
                     val nextScope =
                         if (it.registrationStep1.userType == UserType.SEASON_BOY.serverValue) {
@@ -98,33 +91,27 @@ internal class AddEmployeeEventDelegate(
                 }.onError(navigator)*/
             }
             is UserRegistration4 -> {
-              /*  navigator.withScope<AddEmployeeScope.LegalDocuments.DrugLicense> {
-                    setScope(
-                        AddEmployeeScope.PreviewDetails(
-                            registrationStep1 = it.registrationStep1,
-                            registrationStep2 = it.registrationStep2,
-                            registrationStep3 = it.registrationStep3,
-                            registrationStep4 = it.registrationStep4.value,
-                        )
-                    )
-                }*/
+                /*  navigator.withScope<AddEmployeeScope.LegalDocuments.DrugLicense> {
+                      setScope(
+                          AddEmployeeScope.PreviewDetails(
+                              registrationStep1 = it.registrationStep1,
+                              registrationStep2 = it.registrationStep2,
+                              registrationStep3 = it.registrationStep3,
+                              registrationStep4 = it.registrationStep4.value,
+                          )
+                      )
+                  }*/
             }
         }
     }
-
     private fun addAadhaar(aadhaarData: AadhaarData) {
         navigator.withScope<EmployeeScope.Details.Aadhaar> {
             it.aadhaarData.value = aadhaarData
             setScope(
-                SignUpScope.LegalDocuments.Aadhaar(
-                    registrationStep1 = it.registrationStep1,
-                    registrationStep2 = it.registrationStep2,
-                    aadhaarData = aadhaarData,
-                )
+                EmployeeScope.SuccessEmployee()
             )
         }
     }
-
     private suspend fun uploadDocument(event: Event.Action.Employee) {
         navigator.withScope<CommonScope.UploadDocument> {
             var storageKey: String? = null
@@ -136,23 +123,20 @@ internal class AddEmployeeEventDelegate(
                             aadhaar = requireNotNull(searchQueuesFor<AadhaarDataComponent>()).aadhaarData.value,
                             fileString = event.aadhaarAsBase64,
                             phoneNumber = userReg?.phoneNumber
-                                ?: ""/*userRepo.requireUser().phoneNumber*/,
-                            email = userReg?.email ?: ""/*userRepo.requireUser().email*/,
+                                ?: "",/*userRepo.requireUser().phoneNumber*/
+                            email = userReg?.email ?: "",/*userRepo.requireUser().email*/
                         ).onError(navigator)
                             .isSuccess
                     }
                     else -> throw UnsupportedOperationException("unsupported event $event for uploadDocument()")
                 }
-
             }
             if (isSuccess) {
                 when (it) {
-                    is EmployeeScope.LegalDocuments -> {
-                        if (it is EmployeeScope.LegalDocuments.Aadhaar) {
-                                it.aadhaarFile =
-                                    (event as Event.Action.Employee.UploadAadhaar).aadhaarAsBase64
-                                it.onDataValid(true)
-                        }
+                    is EmployeeScope.Details.Aadhaar -> {
+                        /*it.aadhaarFile =
+                            (event as Event.Action.Employee.UploadAadhaar).aadhaarAsBase64
+                        it.onDataValid(true)*/
                         //startOtp(it.registrationStep1.phoneNumber)
                     }
                     is LimitedAccessScope -> {
@@ -163,5 +147,4 @@ internal class AddEmployeeEventDelegate(
             }
         }
     }
-
 }

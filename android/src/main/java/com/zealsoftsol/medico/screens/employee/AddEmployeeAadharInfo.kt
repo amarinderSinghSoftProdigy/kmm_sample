@@ -1,64 +1,78 @@
 package com.zealsoftsol.medico.screens.employee
-
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Text
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.EmployeeScope
 import com.zealsoftsol.medico.screens.auth.AadhaarInputFields
-import com.zealsoftsol.medico.screens.common.MedicoButton
+import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.utils.PermissionCheckUI
+import com.zealsoftsol.medico.utils.PermissionViewModel
 
+@ExperimentalMaterialApi
 @Composable
-fun AddEmployeeAadharInfoScreen(scope: EmployeeScope.Details.Aadhaar) {
-
-    val showSuccess = scope.showSuccess.flow.collectAsState()
-
-    if (showSuccess.value) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-
-            Image(painter = painterResource(id = R.drawable.ic_success), contentDescription = null)
-            Text(
-                modifier = Modifier.padding(top = 10.dp),
-                text = stringResource(id = R.string.employee_reg_success),
-                color = ConstColors.green
-            )
-            MedicoButton(
-                modifier = Modifier.padding(horizontal = 40.dp, vertical = 10.dp),
-                text = stringResource(id = R.string.done),
-                isEnabled = true
-            ) {
-
-            }
-        }
-    } else {
-        BasicAuthSignUpScreenWithButton(
-            userType = scope.registrationStep1.userType,
-            progress = 3.0,//0.8,
-            baseScope = scope,
-            buttonText = stringResource(id = R.string.next),
-            onButtonClick = { scope.addAadhaar() },
-            body = {
+fun AddEmployeeAadharInfoScreen(
+    scope: EmployeeScope.Details.Aadhaar,
+    scaffoldState: ScaffoldState,
+) {
+    val permissionViewModel = PermissionViewModel()
+    PermissionCheckUI(scaffoldState, permissionViewModel)
+    BasicAuthSignUpScreenWithButton(
+        userType = scope.registrationStep1.userType,
+        progress = 3.0,//0.8,
+        baseScope = scope,
+        buttonText = stringResource(id = R.string.next),
+        onButtonClick = { scope.addAadhaar() },
+        body = {
+            Column {
+                val tradeCheck = scope.isVerified.flow.collectAsState()
                 AadhaarInputFields(
                     aadhaarData = scope.aadhaarData,
-                    onCardChange = scope::changeCard,
-                    onCodeChange = scope::changeShareCode,
+                    showShareCode = false,
+                    onCardChange = {
+                        scope.changeShareCode("1234")
+                        scope.changeCard(it)
+                        scope.validate()
+                    },
+                    onCodeChange = {},
                 )
+                Space(dp = 16.dp)
+                /*Surface(
+                    onClick = {
+                        permissionViewModel.setPerformLocationAction(true, "TRADE_PROFILE")
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp),
+                    shape = MaterialTheme.shapes.large,
+                    color = Color.White,
+                    border = BorderStroke(1.dp, ConstColors.gray.copy(alpha = .2f))
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_img_placeholder),
+                            contentDescription = null,
+                            modifier = Modifier.size(50.dp),
+                        )
+                        Space(dp = 4.dp)
+                        Text(
+                            text = if (tradeCheck) stringResource(id = R.string.file_uploaded_successfully)
+                            else stringResource(id = R.string.upload_aadhaar),
+                            color = if (tradeCheck) MaterialTheme.colors.background else ConstColors.gray,
+                            textAlign = TextAlign.Center,
+                            fontSize = 12.sp,
+                            fontWeight = if (tradeCheck) FontWeight.Bold else FontWeight.Normal
+                        )
+                    }
+                }*/
             }
-        )
-    }
+        }
+    )
 }

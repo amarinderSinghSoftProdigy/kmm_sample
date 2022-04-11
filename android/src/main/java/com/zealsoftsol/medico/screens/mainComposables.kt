@@ -135,6 +135,7 @@ import com.zealsoftsol.medico.screens.employee.AddEmployeeAadharInfoScreen
 import com.zealsoftsol.medico.screens.employee.AddEmployeeAddressDetailsScreen
 import com.zealsoftsol.medico.screens.employee.AddEmployeeScreen
 import com.zealsoftsol.medico.screens.employee.AddEmployeeStepOneScreen
+import com.zealsoftsol.medico.screens.employee.SuccessEmployees
 import com.zealsoftsol.medico.screens.employee.ViewEmployees
 import com.zealsoftsol.medico.screens.help.HelpScreens
 import com.zealsoftsol.medico.screens.instore.InStoreAddUserScreen
@@ -421,8 +422,9 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     is EmployeeScope.SelectUserType -> AddEmployeeScreen(it)
                     is EmployeeScope.PersonalData -> AddEmployeeStepOneScreen(it)
                     is EmployeeScope.AddressData -> AddEmployeeAddressDetailsScreen(it)
-                    is EmployeeScope.Details.Aadhaar -> AddEmployeeAadharInfoScreen(it)
+                    is EmployeeScope.Details.Aadhaar -> AddEmployeeAadharInfoScreen(it, scaffoldState)
                     is EmployeeScope.ViewEmployee -> ViewEmployees(it)
+                    is EmployeeScope.SuccessEmployee -> SuccessEmployees(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }
@@ -826,7 +828,8 @@ private fun NoIconHeader(
             }
             is InStoreSellerScope -> {
                 Row(modifier = Modifier.weight(0.7f)) {
-                    val scopeCustom = scope.childScope.flow.collectAsState().value as InStoreSellerScope
+                    val scopeCustom =
+                        scope.childScope.flow.collectAsState().value as InStoreSellerScope
                     BasicSearchBar(
                         start = 0.dp,
                         input = scopeCustom.searchText.flow.collectAsState().value,

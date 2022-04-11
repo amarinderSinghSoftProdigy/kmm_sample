@@ -328,7 +328,7 @@ fun BasicAuthSignUpScreenWithButton(
                     itemsIndexed(
                         items = baseScope.inputProgress,
                         itemContent = { _, item ->
-                            ProgressItem(count = item, progress)
+                            ProgressItem(count = item, progress, limit = 4, width = 0.27)
                         },
                     )
                 }
