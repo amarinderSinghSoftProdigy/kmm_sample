@@ -1,4 +1,5 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
+
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
@@ -16,6 +17,7 @@ import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration4
 import com.zealsoftsol.medico.data.UserType
+
 internal class AddEmployeeEventDelegate(
     navigator: Navigator,
     private val userRepo: UserRepo,
@@ -29,13 +31,16 @@ internal class AddEmployeeEventDelegate(
             is Event.Action.Employee.MoveToViewEmployee -> moveToEmployeeScreen()
             is Event.Action.Employee.ViewEmployee -> viewEmployee()
         }
+
     private fun moveToEmployeeScreen() {
         navigator.withScope<EmployeeScope.SelectUserType> {
             setScope(EmployeeScope.ViewEmployee())
         }
     }
+
     private fun viewEmployee() {
     }
+
     private fun moveToPersonalDetailsScreen(userType: UserType) {
         navigator.withScope<EmployeeScope.SelectUserType> {
             it.userType.value = userType
@@ -51,6 +56,7 @@ internal class AddEmployeeEventDelegate(
             )
         }
     }
+
     private suspend fun validate(userRegistration: UserRegistration) {
         when (userRegistration) {
             is UserRegistration1 -> navigator.withScope<EmployeeScope.PersonalData> {
@@ -104,6 +110,7 @@ internal class AddEmployeeEventDelegate(
             }
         }
     }
+
     private fun addAadhaar(aadhaarData: AadhaarData) {
         navigator.withScope<EmployeeScope.Details.Aadhaar> {
             it.aadhaarData.value = aadhaarData
@@ -112,6 +119,7 @@ internal class AddEmployeeEventDelegate(
             )
         }
     }
+
     private suspend fun uploadDocument(event: Event.Action.Employee) {
         navigator.withScope<CommonScope.UploadDocument> {
             var storageKey: String? = null
