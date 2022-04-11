@@ -57,6 +57,11 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
         fun goToPersonalData() =
             EventCollector.sendEvent(Event.Action.Employee.SelectUserType(userType.value))
 
+        /**
+         * Transition to [ViewEmployee]
+         */
+        fun goToViewEmployee() = EventCollector.sendEvent(Event.Action.Employee.MoveToViewEmployee)
+
         companion object {
             fun get() = TabBarScope(
                 childScope = SelectUserType(),

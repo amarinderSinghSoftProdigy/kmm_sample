@@ -81,10 +81,10 @@ fun AddEmployeeScreen(scope: EmployeeScope.SelectUserType) {
                 .align(Alignment.BottomCenter)
                 .padding(16.dp)
         ) {
-            if (optionSelected.value == EmployeeScope.OptionSelected.ADD_EMPLOYEE)
+            if (optionSelected.value == EmployeeScope.OptionSelected.ADD_EMPLOYEE) {
                 scope.goToPersonalData()
-            else{
-                //handle view employee case
+            } else {
+                scope.goToViewEmployee()
             }
         }
     }

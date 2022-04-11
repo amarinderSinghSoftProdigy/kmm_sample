@@ -30,7 +30,7 @@ internal class AddEmployeeEventDelegate(
             is Event.Action.Employee.ViewEmployee -> viewEmployee()
         }
     private fun moveToEmployeeScreen() {
-        navigator.withScope<EmployeeScope.Details.Aadhaar> {
+        navigator.withScope<EmployeeScope.SelectUserType> {
             setScope(EmployeeScope.ViewEmployee())
         }
     }
