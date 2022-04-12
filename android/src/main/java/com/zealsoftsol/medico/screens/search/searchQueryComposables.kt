@@ -118,6 +118,7 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
         val activeFilterIds = scope.activeFilterIds.flow.collectAsState()
         val listStateScroll = rememberScrollState()
         val coroutineScope = rememberCoroutineScope()
+        val totalResults = scope.totalResults.flow.collectAsState()
 
         Column(
             modifier = Modifier
@@ -234,7 +235,7 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                             }
                         }
                         Space(dp = 12.dp)
-                        if (products.value.isNotEmpty() && products.value.size == Pagination.ITEMS_PER_PAGE_30) {
+                        if (products.value.isNotEmpty() && totalResults.value == Pagination.ITEMS_PER_PAGE_30) {
                             PaginationButtons(modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),

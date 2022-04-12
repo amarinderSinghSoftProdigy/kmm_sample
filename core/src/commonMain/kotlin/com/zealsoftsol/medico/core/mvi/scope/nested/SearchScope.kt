@@ -33,6 +33,7 @@ interface BaseSearchScope : Scopable {
     val activeFilterIds: DataSource<List<String>>
     val freeQty: DataSource<Double>
     val productId: DataSource<String>
+    val totalResults: DataSource<Int>
 
     // store search if present
     val unitCode: String?
@@ -123,6 +124,7 @@ class SearchScope(
     override val activeFilterIds: DataSource<List<String>> = DataSource(emptyList()),
     override val freeQty: DataSource<Double> = DataSource(0.0),
     override val productId: DataSource<String> = DataSource(""),
+    override val totalResults: DataSource<Int> = DataSource(0)
 ) : Scope.Child.TabBar(), BaseSearchScope {
 
     override val unitCode: String? = null
@@ -145,8 +147,7 @@ class SearchScope(
                 )
             }
         } else {
-//            EventCollector.sendEvent(Event.Action.Search.GetLocalSearchData)
-            EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = false, search = ""))
+            EventCollector.sendEvent(Event.Action.Search.GetLocalSearchData)
         }
     }
 

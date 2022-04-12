@@ -431,6 +431,7 @@ internal class SearchEventDelegate(
             filters.value = body.facets.toFilter()
             products.value = /*if (!addPage)*/
                 body.products /*else products.value + body.products*/
+            totalResults.value = body.totalResults
             sortOptions.value = body.sortOptions
             if (selectedSortOption.value == null) {
                 selectedSortOption.value = sortOptions.value.firstOrNull()
