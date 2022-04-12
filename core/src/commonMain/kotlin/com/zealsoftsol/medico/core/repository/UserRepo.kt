@@ -10,6 +10,7 @@ import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AuthCredentials
+import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BodyResponse
 import com.zealsoftsol.medico.data.ConfigData
 import com.zealsoftsol.medico.data.CreateRetailer
@@ -48,6 +49,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 
 
@@ -393,9 +395,27 @@ class UserRepo(
         return profileImageScope.getProfileImageData()
     }
 
+    fun getLocalSearchHistory(): List<AutoComplete> {
+        return runCatching {
+            Json.decodeFromString(
+                ListSerializer(AutoComplete.serializer()), settings.getString(
+                    LOCAL_SEARCH
+                )
+            )
+        }.getOrElse { emptyList() }
+    }
+
+    fun saveLocalSearchHistory(item: AutoComplete) {
+        val list: MutableList<AutoComplete> = getLocalSearchHistory().toMutableList()
+        if (list.isNotEmpty() && list.contains(item)) return else list.add(item)
+        val json = Json.encodeToString(ListSerializer(AutoComplete.serializer()), list)
+        settings.putString(LOCAL_SEARCH, json)
+    }
+
     private fun clearUserData() {
         settings.remove(AUTH_USER_KEY)
         settings.remove(AUTH_USER_KEY_V2)
+        settings.remove(LOCAL_SEARCH)
         tokenStorage.clear()
     }
 
@@ -408,6 +428,7 @@ class UserRepo(
         private const val AUTH_LOGIN_KEY = "auid"
         private const val AUTH_USER_KEY = "ukey"
         private const val AUTH_USER_KEY_V2 = "ukeyV2"
+        private const val LOCAL_SEARCH = "local_search"
     }
 }
 

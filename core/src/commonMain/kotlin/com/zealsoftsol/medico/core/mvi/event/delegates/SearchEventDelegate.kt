@@ -4,7 +4,6 @@ import com.zealsoftsol.medico.core.extensions.toScope
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
-import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
@@ -17,7 +16,6 @@ import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.ConnectedStockist
-import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.Facet
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
@@ -64,6 +62,16 @@ internal class SearchEventDelegate(
         is Event.Action.Search.ShowConnectedStockistBottomSheet -> showConnectedStockist(event.stockist)
         is Event.Action.Search.SelectAutoCompleteGlobal -> selectAutoCompleteGlobal(event.autoComplete)
         is Event.Action.Search.LoadStockist -> loadStockist(event.code, event.imageCode)
+        is Event.Action.Search.GetLocalSearchData -> getLocalSearchData()
+    }
+
+    /**
+     * get local search history of user
+     */
+    private fun getLocalSearchData() {
+        navigator.withScope<SearchScope> {
+            it.autoComplete.value = userRepo.getLocalSearchHistory()
+        }
     }
 
     /**
@@ -218,6 +226,7 @@ internal class SearchEventDelegate(
     }
 
     private suspend fun selectAutocomplete(autoComplete: AutoComplete) {
+        userRepo.saveLocalSearchHistory(autoComplete)
         navigator.withScope<BaseSearchScope> {
             it.productSearch.value = autoComplete.suggestion
             it.pagination.reset()
