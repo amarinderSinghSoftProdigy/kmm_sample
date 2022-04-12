@@ -26,6 +26,7 @@ internal class PreferencesEventDelegate(
                 preferenceScope.getAutoApprovePreference()
                     .onSuccess { body ->
                         it.isAutoApproved.value = body.autoApprove.value
+                        it.showAlertText.value = body.autoApprove.formatted
                     }.onError(navigator)
             }
         }

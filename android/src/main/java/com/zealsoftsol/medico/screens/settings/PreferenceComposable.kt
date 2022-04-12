@@ -81,6 +81,13 @@ fun PreferenceScreen(scope: PreferenceScope) {
             ) {
                 scope.submitPreference()
             }
+            Space(40.dp)
+            Text(
+                modifier = Modifier.padding(horizontal = 20.dp),
+                text = showAlertText.value,
+                fontSize = 12.sp,
+                color = Color.Gray
+            )
 
         }
 
