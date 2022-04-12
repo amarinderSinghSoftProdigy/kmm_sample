@@ -154,6 +154,8 @@ sealed class Event {
                 }
             }
 
+            object GetLocalSearchData : Search()
+
             data class SearchAutoComplete(val value: String, val sellerUnitCode: String? = null) :
                 Search()
 
@@ -624,8 +626,8 @@ sealed class Event {
         sealed class Preferences : Action() {
             override val typeClazz: KClass<*> = Preferences::class
 
-            object GetPreferences: Preferences()
-            data class SetAutoConnectPreferences(val isEnabled: Boolean): Preferences()
+            object GetPreferences : Preferences()
+            data class SetAutoConnectPreferences(val isEnabled: Boolean) : Preferences()
         }
 
     }
