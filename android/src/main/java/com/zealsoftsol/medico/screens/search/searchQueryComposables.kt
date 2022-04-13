@@ -215,43 +215,46 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                 }
             } else {
                 if (autoComplete.value.isEmpty()) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(listStateScroll)
-                    ) {
-                        FlowRow(
-                            mainAxisSize = SizeMode.Expand,
-                            mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
+                    if (products.value.isNotEmpty()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(listStateScroll)
                         ) {
-                            products.value.forEachIndexed { index, productSearch ->
-                                ProductItem(
-                                    productSearch,
-                                    onClick = { //scope.selectProduct(item)
-                                    },
-                                    onBuy = { scope.buy(productSearch) },
-                                    scope = scope
-                                )
+                            FlowRow(
+                                mainAxisSize = SizeMode.Expand,
+                                mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
+                            ) {
+                                products.value.forEachIndexed { index, productSearch ->
+                                    ProductItem(
+                                        productSearch,
+                                        onClick = { //scope.selectProduct(item)
+                                        },
+                                        onBuy = { scope.buy(productSearch) },
+                                        scope = scope
+                                    )
+                                }
+                            }
+                            Space(dp = 12.dp)
+                            if (products.value.isNotEmpty() && totalResults.value == Pagination.ITEMS_PER_PAGE_30) {
+                                PaginationButtons(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                                    scope.pagination, products.value.size, {
+                                        coroutineScope.launch {
+                                            listStateScroll.scrollTo(0)
+                                        }
+                                        scope.startSearch(true)
+                                    }, {
+                                        coroutineScope.launch {
+                                            listStateScroll.scrollTo(0)
+                                        }
+                                        scope.startSearch(false)
+                                    })
                             }
                         }
-                        Space(dp = 12.dp)
-                        if (products.value.isNotEmpty() && totalResults.value == Pagination.ITEMS_PER_PAGE_30) {
-                            PaginationButtons(modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
-                                scope.pagination, products.value.size, {
-                                    coroutineScope.launch {
-                                        listStateScroll.scrollTo(0)
-                                    }
-                                    scope.startSearch(true)
-                                }, {
-                                    coroutineScope.launch {
-                                        listStateScroll.scrollTo(0)
-                                    }
-                                    scope.startSearch(false)
-                                })
-
-                        }
+                    } else {
+                        NoProduct(productName = search.value)
                     }
                 } else {
                     LazyColumn(
@@ -283,6 +286,16 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                 scope.manageAlertVisibility(false)
             }
 
+    }
+}
+
+@Composable
+private fun NoProduct(productName: String) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Text(
+            modifier = Modifier.align(Alignment.Center),
+            text = "$productName ${stringResource(id = R.string.prod_not_found)}"
+        )
     }
 }
 
