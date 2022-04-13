@@ -473,6 +473,7 @@
     <string name="employee_reg_success">Employee Registration Successful</string>
     <string name="done">Done</string>
     <string name="employee">Employee</string>
+    <string name="no_employee">No Employee Found!</string>
 
     <!-- Termrs and Cond -->
 

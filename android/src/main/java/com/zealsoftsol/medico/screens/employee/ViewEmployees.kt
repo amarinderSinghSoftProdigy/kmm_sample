@@ -11,12 +11,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
+import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.EmployeeScope
 import com.zealsoftsol.medico.data.EmployeeData
+import com.zealsoftsol.medico.screens.common.NoRecords
 
 @Composable
 fun ViewEmployees(scope: EmployeeScope.ViewEmployee) {
@@ -28,16 +31,26 @@ fun ViewEmployees(scope: EmployeeScope.ViewEmployee) {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        LazyRow(
-            modifier = Modifier.padding(horizontal = 14.dp)
-        ) {
-            itemsIndexed(
-                items = employeeData.value,
-                key = { index, _ -> index },
-                itemContent = { _, item ->
-                    EmployeeItem(item)
-                },
-            )
+        if (employeeData.value.isNotEmpty()) {
+            LazyRow(
+                modifier = Modifier.padding(horizontal = 14.dp)
+            ) {
+                itemsIndexed(
+                    items = employeeData.value,
+                    key = { index, _ -> index },
+                    itemContent = { _, item ->
+                        EmployeeItem(item)
+                    },
+                )
+            }
+        } else {
+            NoRecords(
+                icon = R.drawable.ic_view_employee,
+                text = R.string.no_employee,
+                buttonText = stringResource(R.string.go_back)
+            ) {
+                scope.goBack()
+            }
         }
     }
 }

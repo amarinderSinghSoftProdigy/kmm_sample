@@ -54,6 +54,7 @@ internal class AddEmployeeEventDelegate(
                 EmployeeScope.PersonalData(
                     registration = DataSource(
                         UserRegistration1(
+                            type = it.userType.value.serverValue,
                             userType = it.userType.value.serverValue,
                         )
                     ),

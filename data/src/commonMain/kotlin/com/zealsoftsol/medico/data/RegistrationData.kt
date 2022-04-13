@@ -17,6 +17,8 @@ data class PincodeValidation(
 
 @Serializable
 data class UserRegistration1(
+    @SerialName("userType") //to be used only for employee registration
+    val type: String? = null,
     @SerialName("customerType")
     @Required
     val userType: String = "",
@@ -140,6 +142,8 @@ data class UploadResponseData(
 data class SubmitRegistration(
     @SerialName("customerType")
     val userType: String,
+    @SerialName("userType") //to be used only for employee registration
+    val type: String? = null,
     val firstName: String,
     val lastName: String,
     val email: String,
@@ -263,8 +267,9 @@ data class SubmitRegistration(
             userRegistration1: UserRegistration1,
             userRegistration2: UserRegistration2,
             aadhaarCardNo: String
-        )= SubmitRegistration(
-            userType = userRegistration1.userType,
+        ) = SubmitRegistration(
+            userType = "",
+            type = userRegistration1.userType,
             firstName = userRegistration1.firstName,
             lastName = userRegistration1.lastName,
             email = userRegistration1.email,
@@ -279,6 +284,7 @@ data class SubmitRegistration(
             city = userRegistration2.city,
             district = userRegistration2.district,
             state = userRegistration2.state,
+            isSeasonBoy = false,
         )
     }
 }

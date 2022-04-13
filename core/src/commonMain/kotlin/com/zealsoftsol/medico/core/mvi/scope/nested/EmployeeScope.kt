@@ -236,7 +236,9 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
         enum class Fields { AADHAAR_CARD, SHARE_CODE }
     }
 
-    class SuccessEmployee : EmployeeScope("employees")
+    class SuccessEmployee : EmployeeScope("employees"){
+        fun goToMenu() = EventCollector.sendEvent(Event.Transition.Menu)
+    }
 
     class ViewEmployee : EmployeeScope("employees") {
 

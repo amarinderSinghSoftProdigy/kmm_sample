@@ -35,7 +35,7 @@ fun SuccessEmployees(scope: EmployeeScope.SuccessEmployee) {
             text = stringResource(id = R.string.done),
             isEnabled = true
         ) {
-
+            scope.goToMenu()
         }
     }
 }
