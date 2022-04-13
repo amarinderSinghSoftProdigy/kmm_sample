@@ -137,7 +137,6 @@ internal class AddEmployeeEventDelegate(
             }
 
             result.onSuccess {
-                submitFinalData()
                 setScope(
                     EmployeeScope.SuccessEmployee()
                 )
