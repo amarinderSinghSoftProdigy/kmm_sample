@@ -74,6 +74,7 @@ class EventCollector(
     qrCodeScope: NetworkScope.QrCodeStore,
     iocNetworkScope: NetworkScope.IOCStore,
     iocBuyerNetworkScope: NetworkScope.IOCBuyerStore,
+    employeeStore: NetworkScope.EmployeeStore,
     private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
     private val cartRepo: CartRepo,
@@ -182,7 +183,8 @@ class EventCollector(
         ),
         Event.Action.Employee::class to AddEmployeeEventDelegate(
             navigator,
-            userRepo
+            userRepo,
+            employeeStore
         )
     )
 

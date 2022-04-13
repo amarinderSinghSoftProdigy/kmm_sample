@@ -522,7 +522,7 @@ interface NetworkScope {
         ): BodyResponse<HeaderData>
     }
 
-    interface Employee : NetworkScope {
+    interface EmployeeStore : NetworkScope {
         suspend fun submitPersonalDetails(userRegistration1: UserRegistration1): BodyResponse<AddEmployee>
         suspend fun submitAddressDetails(userRegistration2: UserRegistration2): BodyResponse<AddEmployee>
         suspend fun submitAadhaarDetails(aadhaar: String): BodyResponse<AddEmployee>

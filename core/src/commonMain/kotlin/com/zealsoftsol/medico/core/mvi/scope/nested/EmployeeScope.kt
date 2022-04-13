@@ -14,6 +14,7 @@ import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.AadhaarData
+import com.zealsoftsol.medico.data.EmployeeData
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PincodeValidation
@@ -34,7 +35,7 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
 
     val canGoNext: DataSource<Boolean> = DataSource(false)
     protected open fun checkCanGoNext() = Unit
-    val inputProgress: List<Int> = listOfNotNull(1, 2, 3, 4)
+    val inputProgress: List<Int> = listOfNotNull(1, 2, 3)
 
     enum class OptionSelected {
         ADD_EMPLOYEE, VIEW_EMPLOYEE
@@ -203,7 +204,7 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
     sealed class Details(
         titleId: String,
         val registrationStep1: UserRegistration1,
-        internal val registrationStep2: UserRegistration2,
+        val registrationStep2: UserRegistration2,
     ) : EmployeeScope(titleId) {
         abstract val inputFields: List<Fields>
 
@@ -229,14 +230,22 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
             }
 
             override val supportedFileTypes: Array<FileType> = FileType.forAadhaar()
-            override val isSeasonBoy = true
+            override val isSeasonBoy = false
         }
 
         enum class Fields { AADHAAR_CARD, SHARE_CODE }
     }
 
     class SuccessEmployee : EmployeeScope("employees")
+
     class ViewEmployee : EmployeeScope("employees") {
-        val employeeData = DataSource<String?>(null)
+
+        init {
+            EventCollector.sendEvent(Event.Action.Employee.ViewEmployee)
+        }
+
+        val employeeData = DataSource<List<EmployeeData>>(emptyList())
+
+
     }
 }

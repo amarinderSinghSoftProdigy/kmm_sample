@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
+import com.zealsoftsol.medico.data.AddEmployee
 import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoComplete
@@ -107,6 +108,7 @@ import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
 import com.zealsoftsol.medico.data.ValidationResponse
 import com.zealsoftsol.medico.data.VerifyOtpRequest
+import com.zealsoftsol.medico.data.ViewEmployee
 import com.zealsoftsol.medico.data.WhatsappData
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -158,7 +160,8 @@ class NetworkClient(
     NetworkScope.IOCStore,
     NetworkScope.IOCBuyerStore,
     NetworkScope.BottomSheetStore,
-    NetworkScope.QrCodeStore {
+    NetworkScope.QrCodeStore,
+    NetworkScope.EmployeeStore {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -1346,6 +1349,43 @@ class NetworkClient(
             }
         }
 
+    override suspend fun submitPersonalDetails(userRegistration1: UserRegistration1): BodyResponse<AddEmployee> =
+        simpleRequest {
+            client.post("${baseUrl.url}/b2bapp/employee/step1") {
+                withMainToken()
+                jsonBody(userRegistration1)
+            }
+        }
+
+    override suspend fun submitAddressDetails(userRegistration2: UserRegistration2): BodyResponse<AddEmployee> =
+        simpleRequest {
+            client.post("${baseUrl.url}/b2bapp/employee/step2") {
+                withMainToken()
+                jsonBody(userRegistration2)
+            }
+        }
+
+    override suspend fun submitAadhaarDetails(aadhaar: String): BodyResponse<AddEmployee> =
+        simpleRequest {
+            client.post("${baseUrl.url}/b2bapp/employee/step3") {
+                withMainToken()
+                jsonBody(mapOf("aadhaarCardNo" to aadhaar))
+            }
+        }
+
+    override suspend fun submitEmployee(employee: SubmitRegistration): BodyResponse<AddEmployee> =
+        simpleRequest {
+            client.post("${baseUrl.url}/b2bapp/employee/submit") {
+                withMainToken()
+                jsonBody(employee)
+            }
+        }
+
+    override suspend fun getAllEmployees(): BodyResponse<ViewEmployee> =
+        client.get("${baseUrl.url}/b2bapp/employee/all") {
+            withMainToken()
+        }
+
     // Utils
     private inline fun HttpRequestBuilder.withB2bCodeToken(finalToken: String) {
         applyHeader(finalToken)
@@ -1449,7 +1489,6 @@ class NetworkClient(
         STAG("https://staging-api-gateway.medicostores.com"),
         PROD("https://partner-api-gateway.medicostores.com");
     }
-
 }
 
 expect fun addInterceptor(config: HttpClientConfig<HttpClientEngineConfig>)

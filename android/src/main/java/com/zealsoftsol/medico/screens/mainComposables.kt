@@ -208,7 +208,9 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
         scaffoldState = scaffoldState,
         drawerGesturesEnabled = navigation.value != null,
         topBar = {
-            if (childScope.value !is OrderHsnEditScope && childScope.value !is InventoryScope && childScope.value !is IocSellerScope.InvUserListing && childScope.value !is IocBuyerScope.InvUserListing) //don't show top bar for OrderEditHsnScreen and Inventory and IOC listing
+            if (childScope.value !is OrderHsnEditScope && childScope.value !is InventoryScope && childScope.value !is IocSellerScope.InvUserListing && childScope.value !is IocBuyerScope.InvUserListing
+                && childScope.value !is EmployeeScope.SuccessEmployee
+            ) //don't show top bar for OrderEditHsnScreen and Inventory and IOC listing
             {
                 val tabBarInfo = scope.tabBar.flow.collectAsState()
                 TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
@@ -422,7 +424,10 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     is EmployeeScope.SelectUserType -> AddEmployeeScreen(it)
                     is EmployeeScope.PersonalData -> AddEmployeeStepOneScreen(it)
                     is EmployeeScope.AddressData -> AddEmployeeAddressDetailsScreen(it)
-                    is EmployeeScope.Details.Aadhaar -> AddEmployeeAadharInfoScreen(it, scaffoldState)
+                    is EmployeeScope.Details.Aadhaar -> AddEmployeeAadharInfoScreen(
+                        it,
+                        scaffoldState
+                    )
                     is EmployeeScope.ViewEmployee -> ViewEmployees(it)
                     is EmployeeScope.SuccessEmployee -> SuccessEmployees(it)
                 }

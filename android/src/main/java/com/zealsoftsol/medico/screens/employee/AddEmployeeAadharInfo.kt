@@ -23,7 +23,7 @@ fun AddEmployeeAadharInfoScreen(
     PermissionCheckUI(scaffoldState, permissionViewModel)
     BasicAuthSignUpScreenWithButton(
         userType = scope.registrationStep1.userType,
-        progress = 3.0,//0.8,
+        progress = 3.0,
         baseScope = scope,
         buttonText = stringResource(id = R.string.next),
         onButtonClick = { scope.addAadhaar() },

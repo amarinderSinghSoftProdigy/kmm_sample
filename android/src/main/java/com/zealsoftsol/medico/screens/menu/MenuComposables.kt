@@ -275,7 +275,7 @@ fun StockistMenu(scope: MenuScope) {
     AccountContentItem(
         route = Event.Transition.AddEmployee,
         drawableResourceId = R.drawable.ic_customer_care_acc,
-        stringResourceId = R.string.add_employee,
+        stringResourceId = R.string.employee,
         scope = scope
     )
 }
