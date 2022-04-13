@@ -105,13 +105,18 @@ sealed class TabBarInfo {
         fun toggleFilter() = EventCollector.sendEvent(Event.Action.Search.ToggleFilter)
 
         fun searchProduct(input: String, withAutoComplete: Boolean): Boolean {
-            return trimInput(input, search.value) {
-                val event = if (withAutoComplete) {
-                    Event.Action.Search.SearchAutoComplete(it)
-                } else {
-                    Event.Action.Search.SearchInput(isOneOf = false, search = input)
+            return if(input.isNotEmpty()) {
+                trimInput(input, search.value) {
+                    val event = if (withAutoComplete) {
+                        Event.Action.Search.SearchAutoComplete(it)
+                    } else {
+                        Event.Action.Search.SearchInput(isOneOf = false, search = input)
+                    }
+                    EventCollector.sendEvent(event)
                 }
-                EventCollector.sendEvent(event)
+            }else{
+                EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true, search = ""))
+                true
             }
         }
     }
