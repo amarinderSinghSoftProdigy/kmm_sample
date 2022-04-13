@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.network
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.data.AadhaarUpload
+import com.zealsoftsol.medico.data.AddEmployee
 import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoComplete
@@ -90,6 +91,7 @@ import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
 import com.zealsoftsol.medico.data.ValidationResponse
+import com.zealsoftsol.medico.data.ViewEmployee
 import com.zealsoftsol.medico.data.WhatsappData
 
 
@@ -518,6 +520,14 @@ interface NetworkScope {
         suspend fun getDetails(
             unitCode: String,
         ): BodyResponse<HeaderData>
+    }
+
+    interface Employee : NetworkScope {
+        suspend fun submitPersonalDetails(userRegistration1: UserRegistration1): BodyResponse<AddEmployee>
+        suspend fun submitAddressDetails(userRegistration2: UserRegistration2): BodyResponse<AddEmployee>
+        suspend fun submitAadhaarDetails(aadhaar: String): BodyResponse<AddEmployee>
+        suspend fun submitEmployee(employee: SubmitRegistration): BodyResponse<AddEmployee>
+        suspend fun getAllEmployees(): BodyResponse<ViewEmployee>
     }
 
 }

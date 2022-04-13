@@ -172,7 +172,7 @@ data class SubmitRegistration(
     val city: String,
     val district: String,
     val state: String,
-    val ipAddress: String,
+    val ipAddress: String? = null,
     @Required
     val channel: String = "MOBILE",
     @Transient
@@ -257,6 +257,28 @@ data class SubmitRegistration(
             state = userRegistration2.state,
             ipAddress = ipAddress,
             isSeasonBoy = true,
+        )
+
+        fun employee(
+            userRegistration1: UserRegistration1,
+            userRegistration2: UserRegistration2,
+            aadhaarCardNo: String
+        )= SubmitRegistration(
+            userType = userRegistration1.userType,
+            firstName = userRegistration1.firstName,
+            lastName = userRegistration1.lastName,
+            email = userRegistration1.email,
+            phoneNumber = userRegistration1.phoneNumber,
+            password = userRegistration1.password,
+            verifyPassword = userRegistration1.verifyPassword,
+            aadhaarCardNo = aadhaarCardNo,
+            pincode = userRegistration2.pincode,
+            addressLine1 = userRegistration2.addressLine1,
+            location = userRegistration2.location,
+            landmark = userRegistration2.landmark,
+            city = userRegistration2.city,
+            district = userRegistration2.district,
+            state = userRegistration2.state,
         )
     }
 }
