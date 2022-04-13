@@ -2,8 +2,9 @@ package com.zealsoftsol.medico.screens.employee
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -32,9 +33,7 @@ fun ViewEmployees(scope: EmployeeScope.ViewEmployee) {
             .padding(16.dp)
     ) {
         if (employeeData.value.isNotEmpty()) {
-            LazyRow(
-                modifier = Modifier.padding(horizontal = 14.dp)
-            ) {
+            LazyColumn{
                 itemsIndexed(
                     items = employeeData.value,
                     key = { index, _ -> index },
@@ -58,27 +57,27 @@ fun ViewEmployees(scope: EmployeeScope.ViewEmployee) {
 @Composable
 fun EmployeeItem(item: EmployeeData) {
     Surface(modifier = Modifier.padding(10.dp), color = Color.White, elevation = 5.dp) {
-        Text(
-            modifier = Modifier.padding(bottom = 10.dp),
-            text = item.name,
-            color = ConstColors.green,
-            fontSize = 15.sp,
-            fontWeight = FontWeight.W600,
-        )
-        Text(
-            modifier = Modifier.padding(top = 10.dp),
-            text = item.mobileNo,
-            color = ConstColors.gray,
-            fontSize = 15.sp,
-            fontWeight = FontWeight.W600,
-        )
-        Text(
-            modifier = Modifier.padding(top = 10.dp),
-            text = "${item.addressLine},${item.location},${item.cityOrTown},${item.state},${item.pincode}",
-            color = ConstColors.gray,
-            fontSize = 15.sp,
-            fontWeight = FontWeight.W600,
-        )
+        Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+            Text(
+                text = item.name,
+                color = ConstColors.green,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.W600,
+            )
+            Text(
+                modifier = Modifier.padding(top = 8.dp),
+                text = item.mobileNo,
+                color = ConstColors.txtGrey,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.W500,
+            )
+            Text(
+                modifier = Modifier.padding(top = 8.dp),
+                text = "${item.addressLine},${item.location},${item.cityOrTown},${item.state},${item.pincode}",
+                color = ConstColors.txtGrey,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.W500,
+            )
+        }
     }
-
 }
