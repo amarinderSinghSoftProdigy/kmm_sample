@@ -1,17 +1,22 @@
 package com.zealsoftsol.medico.screens.employee
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -33,12 +38,14 @@ fun ViewEmployees(scope: EmployeeScope.ViewEmployee) {
             .padding(16.dp)
     ) {
         if (employeeData.value.isNotEmpty()) {
-            LazyColumn{
+            LazyColumn {
                 itemsIndexed(
                     items = employeeData.value,
                     key = { index, _ -> index },
-                    itemContent = { _, item ->
-                        EmployeeItem(item)
+                    itemContent = { index, item ->
+                        EmployeeItem(item) {
+                            scope.deleteEmployee(item.id, index)
+                        }
                     },
                 )
             }
@@ -55,9 +62,23 @@ fun ViewEmployees(scope: EmployeeScope.ViewEmployee) {
 }
 
 @Composable
-fun EmployeeItem(item: EmployeeData) {
+fun EmployeeItem(item: EmployeeData, onDeleteClick: () -> Unit) {
     Surface(modifier = Modifier.padding(10.dp), color = Color.White, elevation = 5.dp) {
-        Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_delete), contentDescription = null,
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .size(25.dp)
+                    .padding(bottom = 5.dp)
+                    .clickable {
+                        onDeleteClick()
+                    }
+            )
             Text(
                 text = item.name,
                 color = ConstColors.green,

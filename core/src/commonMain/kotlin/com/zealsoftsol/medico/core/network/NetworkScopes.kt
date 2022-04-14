@@ -531,6 +531,7 @@ interface NetworkScope {
         suspend fun submitAadhaarDetails(aadhaar: String): BodyResponse<AddEmployee>
         suspend fun submitEmployee(employee: SubmitEmployeeRegistration): BodyResponse<AddEmployee>
         suspend fun getAllEmployees(): BodyResponse<ViewEmployee>
+        suspend fun deleteEmployee(id: String): BodyResponse<AddEmployee>
     }
 
 }

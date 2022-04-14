@@ -12,6 +12,7 @@ data class ViewEmployee(
 
 @Serializable
 data class EmployeeData(
+    val id: String,
     val userType: String,
     val name: String,
     val mobileNo: String,

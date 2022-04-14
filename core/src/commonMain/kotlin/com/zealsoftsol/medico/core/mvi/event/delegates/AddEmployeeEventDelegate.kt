@@ -29,7 +29,20 @@ internal class AddEmployeeEventDelegate(
             is Event.Action.Employee.MoveToViewEmployee -> moveToEmployeeScreen()
             is Event.Action.Employee.ViewEmployee -> viewEmployee()
             is Event.Action.Employee.UpdatePincode -> updatePincode(event.pincode)
+            is Event.Action.Employee.DeleteEmployee -> deleteEmployee(event.id)
         }
+
+    private suspend fun deleteEmployee(id: String) {
+        navigator.withScope<EmployeeScope.ViewEmployee> {
+            val result = withProgress {
+                employeeRepo.deleteEmployee(id)
+            }
+
+            result.onSuccess { _ ->
+                it.employeeDeleted()
+            }.onError(navigator)
+        }
+    }
 
     private fun moveToEmployeeScreen() {
         navigator.withScope<EmployeeScope.SelectUserType> {

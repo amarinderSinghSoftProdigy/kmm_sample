@@ -240,11 +240,23 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
     class ViewEmployee : EmployeeScope("employees") {
 
         init {
+            getEmployees()
+        }
+
+        private fun getEmployees() {
             EventCollector.sendEvent(Event.Action.Employee.ViewEmployee)
         }
 
         val employeeData = DataSource<List<EmployeeData>>(emptyList())
 
+        fun deleteEmployee(id: String, position: Int) {
+            EventCollector.sendEvent(Event.Action.Employee.DeleteEmployee(id))
+        }
+
+        fun employeeDeleted() {
+            employeeData.value = emptyList()
+            getEmployees()
+        }
 
     }
 }

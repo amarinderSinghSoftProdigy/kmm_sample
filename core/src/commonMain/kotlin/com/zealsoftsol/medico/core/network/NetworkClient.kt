@@ -1389,6 +1389,14 @@ class NetworkClient(
             withMainToken()
         }
 
+    override suspend fun deleteEmployee(id: String): BodyResponse<AddEmployee> =
+        simpleRequest {
+            client.post("${baseUrl.url}/b2bapp/employee/delete") {
+                withMainToken()
+                jsonBody(mapOf("id" to id))
+            }
+        }
+
     // Utils
     private inline fun HttpRequestBuilder.withB2bCodeToken(finalToken: String) {
         applyHeader(finalToken)

@@ -631,6 +631,7 @@ sealed class Event {
             data class UpdatePincode(val pincode: String) : Employee()
             object MoveToViewEmployee : Employee()
             object ViewEmployee : Employee()
+            data class DeleteEmployee(val id: String) : Employee()
 
         }
     }
