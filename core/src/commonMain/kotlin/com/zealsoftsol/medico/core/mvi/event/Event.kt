@@ -23,6 +23,7 @@ import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.DeclineReason
+import com.zealsoftsol.medico.data.EmployeeRegistration
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.HeaderData
@@ -494,7 +495,7 @@ sealed class Event {
                 val search: String? = null,
                 val query: ArrayList<String> = ArrayList(),
                 val status: OfferStatus,
-                ) : Offers()
+            ) : Offers()
 
             data class UpdateOffer(val promotionType: String, val active: Boolean) : Offers()
             data class EditOffer(val promoCode: String, val request: OfferProductRequest) : Offers()
@@ -621,12 +622,13 @@ sealed class Event {
             object ClearScopes : IOCBuyer()
         }
 
-        sealed class Employee: Action(){
+        sealed class Employee : Action() {
             override val typeClazz: KClass<*> = Employee::class
 
             data class SelectUserType(val userType: UserType) : Employee()
-            data class Validate(val userRegistration: UserRegistration) : Employee()
+            data class Validate(val userRegistration: EmployeeRegistration) : Employee()
             data class Aadhaar(val aadhaarData: AadhaarData) : Employee()
+            data class UpdatePincode(val pincode: String) : Employee()
             object MoveToViewEmployee : Employee()
             object ViewEmployee : Employee()
 
@@ -676,7 +678,11 @@ sealed class Event {
             val phoneNumber: String
         ) : Transition()
 
-        data class Inventory(val type: InventoryScope.InventoryType, val manufacturer: String = "") : Transition()
+        data class Inventory(
+            val type: InventoryScope.InventoryType,
+            val manufacturer: String = ""
+        ) : Transition()
+
         object Menu : Transition()
         data class Batches(
             val spid: String,

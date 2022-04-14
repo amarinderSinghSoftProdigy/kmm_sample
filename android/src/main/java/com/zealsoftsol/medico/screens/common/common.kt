@@ -373,9 +373,9 @@ fun <T : WithNotifications> T.showNotificationAlert() {
 
 @Composable
 fun stringResourceByName(name: String): String {
-    return LocalContext.current.runCatching {
+    return if (name.isNotEmpty()) LocalContext.current.runCatching {
         resources.getIdentifier(name, "string", packageName)
-    }.getOrNull()?.let { stringResource(id = it) } ?: name
+    }.getOrNull()?.let { stringResource(id = it) } ?: name else ""
 }
 
 @Composable

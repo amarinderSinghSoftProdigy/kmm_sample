@@ -25,6 +25,8 @@ import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
 import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
+import com.zealsoftsol.medico.data.EmployeeRegistration1
+import com.zealsoftsol.medico.data.EmployeeRegistration2
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.HeaderData
 import com.zealsoftsol.medico.data.HelpData
@@ -75,6 +77,7 @@ import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.SellerUsersData
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.Store
+import com.zealsoftsol.medico.data.SubmitEmployeeRegistration
 import com.zealsoftsol.medico.data.SubmitPaymentRequest
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.SubscribeRequest
@@ -523,10 +526,10 @@ interface NetworkScope {
     }
 
     interface EmployeeStore : NetworkScope {
-        suspend fun submitPersonalDetails(userRegistration1: UserRegistration1): BodyResponse<AddEmployee>
-        suspend fun submitAddressDetails(userRegistration2: UserRegistration2): BodyResponse<AddEmployee>
+        suspend fun submitPersonalDetails(userRegistration1: EmployeeRegistration1): BodyResponse<AddEmployee>
+        suspend fun submitAddressDetails(userRegistration2: EmployeeRegistration2): BodyResponse<AddEmployee>
         suspend fun submitAadhaarDetails(aadhaar: String): BodyResponse<AddEmployee>
-        suspend fun submitEmployee(employee: SubmitRegistration): BodyResponse<AddEmployee>
+        suspend fun submitEmployee(employee: SubmitEmployeeRegistration): BodyResponse<AddEmployee>
         suspend fun getAllEmployees(): BodyResponse<ViewEmployee>
     }
 

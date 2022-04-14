@@ -4,15 +4,16 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
+import com.zealsoftsol.medico.core.mvi.scope.nested.EmployeeAddressComponent
 import com.zealsoftsol.medico.core.mvi.scope.nested.EmployeeScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.data.AadhaarData
-import com.zealsoftsol.medico.data.SubmitRegistration
-import com.zealsoftsol.medico.data.UserRegistration
-import com.zealsoftsol.medico.data.UserRegistration1
-import com.zealsoftsol.medico.data.UserRegistration2
+import com.zealsoftsol.medico.data.EmployeeRegistration
+import com.zealsoftsol.medico.data.EmployeeRegistration1
+import com.zealsoftsol.medico.data.EmployeeRegistration2
+import com.zealsoftsol.medico.data.SubmitEmployeeRegistration
 import com.zealsoftsol.medico.data.UserType
 
 internal class AddEmployeeEventDelegate(
@@ -27,6 +28,7 @@ internal class AddEmployeeEventDelegate(
             is Event.Action.Employee.Aadhaar -> addAadhaar(event.aadhaarData)
             is Event.Action.Employee.MoveToViewEmployee -> moveToEmployeeScreen()
             is Event.Action.Employee.ViewEmployee -> viewEmployee()
+            is Event.Action.Employee.UpdatePincode -> updatePincode(event.pincode)
         }
 
     private fun moveToEmployeeScreen() {
@@ -47,13 +49,31 @@ internal class AddEmployeeEventDelegate(
         }
     }
 
+    private suspend fun updatePincode(pincode: String) {
+        navigator.withScope<EmployeeAddressComponent> {
+            it.registration.value = it.registration.value.copy(pincode = pincode)
+            if (pincode.length == 6) {
+                val result = withProgress { userRepo.getLocationData(pincode) }
+                it.pincodeValidation.value = result.validations
+                result.onSuccess { body ->
+                    it.locationData.value = body
+                    it.registration.value = EmployeeRegistration2(
+                        pincode = pincode,
+                        district = body.district,
+                        state = body.state,
+                    )
+                }.onError(navigator)
+            }
+        }
+    }
+
     private fun moveToPersonalDetailsScreen(userType: UserType) {
         navigator.withScope<EmployeeScope.SelectUserType> {
             it.userType.value = userType
             setScope(
                 EmployeeScope.PersonalData(
                     registration = DataSource(
-                        UserRegistration1(
+                        EmployeeRegistration1(
                             userType = it.userType.value.serverValue,
                         )
                     ),
@@ -66,9 +86,9 @@ internal class AddEmployeeEventDelegate(
     /**
      * send address and personal details of emloyee to server
      */
-    private suspend fun validate(userRegistration: UserRegistration) {
+    private suspend fun validate(userRegistration: EmployeeRegistration) {
         when (userRegistration) {
-            is UserRegistration1 -> navigator.withScope<EmployeeScope.PersonalData> {
+            is EmployeeRegistration1 -> navigator.withScope<EmployeeScope.PersonalData> {
 
                 val result = withProgress {
                     employeeRepo.submitPersonalDetails(userRegistration)
@@ -79,13 +99,13 @@ internal class AddEmployeeEventDelegate(
                         EmployeeScope.AddressData(
                             registrationStep1 = it.registration.value,
                             locationData = DataSource(null),
-                            registration = DataSource(UserRegistration2()),
+                            registration = DataSource(EmployeeRegistration2()),
                         )
                     )
                 }.onError(navigator)
 
             }
-            is UserRegistration2 -> navigator.withScope<EmployeeScope.AddressData> {
+            is EmployeeRegistration2 -> navigator.withScope<EmployeeScope.AddressData> {
                 val result = withProgress {
                     employeeRepo.submitAddressDetails(userRegistration)
                 }
@@ -127,7 +147,7 @@ internal class AddEmployeeEventDelegate(
         navigator.withScope<EmployeeScope.Details.Aadhaar> {
             val result = withProgress {
                 employeeRepo.submitEmployee(
-                    SubmitRegistration.employee(
+                    SubmitEmployeeRegistration.employee(
                         aadhaarCardNo = it.aadhaarData.value.cardNumber,
                         userRegistration1 = it.registrationStep1,
                         userRegistration2 = it.registrationStep2
