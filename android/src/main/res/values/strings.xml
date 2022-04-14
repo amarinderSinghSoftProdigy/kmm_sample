@@ -474,8 +474,12 @@
     <string name="done">Done</string>
     <string name="employee">Employee</string>
     <string name="no_employee">No Employee Found!</string>
+    <string name="add_partner">Add Partner</string>
+    <string name="view_details">View Details</string>
+    <string name="more_details">More Details</string>
+    <string name="delete">Delete</string>
 
-    <!-- Termrs and Cond -->
+    <!-- Terms and Cond -->
 
     <string name="tandc_line_1">Terms &amp; Conditions</string>
     <string name="tandc_line_2">Please Read These Terms Carefully Before Using this Service</string>

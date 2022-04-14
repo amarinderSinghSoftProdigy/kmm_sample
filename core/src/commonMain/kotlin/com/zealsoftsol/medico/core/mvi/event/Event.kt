@@ -629,7 +629,6 @@ sealed class Event {
             data class Validate(val userRegistration: EmployeeRegistration) : Employee()
             data class Aadhaar(val aadhaarData: AadhaarData) : Employee()
             data class UpdatePincode(val pincode: String) : Employee()
-            object MoveToViewEmployee : Employee()
             object ViewEmployee : Employee()
             data class DeleteEmployee(val id: String) : Employee()
 

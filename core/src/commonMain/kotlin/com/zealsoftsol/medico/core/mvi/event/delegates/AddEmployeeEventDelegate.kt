@@ -26,14 +26,13 @@ internal class AddEmployeeEventDelegate(
             is Event.Action.Employee.SelectUserType -> moveToPersonalDetailsScreen(event.userType)
             is Event.Action.Employee.Validate -> validate(event.userRegistration)
             is Event.Action.Employee.Aadhaar -> addAadhaar(event.aadhaarData)
-            is Event.Action.Employee.MoveToViewEmployee -> moveToEmployeeScreen()
             is Event.Action.Employee.ViewEmployee -> viewEmployee()
             is Event.Action.Employee.UpdatePincode -> updatePincode(event.pincode)
             is Event.Action.Employee.DeleteEmployee -> deleteEmployee(event.id)
         }
 
     private suspend fun deleteEmployee(id: String) {
-        navigator.withScope<EmployeeScope.ViewEmployee> {
+        navigator.withScope<EmployeeScope.SelectUserType> {
             val result = withProgress {
                 employeeRepo.deleteEmployee(id)
             }
@@ -44,14 +43,8 @@ internal class AddEmployeeEventDelegate(
         }
     }
 
-    private fun moveToEmployeeScreen() {
-        navigator.withScope<EmployeeScope.SelectUserType> {
-            setScope(EmployeeScope.ViewEmployee())
-        }
-    }
-
     private suspend fun viewEmployee() {
-        navigator.withScope<EmployeeScope.ViewEmployee> {
+        navigator.withScope<EmployeeScope.SelectUserType> {
             val result = withProgress {
                 employeeRepo.getAllEmployees()
             }

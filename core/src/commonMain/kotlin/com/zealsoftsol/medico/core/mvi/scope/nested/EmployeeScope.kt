@@ -38,7 +38,7 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
     val inputProgress: List<Int> = listOfNotNull(1, 2, 3)
 
     enum class OptionSelected {
-        ADD_EMPLOYEE, VIEW_EMPLOYEE
+        ADD_EMPLOYEE, ADD_PARTNER
     }
 
     class SelectUserType private constructor(
@@ -46,6 +46,20 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
     ) : EmployeeScope("user_type") {
         init {
             canGoNext.value = true
+            EventCollector.sendEvent(Event.Action.Employee.ViewEmployee)
+        }
+
+        private var clickedPosition = 0
+
+        val employeeData = DataSource<List<EmployeeData>>(emptyList())
+
+        fun deleteEmployee(id: String, position: Int) {
+            this.clickedPosition = position
+            EventCollector.sendEvent(Event.Action.Employee.DeleteEmployee(id))
+        }
+
+        fun employeeDeleted() {
+            employeeData.value.toMutableList().removeAt(clickedPosition)
         }
 
         fun chooseUserType(userType: UserType) {
@@ -57,11 +71,6 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
          */
         fun goToPersonalData() =
             EventCollector.sendEvent(Event.Action.Employee.SelectUserType(userType.value))
-
-        /**
-         * Transition to [ViewEmployee]
-         */
-        fun goToViewEmployee() = EventCollector.sendEvent(Event.Action.Employee.MoveToViewEmployee)
 
         companion object {
             fun get() = TabBarScope(
@@ -235,29 +244,6 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
 
     class SuccessEmployee : EmployeeScope("employees") {
         fun goToMenu() = EventCollector.sendEvent(Event.Transition.Menu)
-    }
-
-    class ViewEmployee : EmployeeScope("employees") {
-
-        init {
-            getEmployees()
-        }
-
-        private fun getEmployees() {
-            EventCollector.sendEvent(Event.Action.Employee.ViewEmployee)
-        }
-
-        val employeeData = DataSource<List<EmployeeData>>(emptyList())
-
-        fun deleteEmployee(id: String, position: Int) {
-            EventCollector.sendEvent(Event.Action.Employee.DeleteEmployee(id))
-        }
-
-        fun employeeDeleted() {
-            employeeData.value = emptyList()
-            getEmployees()
-        }
-
     }
 }
 
