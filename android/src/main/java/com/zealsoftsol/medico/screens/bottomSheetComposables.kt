@@ -83,6 +83,7 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.density
 import com.zealsoftsol.medico.core.extensions.screenHeight
 import com.zealsoftsol.medico.core.extensions.screenWidth
+import com.zealsoftsol.medico.core.interop.Time
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
@@ -2004,7 +2005,11 @@ private fun PreviewItemBottomSheet(
                     }
                     Space(4.dp)
                     headerData.mobileNumber.let {
-                        Row {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
                             ClickableText(
                                 text = AnnotatedString(it),
                                 style = TextStyle(
@@ -2014,6 +2019,14 @@ private fun PreviewItemBottomSheet(
                                 ),
                                 onClick = { activity.openDialer(headerData.mobileNumber) },
                             )
+                            if (Time.now >= headerData.dlExpiryDate.value) {
+                                Text(
+                                    text = stringResource(id = R.string.expired).uppercase(),
+                                    fontSize = 15.sp,
+                                    color = ConstColors.red,
+                                    fontWeight = FontWeight.W600
+                                )
+                            }
                         }
                     }
                     if (isForSeasonBoy) {
