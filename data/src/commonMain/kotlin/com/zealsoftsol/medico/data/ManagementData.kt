@@ -42,6 +42,7 @@ data class SubscriptionData(
     val paymentMethod: PaymentMethod,
     val noOfCreditDays: Int,
     val orders: Int,
+    val notificationId : String = ""
 )
 
 @Serializable

@@ -2973,7 +2973,7 @@ private fun NonSeasonBoyPreviewItem(entityInfo: HeaderData, onSubscribe: (() -> 
                     Row {
                         BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                             Box(modifier = Modifier.width(maxWidth / 2)) {
-                                entityInfo.flExpiryDate?.let {
+                                entityInfo.dlExpiryDate?.let {
                                     DataWithLabel(
                                         label = R.string.expiry,
                                         data = it.formatted, size = 12.sp
@@ -2987,7 +2987,7 @@ private fun NonSeasonBoyPreviewItem(entityInfo: HeaderData, onSubscribe: (() -> 
                                 contentAlignment = Alignment.BottomEnd
                             ) {
 
-                                entityInfo.flExpiresIn?.let {
+                                entityInfo.dlExpiresIn?.let {
                                     DataWithLabel(
                                         label = R.string.expires_in,
                                         data = it,
