@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.nested.EmployeeAddressComponent
 import com.zealsoftsol.medico.core.mvi.scope.nested.EmployeeScope
@@ -29,10 +30,8 @@ internal class AddEmployeeEventDelegate(
             is Event.Action.Employee.ViewEmployee -> viewEmployee()
             is Event.Action.Employee.UpdatePincode -> updatePincode(event.pincode)
             is Event.Action.Employee.DeleteEmployee -> deleteEmployee(event.id)
-            is Event.Action.Employee.Preview -> previewUser(
-                event.userRegistration1,
-                event.userRegistration2
-            )
+            is Event.Action.Employee.SubmitOtp -> submitOtp()
+            is Event.Action.Employee.SubmitFinalData -> submitFinalData()
         }
 
     private fun previewUser(
@@ -151,9 +150,8 @@ internal class AddEmployeeEventDelegate(
                 employeeRepo.submitAadhaarDetails(aadhaarData.cardNumber)
             }
 
-            result.onSuccess {
-                submitFinalData()
-
+            result.onSuccess { _ ->
+                previewUser(it.registrationStep1, it.registrationStep2)
             }.onError(navigator)
             it.aadhaarData.value = aadhaarData
         }
@@ -181,4 +179,13 @@ internal class AddEmployeeEventDelegate(
             }.onError(navigator)
         }
     }
+
+    private fun submitOtp() {
+        navigator.withScope<EmployeeScope.PreviewDetails> {
+            startOtp(it.registrationStep1.phoneNumber)
+        }
+    }
+
+    private inline fun startOtp(phoneNumber: String) =
+        EventCollector.sendEvent(Event.Action.Otp.Send(phoneNumber))
 }

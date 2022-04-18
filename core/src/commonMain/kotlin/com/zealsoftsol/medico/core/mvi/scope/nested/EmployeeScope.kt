@@ -227,10 +227,6 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
                 Fields.SHARE_CODE,
             )
 
-            fun previewDetails(){
-                EventCollector.sendEvent(Event.Action.Employee.Preview(registrationStep1, registrationStep2))
-            }
-
             fun addAadhaar() {
                 EventCollector.sendEvent(Event.Action.Employee.Aadhaar(aadhaarData.value))
             }
@@ -259,10 +255,7 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
             canGoNext.value = true
         }
 
-        fun previewImage(item: String) =
-            EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(item, type = "type"))
-
-        fun submit() = EventCollector.sendEvent(Event.Action.Registration.Submit)
+        fun submit() = EventCollector.sendEvent(Event.Action.Employee.SubmitOtp)
     }
 }
 

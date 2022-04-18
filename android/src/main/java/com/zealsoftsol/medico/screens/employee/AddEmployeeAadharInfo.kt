@@ -34,7 +34,7 @@ fun AddEmployeeAadharInfoScreen(
         progress = 3.0,
         baseScope = scope,
         buttonText = stringResource(id = R.string.next),
-        onButtonClick = { scope.previewDetails() },
+        onButtonClick = { scope.addAadhaar() },
         body = {
             Column {
                 val tradeCheck = scope.isVerified.flow.collectAsState()
@@ -110,7 +110,6 @@ fun EmployeePreview(scope: EmployeeScope.PreviewDetails) {
                 TextLabel(scope.registrationStep1.email, R.drawable.ic_email)
                 TextLabel(scope.registrationStep1.phoneNumber, R.drawable.ic_call)
                 TextLabel(scope.registrationStep1.password, R.drawable.ic_verify_password)
-                //TextLabel(scope.registrationStep1.verifyPassword, R.drawable.ic_verify_password)
                 Space(dp = 4.dp)
                 Text(
                     text = stringResource(id = R.string.address_info),
