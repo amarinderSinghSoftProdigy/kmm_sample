@@ -249,6 +249,8 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
     class PreviewDetails(
         val registrationStep1: EmployeeRegistration1,
         val registrationStep2: EmployeeRegistration2,
+        val aadharNumber: String,
+
     ) : EmployeeScope("preview"), CommonScope.PhoneVerificationEntryPoint {
 
         init {

@@ -36,10 +36,11 @@ internal class AddEmployeeEventDelegate(
 
     private fun previewUser(
         userRegistration1: EmployeeRegistration1,
-        userRegistration2: EmployeeRegistration2
+        userRegistration2: EmployeeRegistration2,
+        cardNumber: String
     ) {
         navigator.withScope<EmployeeScope.Details.Aadhaar> {
-            setScope(EmployeeScope.PreviewDetails(userRegistration1, userRegistration2))
+            setScope(EmployeeScope.PreviewDetails(userRegistration1, userRegistration2, cardNumber))
         }
     }
 
@@ -151,7 +152,11 @@ internal class AddEmployeeEventDelegate(
             }
 
             result.onSuccess { _ ->
-                previewUser(it.registrationStep1, it.registrationStep2)
+                previewUser(
+                    it.registrationStep1,
+                    it.registrationStep2,
+                    it.aadhaarData.value.cardNumber
+                )
             }.onError(navigator)
             it.aadhaarData.value = aadhaarData
         }
@@ -161,11 +166,11 @@ internal class AddEmployeeEventDelegate(
      * send all details of employee to server
      */
     private suspend fun submitFinalData() {
-        navigator.withScope<EmployeeScope.Details.Aadhaar> {
+        navigator.withScope<EmployeeScope.PreviewDetails> {
             val result = withProgress {
                 employeeRepo.submitEmployee(
                     SubmitEmployeeRegistration.employee(
-                        aadhaarCardNo = it.aadhaarData.value.cardNumber,
+                        aadhaarCardNo = it.aadharNumber,
                         userRegistration1 = it.registrationStep1,
                         userRegistration2 = it.registrationStep2
                     )
