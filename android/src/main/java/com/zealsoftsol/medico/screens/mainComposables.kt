@@ -135,6 +135,7 @@ import com.zealsoftsol.medico.screens.employee.AddEmployeeAadharInfoScreen
 import com.zealsoftsol.medico.screens.employee.AddEmployeeAddressDetailsScreen
 import com.zealsoftsol.medico.screens.employee.AddEmployeeScreen
 import com.zealsoftsol.medico.screens.employee.AddEmployeeStepOneScreen
+import com.zealsoftsol.medico.screens.employee.EmployeePreview
 import com.zealsoftsol.medico.screens.employee.SuccessEmployees
 import com.zealsoftsol.medico.screens.help.HelpScreens
 import com.zealsoftsol.medico.screens.instore.InStoreAddUserScreen
@@ -428,6 +429,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                         scaffoldState
                     )
                     is EmployeeScope.SuccessEmployee -> SuccessEmployees(it)
+                    is EmployeeScope.PreviewDetails -> EmployeePreview(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }

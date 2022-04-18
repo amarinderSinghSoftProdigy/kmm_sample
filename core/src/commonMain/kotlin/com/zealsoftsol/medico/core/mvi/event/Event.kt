@@ -24,6 +24,8 @@ import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.DeclineReason
 import com.zealsoftsol.medico.data.EmployeeRegistration
+import com.zealsoftsol.medico.data.EmployeeRegistration1
+import com.zealsoftsol.medico.data.EmployeeRegistration2
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.HeaderData
@@ -631,7 +633,10 @@ sealed class Event {
             data class UpdatePincode(val pincode: String) : Employee()
             object ViewEmployee : Employee()
             data class DeleteEmployee(val id: String) : Employee()
-
+            data class Preview(
+                val userRegistration1: EmployeeRegistration1,
+                val userRegistration2: EmployeeRegistration2
+            ) : Employee()
         }
     }
 

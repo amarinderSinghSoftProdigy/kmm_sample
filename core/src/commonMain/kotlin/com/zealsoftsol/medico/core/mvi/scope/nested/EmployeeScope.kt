@@ -35,7 +35,7 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
 
     val canGoNext: DataSource<Boolean> = DataSource(false)
     protected open fun checkCanGoNext() = Unit
-    val inputProgress: List<Int> = listOfNotNull(1, 2, 3)
+    val inputProgress: List<Int> = listOfNotNull(1, 2, 3, 4)
 
     enum class OptionSelected {
         ADD_EMPLOYEE, ADD_PARTNER
@@ -227,6 +227,10 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
                 Fields.SHARE_CODE,
             )
 
+            fun previewDetails(){
+                EventCollector.sendEvent(Event.Action.Employee.Preview(registrationStep1, registrationStep2))
+            }
+
             fun addAadhaar() {
                 EventCollector.sendEvent(Event.Action.Employee.Aadhaar(aadhaarData.value))
             }
@@ -244,6 +248,21 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
 
     class SuccessEmployee : EmployeeScope("employees") {
         fun goToMenu() = EventCollector.sendEvent(Event.Transition.Menu)
+    }
+
+    class PreviewDetails(
+        val registrationStep1: EmployeeRegistration1,
+        val registrationStep2: EmployeeRegistration2,
+    ) : EmployeeScope("preview"), CommonScope.PhoneVerificationEntryPoint {
+
+        init {
+            canGoNext.value = true
+        }
+
+        fun previewImage(item: String) =
+            EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(item, type = "type"))
+
+        fun submit() = EventCollector.sendEvent(Event.Action.Registration.Submit)
     }
 }
 

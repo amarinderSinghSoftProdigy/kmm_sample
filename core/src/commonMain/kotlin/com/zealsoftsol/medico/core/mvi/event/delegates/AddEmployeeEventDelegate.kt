@@ -29,7 +29,20 @@ internal class AddEmployeeEventDelegate(
             is Event.Action.Employee.ViewEmployee -> viewEmployee()
             is Event.Action.Employee.UpdatePincode -> updatePincode(event.pincode)
             is Event.Action.Employee.DeleteEmployee -> deleteEmployee(event.id)
+            is Event.Action.Employee.Preview -> previewUser(
+                event.userRegistration1,
+                event.userRegistration2
+            )
         }
+
+    private fun previewUser(
+        userRegistration1: EmployeeRegistration1,
+        userRegistration2: EmployeeRegistration2
+    ) {
+        navigator.withScope<EmployeeScope.Details.Aadhaar> {
+            setScope(EmployeeScope.PreviewDetails(userRegistration1, userRegistration2))
+        }
+    }
 
     private suspend fun deleteEmployee(id: String) {
         navigator.withScope<EmployeeScope.SelectUserType> {
