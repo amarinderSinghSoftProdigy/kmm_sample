@@ -2,6 +2,11 @@ package com.zealsoftsol.medico.screens.employee
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -9,6 +14,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,8 +27,10 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -82,7 +90,7 @@ fun AddEmployeeScreen(scope: EmployeeScope.SelectUserType) {
                     icon = R.drawable.ic_add_employee,
                     isSelected = optionSelected.value != null && optionSelected.value == EmployeeScope.OptionSelected.ADD_PARTNER
                 ) {
-                    scope.chooseUserType(UserType.EMPLOYEE) //todo change to partner
+                    scope.chooseUserType(UserType.PARTNER)
                     optionSelected.value = EmployeeScope.OptionSelected.ADD_PARTNER
                 }
             }
@@ -94,7 +102,7 @@ fun AddEmployeeScreen(scope: EmployeeScope.SelectUserType) {
             )
             Space(dp = 10.dp)
             if (employeeData.value.isNotEmpty()) {
-                LazyColumn {
+                LazyColumn(contentPadding = PaddingValues(3.dp)) {
                     itemsIndexed(
                         items = employeeData.value,
                         key = { index, _ -> index },
@@ -126,8 +134,10 @@ fun AddEmployeeScreen(scope: EmployeeScope.SelectUserType) {
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun EmployeeItem(activity: MainActivity, item: EmployeeData, onDeleteClick: () -> Unit) {
+    var visible by remember { mutableStateOf(true) }
     Surface(
         modifier = Modifier.padding(horizontal = 10.dp),
         color = Color.White,
@@ -177,23 +187,39 @@ fun EmployeeItem(activity: MainActivity, item: EmployeeData, onDeleteClick: () -
                     fontWeight = FontWeight.W500,
                 )
                 Text(
-                    modifier = Modifier.padding(top = 5.dp),
+                    modifier = Modifier.padding(top = 5.dp).clickable{
+                        visible = !visible
+                    },
                     text = stringResource(id = R.string.more_details),
                     color = MaterialTheme.colors.background,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.W500,
                 )
             }
-            Text(
-                modifier = Modifier.padding(top = 5.dp),
-                text = "${item.addressLine},${item.location},${item.cityOrTown},${item.state},${item.pincode}",
-                color = ConstColors.txtGrey,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.W500,
-            )
-            Space(10.dp)
-            MedicoButton(text = stringResource(id = R.string.delete), isEnabled = true) {
-                onDeleteClick()
+            AnimatedVisibility(
+                visible = visible,
+                enter = fadeIn(
+                    // Overwrites the initial value of alpha to 0.4f for fade in, 0 by default
+                    initialAlpha = 0.4f
+                ),
+                exit = fadeOut(
+                    // Overwrites the default animation with tween
+                    animationSpec = tween(durationMillis = 250)
+                )
+            ){
+                Column {
+                    Text(
+                        modifier = Modifier.padding(top = 5.dp),
+                        text = "${item.addressLine},${item.location},${item.cityOrTown},${item.state},${item.pincode}",
+                        color = ConstColors.txtGrey,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.W500,
+                    )
+                    Space(10.dp)
+                    MedicoButton(text = stringResource(id = R.string.delete), isEnabled = true) {
+                        onDeleteClick()
+                    }
+                }
             }
         }
     }

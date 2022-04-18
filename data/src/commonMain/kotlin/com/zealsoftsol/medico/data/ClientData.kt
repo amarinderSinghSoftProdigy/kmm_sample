@@ -16,7 +16,8 @@ enum class UserType(
     RETAILER("RETAILER", "retailer"),
     SEASON_BOY("SEASON_BOY", "seasonboy"),
     HOSPITAL("HOSPITAL", "hospital"),
-    EMPLOYEE("EMPLOYEE", "employee");
+    EMPLOYEE("EMPLOYEE", "employee"),
+    PARTNER("PARTNER", "partner");
 
     val stringId: String
         get() = serverValue.lowercase()

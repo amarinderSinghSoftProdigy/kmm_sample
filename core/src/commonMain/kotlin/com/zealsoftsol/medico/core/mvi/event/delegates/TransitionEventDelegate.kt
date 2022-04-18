@@ -117,6 +117,7 @@ internal class TransitionEventDelegate(
                         UserType.HOSPITAL -> ManagementScope.User.Hospital()
                         UserType.SEASON_BOY -> ManagementScope.User.SeasonBoy()
                         UserType.EMPLOYEE -> EmployeeScope.SelectUserType.get()
+                        UserType.PARTNER -> EmployeeScope.SelectUserType.get()
                     }
                 )
                 is Event.Transition.RequestCreateRetailer -> setScope(
