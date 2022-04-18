@@ -106,6 +106,7 @@ import com.zealsoftsol.medico.data.StockInfo
 import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.data.TaxInfo
 import com.zealsoftsol.medico.data.TaxType
+import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.CoilImageZoom
 import com.zealsoftsol.medico.screens.common.DataWithLabel
@@ -3144,7 +3145,7 @@ private fun NonSeasonBoyPreviewItem(
         }
     }
 
-    if(entityInfo.notificationId.isNotEmpty()){
+    if(bs.userType == UserType.STOCKIST && bs.canConnect && entityInfo.subscriptionData?.notificationId?.isNotEmpty() == true){
         Surface(
             modifier = Modifier
                 .fillMaxWidth()

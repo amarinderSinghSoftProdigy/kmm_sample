@@ -33,6 +33,7 @@ import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.TaxInfo
 import com.zealsoftsol.medico.data.UpdateInvoiceRequest
 import com.zealsoftsol.medico.data.UserRegistration1
+import com.zealsoftsol.medico.data.UserType
 
 sealed class BottomSheet {
 
@@ -163,7 +164,9 @@ sealed class BottomSheet {
         val headerData: HeaderData,
         val isSeasonBoy: Boolean,
         val canSubscribe: Boolean,
-        val connectingStockistUnitCode: String
+        val connectingStockistUnitCode: String,
+        val userType: UserType,
+        val canConnect:Boolean = false
     ) : BottomSheet() {
 
         fun subscribe() =
