@@ -19,9 +19,11 @@ import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.HeaderData
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
+import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderTaxInfo
+import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.ProductsData
 import com.zealsoftsol.medico.data.PromotionType
@@ -165,7 +167,35 @@ sealed class BottomSheet {
     ) : BottomSheet() {
 
         fun subscribe() =
-            EventCollector.sendEvent(Event.Action.Management.RequestSubscribe(headerData, connectingStockistUnitCode))
+            EventCollector.sendEvent(
+                Event.Action.Management.RequestSubscribe(
+                    headerData,
+                    connectingStockistUnitCode
+                )
+            )
+
+        val paymentMethod: DataSource<PaymentMethod> =
+            DataSource(headerData.subscriptionData?.paymentMethod ?: PaymentMethod.CREDIT)
+        val creditDays: DataSource<String> =
+            DataSource(headerData.subscriptionData?.noOfCreditDays.toString())
+        val discount: DataSource<String> = DataSource("0")
+
+        fun changePaymentMethod(paymentMethod: PaymentMethod) {
+            this.paymentMethod.value = paymentMethod
+            if (paymentMethod == PaymentMethod.CASH)
+                creditDays.value = "0"
+        }
+
+        fun changeCreditDays(days: String) {
+            creditDays.value = days
+        }
+
+        fun changeDiscountRate(rate: String) {
+            discount.value = rate
+        }
+
+        fun sendRequest(action: NotificationAction) =
+            {}
     }
 
     class UpdateOfferStatus(

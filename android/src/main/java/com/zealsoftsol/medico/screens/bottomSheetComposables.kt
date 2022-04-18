@@ -37,10 +37,12 @@ import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
 import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.CameraAlt
@@ -94,8 +96,10 @@ import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.HeaderData
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
+import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderTaxInfo
+import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.StockInfo
@@ -105,6 +109,7 @@ import com.zealsoftsol.medico.data.TaxType
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.CoilImageZoom
 import com.zealsoftsol.medico.screens.common.DataWithLabel
+import com.zealsoftsol.medico.screens.common.Dropdown
 import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.EditText
 import com.zealsoftsol.medico.screens.common.FoldableItem
@@ -192,6 +197,7 @@ fun Scope.Host.showBottomSheet(
                     { bs.subscribe() }
                 } else null,
                 onDismiss = { dismissBottomSheet() },
+                bs,
             )
             is BottomSheet.UpdateOfferStatus -> UpdateOfferItemBottomSheet(
                 info = bs.info,
@@ -1928,6 +1934,7 @@ private fun PreviewItemBottomSheet(
     isForSeasonBoy: Boolean,
     onSubscribe: (() -> Unit)?,
     onDismiss: () -> Unit,
+    bs: BottomSheet.PreviewManagementItem,
 ) {
     val activity = LocalContext.current as MainActivity
     BaseBottomSheet(onDismiss) {
@@ -1940,6 +1947,7 @@ private fun PreviewItemBottomSheet(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomEnd)
+                    .verticalScroll(rememberScrollState())
             ) {
                 Box(
                     modifier = Modifier
@@ -2033,7 +2041,7 @@ private fun PreviewItemBottomSheet(
                         Space(8.dp)
                         SeasonBoyPreviewItem(headerData)
                     } else {
-                        NonSeasonBoyPreviewItem(headerData, onSubscribe)
+                        NonSeasonBoyPreviewItem(headerData, onSubscribe, bs)
                     }
                 }
             }
@@ -2798,8 +2806,13 @@ private fun SeasonBoyPreviewItem(entityInfo: HeaderData) {
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun NonSeasonBoyPreviewItem(entityInfo: HeaderData, onSubscribe: (() -> Unit)?) {
+private fun NonSeasonBoyPreviewItem(
+    entityInfo: HeaderData,
+    onSubscribe: (() -> Unit)?,
+    bs: BottomSheet.PreviewManagementItem
+) {
     Space(8.dp)
     Surface(
         modifier = Modifier
@@ -3010,6 +3023,40 @@ private fun NonSeasonBoyPreviewItem(entityInfo: HeaderData, onSubscribe: (() -> 
                             }
                         }
                     }
+                    Space(4.dp)
+                    Divider(thickness = 0.3.dp)
+                    Space(4.dp)
+                    /*entityInfo.fl?.let {
+                        DataWithLabel(label = R.string.food_license_number, data = it, size = 12.sp)
+                    }
+                    Space(4.dp)*/
+                    Row {
+                        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                            Box(modifier = Modifier.width(maxWidth / 2)) {
+                                entityInfo.flExpiryDate?.let {
+                                    DataWithLabel(
+                                        label = R.string.food_licence_expiry,
+                                        data = it.formatted, size = 12.sp
+                                    )
+                                }
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .width(maxWidth / 2)
+                                    .align(Alignment.BottomEnd),
+                                contentAlignment = Alignment.BottomEnd
+                            ) {
+
+                                entityInfo.flExpiresIn?.let {
+                                    DataWithLabel(
+                                        label = R.string.expires_in,
+                                        data = it,
+                                        size = 12.sp
+                                    )
+                                }
+                            }
+                        }
+                    }
 
                 }
                 entityInfo.seasonBoyRetailerData != null -> entityInfo.seasonBoyRetailerData?.let { data ->
@@ -3092,6 +3139,135 @@ private fun NonSeasonBoyPreviewItem(entityInfo: HeaderData, onSubscribe: (() -> 
                         }
                     }
                 }
+            }
+
+        }
+    }
+
+    if(entityInfo.notificationId.isNotEmpty()){
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            shape = MaterialTheme.shapes.medium,
+            color = Color.White,
+            border = BorderStroke(2.dp, ConstColors.separator)
+        ) {
+            val paymentMethod = bs.paymentMethod.flow.collectAsState()
+            val creditDays = bs.creditDays.flow.collectAsState()
+            val discount = bs.discount.flow.collectAsState()
+
+            Column(modifier = Modifier.padding(all = 12.dp)) {
+                Surface(
+                    modifier = Modifier
+                        .border(
+                            1.dp,
+                            Color.White,
+                            RoundedCornerShape(4.dp)
+                        )
+                        .height(50.dp),
+                    elevation = 3.dp
+                ) {
+                    Dropdown(
+                        rememberChooseKey = this,
+                        value = paymentMethod.value.serverValue,
+                        hint = "",
+                        dropDownItems = PaymentMethod.values().map { it.serverValue },
+                        readOnly = false,
+                        onSelected = {
+                            val method = when (it) {
+                                PaymentMethod.CREDIT.serverValue -> PaymentMethod.CREDIT
+                                PaymentMethod.CASH.serverValue -> PaymentMethod.CASH
+                                else -> throw UnsupportedOperationException("unknown payment method")
+                            }
+                            bs.changePaymentMethod(method)
+                        }
+                    )
+                }
+                Space(8.dp)
+                if (paymentMethod.value == PaymentMethod.CREDIT) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        DataWithLabel(R.string.credit_days, "")
+                        BoxWithConstraints { Spacer(Modifier.width(maxWidth - 100.dp)) }
+                        OutlinedTextField(
+                            modifier = Modifier.height(50.dp),
+                            value = creditDays.value,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                focusedBorderColor = ConstColors.lightBlue,
+                                unfocusedBorderColor = ConstColors.gray.copy(1f),
+                            ),
+                            singleLine = true,
+                            maxLines = 1,
+                            readOnly = false,
+                            onValueChange = {
+                                if (it.isEmpty() || it.toIntOrNull() != null) {
+                                    bs.changeCreditDays(it)
+                                }
+                            },
+                        )
+                    }
+                }
+                Space(8.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    DataWithLabel(R.string.discount_rate, "")
+                    BoxWithConstraints { Spacer(Modifier.width(maxWidth - 100.dp)) }
+                    OutlinedTextField(
+                        modifier = Modifier.height(50.dp),
+                        value = discount.value,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = ConstColors.lightBlue,
+                            unfocusedBorderColor = ConstColors.gray.copy(1f),
+                        ),
+                        maxLines = 1,
+                        singleLine = true,
+                        readOnly = false,
+                        onValueChange = {
+                            if (it.isEmpty() || it.toDoubleOrNull() != null) {
+                                bs.changeDiscountRate(it)
+                            }
+                        },
+                    )
+                }
+                Space(10.dp)
+                Row(modifier = Modifier.fillMaxSize()) {
+
+                    MedicoButton(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(10.dp)
+                            .height(40.dp),
+                        text = stringResource(id = R.string.accept),
+                        onClick = {
+                            bs.sendRequest(NotificationAction.ACCEPT)
+                        },
+                        contentColor = Color.White,
+                        isEnabled = true,
+                    )
+
+                    MedicoButton(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(10.dp)
+                            .height(40.dp),
+                        text = stringResource(id = R.string.decline),
+                        color = ConstColors.lightGrey,
+                        onClick = {
+                            bs.sendRequest(NotificationAction.DECLINE)
+                        },
+                        isEnabled = true
+                    )
+                }
+
             }
         }
     }
