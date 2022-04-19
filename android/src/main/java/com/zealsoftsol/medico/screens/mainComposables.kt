@@ -1219,7 +1219,10 @@ fun BottomNavigationBar(items: List<BottomNavigationItem>?, height: Int = 56) {
                             .weight(1f)
                             .height(48.dp)
                             .clickable {
-                                EventCollector.sendEvent(item.route)
+                                if (item.route != null)
+                                    EventCollector.sendEvent(item.route!!)
+                                else
+                                    EventCollector.sendEvent(item.action!!)
                             },
                         contentAlignment = Alignment.Center
                     ) {
@@ -1255,7 +1258,7 @@ fun BottomNavigationBar(items: List<BottomNavigationItem>?, height: Int = 56) {
  * bottom nav items , icons and their selected state
  */
 sealed class BottomNavigationItem(
-    var route: Event.Transition,
+    var route: Event.Transition?,
     var unSelectedIcon: Int,
     var selectedIcon: Int,
     var selected: MutableState<Boolean>,
@@ -1338,7 +1341,7 @@ sealed class BottomNavigationItem(
 
     object Logout :
         BottomNavigationItem(
-            Event.Transition.IOCBuyer,
+            null,
             R.drawable.ic_logout,
             R.drawable.ic_logout,
             mutableStateOf(false),

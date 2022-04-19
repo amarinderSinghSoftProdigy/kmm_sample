@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreSellerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
 import com.zealsoftsol.medico.core.mvi.withProgress
@@ -19,6 +20,7 @@ import com.zealsoftsol.medico.core.repository.getUserDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSourceV2
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.repository.requireUserOld
+import com.zealsoftsol.medico.data.UserType
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.coroutines.coroutineContext
@@ -56,25 +58,30 @@ internal class AuthEventDelegate(
                             userRepo.sendFirebaseToken()
                             //userRepo.loadConfig()
                             //notificationRepo.loadUnreadMessagesFromServer()
-                            cartRepo.loadCartFromServer(userRepo.requireUser().unitCode)
+                            if (it.customerType != UserType.EMPLOYEE_STOCKIST.serverValue)
+                                cartRepo.loadCartFromServer(userRepo.requireUser().unitCode)
                         }
                         dropScope(Navigator.DropStrategy.All, updateDataSource = false)
                         val user = userRepo.requireUser()
                         setScope(
-                            if (user.isActivated)
-                                DashboardScope.get(
-                                    user = user,
-                                    userDataSource = userRepo.getUserDataSourceV2(),
-                                    dashboardData = userRepo.getDashboardDataSource(),
-                                    unreadNotifications = notificationRepo.getUnreadMessagesDataSource(),
-                                    cartItemsCount = cartRepo.getEntriesCountDataSource(),
-                                )
-                            else
-                                LimitedAccessScope.get(
-                                    userRepo.requireUserOld(),
-                                    userRepo.getUserDataSource(),
-                                    userRepo.getUserDataSourceV2()
-                                )
+                            if (user.type == UserType.EMPLOYEE_STOCKIST) {
+                                InStoreSellerScope(notificationRepo.getUnreadMessagesDataSource())
+                            } else {
+                                if (user.isActivated)
+                                    DashboardScope.get(
+                                        user = user,
+                                        userDataSource = userRepo.getUserDataSourceV2(),
+                                        dashboardData = userRepo.getDashboardDataSource(),
+                                        unreadNotifications = notificationRepo.getUnreadMessagesDataSource(),
+                                        cartItemsCount = cartRepo.getEntriesCountDataSource(),
+                                    )
+                                else
+                                    LimitedAccessScope.get(
+                                        userRepo.requireUserOld(),
+                                        userRepo.getUserDataSource(),
+                                        userRepo.getUserDataSourceV2()
+                                    )
+                            }
                         )
                     }.onError(navigator)
             }.onError(navigator)
