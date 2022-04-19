@@ -21,16 +21,18 @@ import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation3
 
-sealed class ManagementScope : Scope.Child.TabBar() {
+sealed class ManagementScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
 
-    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.OnlyBackHeader("connections")
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
+        TabBarInfo.OnlyBackHeader("connections")
 
     sealed class User(
         val tabs: List<Tab>,
         internal val forType: UserType,
     ) : ManagementScope(), Loadable<EntityInfo> {
 
-        override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.OnlyBackHeader("connections")
+        override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
+            TabBarInfo.OnlyBackHeader("")
 
         override val isRoot: Boolean = false
 
@@ -41,7 +43,7 @@ sealed class ManagementScope : Scope.Child.TabBar() {
         override val searchText: DataSource<String> = DataSource("")
         val showAlert = DataSource(false)
 
-        fun changeAlertVisibility(visible: Boolean){
+        fun changeAlertVisibility(visible: Boolean) {
             showAlert.value = visible
         }
 
