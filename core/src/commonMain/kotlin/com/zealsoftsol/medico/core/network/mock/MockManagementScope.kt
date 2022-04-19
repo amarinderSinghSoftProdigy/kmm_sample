@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.GeoData
 import com.zealsoftsol.medico.data.GeoPoints
 import com.zealsoftsol.medico.data.ManagementCriteria
+import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.SubscribeRequest
 import com.zealsoftsol.medico.data.UserType
@@ -32,6 +33,13 @@ class MockManagementScope : NetworkScope.Management {
         mockResponse {
             mockEmptyMapBody()
         }
+
+    override suspend fun selectNotificationAction(
+        id: String,
+        actionRequest: NotificationActionRequest
+    ) = mockResponse {
+        mockEmptyMapBody()
+    }
 }
 
 private fun longPaginatedData(size: Int) =

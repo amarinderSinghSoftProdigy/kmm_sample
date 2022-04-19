@@ -14,6 +14,7 @@ import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.utils.LoadHelper
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.HeaderData
+import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.SubscribeRequest
 import com.zealsoftsol.medico.data.UserType
@@ -40,6 +41,7 @@ internal class ManagementEventDelegate(
             event.creditDays
         )
         is Event.Action.Management.VerifyRetailerTraderDetails -> verifyRetailerTraderDetails()
+        is Event.Action.Management.SelectAction -> selectAction(event.notificationId, event.action)
     }
 
     private suspend fun openRetailerDetails(item: String) {
@@ -142,6 +144,16 @@ internal class ManagementEventDelegate(
             it.validation.value = result.validations
             result.onSuccess {
                 EventCollector.sendEvent(Event.Transition.AddRetailerAddress)
+            }.onError(navigator)
+        }
+    }
+
+    private suspend fun selectAction(id: String, action: NotificationActionRequest) {
+        navigator.withScope<ManagementScope.User> {
+            withProgress {
+                networkManagementScope.selectNotificationAction(id, action)
+            }.onSuccess {
+//                dropScope()
             }.onError(navigator)
         }
     }

@@ -20,6 +20,8 @@ import com.zealsoftsol.medico.data.HeaderData
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.NotificationAction
+import com.zealsoftsol.medico.data.NotificationActionRequest
+import com.zealsoftsol.medico.data.NotificationOption
 import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderTaxInfo
@@ -166,7 +168,7 @@ sealed class BottomSheet {
         val canSubscribe: Boolean,
         val connectingStockistUnitCode: String,
         val userType: UserType,
-        val canConnect:Boolean = false
+        val canConnect: Boolean = false
     ) : BottomSheet() {
 
         fun subscribe() =
@@ -197,8 +199,16 @@ sealed class BottomSheet {
             discount.value = rate
         }
 
-        fun sendRequest(action: NotificationAction) =
-            {}
+        fun sendRequest(id: String, action: NotificationAction) {
+            val subscription = NotificationOption.Subscription(
+                paymentMethod.value,
+                discount.value,
+                creditDays.value
+            )
+            val request = NotificationActionRequest(action, subscription)
+            EventCollector.sendEvent(Event.Action.Management.SelectAction(id, request))
+        }
+
     }
 
     class UpdateOfferStatus(

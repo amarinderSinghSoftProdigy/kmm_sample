@@ -2807,13 +2807,15 @@ private fun SeasonBoyPreviewItem(entityInfo: HeaderData) {
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
 private fun NonSeasonBoyPreviewItem(
     entityInfo: HeaderData,
     onSubscribe: (() -> Unit)?,
     bs: BottomSheet.PreviewManagementItem
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Space(8.dp)
     Surface(
         modifier = Modifier
@@ -3145,7 +3147,7 @@ private fun NonSeasonBoyPreviewItem(
         }
     }
 
-    if(bs.userType == UserType.STOCKIST && bs.canConnect && entityInfo.subscriptionData?.notificationId?.isNotEmpty() == true){
+    if (bs.userType == UserType.STOCKIST && bs.canConnect && entityInfo.subscriptionData?.notificationId?.isNotEmpty() == true) {
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -3197,7 +3199,12 @@ private fun NonSeasonBoyPreviewItem(
                         OutlinedTextField(
                             modifier = Modifier.height(50.dp),
                             value = creditDays.value,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.Done,
+                                keyboardType = KeyboardType.Number
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = { keyboardController?.hide() }),
                             colors = TextFieldDefaults.outlinedTextFieldColors(
                                 focusedBorderColor = ConstColors.lightBlue,
                                 unfocusedBorderColor = ConstColors.gray.copy(1f),
@@ -3224,7 +3231,12 @@ private fun NonSeasonBoyPreviewItem(
                     OutlinedTextField(
                         modifier = Modifier.height(50.dp),
                         value = discount.value,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Done,
+                            keyboardType = KeyboardType.Number
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = { keyboardController?.hide() }),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = ConstColors.lightBlue,
                             unfocusedBorderColor = ConstColors.gray.copy(1f),
@@ -3249,7 +3261,10 @@ private fun NonSeasonBoyPreviewItem(
                             .height(40.dp),
                         text = stringResource(id = R.string.accept),
                         onClick = {
-                            bs.sendRequest(NotificationAction.ACCEPT)
+                            bs.sendRequest(
+                                entityInfo.subscriptionData!!.notificationId,
+                                NotificationAction.ACCEPT
+                            )
                         },
                         contentColor = Color.White,
                         isEnabled = true,
@@ -3263,7 +3278,11 @@ private fun NonSeasonBoyPreviewItem(
                         text = stringResource(id = R.string.decline),
                         color = ConstColors.lightGrey,
                         onClick = {
-                            bs.sendRequest(NotificationAction.DECLINE)
+                            bs.sendRequest(
+                                entityInfo.subscriptionData!!.notificationId,
+                                NotificationAction.DECLINE
+                            )
+
                         },
                         isEnabled = true
                     )
