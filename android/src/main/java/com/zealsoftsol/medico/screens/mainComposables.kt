@@ -436,22 +436,32 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
         },
         bottomBar = {
             if (mBottomNavItems.isNullOrEmpty() && mUserType != null) {
-                if (mUserType == UserType.STOCKIST) {
-                    mBottomNavItems = listOf(
-                        BottomNavigationItem.Dashboard,
-                        BottomNavigationItem.InStores,
-                        BottomNavigationItem.PurchaseOrders,
-                        BottomNavigationItem.Cart,
-                        BottomNavigationItem.Drawer
-                    )
-                } else {
-                    mBottomNavItems = listOf(
-                        BottomNavigationItem.Dashboard,
-                        BottomNavigationItem.Settings,
-                        BottomNavigationItem.Stores,
-                        BottomNavigationItem.Cart,
-                        BottomNavigationItem.Drawer
-                    )
+                when (mUserType) {
+                    UserType.STOCKIST -> {
+                        mBottomNavItems = listOf(
+                            BottomNavigationItem.Dashboard,
+                            BottomNavigationItem.InStores,
+                            BottomNavigationItem.PurchaseOrders,
+                            BottomNavigationItem.Cart,
+                            BottomNavigationItem.Drawer
+                        )
+                    }
+                    UserType.EMPLOYEE_STOCKIST -> {
+                        mBottomNavItems = listOf(
+                            BottomNavigationItem.InStores,
+                            BottomNavigationItem.DebtCollection,
+                            BottomNavigationItem.Logout
+                        )
+                    }
+                    else -> {
+                        mBottomNavItems = listOf(
+                            BottomNavigationItem.Dashboard,
+                            BottomNavigationItem.Settings,
+                            BottomNavigationItem.Stores,
+                            BottomNavigationItem.Cart,
+                            BottomNavigationItem.Drawer
+                        )
+                    }
                 }
             }
             if (mUserType != null) {
@@ -1250,7 +1260,8 @@ sealed class BottomNavigationItem(
     var selectedIcon: Int,
     var selected: MutableState<Boolean>,
     var cartCount: MutableState<Int> = mutableStateOf(0),
-    var key: BottomNavKey
+    var key: BottomNavKey,
+    var action: Event.Action? = null,
 ) {
     object Dashboard :
         BottomNavigationItem(
@@ -1315,10 +1326,29 @@ sealed class BottomNavigationItem(
             mutableStateOf(false),
             key = BottomNavKey.INSTORES
         )
+
+    object DebtCollection :
+        BottomNavigationItem(
+            Event.Transition.IOCBuyer,
+            R.drawable.ic_invoice_grey,
+            R.drawable.ic_invoice,
+            mutableStateOf(false),
+            key = BottomNavKey.DEBT_COLLECTION
+        )
+
+    object Logout :
+        BottomNavigationItem(
+            Event.Transition.IOCBuyer,
+            R.drawable.ic_logout,
+            R.drawable.ic_logout,
+            mutableStateOf(false),
+            key = BottomNavKey.LOGOUT,
+            action = Event.Action.Auth.LogOut(true),
+        )
 }
 
 enum class BottomNavKey {
-    DASHBOARD, SETTINGS, PO, CART, MENU, STORES, INSTORES
+    DASHBOARD, SETTINGS, PO, CART, MENU, STORES, INSTORES, LOGOUT, DEBT_COLLECTION
 }
 
 /**

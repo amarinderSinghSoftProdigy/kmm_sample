@@ -118,6 +118,8 @@ internal class TransitionEventDelegate(
                         UserType.SEASON_BOY -> ManagementScope.User.SeasonBoy()
                         UserType.EMPLOYEE -> EmployeeScope.SelectUserType.get()
                         UserType.PARTNER -> EmployeeScope.SelectUserType.get()
+                        UserType.EMPLOYEE_STOCKIST -> EmployeeScope.SelectUserType.get()
+                        UserType.EMPLOYEE_RETAILER -> EmployeeScope.SelectUserType.get()
                     }
                 )
                 is Event.Transition.RequestCreateRetailer -> setScope(
