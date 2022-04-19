@@ -2042,7 +2042,7 @@ private fun PreviewItemBottomSheet(
                         Space(8.dp)
                         SeasonBoyPreviewItem(headerData)
                     } else {
-                        NonSeasonBoyPreviewItem(headerData, onSubscribe, bs)
+                        NonSeasonBoyPreviewItem(headerData, onSubscribe, bs, onDismiss)
                     }
                 }
             }
@@ -2812,7 +2812,8 @@ private fun SeasonBoyPreviewItem(entityInfo: HeaderData) {
 private fun NonSeasonBoyPreviewItem(
     entityInfo: HeaderData,
     onSubscribe: (() -> Unit)?,
-    bs: BottomSheet.PreviewManagementItem
+    bs: BottomSheet.PreviewManagementItem,
+    onDismiss: () -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -3265,6 +3266,7 @@ private fun NonSeasonBoyPreviewItem(
                                 entityInfo.subscriptionData!!.notificationId,
                                 NotificationAction.ACCEPT
                             )
+                            onDismiss()
                         },
                         contentColor = Color.White,
                         isEnabled = true,
@@ -3282,7 +3284,7 @@ private fun NonSeasonBoyPreviewItem(
                                 entityInfo.subscriptionData!!.notificationId,
                                 NotificationAction.DECLINE
                             )
-
+                            onDismiss()
                         },
                         isEnabled = true
                     )

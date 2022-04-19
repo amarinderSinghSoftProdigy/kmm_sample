@@ -152,8 +152,8 @@ internal class ManagementEventDelegate(
         navigator.withScope<ManagementScope.User> {
             withProgress {
                 networkManagementScope.selectNotificationAction(id, action)
-            }.onSuccess {
-//                dropScope()
+            }.onSuccess { _ ->
+                it.changeAlertVisibility(true)
             }.onError(navigator)
         }
     }

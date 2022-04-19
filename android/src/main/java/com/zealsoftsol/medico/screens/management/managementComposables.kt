@@ -55,6 +55,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.screens.common.NoRecords
+import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.formatIndia
@@ -86,6 +87,7 @@ fun ManagementScreen(scope: ManagementScope.User, isInProgress: DataSource<Boole
 @Composable
 private fun EntityManagementScreen(scope: ManagementScope.User, isInProgress: DataSource<Boolean>) {
     val search = scope.searchText.flow.collectAsState()
+    val showAlert = scope.showAlert.flow.collectAsState()
     val showSearchOverlay = remember { mutableStateOf(true) }
     Space(16.dp)
     if (showSearchOverlay.value) {
@@ -235,6 +237,10 @@ private fun EntityManagementScreen(scope: ManagementScope.User, isInProgress: Da
             )
         }
     }
+    if(showAlert.value)
+        ShowAlert(message = stringResource(id = R.string.update_successfull)) {
+            scope.changeAlertVisibility(false)
+        }
 }
 
 @Composable

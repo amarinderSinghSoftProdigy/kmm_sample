@@ -39,6 +39,11 @@ sealed class ManagementScope : Scope.Child.TabBar() {
         override val totalItems: DataSource<Int> = DataSource(0)
         val activeTab: DataSource<Tab> = DataSource(tabs.first())
         override val searchText: DataSource<String> = DataSource("")
+        val showAlert = DataSource(false)
+
+        fun changeAlertVisibility(visible: Boolean){
+            showAlert.value = visible
+        }
 
         init {
             EventCollector.sendEvent(Event.Action.Management.Load(isFirstLoad = true))
