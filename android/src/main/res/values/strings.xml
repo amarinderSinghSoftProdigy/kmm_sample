@@ -472,6 +472,7 @@
     <string name="auto_approve">Auto Approve</string>
     <string name="connection_req">Connection Requests</string>
     <string name="prod_not_found">Product Not Found</string>
+    <string name="fl_expiry">FL Expiry</string>
 
     <!-- Termrs and Cond -->
 

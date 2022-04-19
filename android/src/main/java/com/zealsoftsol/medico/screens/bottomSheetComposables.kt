@@ -3043,7 +3043,7 @@ private fun NonSeasonBoyPreviewItem(
                             Box(modifier = Modifier.width(maxWidth / 2)) {
                                 entityInfo.flExpiryDate?.let {
                                     DataWithLabel(
-                                        label = R.string.food_licence_expiry,
+                                        label = R.string.fl_expiry,
                                         data = it.formatted, size = 12.sp
                                     )
                                 }
