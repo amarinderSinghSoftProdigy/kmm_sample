@@ -47,7 +47,6 @@ import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.ImageLabel
-import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Placeholder
 import com.zealsoftsol.medico.screens.common.ReadOnlyField
 import com.zealsoftsol.medico.screens.common.ReadOnlyFieldTwoValues
@@ -233,6 +232,13 @@ fun SettingsScreen(scope: SettingsScope, scaffoldState: ScaffoldState) {
                 scope = scope
             )
             Separator(thickness = 0.5f)
+            AccountContentItem(
+                drawableResourceId = R.drawable.ic_share,
+                stringResourceId = R.string.share_medico,
+                scope = scope,
+                shareText = stringResource(id = R.string.share_content)
+            )
+            Separator(thickness = 0.5f)
             Box(modifier = Modifier.height(56.dp))
             Separator(thickness = 0.5f)
             Row(
@@ -307,8 +313,11 @@ private fun AccountContentItem(
     altRoute: Event.Action? = null,
     drawableResourceId: Int,
     stringResourceId: Int,
-    scope: SettingsScope? = null
+    scope: SettingsScope? = null,
+    shareText: String = ""
 ) {
+    val activity = LocalContext.current as MainActivity
+
     Column {
         Separator(thickness = 1f)
 
@@ -318,11 +327,12 @@ private fun AccountContentItem(
             .clickable(
                 indication = rememberRipple(),
                 onClick = {
-                    if (route != null)
-                        scope?.sendEvent(transition = route)
-                    else if (altRoute != null)
-                        scope?.sendEvent(action = altRoute)
-
+                    when {
+                        route != null -> scope?.sendEvent(transition = route)
+                        altRoute != null -> scope?.sendEvent(action = altRoute)
+                        else //share app
+                        -> activity.shareTextContent(shareText)
+                    }
                 }
             )) {
 
