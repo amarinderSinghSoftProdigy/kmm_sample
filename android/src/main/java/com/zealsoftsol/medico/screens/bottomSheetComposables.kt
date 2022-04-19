@@ -1938,7 +1938,8 @@ private fun PreviewItemBottomSheet(
     bs: BottomSheet.PreviewManagementItem,
 ) {
     val activity = LocalContext.current as MainActivity
-    val isExpired = Time.now >= headerData.dlExpiryDate.value
+    val isExpired =
+        headerData.dlExpiryDate.value != 0.0 && Time.now >= headerData.dlExpiryDate.value
 
     BaseBottomSheet(onDismiss) {
         Box(
@@ -2030,14 +2031,17 @@ private fun PreviewItemBottomSheet(
                                 ),
                                 onClick = { activity.openDialer(headerData.mobileNumber) },
                             )
-                            if (isExpired) {
-                                Text(
-                                    text = stringResource(id = R.string.expired).uppercase(),
-                                    fontSize = 15.sp,
-                                    color = ConstColors.red,
-                                    fontWeight = FontWeight.W600
-                                )
-                            }
+                            Text(
+                                text = when {
+                                    isExpired -> stringResource(id = R.string.expired).uppercase()
+                                    headerData.dlExpiryDate.value == 0.0 -> stringResource(id = R.string.not_available).uppercase()
+                                    else -> ""
+                                },
+                                fontSize = 15.sp,
+                                color = ConstColors.red,
+                                fontWeight = FontWeight.W600
+                            )
+
                         }
                     }
                     if (isForSeasonBoy) {
@@ -2819,7 +2823,7 @@ private fun NonSeasonBoyPreviewItem(
     isExpired: Boolean
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    val borderColor = if(isExpired) ConstColors.red else ConstColors.separator
+    val borderColor = if (isExpired) ConstColors.red else ConstColors.separator
 
     Space(8.dp)
     Surface(
