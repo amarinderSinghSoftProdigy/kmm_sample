@@ -1938,6 +1938,8 @@ private fun PreviewItemBottomSheet(
     bs: BottomSheet.PreviewManagementItem,
 ) {
     val activity = LocalContext.current as MainActivity
+    val isExpired = Time.now >= headerData.dlExpiryDate.value
+
     BaseBottomSheet(onDismiss) {
         Box(
             modifier = Modifier
@@ -2028,7 +2030,7 @@ private fun PreviewItemBottomSheet(
                                 ),
                                 onClick = { activity.openDialer(headerData.mobileNumber) },
                             )
-                            if (Time.now >= headerData.dlExpiryDate.value) {
+                            if (isExpired) {
                                 Text(
                                     text = stringResource(id = R.string.expired).uppercase(),
                                     fontSize = 15.sp,
@@ -2042,7 +2044,7 @@ private fun PreviewItemBottomSheet(
                         Space(8.dp)
                         SeasonBoyPreviewItem(headerData)
                     } else {
-                        NonSeasonBoyPreviewItem(headerData, onSubscribe, bs, onDismiss)
+                        NonSeasonBoyPreviewItem(headerData, onSubscribe, bs, onDismiss, isExpired)
                     }
                 }
             }
@@ -2813,9 +2815,11 @@ private fun NonSeasonBoyPreviewItem(
     entityInfo: HeaderData,
     onSubscribe: (() -> Unit)?,
     bs: BottomSheet.PreviewManagementItem,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    isExpired: Boolean
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
+    val borderColor = if(isExpired) ConstColors.red else ConstColors.separator
 
     Space(8.dp)
     Surface(
@@ -2824,7 +2828,7 @@ private fun NonSeasonBoyPreviewItem(
             .padding(vertical = 8.dp),
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
-        border = BorderStroke(2.dp, ConstColors.separator)
+        border = BorderStroke(2.dp, borderColor)
     ) {
         Column(
             modifier = Modifier
@@ -2890,7 +2894,7 @@ private fun NonSeasonBoyPreviewItem(
             .padding(vertical = 8.dp),
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
-        border = BorderStroke(2.dp, ConstColors.separator)
+        border = BorderStroke(2.dp, borderColor)
     ) {
         Column(modifier = Modifier.padding(all = 12.dp)) {
             when {
@@ -3155,7 +3159,7 @@ private fun NonSeasonBoyPreviewItem(
                 .padding(vertical = 8.dp),
             shape = MaterialTheme.shapes.medium,
             color = Color.White,
-            border = BorderStroke(2.dp, ConstColors.separator)
+            border = BorderStroke(2.dp, borderColor)
         ) {
             val paymentMethod = bs.paymentMethod.flow.collectAsState()
             val creditDays = bs.creditDays.flow.collectAsState()
