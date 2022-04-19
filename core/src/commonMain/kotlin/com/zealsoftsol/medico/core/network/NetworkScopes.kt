@@ -191,6 +191,12 @@ interface NetworkScope {
         ): BodyResponse<PaginatedData<EntityInfo>>
 
         suspend fun subscribeRequest(subscribeRequest: SubscribeRequest): AnyResponse
+
+        suspend fun selectNotificationAction(
+            id: String,
+            actionRequest: NotificationActionRequest
+        ): AnyResponse
+
     }
 
     interface Notification : NetworkScope {

@@ -31,6 +31,7 @@ import com.zealsoftsol.medico.data.InvUserData
 import com.zealsoftsol.medico.data.InvoiceDetails
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.NotificationAction
+import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationFilter
 import com.zealsoftsol.medico.data.NotificationOption
@@ -212,6 +213,10 @@ sealed class Event {
                 Management()
 
             object VerifyRetailerTraderDetails : Management()
+            data class SelectAction(
+                val notificationId: String,
+                val action: NotificationActionRequest
+            ) : Management()
         }
 
         sealed class Notification : Action() {

@@ -36,7 +36,8 @@ data class HeaderData(
     val flExpiresIn: String,
     val seasonBoyRetailerData: SeasonBoyRetailerData? = null,
     val seasonBoyData: SeasonBoyData? = null,
-    val subscriptionData: SubscriptionData? = null
+    val subscriptionData: SubscriptionData? = null,
+    val notificationId : String = ""
 )
 
 @Serializable
