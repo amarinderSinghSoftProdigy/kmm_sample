@@ -76,16 +76,6 @@ fun AddEmployeeScreen(scope: EmployeeScope.SelectUserType) {
             ) {
                 ChooseOption(
                     modifier = Modifier.weight(1f),
-                    titleId = R.string.add_employee,
-                    icon = R.drawable.ic_add_employee,
-                    isSelected = optionSelected.value != null && optionSelected.value == EmployeeScope.OptionSelected.ADD_EMPLOYEE
-                ) {
-                    scope.chooseUserType(UserType.EMPLOYEE)
-                    optionSelected.value = EmployeeScope.OptionSelected.ADD_EMPLOYEE
-                }
-                Space(20.dp)
-                ChooseOption(
-                    modifier = Modifier.weight(1f),
                     titleId = R.string.add_partner,
                     icon = R.drawable.ic_add_employee,
                     isSelected = optionSelected.value != null && optionSelected.value == EmployeeScope.OptionSelected.ADD_PARTNER
@@ -93,15 +83,26 @@ fun AddEmployeeScreen(scope: EmployeeScope.SelectUserType) {
                     scope.chooseUserType(UserType.PARTNER)
                     optionSelected.value = EmployeeScope.OptionSelected.ADD_PARTNER
                 }
+                Space(20.dp)
+                ChooseOption(
+                    modifier = Modifier.weight(1f),
+                    titleId = R.string.add_employee,
+                    icon = R.drawable.ic_add_employee,
+                    isSelected = optionSelected.value != null && optionSelected.value == EmployeeScope.OptionSelected.ADD_EMPLOYEE
+                ) {
+                    scope.chooseUserType(UserType.EMPLOYEE)
+                    optionSelected.value = EmployeeScope.OptionSelected.ADD_EMPLOYEE
+                }
+
             }
-            Text(
-                text = stringResource(id = R.string.view_details),
-                color = MaterialTheme.colors.background,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.W600
-            )
-            Space(dp = 10.dp)
             if (employeeData.value.isNotEmpty()) {
+                Text(
+                    text = stringResource(id = R.string.view_details),
+                    color = MaterialTheme.colors.background,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.W600
+                )
+                Space(dp = 10.dp)
                 LazyColumn(contentPadding = PaddingValues(3.dp)) {
                     itemsIndexed(
                         items = employeeData.value,
