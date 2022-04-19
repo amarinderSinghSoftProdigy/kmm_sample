@@ -57,8 +57,6 @@ internal class ManagementEventDelegate(
                     isSeasonBoy = false,
                     canSubscribe = it is ManagementScope.User && it.activeTab.value == ManagementScope.Tab.ALL_STOCKISTS,
                     connectingStockistUnitCode = item,
-                    canConnect = it is ManagementScope.User && (it.activeTab.value == ManagementScope.Tab.YOUR_RETAILERS ||
-                            it.activeTab.value == ManagementScope.Tab.YOUR_HOSPITALS),
                     userType = userRepo.userV2Flow.value!!.type
                 )
             }

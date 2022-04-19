@@ -168,7 +168,6 @@ sealed class BottomSheet {
         val canSubscribe: Boolean,
         val connectingStockistUnitCode: String,
         val userType: UserType,
-        val canConnect: Boolean = false
     ) : BottomSheet() {
 
         fun subscribe() =
