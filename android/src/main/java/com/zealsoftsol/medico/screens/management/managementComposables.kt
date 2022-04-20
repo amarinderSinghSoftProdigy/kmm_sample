@@ -287,7 +287,7 @@ private fun EntityManagementScreen(scope: ManagementScope.User, isInProgress: Da
                     }
                 },
             )
-            item{
+            item {
                 Space(dp = 80.dp)
             }
         }
@@ -388,7 +388,11 @@ private fun NonSeasonBoyItem(
                             modifier = Modifier
                                 .weight(1f)
                                 .clickable {
-                                    scope.loadCompanies(entityInfo.tradeName, entityInfo.unitCode)
+                                    if (activeTab == ManagementScope.Tab.ALL_STOCKISTS.name)
+                                        scope.loadCompanies(
+                                            entityInfo.tradeName,
+                                            entityInfo.unitCode
+                                        )
                                 },
                             text = if (activeTab == ManagementScope.Tab.ALL_STOCKISTS.name) stringResource(
                                 id = R.string.companies

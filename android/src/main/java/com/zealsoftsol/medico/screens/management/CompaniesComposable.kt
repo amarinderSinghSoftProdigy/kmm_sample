@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -103,14 +104,16 @@ fun CompanyItem(item: CompanyData) {
     val visibility = remember { mutableStateOf(false) }
     Surface(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(40.dp),
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(3.dp),
+        color = White,
         elevation = 3.dp,
     ) {
         Column {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(50.dp)
                     .padding(horizontal = 16.dp)
                     .clickable {
                         visibility.value = !visibility.value
@@ -125,6 +128,7 @@ fun CompanyItem(item: CompanyData) {
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
+                        modifier = Modifier.padding(end = 20.dp),
                         text = item.products.size.toString(),
                         color = MaterialTheme.colors.background,
                         fontSize = 15.sp,
@@ -133,7 +137,9 @@ fun CompanyItem(item: CompanyData) {
 
                     Image(
                         painter = painterResource(id = R.drawable.ic_arrow_right),
-                        modifier = Modifier.rotate(90f), contentDescription = null
+                        modifier = Modifier
+                            .rotate(90f),
+                        contentDescription = null
                     )
                 }
             }
@@ -145,11 +151,16 @@ fun CompanyItem(item: CompanyData) {
                         mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
                     ) {
                         item.products.let {
-                            it.forEachIndexed { _, _ ->
-                                Column(modifier = Modifier.fillMaxWidth().padding(10.dp)) {
+                            it.forEachIndexed { index, _ ->
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(10.dp)
+                                ) {
                                     Text(text = item.name, color = Gray)
                                     Space(dp = 5.dp)
-                                    Divider()
+                                    if (index != it.size)
+                                        Divider()
                                 }
                             }
                         }

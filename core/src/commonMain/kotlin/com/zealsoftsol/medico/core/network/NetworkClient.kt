@@ -1364,7 +1364,7 @@ class NetworkClient(
 
     override suspend fun getCompanies(unitCode: String, page: Int): BodyResponse<InventoryCompanies> =
         simpleRequest {
-            client.post("${baseUrl.url}/inventory/companies/view/") {
+            client.post("${baseUrl.url}/inventory/companies/view") {
                 header("X-TENANT-ID", unitCode)
                 withMainToken()
                 url {
