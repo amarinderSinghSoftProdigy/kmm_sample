@@ -197,7 +197,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
         mBottomNavItems = null
         mUserType = navigation.value?.user?.flow?.value?.type
     }
-    if (childScope.value is SignUpScope) {
+    if (childScope.value is SignUpScope || childScope.value is EmployeeScope) {
         activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     } else {
         activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)

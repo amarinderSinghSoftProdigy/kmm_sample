@@ -58,6 +58,7 @@ fun AddEmployeeScreen(scope: EmployeeScope.SelectUserType) {
     val optionSelected = remember { mutableStateOf<EmployeeScope.OptionSelected?>(null) }
     val employeeData = scope.employeeData.flow.collectAsState()
     val activity = LocalContext.current as MainActivity
+    val isEnabled = employeeData.value.isEmpty()
 
     Box(
         modifier = Modifier
@@ -76,30 +77,28 @@ fun AddEmployeeScreen(scope: EmployeeScope.SelectUserType) {
             ) {
                 ChooseOption(
                     modifier = Modifier.weight(1f),
-                    titleId = R.string.add_employee,
+                    titleId = R.string.add_partner,
                     icon = R.drawable.ic_add_employee,
-                    isSelected = optionSelected.value != null && optionSelected.value == EmployeeScope.OptionSelected.ADD_EMPLOYEE
+                    isSelected = optionSelected.value != null && optionSelected.value == EmployeeScope.OptionSelected.ADD_PARTNER,
+                    isEnabled = isEnabled
                 ) {
-                    scope.chooseUserType(UserType.EMPLOYEE)
-                    optionSelected.value = EmployeeScope.OptionSelected.ADD_EMPLOYEE
+                    scope.chooseUserType(UserType.PARTNER)
+                    optionSelected.value = EmployeeScope.OptionSelected.ADD_PARTNER
+                    scope.goToPersonalData()
                 }
                 Space(20.dp)
                 ChooseOption(
                     modifier = Modifier.weight(1f),
-                    titleId = R.string.add_partner,
+                    titleId = R.string.add_employee,
                     icon = R.drawable.ic_add_employee,
-                    isSelected = optionSelected.value != null && optionSelected.value == EmployeeScope.OptionSelected.ADD_PARTNER
+                    isSelected = optionSelected.value != null && optionSelected.value == EmployeeScope.OptionSelected.ADD_EMPLOYEE,
+                    isEnabled = isEnabled
                 ) {
-                    scope.chooseUserType(UserType.PARTNER)
-                    optionSelected.value = EmployeeScope.OptionSelected.ADD_PARTNER
+                    scope.chooseUserType(UserType.EMPLOYEE)
+                    optionSelected.value = EmployeeScope.OptionSelected.ADD_EMPLOYEE
+                    scope.goToPersonalData()
                 }
             }
-            Text(
-                text = stringResource(id = R.string.view_details),
-                color = MaterialTheme.colors.background,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.W600
-            )
             Space(dp = 10.dp)
             if (employeeData.value.isNotEmpty()) {
                 LazyColumn(contentPadding = PaddingValues(3.dp)) {
@@ -122,14 +121,6 @@ fun AddEmployeeScreen(scope: EmployeeScope.SelectUserType) {
                     scope.goBack()
                 }
             }
-        }
-        MedicoButton(
-            text = stringResource(id = R.string.next), isEnabled = optionSelected.value != null,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(16.dp)
-        ) {
-            scope.goToPersonalData()
         }
     }
 }
@@ -187,9 +178,11 @@ fun EmployeeItem(activity: MainActivity, item: EmployeeData, onDeleteClick: () -
                     fontWeight = FontWeight.W500,
                 )
                 Text(
-                    modifier = Modifier.padding(top = 5.dp).clickable{
-                        visible = !visible
-                    },
+                    modifier = Modifier
+                        .padding(top = 5.dp)
+                        .clickable {
+                            visible = !visible
+                        },
                     text = stringResource(id = R.string.more_details),
                     color = MaterialTheme.colors.background,
                     fontSize = 12.sp,
@@ -206,7 +199,7 @@ fun EmployeeItem(activity: MainActivity, item: EmployeeData, onDeleteClick: () -
                     // Overwrites the default animation with tween
                     animationSpec = tween(durationMillis = 250)
                 )
-            ){
+            ) {
                 Column {
                     Text(
                         modifier = Modifier.padding(top = 5.dp),
@@ -231,14 +224,16 @@ private fun ChooseOption(
     @StringRes titleId: Int,
     @DrawableRes icon: Int,
     isSelected: Boolean,
-    onClick: () -> Unit
+    isEnabled: Boolean,
+    onClick: () -> Unit,
 ) {
     Surface(
         modifier = modifier.clickable {
-            onClick()
+            if (isEnabled)
+                onClick()
         },
         elevation = 5.dp,
-        color = Color.White,
+        color = if (isEnabled) Color.White else Color.White.copy(alpha = 0.5f),
         border = if (isSelected) BorderStroke(
             1.dp,
             ConstColors.yellow.copy(alpha = 0.5f),
