@@ -126,6 +126,15 @@ fun EmployeePreview(scope: EmployeeScope.PreviewDetails) {
                 TextLabel(scope.registrationStep2.state)
                 TextLabel(scope.registrationStep2.pincode)
                 Space(dp = 4.dp)
+                Space(dp = 4.dp)
+                Text(
+                    text = stringResource(id = R.string.aadhaar_card),
+                    fontSize = 16.sp,
+                    color = ConstColors.lightBlue,
+                    fontWeight = FontWeight.W600,
+                )
+                Space(dp = 16.dp)
+                TextLabel(scope.aadharNumber)
             }
         }
     )
