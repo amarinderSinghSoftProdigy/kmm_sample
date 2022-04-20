@@ -157,7 +157,7 @@ fun CompanyItem(item: CompanyData) {
                                         .fillMaxWidth()
                                         .padding(10.dp)
                                 ) {
-                                    Text(text = item.name, color = Gray)
+                                    Text(text = it[index].name, color = Gray)
                                     Space(dp = 5.dp)
                                     if (index != it.size)
                                         Divider()
