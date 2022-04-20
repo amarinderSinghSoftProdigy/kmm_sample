@@ -473,7 +473,7 @@
     <string name="employee_reg_success">Employee Registration Successful</string>
     <string name="done">Done</string>
     <string name="employee">Employee</string>
-    <string name="no_employee">No Employee Found!</string>
+    <string name="no_employee">No Employee/Partner Found!</string>
     <string name="add_partner">Add Partner</string>
     <string name="view_details">View Details</string>
     <string name="more_details">More Details</string>
