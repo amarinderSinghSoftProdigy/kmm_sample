@@ -11,6 +11,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.AddressComponent
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.mvi.scope.extra.TraderDetailsComponent
 import com.zealsoftsol.medico.core.utils.Loadable
+import com.zealsoftsol.medico.data.CompanyData
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
@@ -72,6 +73,12 @@ sealed class ManagementScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
 
         fun loadItems() =
             EventCollector.sendEvent(Event.Action.Management.Load(isFirstLoad = false))
+
+        /**
+         * move to companies screen
+         */
+        fun loadCompanies(title: String, unitCode: String) =
+            EventCollector.sendEvent(Event.Transition.Companies(title, unitCode))
 
         class Stockist(
             override val notifications: DataSource<ScopeNotification?> = DataSource(null)
@@ -144,6 +151,38 @@ sealed class ManagementScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
         }
     }
 
+    class CompaniesScope(val title: String, val unitCode: String) : ManagementScope() {
+
+        private var mCurrentPage = 0
+        var totalResults = 0
+        val companiesList = DataSource<MutableList<CompanyData>>(mutableListOf())
+
+        override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
+            TabBarInfo.OnlyBackHeader(title)
+
+        init {
+            getCompanies(true)
+        }
+
+        /**
+         * update Companies list from server
+         */
+        fun updateCompanies(list: List<CompanyData>) {
+            if (companiesList.value.isEmpty()) {
+                companiesList.value = list as MutableList<CompanyData>
+            } else {
+                companiesList.value.addAll(list)
+            }
+        }
+
+        fun getCompanies(isFirstLoad: Boolean) {
+            if (isFirstLoad)
+                mCurrentPage = 0
+            else
+                mCurrentPage += 1
+            EventCollector.sendEvent(Event.Action.Management.GetCompanies(unitCode, mCurrentPage))
+        }
+    }
 
     // Notifications
 
@@ -155,7 +194,7 @@ sealed class ManagementScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
     ) : ScopeNotification {
         override val isSimple: Boolean = false
         override val isDismissible: Boolean = true
-        override val title: String? = "choose_payment_method"
+        override val title: String = "choose_payment_method"
         override val body: String? = null
 
         init {
@@ -196,7 +235,7 @@ sealed class ManagementScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
     object ThankYou : ScopeNotification {
         override val isSimple: Boolean = true
         override val isDismissible: Boolean = true
-        override val title: String? = "thank_you_for_request"
+        override val title: String = "thank_you_for_request"
         override val body: String? = null
     }
 
@@ -204,7 +243,7 @@ sealed class ManagementScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
         override val dismissEvent: Event = Event.Transition.Refresh
         override val isSimple: Boolean = false
         override val isDismissible: Boolean = true
-        override val title: String? = "congratulations"
+        override val title: String = "congratulations"
         override val body: String = "retailer_added_template"
     }
 

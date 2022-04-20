@@ -476,6 +476,8 @@
     <string name="share_medico">Share Medicostores App</string>
     <string name="share_content">Checkout Medicostores app on\n\nGoogle Play: https://play.google.com/store/apps/details?id=com.zealsoftsol.medico\n\n
     App Store: https://apps.apple.com/in/app/medicostores/id1578471027?uo=4</string>
+    <string name="companies">Companies</string>
+    <string name="no_companies">No Companies</string>
 
     <!-- Termrs and Cond -->
 
