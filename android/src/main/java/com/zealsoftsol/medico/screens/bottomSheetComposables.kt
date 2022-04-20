@@ -3156,7 +3156,7 @@ private fun NonSeasonBoyPreviewItem(
         }
     }
 
-    if (bs.userType == UserType.STOCKIST && entityInfo.subscriptionData?.notificationId?.isNotEmpty() == true) {
+    if (bs.showConnectOption && bs.userType == UserType.STOCKIST && entityInfo.subscriptionData?.notificationId?.isNotEmpty() == true) {
         Surface(
             modifier = Modifier
                 .fillMaxWidth()

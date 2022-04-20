@@ -204,7 +204,7 @@ sealed class Event {
 
             data class Search(val value: String) : Management()
             data class Load(val isFirstLoad: Boolean) : Management()
-            data class GetDetails(val item: String) : Management()
+            data class GetDetails(val item: String , val showConnectionOption: Boolean = false) : Management()
             data class RequestSubscribe(
                 val item: HeaderData,
                 val connectingStockistUnitCode: String

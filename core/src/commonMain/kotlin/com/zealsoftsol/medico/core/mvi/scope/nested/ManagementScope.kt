@@ -60,7 +60,7 @@ sealed class ManagementScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
         }
 
         fun selectItem(item: EntityInfo) =
-            EventCollector.sendEvent(Event.Action.Management.GetDetails(item.unitCode))
+            EventCollector.sendEvent(Event.Action.Management.GetDetails(item.unitCode, true))
 
         fun search(value: String): Boolean {
             return if (searchText.value != value) {

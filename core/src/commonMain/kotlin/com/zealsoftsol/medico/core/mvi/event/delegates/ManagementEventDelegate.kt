@@ -35,7 +35,7 @@ internal class ManagementEventDelegate(
             event.item,
             event.connectingStockistUnitCode
         )
-        is Event.Action.Management.GetDetails -> openRetailerDetails(event.item)
+        is Event.Action.Management.GetDetails -> openRetailerDetails(event.item, event.showConnectionOption)
         is Event.Action.Management.ChoosePayment -> choosePayment(
             event.paymentMethod,
             event.creditDays
@@ -44,7 +44,7 @@ internal class ManagementEventDelegate(
         is Event.Action.Management.SelectAction -> selectAction(event.notificationId, event.action)
     }
 
-    private suspend fun openRetailerDetails(item: String) {
+    private suspend fun openRetailerDetails(item: String, showConnectionOption: Boolean) {
         navigator.withProgress {
             userRepo.getBottomSheetDetails(
                 item
@@ -57,7 +57,8 @@ internal class ManagementEventDelegate(
                     isSeasonBoy = false,
                     canSubscribe = it is ManagementScope.User && it.activeTab.value == ManagementScope.Tab.ALL_STOCKISTS,
                     connectingStockistUnitCode = item,
-                    userType = userRepo.userV2Flow.value!!.type
+                    userType = userRepo.userV2Flow.value!!.type,
+                    showConnectOption = showConnectionOption
                 )
             }
         }.onError(navigator)
