@@ -1369,7 +1369,7 @@ class NetworkClient(
 
     override suspend fun submitPersonalDetails(userRegistration1: EmployeeRegistration1): BodyResponse<AddEmployee> =
         simpleRequest {
-            client.post("${baseUrl.url}/b2bapp/employee/step1") {
+            client.post("${baseUrl.url}/medico/employee/step1") { // Step1 is validated against the authorisation service (medico-auth0)
                 withMainToken()
                 jsonBody(userRegistration1)
             }
