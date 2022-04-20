@@ -818,6 +818,7 @@ fun TextLabel(
 fun ImageLabel(
     value: String,
     direct: Boolean = false,
+    verified: Boolean = false,
     onClick: () -> Unit
 ) {
     if (value.isNotEmpty())
@@ -827,7 +828,7 @@ fun ImageLabel(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Surface(onClick = onClick, shape = MaterialTheme.shapes.large) {
+                Surface(onClick = onClick, shape = MaterialTheme.shapes.large, modifier = Modifier.padding(start =10.dp)) {
                     CoilImage(
                         src = if (direct) value else File(value),
                         modifier = Modifier
@@ -841,7 +842,7 @@ fun ImageLabel(
                 Image(
                     painter = painterResource(id = R.drawable.ic_verified),
                     contentDescription = null,
-                    modifier = Modifier.size(15.dp)
+                    modifier = Modifier.padding(end = 10.dp).size(15.dp)
                 )
             }
             Space(16.dp)

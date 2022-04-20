@@ -103,6 +103,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.BatchesScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.PreferenceScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.QrCodeScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.WhatsappPreferenceScope
@@ -173,6 +174,7 @@ import com.zealsoftsol.medico.screens.search.SearchBarEnd
 import com.zealsoftsol.medico.screens.search.SearchScreen
 import com.zealsoftsol.medico.screens.settings.AddressComposable
 import com.zealsoftsol.medico.screens.settings.GstinDetailsComposable
+import com.zealsoftsol.medico.screens.settings.PreferenceScreen
 import com.zealsoftsol.medico.screens.settings.ProfileComposable
 import com.zealsoftsol.medico.screens.settings.SettingsScreen
 import com.zealsoftsol.medico.screens.whatsappComposables.WhatsappPreference
@@ -208,9 +210,9 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
         scaffoldState = scaffoldState,
         drawerGesturesEnabled = navigation.value != null,
         topBar = {
-            if (childScope.value !is OrderHsnEditScope && childScope.value !is InventoryScope && childScope.value !is IocSellerScope.InvUserListing && childScope.value !is IocBuyerScope.InvUserListing
-                && childScope.value !is EmployeeScope.SuccessEmployee
-            ) //don't show top bar for OrderEditHsnScreen and Inventory and IOC listing
+
+            if (childScope.value !is OrderHsnEditScope && childScope.value !is InventoryScope && childScope.value !is IocSellerScope.InvUserListing
+                && childScope.value !is IocBuyerScope.InvUserListing && childScope.value !is ManagementScope.User) //don't show top bar for OrderEditHsnScreen and Inventory and IOC listing
             {
                 val tabBarInfo = scope.tabBar.flow.collectAsState()
                 TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
@@ -290,7 +292,8 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
         },
         content = {
             var padding = 56
-            if (childScope.value is OrderHsnEditScope || childScope.value is ViewOrderScope || childScope.value is SignUpScope) {// no bottom padding while editing order entries
+            if (childScope.value is OrderHsnEditScope || childScope.value is ViewOrderScope ||
+                childScope.value is SignUpScope || childScope.value is ManagementScope.User) {// no bottom padding while editing order entries
                 padding = 0
             }
 
@@ -403,7 +406,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     is SettingsScope.Profile -> ProfileComposable(it.user)
                     is SettingsScope.Address -> AddressComposable(it.user.addressData)
                     is SettingsScope.GstinDetails -> GstinDetailsComposable(
-                        it.user.details as User.Details.DrugLicense,
+                        it.user.details as User.Details.DrugLicense, it, scaffoldState
                     )
                     is MenuScope -> {
                         MenuScreen(it)
@@ -430,6 +433,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     )
                     is EmployeeScope.SuccessEmployee -> SuccessEmployees(it)
                     is EmployeeScope.PreviewDetails -> EmployeePreview(it)
+                    is PreferenceScope -> PreferenceScreen(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }

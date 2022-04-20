@@ -69,7 +69,6 @@ import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.UserLogoPlaceholder
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.stringResourceByName
-import com.zealsoftsol.medico.screens.management.GeoLocation
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.SearchBarBox
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
@@ -359,8 +358,8 @@ private fun SubscriptionDeatails(
             CoilImage(
                 src = "",
                 size = 100.dp,
-                onError = { UserLogoPlaceholder(details.customerData.run { ""/*"$firstName $lastName"*/ }) },
-                onLoading = { UserLogoPlaceholder(details.customerData.run { ""/*"$firstName $lastName"*/ }) },
+                onError = { UserLogoPlaceholder(details.customerData.run { "$firstName $lastName"}) },
+                onLoading = { UserLogoPlaceholder(details.customerData.run { "$firstName $lastName" }) },
             )
             Space(24.dp)
             Column(
@@ -381,8 +380,8 @@ private fun SubscriptionDeatails(
                     color = ConstColors.lightBlue,
                     modifier = Modifier.clickable {
                         activity.openMaps(
-                            details.customerData.latitude,
-                            details.customerData.longitude,
+                            details.customerData.addressData.latitude,
+                            details.customerData.addressData.longitude,
                         )
                     },
                 )

@@ -26,7 +26,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -83,6 +82,7 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.density
 import com.zealsoftsol.medico.core.extensions.screenWidth
+import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.AutoComplete
@@ -96,13 +96,11 @@ import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.FlowRow
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
-import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.PaginationButtons
 import com.zealsoftsol.medico.screens.common.Separator
 import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
-import com.zealsoftsol.medico.screens.common.scrollOnFocus
 import kotlinx.coroutines.launch
 
 @Composable
@@ -120,6 +118,7 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
         val activeFilterIds = scope.activeFilterIds.flow.collectAsState()
         val listStateScroll = rememberScrollState()
         val coroutineScope = rememberCoroutineScope()
+        val totalResults = scope.totalResults.flow.collectAsState()
 
         Column(
             modifier = Modifier
@@ -216,43 +215,46 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                 }
             } else {
                 if (autoComplete.value.isEmpty()) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(listStateScroll)
-                    ) {
-                        FlowRow(
-                            mainAxisSize = SizeMode.Expand,
-                            mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
+                    if (products.value.isNotEmpty()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(listStateScroll)
                         ) {
-                            products.value.forEachIndexed { index, productSearch ->
-                                ProductItem(
-                                    productSearch,
-                                    onClick = { //scope.selectProduct(item)
-                                    },
-                                    onBuy = { scope.buy(productSearch) },
-                                    scope = scope
-                                )
+                            FlowRow(
+                                mainAxisSize = SizeMode.Expand,
+                                mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
+                            ) {
+                                products.value.forEachIndexed { index, productSearch ->
+                                    ProductItem(
+                                        productSearch,
+                                        onClick = { //scope.selectProduct(item)
+                                        },
+                                        onBuy = { scope.buy(productSearch) },
+                                        scope = scope
+                                    )
+                                }
+                            }
+                            Space(dp = 12.dp)
+                            if (products.value.isNotEmpty() && totalResults.value == Pagination.ITEMS_PER_PAGE_30) {
+                                PaginationButtons(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                                    scope.pagination, products.value.size, {
+                                        coroutineScope.launch {
+                                            listStateScroll.scrollTo(0)
+                                        }
+                                        scope.startSearch(true)
+                                    }, {
+                                        coroutineScope.launch {
+                                            listStateScroll.scrollTo(0)
+                                        }
+                                        scope.startSearch(false)
+                                    })
                             }
                         }
-                        Space(dp = 12.dp)
-                        if (products.value.isNotEmpty()) {
-                            PaginationButtons(modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
-                                scope.pagination, products.value.size, {
-                                    coroutineScope.launch {
-                                        listStateScroll.scrollTo(0)
-                                    }
-                                    scope.startSearch(true)
-                                }, {
-                                    coroutineScope.launch {
-                                        listStateScroll.scrollTo(0)
-                                    }
-                                    scope.startSearch(false)
-                                })
-
-                        }
+                    } else {
+                        NoProduct(productName = search.value)
                     }
                 } else {
                     LazyColumn(
@@ -268,7 +270,9 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                                 AutoCompleteItem(
                                     item,
                                     search.value
-                                ) { scope.selectAutoComplete(item) }
+                                ) {
+                                    scope.selectAutoComplete(item)
+                                }
                             },
                         )
                     }
@@ -282,6 +286,16 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                 scope.manageAlertVisibility(false)
             }
 
+    }
+}
+
+@Composable
+private fun NoProduct(productName: String) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Text(
+            modifier = Modifier.align(Alignment.Center),
+            text = "$productName ${stringResource(id = R.string.prod_not_found)}"
+        )
     }
 }
 

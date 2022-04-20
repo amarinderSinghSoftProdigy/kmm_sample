@@ -32,6 +32,7 @@ import com.zealsoftsol.medico.data.InvUserData
 import com.zealsoftsol.medico.data.InvoiceDetails
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.NotificationAction
+import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationFilter
 import com.zealsoftsol.medico.data.NotificationOption
@@ -155,6 +156,8 @@ sealed class Event {
                 }
             }
 
+            object GetLocalSearchData : Search()
+
             data class SearchAutoComplete(val value: String, val sellerUnitCode: String? = null) :
                 Search()
 
@@ -211,6 +214,10 @@ sealed class Event {
                 Management()
 
             object VerifyRetailerTraderDetails : Management()
+            data class SelectAction(
+                val notificationId: String,
+                val action: NotificationActionRequest
+            ) : Management()
         }
 
         sealed class Notification : Action() {
@@ -634,6 +641,14 @@ sealed class Event {
             object SubmitOtp : Employee()
             object SubmitFinalData : Employee()
         }
+
+        sealed class Preferences : Action() {
+            override val typeClazz: KClass<*> = Preferences::class
+
+            object GetPreferences : Preferences()
+            data class SetAutoConnectPreferences(val isEnabled: Boolean) : Preferences()
+        }
+
     }
 
 
@@ -696,6 +711,6 @@ sealed class Event {
         object IOCSeller : Transition()
         object IOCBuyer : Transition()
         object AddEmployee : Transition()
-
+        object Preference : Transition()
     }
 }

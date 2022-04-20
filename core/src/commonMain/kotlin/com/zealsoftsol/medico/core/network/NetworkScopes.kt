@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AddEmployee
 import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.AnyResponse
+import com.zealsoftsol.medico.data.AutoApprove
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
 import com.zealsoftsol.medico.data.BatchUpdateRequest
@@ -195,6 +196,12 @@ interface NetworkScope {
         ): BodyResponse<PaginatedData<EntityInfo>>
 
         suspend fun subscribeRequest(subscribeRequest: SubscribeRequest): AnyResponse
+
+        suspend fun selectNotificationAction(
+            id: String,
+            actionRequest: NotificationActionRequest
+        ): AnyResponse
+
     }
 
     interface Notification : NetworkScope {
@@ -525,6 +532,7 @@ interface NetworkScope {
         ): BodyResponse<HeaderData>
     }
 
+
     interface EmployeeStore : NetworkScope {
         suspend fun submitPersonalDetails(userRegistration1: EmployeeRegistration1): BodyResponse<AddEmployee>
         suspend fun submitAddressDetails(userRegistration2: EmployeeRegistration2): BodyResponse<AddEmployee>
@@ -534,4 +542,10 @@ interface NetworkScope {
         suspend fun deleteEmployee(id: String): BodyResponse<AddEmployee>
     }
 
+    interface PreferencesStore : NetworkScope {
+        suspend fun getAutoApprovePreference(
+        ): BodyResponse<AutoApprove>
+
+        suspend fun setAutoApprovePreference(isEnabled: Boolean): BodyResponse<AutoApprove>
+    }
 }

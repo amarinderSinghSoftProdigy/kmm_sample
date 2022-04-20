@@ -55,6 +55,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.screens.common.NoRecords
+import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.formatIndia
@@ -65,11 +66,19 @@ import com.zealsoftsol.medico.screens.search.SearchBarEnd
 
 @Composable
 fun ManagementScreen(scope: ManagementScope.User, isInProgress: DataSource<Boolean>) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
         EntityManagementScreen(scope, isInProgress)
     }
     if (scope is ManagementScope.User.Retailer && scope.canAdd) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+        ) {
             FloatingActionButton(
                 onClick = { scope.requestCreateRetailer() },
                 backgroundColor = ConstColors.yellow,
@@ -86,67 +95,110 @@ fun ManagementScreen(scope: ManagementScope.User, isInProgress: DataSource<Boole
 @Composable
 private fun EntityManagementScreen(scope: ManagementScope.User, isInProgress: DataSource<Boolean>) {
     val search = scope.searchText.flow.collectAsState()
+    val showAlert = scope.showAlert.flow.collectAsState()
     val showSearchOverlay = remember { mutableStateOf(true) }
-    Space(16.dp)
-    if (showSearchOverlay.value) {
-        SearchBarBox(
-            modifier = Modifier.clickable(indication = null) {
-                showSearchOverlay.value = false
-            },
-            elevation = 0.dp,
-            horizontalPadding = 18.dp,
-        ) {
-            val (icon, text) = when (scope) {
-                is ManagementScope.User.Stockist -> R.drawable.ic_stockist to R.string.stockists_search
-                is ManagementScope.User.Retailer -> R.drawable.ic_retailer_search to R.string.retailers_search
-                is ManagementScope.User.SeasonBoy -> R.drawable.ic_season_boy to R.string.season_boys_search
-                is ManagementScope.User.Hospital -> R.drawable.ic_hospital to R.string.hospitals_search
-            }
-            Icon(
-                painter = painterResource(id = icon),
-                contentDescription = null,
-                tint = ConstColors.lightGreen,
-                modifier = Modifier.size(24.dp),
-            )
-            Space(16.dp)
-            Text(
-                text = stringResource(id = text),
-                fontWeight = FontWeight.W700,
-                color = ConstColors.txtGrey,
-                fontSize = 12.sp
-            )
-            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_filter),
-                    contentDescription = null,
-                    tint = ConstColors.gray,
-                    modifier = Modifier.size(24.dp),
-                )
-            }
-        }
-    } else {
-        BasicSearchBar(
-            input = search.value,
-            hint = when (scope) {
-                is ManagementScope.User.Stockist -> R.string.stockists_search
-                is ManagementScope.User.Retailer -> R.string.retailers_search
-                is ManagementScope.User.SeasonBoy -> R.string.season_boys_search
-                is ManagementScope.User.Hospital -> R.string.hospitals_search
-            },
-            searchBarEnd = SearchBarEnd.Eraser,
-            icon = Icons.Default.ArrowBack,
-            elevation = 0.dp,
-            horizontalPadding = 16.dp,
-            isSearchFocused = true,
-            onSearch = { v, _ -> scope.search(v) },
-            onIconClick = {
-                scope.search("")
-                showSearchOverlay.value = true
-            },
-        )
-    }
     val activeTab = scope.activeTab.flow.collectAsState()
     val totalItems = scope.totalItems.flow.collectAsState()
+
+    Space(16.dp)
+    if (showSearchOverlay.value) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(start = 10.dp)
+                    .clickable(
+                        indication = null,
+                        onClick = {
+                            scope.goBack()
+                        }
+                    )
+            )
+            SearchBarBox(
+                modifier = Modifier.clickable(indication = null) {
+                    showSearchOverlay.value = false
+                },
+                elevation = 3.dp,
+                horizontalPadding = 28.dp,
+            ) {
+                val (icon, text) = when (scope) {
+                    is ManagementScope.User.Stockist -> R.drawable.ic_stockist to R.string.stockists_search
+                    is ManagementScope.User.Retailer -> R.drawable.ic_retailer_search to R.string.retailers_search
+                    is ManagementScope.User.SeasonBoy -> R.drawable.ic_season_boy to R.string.season_boys_search
+                    is ManagementScope.User.Hospital -> R.drawable.ic_hospital to R.string.hospitals_search
+                }
+                Icon(
+                    painter = painterResource(id = icon),
+                    contentDescription = null,
+                    tint = ConstColors.lightGreen,
+                    modifier = Modifier.size(24.dp),
+                )
+                Space(16.dp)
+                Text(
+                    text = stringResource(id = text),
+                    fontWeight = FontWeight.W700,
+                    color = ConstColors.txtGrey,
+                    fontSize = 12.sp
+                )
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_filter),
+                        contentDescription = null,
+                        tint = ConstColors.gray,
+                        modifier = Modifier.size(24.dp),
+                    )
+                }
+            }
+        }
+
+    } else {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(start = 10.dp)
+                    .clickable(
+                        indication = null,
+                        onClick = {
+                            scope.goBack()
+                        }
+                    )
+            )
+            BasicSearchBar(
+                input = search.value,
+                hint = when (scope) {
+                    is ManagementScope.User.Stockist -> R.string.stockists_search
+                    is ManagementScope.User.Retailer -> R.string.retailers_search
+                    is ManagementScope.User.SeasonBoy -> R.string.season_boys_search
+                    is ManagementScope.User.Hospital -> R.string.hospitals_search
+                },
+                searchBarEnd = SearchBarEnd.Eraser,
+                icon = Icons.Default.ArrowBack,
+                elevation = 3.dp,
+                horizontalPadding = 20.dp,
+                isSearchFocused = true,
+                onSearch = { v, _ -> scope.search(v) },
+                onIconClick = {
+                    scope.search("")
+                    showSearchOverlay.value = true
+                },
+            )
+        }
+    }
+    Divider(
+        modifier = Modifier.padding(top = 10.dp),
+        color = ConstColors.lightBlue,
+        thickness = 0.5.dp,
+        startIndent = 0.dp
+    )
     if (scope.tabs.isNotEmpty()) {
         Space(16.dp)
         Row(
@@ -235,6 +287,10 @@ private fun EntityManagementScreen(scope: ManagementScope.User, isInProgress: Da
             )
         }
     }
+    if (showAlert.value)
+        ShowAlert(message = stringResource(id = R.string.update_successfull)) {
+            scope.changeAlertVisibility(false)
+        }
 }
 
 @Composable

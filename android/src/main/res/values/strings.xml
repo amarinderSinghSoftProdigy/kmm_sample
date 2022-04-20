@@ -462,7 +462,7 @@
     <string name="payment_method_">Payment Method</string>
     <string name="pay_now">Pay Now</string>
     <string name="ptr_more_warning">PTR is greater than MRP</string>
-    <string name="margin_perc">Margin Percentage</string>
+    <string name="margin_perc">Margin %</string>
     <string name="stock_status">Stock Status</string>
     <string name="previous">Previous</string>
     <string name="expires_in">Expires in</string>
@@ -478,6 +478,15 @@
     <string name="view_details">View Details</string>
     <string name="more_details">More Details</string>
     <string name="delete">Delete</string>
+    <string name="drug_licence_expiry">Drug License Expiry</string>
+    <string name="food_licence_expiry">Food License Expiry</string>
+    <string name="auto_approve">Auto Approve</string>
+    <string name="connection_req">Connection Requests</string>
+    <string name="prod_not_found">Product Not Found</string>
+    <string name="fl_expiry">FL Expiry</string>
+    <string name="share_medico">Share Medicostores App</string>
+    <string name="share_content">Checkout Medicostores app on\n\nGoogle Play: https://play.google.com/store/apps/details?id=com.zealsoftsol.medico\n\n
+    App Store: https://apps.apple.com/in/app/medicostores/id1578471027?uo=4</string>
 
     <!-- Terms and Cond -->
 

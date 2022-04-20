@@ -11,6 +11,7 @@ import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.data.AddressData
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.ProfileImageData
+import com.zealsoftsol.medico.data.ProfileResponseData
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserV2
 
@@ -22,6 +23,7 @@ sealed class SettingsScope(
     val profileData: DataSource<ProfileImageData?> = DataSource(null)
 ) : Scope.Child.TabBar(), CommonScope.UploadDocument {
     val userDetails: DataSource<User?> = DataSource(null)
+
 
     init {
         sendEvent(action = Event.Action.Profile.GetProfileData)
@@ -89,8 +91,20 @@ sealed class SettingsScope(
     class Address(val addressData: AddressData, val user: User) : Child.TabBar(),
         CommonScope.CanGoBack
 
-    class GstinDetails(val details: User.Details.DrugLicense, val user: User) :
-        Child.TabBar(),
-        CommonScope.CanGoBack
+    class GstinDetails(val details: User.Details.DrugLicense, val user: User) : Child.TabBar(),
+        CommonScope.CanGoBack, CommonScope.UploadDocument {
+
+        var drugLicense: DataSource<ProfileResponseData?> = DataSource(null)
+
+        fun previewImage(item: String) =
+            EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(item))
+
+        override val supportedFileTypes: Array<FileType> = FileType.forDrugLicense()
+
+        val showSuccessMsg = DataSource(false)
+
+        fun hideSuccessMsg() {showSuccessMsg.value = false}
+
+    }
 
 }

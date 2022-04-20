@@ -51,7 +51,7 @@ class MockNotificationScope : NetworkScope.Notification {
     override suspend fun getNotificationDetails(id: String) =
         mockResponse {
             NotificationDetails(
-                customerData = MockCustomerScope.getMockCustomerDataV2(UserType.RETAILER),
+                customerData = MockCustomerScope.getMockCustomerData(UserType.RETAILER),
                 subscriptionOption = NotificationOption.Subscription(
                     PaymentMethod.CREDIT,
                     "0",

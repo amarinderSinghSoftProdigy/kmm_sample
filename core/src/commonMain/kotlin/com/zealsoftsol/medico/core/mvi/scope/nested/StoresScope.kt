@@ -11,10 +11,7 @@ import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.CartData
-import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.Filter
-import com.zealsoftsol.medico.data.GeoData
-import com.zealsoftsol.medico.data.GeoPoints
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.Store
@@ -76,6 +73,8 @@ sealed class StoresScope : Scope.Child.TabBar() {
         override val enableButton: DataSource<Boolean> = DataSource(false),
         override val freeQty: DataSource<Double> = DataSource(0.0),
         override val productId: DataSource<String> = DataSource(""),
+        override val totalResults: DataSource<Int> = DataSource(0)
+
     ) : StoresScope(), BaseSearchScope {
 
         override val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList())

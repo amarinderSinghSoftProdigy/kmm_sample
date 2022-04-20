@@ -119,7 +119,7 @@ class MainActivity : ComponentActivity(), DIAware {
                                 option = WelcomeOption.Thanks { it.accept() }
                             )
                         }
-                        is TabBarScope -> TabBarScreen(it, coroutineScope,this)
+                        is TabBarScope -> TabBarScreen(it, coroutineScope, this)
                     }
                 }
                 val isInProgress = hostScope.value.isInProgress.flow.collectAsState()
@@ -339,5 +339,16 @@ class MainActivity : ComponentActivity(), DIAware {
             return super.createIntent(context, input)
                 .putExtra(Intent.EXTRA_MIME_TYPES, supportedTypes)
         }
+    }
+
+    fun shareTextContent(content: String) {
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, content)
+            type = "text/plain"
+        }
+
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        startActivity(shareIntent)
     }
 }

@@ -15,6 +15,7 @@ import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AddEmployee
 import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.AnyResponse
+import com.zealsoftsol.medico.data.AutoApprove
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
 import com.zealsoftsol.medico.data.BatchUpdateRequest
@@ -164,6 +165,7 @@ class NetworkClient(
     NetworkScope.IOCBuyerStore,
     NetworkScope.BottomSheetStore,
     NetworkScope.QrCodeStore,
+    NetworkScope.PreferencesStore,
     NetworkScope.EmployeeStore {
 
     init {
@@ -1352,6 +1354,19 @@ class NetworkClient(
             }
         }
 
+    override suspend fun getAutoApprovePreference(): BodyResponse<AutoApprove> =
+        client.get("${baseUrl.url}/b2bapp/preference/autoapprove") {
+            withMainToken()
+        }
+
+    override suspend fun setAutoApprovePreference(isEnabled: Boolean): BodyResponse<AutoApprove> =
+        simpleRequest {
+            client.post("${baseUrl.url}/b2bapp/preference/autoapprove/save") {
+                withMainToken()
+                jsonBody(mapOf("autoApprove" to isEnabled))
+            }
+        }
+
     override suspend fun submitPersonalDetails(userRegistration1: EmployeeRegistration1): BodyResponse<AddEmployee> =
         simpleRequest {
             client.post("${baseUrl.url}/b2bapp/employee/step1") {
@@ -1500,6 +1515,8 @@ class NetworkClient(
         STAG("https://staging-api-gateway.medicostores.com"),
         PROD("https://partner-api-gateway.medicostores.com");
     }
+
+
 }
 
 expect fun addInterceptor(config: HttpClientConfig<HttpClientEngineConfig>)
@@ -1511,4 +1528,3 @@ internal fun createJson() = Json {
     // TODO remove after kserilize lib updated from 1.2.1
     useAlternativeNames = false
 }
-

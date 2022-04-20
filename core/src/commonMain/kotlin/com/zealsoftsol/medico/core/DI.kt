@@ -206,6 +206,7 @@ fun startKodein(
             instance(),
             instance(),
             instance(),
+            instance(),
             instance()
         )
     }
