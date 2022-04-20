@@ -50,6 +50,7 @@ import com.zealsoftsol.medico.data.EmployeeData
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.NoRecords
+import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.Space
 
 @Composable
@@ -59,6 +60,7 @@ fun AddEmployeeScreen(scope: EmployeeScope.SelectUserType) {
     val employeeData = scope.employeeData.flow.collectAsState()
     val activity = LocalContext.current as MainActivity
     val isEnabled = employeeData.value.isEmpty()
+    val showWarning = scope.showWarning.flow.collectAsState()
 
     Box(
         modifier = Modifier
@@ -80,11 +82,14 @@ fun AddEmployeeScreen(scope: EmployeeScope.SelectUserType) {
                     titleId = R.string.add_partner,
                     icon = R.drawable.ic_add_employee,
                     isSelected = optionSelected.value != null && optionSelected.value == EmployeeScope.OptionSelected.ADD_PARTNER,
-                    isEnabled = isEnabled
                 ) {
-                    scope.chooseUserType(UserType.PARTNER)
-                    optionSelected.value = EmployeeScope.OptionSelected.ADD_PARTNER
-                    scope.goToPersonalData()
+                    if (isEnabled) {
+                        scope.chooseUserType(UserType.PARTNER)
+                        optionSelected.value = EmployeeScope.OptionSelected.ADD_PARTNER
+                        scope.goToPersonalData()
+                    } else {
+                        scope.updateWarningVisibility(true)
+                    }
                 }
                 Space(20.dp)
                 ChooseOption(
@@ -92,11 +97,14 @@ fun AddEmployeeScreen(scope: EmployeeScope.SelectUserType) {
                     titleId = R.string.add_employee,
                     icon = R.drawable.ic_add_employee,
                     isSelected = optionSelected.value != null && optionSelected.value == EmployeeScope.OptionSelected.ADD_EMPLOYEE,
-                    isEnabled = isEnabled
                 ) {
-                    scope.chooseUserType(UserType.EMPLOYEE)
-                    optionSelected.value = EmployeeScope.OptionSelected.ADD_EMPLOYEE
-                    scope.goToPersonalData()
+                    if (isEnabled) {
+                        scope.chooseUserType(UserType.EMPLOYEE)
+                        optionSelected.value = EmployeeScope.OptionSelected.ADD_EMPLOYEE
+                        scope.goToPersonalData()
+                    } else {
+                        scope.updateWarningVisibility(true)
+                    }
                 }
             }
             Space(dp = 10.dp)
@@ -122,13 +130,18 @@ fun AddEmployeeScreen(scope: EmployeeScope.SelectUserType) {
                 }
             }
         }
+        if (showWarning.value) {
+            ShowAlert(message = stringResource(id = R.string.warning_employee_add)) {
+                scope.updateWarningVisibility(false)
+            }
+        }
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun EmployeeItem(activity: MainActivity, item: EmployeeData, onDeleteClick: () -> Unit) {
-    var visible by remember { mutableStateOf(true) }
+    var visible by remember { mutableStateOf(false) }
     Surface(
         modifier = Modifier.padding(horizontal = 10.dp),
         color = Color.White,
@@ -177,28 +190,23 @@ fun EmployeeItem(activity: MainActivity, item: EmployeeData, onDeleteClick: () -
                     fontSize = 15.sp,
                     fontWeight = FontWeight.W500,
                 )
+
                 Text(
                     modifier = Modifier
                         .padding(top = 5.dp)
                         .clickable {
                             visible = !visible
                         },
-                    text = stringResource(id = R.string.more_details),
+                    text = if (visible) stringResource(id = R.string.less_details) else stringResource(
+                        id = R.string.more_details
+                    ),
                     color = MaterialTheme.colors.background,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.W500,
                 )
             }
             AnimatedVisibility(
-                visible = visible,
-                enter = fadeIn(
-                    // Overwrites the initial value of alpha to 0.4f for fade in, 0 by default
-                    initialAlpha = 0.4f
-                ),
-                exit = fadeOut(
-                    // Overwrites the default animation with tween
-                    animationSpec = tween(durationMillis = 250)
-                )
+                visible = visible
             ) {
                 Column {
                     Text(
@@ -224,16 +232,14 @@ private fun ChooseOption(
     @StringRes titleId: Int,
     @DrawableRes icon: Int,
     isSelected: Boolean,
-    isEnabled: Boolean,
     onClick: () -> Unit,
 ) {
     Surface(
         modifier = modifier.clickable {
-            if (isEnabled)
-                onClick()
+            onClick()
         },
         elevation = 5.dp,
-        color = if (isEnabled) Color.White else Color.White.copy(alpha = 0.5f),
+        color = Color.White,
         border = if (isSelected) BorderStroke(
             1.dp,
             ConstColors.yellow.copy(alpha = 0.5f),

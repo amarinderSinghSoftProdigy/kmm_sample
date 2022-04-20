@@ -956,6 +956,7 @@ fun AuthPreview(scope: SignUpScope.PreviewDetails) {
 }
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AadhaarInputFields(
     aadhaarData: DataSource<AadhaarData>,
@@ -964,6 +965,7 @@ fun AadhaarInputFields(
     showShareCode: Boolean = true,
     modifier: Modifier = Modifier
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Top,
@@ -978,7 +980,12 @@ fun AadhaarInputFields(
                 hint = stringResource(id = R.string.aadhaar_card),
                 text = aadhaar.value.cardNumber,
                 isValid = isAadhaarValid,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Number
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = { keyboardController?.hide() }),
                 onValueChange = onCardChange,
             )
         }
@@ -987,7 +994,12 @@ fun AadhaarInputFields(
             InputField(
                 hint = stringResource(id = R.string.share_code),
                 text = aadhaar.value.shareCode,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Number
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = { keyboardController?.hide() }),
                 onValueChange = onCodeChange,
             )
         }

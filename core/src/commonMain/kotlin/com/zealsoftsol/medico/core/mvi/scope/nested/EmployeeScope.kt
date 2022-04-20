@@ -52,6 +52,11 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
         private var clickedPosition = 0
 
         val employeeData = DataSource<List<EmployeeData>>(emptyList())
+        val showWarning = DataSource(false)
+
+        fun updateWarningVisibility(isVisible: Boolean){
+            showWarning.value = isVisible
+        }
 
         fun deleteEmployee(id: String, position: Int) {
             this.clickedPosition = position
