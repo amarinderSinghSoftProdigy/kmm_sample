@@ -3,9 +3,11 @@ package com.zealsoftsol.medico.core.network.mock
 import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.network.NetworkScope
+import com.zealsoftsol.medico.data.BodyResponse
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.GeoData
 import com.zealsoftsol.medico.data.GeoPoints
+import com.zealsoftsol.medico.data.InventoryCompanies
 import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.PaginatedData
@@ -40,6 +42,14 @@ class MockManagementScope : NetworkScope.Management {
     ) = mockResponse {
         mockEmptyMapBody()
     }
+
+    override suspend fun getCompanies(
+        unitCode: String,
+        page: Int
+    ): BodyResponse<InventoryCompanies> {
+        TODO("Not yet implemented")
+    }
+
 }
 
 private fun longPaginatedData(size: Int) =

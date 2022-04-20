@@ -203,7 +203,7 @@ sealed class Event {
 
             data class Search(val value: String) : Management()
             data class Load(val isFirstLoad: Boolean) : Management()
-            data class GetDetails(val item: String) : Management()
+            data class GetDetails(val item: String , val showConnectionOption: Boolean = false) : Management()
             data class RequestSubscribe(
                 val item: HeaderData,
                 val connectingStockistUnitCode: String
@@ -217,6 +217,8 @@ sealed class Event {
                 val notificationId: String,
                 val action: NotificationActionRequest
             ) : Management()
+
+            data class GetCompanies(val unitCode: String, val page: Int) : Management()
         }
 
         sealed class Notification : Action() {
@@ -534,7 +536,6 @@ sealed class Event {
                 Inventory()
 
             data class UpdateBatch(val batchData: BatchUpdateRequest) : Inventory()
-
         }
 
         sealed class QrCode : Action() {
@@ -634,7 +635,6 @@ sealed class Event {
             object GetPreferences : Preferences()
             data class SetAutoConnectPreferences(val isEnabled: Boolean) : Preferences()
         }
-
     }
 
 
@@ -697,5 +697,6 @@ sealed class Event {
         object IOCSeller : Transition()
         object IOCBuyer : Transition()
         object Preference : Transition()
+        data class Companies(val title: String, val unitCode: String) : Transition()
     }
 }
