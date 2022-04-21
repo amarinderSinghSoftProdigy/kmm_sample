@@ -58,14 +58,18 @@ internal class AuthEventDelegate(
                             userRepo.sendFirebaseToken()
                             //userRepo.loadConfig()
                             //notificationRepo.loadUnreadMessagesFromServer()
-                            if (it.customerType != UserType.EMPLOYEE_STOCKIST.serverValue)
+                            if (it.customerType != UserType.STOCKIST_EMPLOYEE.serverValue && it.customerType != UserType.RETAILER_EMPLOYEE.serverValue)
                                 cartRepo.loadCartFromServer(userRepo.requireUser().unitCode)
                         }
                         dropScope(Navigator.DropStrategy.All, updateDataSource = false)
                         val user = userRepo.requireUser()
                         setScope(
-                            if (user.type == UserType.EMPLOYEE_STOCKIST) {
-                                InStoreSellerScope(notificationRepo.getUnreadMessagesDataSource())
+                            if (user.type == UserType.STOCKIST_EMPLOYEE) {
+                                InStoreSellerScope.get(
+                                    user,
+                                    userRepo.getUserDataSourceV2(),
+                                    null
+                                )
                             } else {
                                 if (user.isActivated)
                                     DashboardScope.get(

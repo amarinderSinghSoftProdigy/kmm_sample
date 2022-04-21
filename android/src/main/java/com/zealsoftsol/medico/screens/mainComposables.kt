@@ -285,6 +285,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                                 scope,
                                 info,
                             )
+                            is TabBarInfo.NoHeader -> {}
                         }
                     }
                 }
@@ -294,6 +295,11 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
             var padding = 56
             if (childScope.value is OrderHsnEditScope || childScope.value is ViewOrderScope ||
                 childScope.value is SignUpScope || childScope.value is ManagementScope.User) {// no bottom padding while editing order entries
+                padding = 0
+            }
+            
+            //no header for stockist employee type due to restricted usage
+            if(mUserType == UserType.STOCKIST_EMPLOYEE){
                 padding = 0
             }
 
@@ -450,7 +456,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                             BottomNavigationItem.Drawer
                         )
                     }
-                    UserType.EMPLOYEE_STOCKIST -> {
+                    UserType.STOCKIST_EMPLOYEE -> {
                         mBottomNavItems = listOf(
                             BottomNavigationItem.InStores,
                             BottomNavigationItem.DebtCollection,
@@ -1337,8 +1343,8 @@ sealed class BottomNavigationItem(
     object DebtCollection :
         BottomNavigationItem(
             Event.Transition.IOCBuyer,
-            R.drawable.ic_invoice_grey,
-            R.drawable.ic_invoice,
+            R.drawable.ic_debt_collection_grey,
+            R.drawable.ic_debt_selected,
             mutableStateOf(false),
             key = BottomNavKey.DEBT_COLLECTION
         )
@@ -1346,8 +1352,8 @@ sealed class BottomNavigationItem(
     object Logout :
         BottomNavigationItem(
             null,
-            R.drawable.ic_logout,
-            R.drawable.ic_logout,
+            R.drawable.ic_logout_grey,
+            R.drawable.ic_logout_yellow,
             mutableStateOf(false),
             key = BottomNavKey.LOGOUT,
             action = Event.Action.Auth.LogOut(true),

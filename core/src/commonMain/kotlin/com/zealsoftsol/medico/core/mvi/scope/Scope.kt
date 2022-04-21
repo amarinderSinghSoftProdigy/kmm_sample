@@ -135,7 +135,7 @@ sealed class TabBarInfo {
     }
 
     data class NoIconTitle(
-        val title: String, val notificationItemsCount: ReadOnlyDataSource<Int>,
+        val title: String, val notificationItemsCount: ReadOnlyDataSource<Int>?,
         val cartItemsCount: ReadOnlyDataSource<Int>? = null
     ) : TabBarInfo() {
         override val icon: ScopeIcon = ScopeIcon.NO_ICON
@@ -167,6 +167,12 @@ sealed class TabBarInfo {
         fun openBottomSheet() {
             EventCollector.sendEvent(event)
         }
+    }
+
+    data class NoHeader(
+        val title: String = "" //pass the string resource id
+    ) : TabBarInfo() {
+        override val icon: ScopeIcon = ScopeIcon.BACK
     }
 }
 

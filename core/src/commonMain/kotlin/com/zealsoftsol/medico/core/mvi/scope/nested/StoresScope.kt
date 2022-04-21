@@ -94,6 +94,15 @@ sealed class StoresScope : Scope.Child.TabBar() {
             EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(url))
         }
 
+        fun searchProduct(value:String) {
+            productSearch.value = value
+            searchProduct(
+                value,
+                withAutoComplete = true,
+                store.sellerUnitCode
+            )
+        }
+
         fun startSearch(check: Boolean) {
             EventCollector.sendEvent(
                 Event.Action.Search.SearchInput(

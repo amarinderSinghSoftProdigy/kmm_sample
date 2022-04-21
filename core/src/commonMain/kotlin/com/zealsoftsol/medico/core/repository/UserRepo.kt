@@ -350,11 +350,14 @@ class UserRepo(
     }
 
     suspend fun sendFirebaseToken(token: String? = cachedFirebaseToken) {
-        if (token != null) {
-            cachedFirebaseToken = token
-        }
-        if (getUserAccess() == UserAccess.FULL_ACCESS && token != null) {
-            networkNotificationScope.sendFirebaseToken(token)
+        val customerType = userV2Flow.value?.type
+        if (customerType != UserType.STOCKIST_EMPLOYEE && customerType != UserType.RETAILER_EMPLOYEE) {
+            if (token != null) {
+                cachedFirebaseToken = token
+            }
+            if (getUserAccess() == UserAccess.FULL_ACCESS && token != null) {
+                networkNotificationScope.sendFirebaseToken(token)
+            }
         }
     }
 

@@ -119,8 +119,8 @@ internal class TransitionEventDelegate(
                         UserType.SEASON_BOY -> ManagementScope.User.SeasonBoy()
                         UserType.EMPLOYEE -> EmployeeScope.SelectUserType.get()
                         UserType.PARTNER -> EmployeeScope.SelectUserType.get()
-                        UserType.EMPLOYEE_STOCKIST -> EmployeeScope.SelectUserType.get()
-                        UserType.EMPLOYEE_RETAILER -> EmployeeScope.SelectUserType.get()
+                        UserType.STOCKIST_EMPLOYEE -> EmployeeScope.SelectUserType.get()
+                        UserType.RETAILER_EMPLOYEE -> EmployeeScope.SelectUserType.get()
                     }
                 )
                 is Event.Transition.RequestCreateRetailer -> setScope(
@@ -199,7 +199,10 @@ internal class TransitionEventDelegate(
                     )
                 )
                 is Event.Transition.InStore -> setScope(
-                    InStoreSellerScope(notificationRepo.getUnreadMessagesDataSource())
+                    InStoreSellerScope(
+                        notificationRepo.getUnreadMessagesDataSource(),
+                        userRepo.userV2Flow.value!!.type
+                    )
                 )
                 is Event.Transition.InStoreUsers -> setScope(
                     InStoreUsersScope()

@@ -18,14 +18,16 @@ enum class UserType(
     HOSPITAL("HOSPITAL", "hospital"),
     EMPLOYEE("EMPLOYEE", "employee"),
     PARTNER("PARTNER", "partner"),
-    EMPLOYEE_STOCKIST("EMPLOYEE_STOCKIST", "employee_stockist"),
-    EMPLOYEE_RETAILER("EMPLOYEE_RETAILER", "employee_retailer");
+    STOCKIST_EMPLOYEE("STOCKIST_EMPLOYEE", "stockist_employee"),
+    RETAILER_EMPLOYEE("RETAILER_EMPLOYEE", "retailer_employee");
 
     val stringId: String
         get() = serverValue.lowercase()
 
     companion object {
         fun parse(value: String): UserType? = when (value) {
+            STOCKIST_EMPLOYEE.serverValue -> STOCKIST_EMPLOYEE
+            RETAILER_EMPLOYEE.serverValue -> RETAILER_EMPLOYEE
             STOCKIST.serverValue -> STOCKIST
             RETAILER.serverValue -> RETAILER
             SEASON_BOY.serverValue -> SEASON_BOY
