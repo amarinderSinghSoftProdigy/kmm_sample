@@ -73,7 +73,8 @@ sealed class StoresScope : Scope.Child.TabBar() {
         override val enableButton: DataSource<Boolean> = DataSource(false),
         override val freeQty: DataSource<Double> = DataSource(0.0),
         override val productId: DataSource<String> = DataSource(""),
-        override val totalResults: DataSource<Int> = DataSource(0)
+        override val totalResults: DataSource<Int> = DataSource(0),
+        override var showNoProducts: DataSource<Boolean> = DataSource(false)
 
     ) : StoresScope(), BaseSearchScope {
 
