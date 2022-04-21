@@ -212,7 +212,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
         topBar = {
 
             if (childScope.value !is OrderHsnEditScope && childScope.value !is InventoryScope && childScope.value !is IocSellerScope.InvUserListing
-                && childScope.value !is IocBuyerScope.InvUserListing && childScope.value !is ManagementScope.User) //don't show top bar for OrderEditHsnScreen and Inventory and IOC listing
+                && childScope.value !is IocBuyerScope.InvUserListing && childScope.value !is ManagementScope.User && mUserType != UserType.STOCKIST_EMPLOYEE) //don't show top bar for OrderEditHsnScreen and Inventory and IOC listing
             {
                 val tabBarInfo = scope.tabBar.flow.collectAsState()
                 TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
@@ -285,7 +285,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                                 scope,
                                 info,
                             )
-                            is TabBarInfo.NoHeader -> {}
+                            is TabBarInfo.NoHeader -> Box{}
                         }
                     }
                 }
@@ -298,11 +298,6 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                 padding = 0
             }
             
-            //no header for stockist employee type due to restricted usage
-            if(mUserType == UserType.STOCKIST_EMPLOYEE){
-                padding = 0
-            }
-
             Crossfade(
                 childScope.value,
                 animationSpec = tween(durationMillis = 200),

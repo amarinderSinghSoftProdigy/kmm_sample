@@ -104,6 +104,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
         }
 
         fun startSearch(check: Boolean) {
+            productSearch.value = ""
             EventCollector.sendEvent(
                 Event.Action.Search.SearchInput(
                     isOneOf = check,
