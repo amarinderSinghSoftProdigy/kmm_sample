@@ -4,9 +4,6 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -59,8 +56,8 @@ fun AddEmployeeScreen(scope: EmployeeScope.SelectUserType) {
     val optionSelected = remember { mutableStateOf<EmployeeScope.OptionSelected?>(null) }
     val employeeData = scope.employeeData.flow.collectAsState()
     val activity = LocalContext.current as MainActivity
-    val isEnabled = employeeData.value.isEmpty()
     val showWarning = scope.showWarning.flow.collectAsState()
+    val showNoEmployeeView = scope.showNoEmployee.flow.collectAsState()
 
     Box(
         modifier = Modifier
@@ -83,9 +80,9 @@ fun AddEmployeeScreen(scope: EmployeeScope.SelectUserType) {
                     icon = R.drawable.ic_add_employee,
                     isSelected = optionSelected.value != null && optionSelected.value == EmployeeScope.OptionSelected.ADD_PARTNER,
                 ) {
-                    if (isEnabled) {
-                        scope.chooseUserType(UserType.PARTNER)
-                        optionSelected.value = EmployeeScope.OptionSelected.ADD_PARTNER
+                    scope.chooseUserType(UserType.PARTNER)
+                    optionSelected.value = EmployeeScope.OptionSelected.ADD_PARTNER
+                    if (canAddMoreItems(employeeData.value, UserType.PARTNER.serverValue)) {
                         scope.goToPersonalData()
                     } else {
                         scope.updateWarningVisibility(true)
@@ -98,9 +95,9 @@ fun AddEmployeeScreen(scope: EmployeeScope.SelectUserType) {
                     icon = R.drawable.ic_add_employee,
                     isSelected = optionSelected.value != null && optionSelected.value == EmployeeScope.OptionSelected.ADD_EMPLOYEE,
                 ) {
-                    if (isEnabled) {
-                        scope.chooseUserType(UserType.EMPLOYEE)
-                        optionSelected.value = EmployeeScope.OptionSelected.ADD_EMPLOYEE
+                    scope.chooseUserType(UserType.EMPLOYEE)
+                    optionSelected.value = EmployeeScope.OptionSelected.ADD_EMPLOYEE
+                    if (canAddMoreItems(employeeData.value, UserType.EMPLOYEE.serverValue)) {
                         scope.goToPersonalData()
                     } else {
                         scope.updateWarningVisibility(true)
@@ -109,7 +106,10 @@ fun AddEmployeeScreen(scope: EmployeeScope.SelectUserType) {
             }
             Space(dp = 10.dp)
             if (employeeData.value.isNotEmpty()) {
-                LazyColumn(contentPadding = PaddingValues(3.dp)) {
+                LazyColumn(
+                    contentPadding = PaddingValues(3.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
                     itemsIndexed(
                         items = employeeData.value,
                         key = { index, _ -> index },
@@ -120,7 +120,8 @@ fun AddEmployeeScreen(scope: EmployeeScope.SelectUserType) {
                         },
                     )
                 }
-            } else {
+            }
+            if (showNoEmployeeView.value)
                 NoRecords(
                     icon = R.drawable.ic_view_employee,
                     text = R.string.no_employee,
@@ -128,13 +129,27 @@ fun AddEmployeeScreen(scope: EmployeeScope.SelectUserType) {
                 ) {
                     scope.goBack()
                 }
-            }
         }
         if (showWarning.value) {
-            ShowAlert(message = stringResource(id = R.string.warning_employee_add)) {
+            ShowAlert(
+                message = if (optionSelected.value == EmployeeScope.OptionSelected.ADD_EMPLOYEE) stringResource(
+                    id = R.string.warning_employee_add
+                ) else stringResource(id = R.string.warning_partner_add)
+            ) {
                 scope.updateWarningVisibility(false)
             }
         }
+    }
+}
+
+/**
+ * to check if the list already contains either an employee or a partner
+ */
+private fun canAddMoreItems(employeeList: List<EmployeeData>, type: String): Boolean {
+    return if (employeeList.isEmpty()) {
+        true
+    } else {
+        !employeeList.any { it.userType.uppercase() in type }
     }
 }
 

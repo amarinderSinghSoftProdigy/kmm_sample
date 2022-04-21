@@ -64,6 +64,8 @@ internal class AddEmployeeEventDelegate(
 
             result.onSuccess { data ->
                 it.employeeData.value = data.results
+                if (data.results.isEmpty())
+                    it.showNoEmployee.value = true
             }.onError(navigator)
         }
     }

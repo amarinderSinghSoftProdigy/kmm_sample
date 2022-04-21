@@ -50,11 +50,11 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
         }
 
         private var clickedPosition = 0
-
+        var showNoEmployee = DataSource(false)
         val employeeData = DataSource<List<EmployeeData>>(emptyList())
         val showWarning = DataSource(false)
 
-        fun updateWarningVisibility(isVisible: Boolean){
+        fun updateWarningVisibility(isVisible: Boolean) {
             showWarning.value = isVisible
         }
 
@@ -64,7 +64,12 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
         }
 
         fun employeeDeleted() {
-            employeeData.value.toMutableList().removeAt(clickedPosition)
+            val tempList: MutableList<EmployeeData> = employeeData.value.toMutableList()
+            tempList.removeAt(clickedPosition)
+            employeeData.value = tempList
+            if (employeeData.value.isEmpty()) {
+                showNoEmployee.value = true
+            }
         }
 
         fun chooseUserType(userType: UserType) {
@@ -256,7 +261,7 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
         val registrationStep2: EmployeeRegistration2,
         val aadharNumber: String,
 
-    ) : EmployeeScope("preview"), CommonScope.PhoneVerificationEntryPoint {
+        ) : EmployeeScope("preview"), CommonScope.PhoneVerificationEntryPoint {
 
         init {
             canGoNext.value = true

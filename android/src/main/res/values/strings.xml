@@ -486,7 +486,8 @@
     <string name="share_medico">Share Medicostores App</string>
     <string name="share_content">Checkout Medicostores app on\n\nGoogle Play: https://play.google.com/store/apps/details?id=com.zealsoftsol.medico\n\n
     App Store: https://apps.apple.com/in/app/medicostores/id1578471027?uo=4</string>
-    <string name="warning_employee_add">An employee/partner is already added. Please delete to add a new employee/partner.</string>
+    <string name="warning_employee_add">An employee is already added. Please delete to add a new employee.</string>
+    <string name="warning_partner_add">A partner is already added. Please delete to add a new partner.</string>
     <string name="less_details">Less Details</string>
     <!-- Terms and Cond -->
 
