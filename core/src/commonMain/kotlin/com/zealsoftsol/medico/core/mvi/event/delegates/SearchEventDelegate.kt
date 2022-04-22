@@ -70,7 +70,35 @@ internal class SearchEventDelegate(
      */
     private fun getLocalSearchData() {
         navigator.withScope<SearchScope> {
-            it.autoComplete.value = userRepo.getLocalSearchHistory()
+            val prefilledList = listOf(
+                AutoComplete(
+                    query = "manufacturers",
+                    details = "in Manufacturers",
+                    suggestion = "ABBOTT INDIA LTD"
+                ),
+                AutoComplete(
+                    query = "manufacturers",
+                    details = "in Manufacturers",
+                    suggestion = "ALEMBIC PHARMACEUTICALS LTD"
+                ),
+                AutoComplete(
+                    query = "manufacturers",
+                    details = "in Manufacturers",
+                    suggestion = "CIPLA LTD"
+                ),
+                AutoComplete(
+                    query = "manufacturers",
+                    details = "in Manufacturers",
+                    suggestion = "ZYDUS CADILA"
+                ),
+                AutoComplete(
+                    query = "manufacturers",
+                    details = "in Manufacturers",
+                    suggestion = "FDC LTD"
+                )
+            )
+            it.autoComplete.value =
+                userRepo.getLocalSearchHistory().toMutableList().plus(prefilledList).toSet().toList()
         }
     }
 

@@ -723,6 +723,7 @@ private fun ActiveSearchTabBar(
                 withAutoComplete = !isFromKeyboard
             )
         },
+        showSearchIcon = true
     )
     scope.storage.save("focus", false)
 }

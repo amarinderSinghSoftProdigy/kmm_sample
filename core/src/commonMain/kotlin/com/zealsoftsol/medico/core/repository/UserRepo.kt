@@ -404,7 +404,7 @@ class UserRepo(
                 ListSerializer(AutoComplete.serializer()), settings.getString(
                     LOCAL_SEARCH
                 )
-            )
+            ).reversed()
         }.getOrElse { emptyList() }
     }
 
