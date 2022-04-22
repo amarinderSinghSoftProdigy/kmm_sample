@@ -1,5 +1,7 @@
 package com.zealsoftsol.medico.screens.inventory
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -77,6 +79,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalAnimationApi::class)
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @Composable
@@ -120,62 +123,63 @@ fun InventoryMainComposable(scope: InventoryScope) {
                         }
                     )
             )
-            if (showSearchBar.value) {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(45.dp)
-                        .padding(start = 10.dp)
-                        .padding(end = 45.dp)
-                        .align(CenterVertically),
-                    shape = RoundedCornerShape(3.dp),
-                    elevation = 3.dp,
-                    color = Color.White
-                ) {
-                    Row(
+                AnimatedVisibility(visible = showSearchBar.value) {
+                    Surface(
                         modifier = Modifier
+                            .fillMaxWidth()
                             .height(45.dp)
-                            .fillMaxWidth(), verticalAlignment = CenterVertically
+                            .padding(start = 10.dp)
+                            .padding(end = 45.dp)
+                            .align(CenterVertically),
+                        shape = RoundedCornerShape(3.dp),
+                        elevation = 3.dp,
+                        color = Color.White
                     ) {
-                        BasicTextField(
+                        Row(
                             modifier = Modifier
-                                .weight(1f)
-                                .padding(horizontal = 5.dp),
-                            value = searchTerm.value,
-                            maxLines = 1,
-                            singleLine = true,
-                            onValueChange = {
-                                searchTerm.value = it
+                                .height(45.dp)
+                                .fillMaxWidth(), verticalAlignment = CenterVertically
+                        ) {
+                            BasicTextField(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(horizontal = 5.dp),
+                                value = searchTerm.value,
+                                maxLines = 1,
+                                singleLine = true,
+                                onValueChange = {
+                                    searchTerm.value = it
 
-                                queryTextChangedJob?.cancel()
+                                    queryTextChangedJob?.cancel()
 
-                                queryTextChangedJob = CoroutineScope(Dispatchers.Main).launch {
-                                    delay(500)
-                                    scope.startSearch(it)
-                                }
-                            },
-                            textStyle = LocalTextStyle.current.copy(
-                                color = Color.Black,
-                                fontSize = 14.sp,
-                                background = Color.White,
-                            ),
-                            decorationBox = { innerTextField ->
-                                Row(modifier = Modifier) {
-                                    if (searchTerm.value.isEmpty()) {
-                                        Text(
-                                            text = stringResource(id = R.string.search_inventory),
-                                            color = Color.Gray,
-                                            fontSize = 14.sp,
-                                            maxLines = 1,
-                                        )
+                                    queryTextChangedJob = CoroutineScope(Dispatchers.Main).launch {
+                                        delay(500)
+                                        scope.startSearch(it)
                                     }
+                                },
+                                textStyle = LocalTextStyle.current.copy(
+                                    color = Color.Black,
+                                    fontSize = 14.sp,
+                                    background = Color.White,
+                                ),
+                                decorationBox = { innerTextField ->
+                                    Row(modifier = Modifier) {
+                                        if (searchTerm.value.isEmpty()) {
+                                            Text(
+                                                text = stringResource(id = R.string.search_inventory),
+                                                color = Color.Gray,
+                                                fontSize = 14.sp,
+                                                maxLines = 1,
+                                            )
+                                        }
+                                    }
+                                    innerTextField()
                                 }
-                                innerTextField()
-                            }
-                        )
+                            )
+                        }
                     }
                 }
-            }
+
 
             if (!showSearchBar.value) {
                 Row(
@@ -250,78 +254,78 @@ fun InventoryMainComposable(scope: InventoryScope) {
             InventoryStatus(scope)
         }
 
-        if (showGraphs.value) {
-            Space(10.dp)
-            LazyRow(
-                state = lazyListState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .padding(10.dp)
-            ) {
-                item {
-                    StatusView(
-                        scope = scope, modifier = Modifier
-                            .fillParentMaxWidth()
-                            .padding(8.dp)
-                    )
-                }
-                item {
-                    AvailabilityView(
-                        scope = scope,
-                        modifier = Modifier
-                            .fillParentMaxWidth()
-                            .padding(8.dp),
-                    )
-                }
-                item {
-                    ExpiryView(
-                        scope = scope,
-                        modifier = Modifier
-                            .fillParentMaxWidth()
-                            .padding(8.dp),
-                    )
-                }
+    AnimatedVisibility(visible = showGraphs.value) {
+        Space(10.dp)
+        LazyRow(
+            state = lazyListState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .padding(10.dp)
+        ) {
+            item {
+                StatusView(
+                    scope = scope, modifier = Modifier
+                        .fillParentMaxWidth()
+                        .padding(8.dp)
+                )
             }
-
-            //auto rotate banner after every 3 seconds
-            LaunchedEffect(lazyListState.firstVisibleItemIndex) {
-                delay(5000) // wait for 5 seconds.
-                // increasing the position and check the limit
-                var newPosition = lazyListState.firstVisibleItemIndex + 1
-                if (newPosition > 3 - 1) newPosition = 0
-                // scrolling to the new position.
-                if (newPosition == 0) {
-                    lazyListState.scrollToItem(newPosition)
-                } else {
-                    lazyListState.animateScrollToItem(newPosition)
-                }
+            item {
+                AvailabilityView(
+                    scope = scope,
+                    modifier = Modifier
+                        .fillParentMaxWidth()
+                        .padding(8.dp),
+                )
+            }
+            item {
+                ExpiryView(
+                    scope = scope,
+                    modifier = Modifier
+                        .fillParentMaxWidth()
+                        .padding(8.dp),
+                )
             }
         }
 
-        if (showManufacturers.value) {
-            Space(10.dp)
-            LazyRow(
-                contentPadding = PaddingValues(start = 3.dp),
-                modifier = Modifier.padding(horizontal = 16.dp),
-            ) {
-                manufacturersList.let {
-                    itemsIndexed(
-                        items = it,
-                        key = { index, _ -> index },
-                        itemContent = { index, item ->
-                            ManufacturersItem(item) {
-                                it.forEachIndexed { _, it ->
-                                    it.isChecked = false
-                                }
-                                it[index].isChecked = true
-                                scope.updateManufacturer(item.code)
+        //auto rotate banner after every 3 seconds
+        LaunchedEffect(lazyListState.firstVisibleItemIndex) {
+            delay(5000) // wait for 5 seconds.
+            // increasing the position and check the limit
+            var newPosition = lazyListState.firstVisibleItemIndex + 1
+            if (newPosition > 3 - 1) newPosition = 0
+            // scrolling to the new position.
+            if (newPosition == 0) {
+                lazyListState.scrollToItem(newPosition)
+            } else {
+                lazyListState.animateScrollToItem(newPosition)
+            }
+        }
+    }
+
+    AnimatedVisibility(visible = showManufacturers.value) {
+        Space(10.dp)
+        LazyRow(
+            contentPadding = PaddingValues(start = 3.dp),
+            modifier = Modifier.padding(horizontal = 16.dp),
+        ) {
+            manufacturersList.let {
+                itemsIndexed(
+                    items = it,
+                    key = { index, _ -> index },
+                    itemContent = { index, item ->
+                        ManufacturersItem(item) {
+                            it.forEachIndexed { _, it ->
+                                it.isChecked = false
                             }
-                        },
-                    )
-                }
+                            it[index].isChecked = true
+                            scope.updateManufacturer(item.code)
+                        }
+                    },
+                )
             }
         }
+    }
 
         Space(dp = 16.dp)
         Card(

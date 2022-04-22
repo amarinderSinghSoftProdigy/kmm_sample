@@ -34,6 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
@@ -138,7 +139,7 @@ fun CompanyItem(item: CompanyData) {
                     Image(
                         painter = painterResource(id = R.drawable.ic_arrow_right),
                         modifier = Modifier
-                            .rotate(90f),
+                            .rotate(if (visibility.value) 270f else 90f),
                         contentDescription = null
                     )
                 }
@@ -151,15 +152,22 @@ fun CompanyItem(item: CompanyData) {
                         mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
                     ) {
                         item.products.let {
-                            it.forEachIndexed { index, _ ->
+                            it.forEachIndexed { index, value ->
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(10.dp)
+                                        .padding(horizontal = 16.dp)
                                 ) {
-                                    Text(text = it[index].name, color = Gray)
-                                    Space(dp = 5.dp)
-                                    if (index != it.size)
+                                    Text(
+                                        text = value.name,
+                                        color = Gray,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        fontSize = 14.sp
+                                    )
+                                     Space(dp = 5.dp)
+                                    if (index != it.size - 1)
                                         Divider()
                                 }
                             }
