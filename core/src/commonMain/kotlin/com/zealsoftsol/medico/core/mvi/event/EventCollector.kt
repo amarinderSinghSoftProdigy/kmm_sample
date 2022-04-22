@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.compatDispatcher
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.interop.Time
 import com.zealsoftsol.medico.core.mvi.Navigator
+import com.zealsoftsol.medico.core.mvi.event.delegates.AddEmployeeEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.AuthEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.BatchesEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.CartEventDelegate
@@ -32,6 +33,7 @@ import com.zealsoftsol.medico.core.mvi.event.delegates.TransitionEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.WhatsappEventDelegate
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreSellerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
 import com.zealsoftsol.medico.core.network.NetworkScope
@@ -47,6 +49,7 @@ import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.repository.requireUserOld
 import com.zealsoftsol.medico.core.utils.LoadHelper
 import com.zealsoftsol.medico.core.utils.TapModeHelper
+import com.zealsoftsol.medico.data.UserType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.BufferOverflow
@@ -74,6 +77,7 @@ class EventCollector(
     qrCodeScope: NetworkScope.QrCodeStore,
     iocNetworkScope: NetworkScope.IOCStore,
     iocBuyerNetworkScope: NetworkScope.IOCBuyerStore,
+    employeeStore: NetworkScope.EmployeeStore,
     preferenceNetworkScope: NetworkScope.PreferencesStore,
     private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
@@ -181,6 +185,11 @@ class EventCollector(
             userRepo,
             iocBuyerNetworkScope
         ),
+        Event.Action.Employee::class to AddEmployeeEventDelegate(
+            navigator,
+            userRepo,
+            employeeStore
+        ),
         Event.Action.Preferences::class to PreferencesEventDelegate(
             navigator,
             userRepo,
@@ -207,13 +216,21 @@ class EventCollector(
 
     fun getStartingScope(): Scope {
         return when (userRepo.getUserAccess()) {
-            UserRepo.UserAccess.FULL_ACCESS -> DashboardScope.get(
-                user = userRepo.requireUser(),
-                userDataSource = userRepo.getUserDataSourceV2(),
-                dashboardData = userRepo.getDashboardDataSource(),
-                unreadNotifications = notificationRepo.getUnreadMessagesDataSource(),
-                cartItemsCount = cartRepo.getEntriesCountDataSource(),
-            )
+            UserRepo.UserAccess.FULL_ACCESS -> if (userRepo.userV2Flow.value!!.type == UserType.STOCKIST_EMPLOYEE)
+                InStoreSellerScope.get(
+                    userRepo.userV2Flow.value!!,
+                    userRepo.getUserDataSourceV2(),
+                    null
+                )
+            else
+                DashboardScope.get(
+                    user = userRepo.requireUser(),
+                    userDataSource = userRepo.getUserDataSourceV2(),
+                    dashboardData = userRepo.getDashboardDataSource(),
+                    unreadNotifications = notificationRepo.getUnreadMessagesDataSource(),
+                    cartItemsCount = cartRepo.getEntriesCountDataSource(),
+                )
+
             UserRepo.UserAccess.LIMITED_ACCESS -> LimitedAccessScope.get(
                 userRepo.requireUserOld(),
                 userRepo.getUserDataSource(),
@@ -228,14 +245,18 @@ class EventCollector(
             GlobalScope.launch(compatDispatcher) {
                 userRepo.loadUserFromServerV2()
             }
-            GlobalScope.launch(compatDispatcher) {
-                cartRepo.loadCartFromServer(userRepo.requireUser().unitCode)
+            if (userRepo.userV2Flow.value!!.type != UserType.STOCKIST_EMPLOYEE) {
+                GlobalScope.launch(compatDispatcher) {
+                    cartRepo.loadCartFromServer(userRepo.requireUser().unitCode)
+                }
             }
             GlobalScope.launch(compatDispatcher) {
                 userRepo.loadConfig()
             }
-            GlobalScope.launch(compatDispatcher) {
-                notificationRepo.loadUnreadMessagesFromServer()
+            if (userRepo.userV2Flow.value!!.type != UserType.STOCKIST_EMPLOYEE) {
+                GlobalScope.launch(compatDispatcher) {
+                    notificationRepo.loadUnreadMessagesFromServer()
+                }
             }
         }
     }

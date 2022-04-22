@@ -72,6 +72,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.CartPreviewScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ConfirmOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.EmployeeScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.HelpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreAddUserScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreCartScope
@@ -131,6 +132,12 @@ import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.showNotificationAlert
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.dashboard.DashboardScreen
+import com.zealsoftsol.medico.screens.employee.AddEmployeeAadharInfoScreen
+import com.zealsoftsol.medico.screens.employee.AddEmployeeAddressDetailsScreen
+import com.zealsoftsol.medico.screens.employee.AddEmployeeScreen
+import com.zealsoftsol.medico.screens.employee.AddEmployeeStepOneScreen
+import com.zealsoftsol.medico.screens.employee.EmployeePreview
+import com.zealsoftsol.medico.screens.employee.SuccessEmployees
 import com.zealsoftsol.medico.screens.help.HelpScreens
 import com.zealsoftsol.medico.screens.instore.InStoreAddUserScreen
 import com.zealsoftsol.medico.screens.instore.InStoreCartScreen
@@ -193,7 +200,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
         mBottomNavItems = null
         mUserType = navigation.value?.user?.flow?.value?.type
     }
-    if (childScope.value is SignUpScope) {
+    if (childScope.value is SignUpScope || childScope.value is EmployeeScope) {
         activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     } else {
         activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
@@ -204,8 +211,10 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
         scaffoldState = scaffoldState,
         drawerGesturesEnabled = navigation.value != null,
         topBar = {
+
             if (childScope.value !is OrderHsnEditScope && childScope.value !is InventoryScope && childScope.value !is IocSellerScope.InvUserListing
-                && childScope.value !is IocBuyerScope.InvUserListing && childScope.value !is ManagementScope.User) //don't show top bar for OrderEditHsnScreen and Inventory and IOC listing
+                && childScope.value !is IocBuyerScope.InvUserListing && childScope.value !is ManagementScope.User && mUserType != UserType.STOCKIST_EMPLOYEE
+            ) //don't show top bar for OrderEditHsnScreen and Inventory and IOC listing
             {
                 val tabBarInfo = scope.tabBar.flow.collectAsState()
                 TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
@@ -278,6 +287,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                                 scope,
                                 info,
                             )
+                            is TabBarInfo.NoHeader -> Box {}
                         }
                     }
                 }
@@ -286,7 +296,8 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
         content = {
             var padding = 56
             if (childScope.value is OrderHsnEditScope || childScope.value is ViewOrderScope ||
-                childScope.value is SignUpScope || childScope.value is ManagementScope.User) {// no bottom padding while editing order entries
+                childScope.value is SignUpScope || childScope.value is ManagementScope.User
+            ) {// no bottom padding while editing order entries
                 padding = 0
             }
 
@@ -408,7 +419,12 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     }
                     is BatchesScope -> ViewBatchesScreen(it)
                     is QrCodeScope -> QrCodeScreen(it)
-                    is IocSellerScope.InvUserListing -> IocListingScreen(it)
+                    is IocSellerScope.InvUserListing -> {
+                        if (mUserType == UserType.STOCKIST_EMPLOYEE) {
+                            manageBottomNavState(BottomNavKey.DEBT_COLLECTION)
+                        }
+                        IocListingScreen(it)
+                    }
                     is IocSellerScope.InvListing -> IocListingScreen(it)
                     is IocSellerScope.InvDetails -> IocListingScreen(it)
                     is IocSellerScope.IOCListing -> IocScreen(it, scaffoldState)
@@ -418,6 +434,15 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     is IocBuyerScope.InvDetails -> IocBuyerListingScreen(it)
                     is IocBuyerScope.IOCPaymentMethod -> IocBuyerListingScreen(it)
                     is IocBuyerScope.IOCPayNow -> IocBuyerListingScreen(it)
+                    is EmployeeScope.SelectUserType -> AddEmployeeScreen(it)
+                    is EmployeeScope.PersonalData -> AddEmployeeStepOneScreen(it)
+                    is EmployeeScope.AddressData -> AddEmployeeAddressDetailsScreen(it)
+                    is EmployeeScope.Details.Aadhaar -> AddEmployeeAadharInfoScreen(
+                        it,
+                        scaffoldState
+                    )
+                    is EmployeeScope.SuccessEmployee -> SuccessEmployees(it)
+                    is EmployeeScope.PreviewDetails -> EmployeePreview(it)
                     is PreferenceScope -> PreferenceScreen(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
@@ -425,22 +450,32 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
         },
         bottomBar = {
             if (mBottomNavItems.isNullOrEmpty() && mUserType != null) {
-                if (mUserType == UserType.STOCKIST) {
-                    mBottomNavItems = listOf(
-                        BottomNavigationItem.Dashboard,
-                        BottomNavigationItem.InStores,
-                        BottomNavigationItem.PurchaseOrders,
-                        BottomNavigationItem.Cart,
-                        BottomNavigationItem.Drawer
-                    )
-                } else {
-                    mBottomNavItems = listOf(
-                        BottomNavigationItem.Dashboard,
-                        BottomNavigationItem.Settings,
-                        BottomNavigationItem.Stores,
-                        BottomNavigationItem.Cart,
-                        BottomNavigationItem.Drawer
-                    )
+                when (mUserType) {
+                    UserType.STOCKIST -> {
+                        mBottomNavItems = listOf(
+                            BottomNavigationItem.Dashboard,
+                            BottomNavigationItem.InStores,
+                            BottomNavigationItem.PurchaseOrders,
+                            BottomNavigationItem.Cart,
+                            BottomNavigationItem.Drawer
+                        )
+                    }
+                    UserType.STOCKIST_EMPLOYEE -> {
+                        mBottomNavItems = listOf(
+                            BottomNavigationItem.InStores,
+                            BottomNavigationItem.DebtCollection,
+                            BottomNavigationItem.Logout
+                        )
+                    }
+                    else -> {
+                        mBottomNavItems = listOf(
+                            BottomNavigationItem.Dashboard,
+                            BottomNavigationItem.Settings,
+                            BottomNavigationItem.Stores,
+                            BottomNavigationItem.Cart,
+                            BottomNavigationItem.Drawer
+                        )
+                    }
                 }
             }
             if (mUserType != null) {
@@ -1198,7 +1233,10 @@ fun BottomNavigationBar(items: List<BottomNavigationItem>?, height: Int = 56) {
                             .weight(1f)
                             .height(48.dp)
                             .clickable {
-                                EventCollector.sendEvent(item.route)
+                                if (item.route != null)
+                                    EventCollector.sendEvent(item.route!!)
+                                else
+                                    EventCollector.sendEvent(item.action!!)
                             },
                         contentAlignment = Alignment.Center
                     ) {
@@ -1234,12 +1272,13 @@ fun BottomNavigationBar(items: List<BottomNavigationItem>?, height: Int = 56) {
  * bottom nav items , icons and their selected state
  */
 sealed class BottomNavigationItem(
-    var route: Event.Transition,
+    var route: Event.Transition?,
     var unSelectedIcon: Int,
     var selectedIcon: Int,
     var selected: MutableState<Boolean>,
     var cartCount: MutableState<Int> = mutableStateOf(0),
-    var key: BottomNavKey
+    var key: BottomNavKey,
+    var action: Event.Action? = null,
 ) {
     object Dashboard :
         BottomNavigationItem(
@@ -1304,10 +1343,29 @@ sealed class BottomNavigationItem(
             mutableStateOf(false),
             key = BottomNavKey.INSTORES
         )
+
+    object DebtCollection :
+        BottomNavigationItem(
+            Event.Transition.IOCSeller,
+            R.drawable.ic_debt_collection_grey,
+            R.drawable.ic_debt_selected,
+            mutableStateOf(false),
+            key = BottomNavKey.DEBT_COLLECTION
+        )
+
+    object Logout :
+        BottomNavigationItem(
+            null,
+            R.drawable.ic_logout_grey,
+            R.drawable.ic_logout_yellow,
+            mutableStateOf(false),
+            key = BottomNavKey.LOGOUT,
+            action = Event.Action.Auth.LogOut(true),
+        )
 }
 
 enum class BottomNavKey {
-    DASHBOARD, SETTINGS, PO, CART, MENU, STORES, INSTORES
+    DASHBOARD, SETTINGS, PO, CART, MENU, STORES, INSTORES, LOGOUT, DEBT_COLLECTION
 }
 
 /**

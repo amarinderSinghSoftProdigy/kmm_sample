@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
+import com.zealsoftsol.medico.data.AddEmployee
 import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoApprove
@@ -35,6 +36,8 @@ import com.zealsoftsol.medico.data.CustomerDataV2
 import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EditOfferRequest
+import com.zealsoftsol.medico.data.EmployeeRegistration1
+import com.zealsoftsol.medico.data.EmployeeRegistration2
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.HeaderData
@@ -92,6 +95,7 @@ import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.SellerUsersData
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.Store
+import com.zealsoftsol.medico.data.SubmitEmployeeRegistration
 import com.zealsoftsol.medico.data.SubmitPaymentRequest
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.SubscribeRequest
@@ -109,6 +113,7 @@ import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
 import com.zealsoftsol.medico.data.ValidationResponse
 import com.zealsoftsol.medico.data.VerifyOtpRequest
+import com.zealsoftsol.medico.data.ViewEmployee
 import com.zealsoftsol.medico.data.WhatsappData
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -161,7 +166,8 @@ class NetworkClient(
     NetworkScope.IOCBuyerStore,
     NetworkScope.BottomSheetStore,
     NetworkScope.QrCodeStore,
-    NetworkScope.PreferencesStore {
+    NetworkScope.PreferencesStore,
+    NetworkScope.EmployeeStore {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -1362,7 +1368,55 @@ class NetworkClient(
             }
         }
 
-    override suspend fun getCompanies(unitCode: String, page: Int): BodyResponse<InventoryCompanies> =
+    override suspend fun submitPersonalDetails(userRegistration1: EmployeeRegistration1): BodyResponse<AddEmployee> =
+        simpleRequest {
+            client.post("${baseUrl.url}/medico/employee/step1") { // Step1 is validated against the authorisation service (medico-auth0)
+                withMainToken()
+                jsonBody(userRegistration1)
+            }
+        }
+
+    override suspend fun submitAddressDetails(userRegistration2: EmployeeRegistration2): BodyResponse<AddEmployee> =
+        simpleRequest {
+            client.post("${baseUrl.url}/b2bapp/employee/step2") {
+                withMainToken()
+                jsonBody(userRegistration2)
+            }
+        }
+
+    override suspend fun submitAadhaarDetails(aadhaar: String): BodyResponse<AddEmployee> =
+        simpleRequest {
+            client.post("${baseUrl.url}/b2bapp/employee/step3") {
+                withMainToken()
+                jsonBody(mapOf("aadhaarCardNo" to aadhaar))
+            }
+        }
+
+    override suspend fun submitEmployee(employee: SubmitEmployeeRegistration): BodyResponse<AddEmployee> =
+        simpleRequest {
+            client.post("${baseUrl.url}/b2bapp/employee/submit") {
+                withMainToken()
+                jsonBody(employee)
+            }
+        }
+
+    override suspend fun getAllEmployees(): BodyResponse<ViewEmployee> =
+        client.get("${baseUrl.url}/b2bapp/employee/all") {
+            withMainToken()
+        }
+
+    override suspend fun deleteEmployee(id: String): BodyResponse<AddEmployee> =
+        simpleRequest {
+            client.post("${baseUrl.url}/b2bapp/employee/delete") {
+                withMainToken()
+                jsonBody(mapOf("id" to id))
+            }
+        }
+
+    override suspend fun getCompanies(
+        unitCode: String,
+        page: Int
+    ): BodyResponse<InventoryCompanies> =
         simpleRequest {
             client.post("${baseUrl.url}/inventory/companies/view") {
                 header("X-TENANT-ID", unitCode)
@@ -1489,4 +1543,3 @@ internal fun createJson() = Json {
     // TODO remove after kserilize lib updated from 1.2.1
     useAlternativeNames = false
 }
-

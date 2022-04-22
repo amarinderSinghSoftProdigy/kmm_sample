@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.EmployeeScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreAddUserScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreCartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreSellerScope
@@ -116,6 +117,10 @@ internal class TransitionEventDelegate(
                         )
                         UserType.HOSPITAL -> ManagementScope.User.Hospital()
                         UserType.SEASON_BOY -> ManagementScope.User.SeasonBoy()
+                        UserType.EMPLOYEE -> EmployeeScope.SelectUserType.get()
+                        UserType.PARTNER -> EmployeeScope.SelectUserType.get()
+                        UserType.STOCKIST_EMPLOYEE -> EmployeeScope.SelectUserType.get()
+                        UserType.RETAILER_EMPLOYEE -> EmployeeScope.SelectUserType.get()
                     }
                 )
                 is Event.Transition.RequestCreateRetailer -> setScope(
@@ -194,7 +199,10 @@ internal class TransitionEventDelegate(
                     )
                 )
                 is Event.Transition.InStore -> setScope(
-                    InStoreSellerScope(notificationRepo.getUnreadMessagesDataSource())
+                    InStoreSellerScope(
+                        notificationRepo.getUnreadMessagesDataSource(),
+                        userRepo.userV2Flow.value!!.type
+                    )
                 )
                 is Event.Transition.InStoreUsers -> setScope(
                     InStoreUsersScope()
@@ -230,8 +238,9 @@ internal class TransitionEventDelegate(
                     )
                 )
                 is Event.Transition.QrCode -> setScope(QrCodeScope())
-                is Event.Transition.IOCSeller -> setScope(IocSellerScope.InvUserListing())
+                is Event.Transition.IOCSeller -> setScope(IocSellerScope.InvUserListing(userRepo.userV2Flow.value!!.type))
                 is Event.Transition.IOCBuyer -> setScope(IocBuyerScope.InvUserListing())
+                is Event.Transition.AddEmployee -> setScope(EmployeeScope.SelectUserType.get())
                 is Event.Transition.Preference -> setScope(PreferenceScope())
                 is Event.Transition.Companies -> setScope(
                     ManagementScope.CompaniesScope(

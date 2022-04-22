@@ -172,7 +172,7 @@ data class SubmitRegistration(
     val city: String,
     val district: String,
     val state: String,
-    val ipAddress: String,
+    val ipAddress: String? = null,
     @Required
     val channel: String = "MOBILE",
     @Transient

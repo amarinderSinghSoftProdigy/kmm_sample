@@ -956,13 +956,16 @@ fun AuthPreview(scope: SignUpScope.PreviewDetails) {
 }
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AadhaarInputFields(
     aadhaarData: DataSource<AadhaarData>,
     onCardChange: (String) -> Unit,
     onCodeChange: (String) -> Unit,
+    showShareCode: Boolean = true,
     modifier: Modifier = Modifier
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Top,
@@ -977,17 +980,29 @@ fun AadhaarInputFields(
                 hint = stringResource(id = R.string.aadhaar_card),
                 text = aadhaar.value.cardNumber,
                 isValid = isAadhaarValid,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Number
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = { keyboardController?.hide() }),
                 onValueChange = onCardChange,
             )
         }
-        Space(dp = 12.dp)
-        InputField(
-            hint = stringResource(id = R.string.share_code),
-            text = aadhaar.value.shareCode,
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-            onValueChange = onCodeChange,
-        )
+        if(showShareCode) {
+            Space(dp = 12.dp)
+            InputField(
+                hint = stringResource(id = R.string.share_code),
+                text = aadhaar.value.shareCode,
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Number
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = { keyboardController?.hide() }),
+                onValueChange = onCodeChange,
+            )
+        }
     }
 }
 
@@ -1141,7 +1156,9 @@ private fun BasicAuthSignUpScreenWithButton(
 }
 
 @Composable
-fun ProgressItem(count: Int, progress: Double) {
+fun ProgressItem(count: Int, progress: Double,
+                 limit: Int = 5,
+                 width: Double = 0.2) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(
             modifier = Modifier
@@ -1161,7 +1178,7 @@ fun ProgressItem(count: Int, progress: Double) {
                 fontWeight = FontWeight.W700,
             )
         }
-        if (count < 5) {
+        if (count < limit) {
             Box(
                 modifier = Modifier
                     .background(
@@ -1169,7 +1186,10 @@ fun ProgressItem(count: Int, progress: Double) {
                         else ConstColors.gray.copy(alpha = 0.5f),
                         MaterialTheme.shapes.small
                     )
-                    .size(((LocalConfiguration.current.screenWidthDp.minus(120) * 0.2)).dp, 4.dp)
+                    .size(
+                        ((LocalConfiguration.current.screenWidthDp.minus(24 * limit) * width)).dp,
+                        4.dp
+                    )
             )
         }
     }

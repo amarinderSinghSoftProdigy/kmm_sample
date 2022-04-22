@@ -2,6 +2,8 @@ package com.zealsoftsol.medico.core.mvi.scope.nested
 
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
+import com.zealsoftsol.medico.core.mvi.NavigationOption
+import com.zealsoftsol.medico.core.mvi.NavigationSection
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
@@ -9,9 +11,12 @@ import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
+import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
+import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.core.utils.trimInput
+import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.InStoreCart
 import com.zealsoftsol.medico.data.InStoreCartEntry
 import com.zealsoftsol.medico.data.InStoreProduct
@@ -21,21 +26,45 @@ import com.zealsoftsol.medico.data.InStoreUserRegistration
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.Total
+import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.data.UserV2
 
-class InStoreSellerScope(val unreadNotifications: ReadOnlyDataSource<Int>) : Scope.Child.TabBar(),
+class InStoreSellerScope(val unreadNotifications: ReadOnlyDataSource<Int>?, val userType: UserType) :
+    Scope.Child.TabBar(),
     Loadable<InStoreSeller> {
 
     override val items: DataSource<List<InStoreSeller>> = DataSource(emptyList())
     override val totalItems: DataSource<Int> = DataSource(0)
     override val searchText: DataSource<String> = DataSource("")
     override val pagination: Pagination = Pagination()
+    override val isRoot: Boolean = true
 
-    init {
+    /*init {
         EventCollector.sendEvent(Event.Action.InStore.SellerLoad(isFirstLoad = true))
+    }*/
+
+    companion object {
+        fun get(
+            user: UserV2,
+            userDataSource: ReadOnlyDataSource<UserV2>,
+            unreadNotifications: ReadOnlyDataSource<Int>?,
+        ) = TabBarScope(
+            childScope = InStoreSellerScope(
+                unreadNotifications = unreadNotifications,
+                userType = user.type
+            ),
+            initialTabBarInfo = TabBarInfo.NoHeader(),
+            initialNavigationSection = NavigationSection(
+                userDataSource,
+                NavigationOption.default(user.type),
+                NavigationOption.footer()
+            ),
+        )
     }
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
-        TabBarInfo.NoIconTitle("", unreadNotifications)
+        if (userType == UserType.STOCKIST_EMPLOYEE) TabBarInfo.NoHeader("") else
+            TabBarInfo.NoIconTitle("", unreadNotifications)
 
     fun loadItems() =
         EventCollector.sendEvent(Event.Action.InStore.SellerLoad(isFirstLoad = false))

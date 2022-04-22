@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.network
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.data.AadhaarUpload
+import com.zealsoftsol.medico.data.AddEmployee
 import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoApprove
@@ -25,6 +26,8 @@ import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
 import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
+import com.zealsoftsol.medico.data.EmployeeRegistration1
+import com.zealsoftsol.medico.data.EmployeeRegistration2
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.HeaderData
 import com.zealsoftsol.medico.data.HelpData
@@ -76,6 +79,7 @@ import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.SellerUsersData
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.Store
+import com.zealsoftsol.medico.data.SubmitEmployeeRegistration
 import com.zealsoftsol.medico.data.SubmitPaymentRequest
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.SubscribeRequest
@@ -92,6 +96,7 @@ import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
 import com.zealsoftsol.medico.data.ValidationResponse
+import com.zealsoftsol.medico.data.ViewEmployee
 import com.zealsoftsol.medico.data.WhatsappData
 
 
@@ -528,6 +533,16 @@ interface NetworkScope {
         suspend fun getDetails(
             unitCode: String,
         ): BodyResponse<HeaderData>
+    }
+
+
+    interface EmployeeStore : NetworkScope {
+        suspend fun submitPersonalDetails(userRegistration1: EmployeeRegistration1): BodyResponse<AddEmployee>
+        suspend fun submitAddressDetails(userRegistration2: EmployeeRegistration2): BodyResponse<AddEmployee>
+        suspend fun submitAadhaarDetails(aadhaar: String): BodyResponse<AddEmployee>
+        suspend fun submitEmployee(employee: SubmitEmployeeRegistration): BodyResponse<AddEmployee>
+        suspend fun getAllEmployees(): BodyResponse<ViewEmployee>
+        suspend fun deleteEmployee(id: String): BodyResponse<AddEmployee>
     }
 
     interface PreferencesStore : NetworkScope {

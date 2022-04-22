@@ -114,11 +114,15 @@ internal class SearchEventDelegate(
      */
     private suspend fun selectAutoCompleteGlobal(autoComplete: AutoComplete) {
         navigator.withScope<BaseSearchScope> {
+            it.showNoProducts.value = false
             it.productSearch.value = autoComplete.suggestion
             it.pagination.reset()
             networkSearchScope.autocomplete(autoComplete.suggestion, null)
                 .onSuccess { body ->
                     it.autoComplete.value = body
+                    if(it.autoComplete.value.isEmpty()){
+                        it.showNoProducts.value = true
+                    }
                     if (body.isEmpty() && it.products.value.isNotEmpty()) {
                         it.products.value = emptyList()
                     }
@@ -204,7 +208,9 @@ internal class SearchEventDelegate(
      * @param sellerB2bCode - send seller B2B code is searching for stores products
      */
     private suspend fun searchAutoComplete(value: String, sellerB2bCode: String? = null) {
+
         navigator.withScope<BaseSearchScope> {
+            it.showNoProducts.value = false
             it.productSearch.value = value
             searchAsync(withDelay = true, withProgress = false) {
 
@@ -217,6 +223,9 @@ internal class SearchEventDelegate(
                 networkSearchScope.autocomplete(value, unitCodeForStores)
                     .onSuccess { body ->
                         it.autoComplete.value = body
+                        if(it.autoComplete.value.isEmpty()){
+                            it.showNoProducts.value = true
+                        }
                         if (value.isNotEmpty() && body.isEmpty() && it.products.value.isNotEmpty()) {
                             it.products.value = emptyList()
                         }
@@ -417,6 +426,7 @@ internal class SearchEventDelegate(
         //searchAsync(withDelay = withDelay, withProgress = withProgress) {
         //val address = userRepo.requireUser().addressData
         val address = userRepo.requireUser()
+        showNoProducts.value = false
         networkSearchScope.search(
             selectedSortOption.value?.code,
             (activeFilters + extraFilters).map { (queryName, option) -> queryName to option.value },
@@ -433,6 +443,9 @@ internal class SearchEventDelegate(
                 body.products /*else products.value + body.products*/
             totalResults.value = body.totalResults
             sortOptions.value = body.sortOptions
+            if (body.products.isEmpty()) {
+                showNoProducts.value = true
+            }
             if (selectedSortOption.value == null) {
                 selectedSortOption.value = sortOptions.value.firstOrNull()
             }

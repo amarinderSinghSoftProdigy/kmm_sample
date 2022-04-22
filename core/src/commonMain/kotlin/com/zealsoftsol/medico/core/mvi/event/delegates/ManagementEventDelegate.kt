@@ -45,6 +45,7 @@ internal class ManagementEventDelegate(
         is Event.Action.Management.GetCompanies -> getCompanies(event.page, event.unitCode)
     }
 
+
     /**
      * get companies list from server
      */

@@ -119,6 +119,7 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
         val listStateScroll = rememberScrollState()
         val coroutineScope = rememberCoroutineScope()
         val totalResults = scope.totalResults.flow.collectAsState()
+        val showNoProduct = scope.showNoProducts.flow.collectAsState()
 
         Column(
             modifier = Modifier
@@ -253,9 +254,9 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                                     })
                             }
                         }
-                    } else {
-                        NoProduct(productName = search.value)
                     }
+                    if (showNoProduct.value)
+                        NoProduct(productName = search.value)
                 } else {
                     LazyColumn(
                         state = rememberLazyListState(),

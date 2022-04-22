@@ -177,13 +177,11 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                     isSearchFocused = false,//scope.storage.restore("focus") as? Boolean ?: true,
                     onSearch = { value, _ ->
                         searchedProduct = value
-                        scope.searchProduct(
-                            value,
-                            withAutoComplete = true,
-                            scope.store.sellerUnitCode
-                        )
+                        scope.pagination.reset()
                         if (value.isEmpty()) {
                             scope.startSearch(false)
+                        } else {
+                            scope.searchProduct(value)
                         }
                     },
                     isSearchCross = true

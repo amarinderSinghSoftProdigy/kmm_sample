@@ -10,7 +10,7 @@ class Pagination(internal val itemsPerPage: Int = DEFAULT_ITEMS_PER_PAGE) {
         totalItems = value
     }
 
-    internal fun reset() {
+    fun reset() {
         currentPage = 0
         totalItems = 0
     }

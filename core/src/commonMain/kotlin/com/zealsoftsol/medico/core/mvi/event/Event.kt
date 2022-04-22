@@ -23,6 +23,7 @@ import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.DeclineReason
+import com.zealsoftsol.medico.data.EmployeeRegistration
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.HeaderData
@@ -629,6 +630,19 @@ sealed class Event {
             object ClearScopes : IOCBuyer()
         }
 
+        sealed class Employee : Action() {
+            override val typeClazz: KClass<*> = Employee::class
+
+            data class SelectUserType(val userType: UserType) : Employee()
+            data class Validate(val userRegistration: EmployeeRegistration) : Employee()
+            data class Aadhaar(val aadhaarData: AadhaarData) : Employee()
+            data class UpdatePincode(val pincode: String) : Employee()
+            object ViewEmployee : Employee()
+            data class DeleteEmployee(val id: String) : Employee()
+            object SubmitOtp : Employee()
+            object SubmitFinalData : Employee()
+        }
+
         sealed class Preferences : Action() {
             override val typeClazz: KClass<*> = Preferences::class
 
@@ -696,6 +710,7 @@ sealed class Event {
         object QrCode : Transition()
         object IOCSeller : Transition()
         object IOCBuyer : Transition()
+        object AddEmployee : Transition()
         object Preference : Transition()
         data class Companies(val title: String, val unitCode: String) : Transition()
     }

@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,6 +36,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreSellerScope
 import com.zealsoftsol.medico.data.InStoreSeller
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
@@ -44,6 +47,8 @@ import com.zealsoftsol.medico.screens.search.SearchBarEnd
 
 @Composable
 fun InStoreSellersScreen(scope: InStoreSellerScope) {
+    remember {scope.loadItems(true)}
+
     Box(
         modifier = Modifier
             .fillMaxSize()

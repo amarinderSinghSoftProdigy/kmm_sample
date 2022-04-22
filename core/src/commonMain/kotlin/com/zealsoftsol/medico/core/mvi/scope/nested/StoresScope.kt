@@ -73,7 +73,8 @@ sealed class StoresScope : Scope.Child.TabBar() {
         override val enableButton: DataSource<Boolean> = DataSource(false),
         override val freeQty: DataSource<Double> = DataSource(0.0),
         override val productId: DataSource<String> = DataSource(""),
-        override val totalResults: DataSource<Int> = DataSource(0)
+        override val totalResults: DataSource<Int> = DataSource(0),
+        override var showNoProducts: DataSource<Boolean> = DataSource(false)
 
     ) : StoresScope(), BaseSearchScope {
 
@@ -93,7 +94,17 @@ sealed class StoresScope : Scope.Child.TabBar() {
             EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(url))
         }
 
+        fun searchProduct(value:String) {
+            productSearch.value = value
+            searchProduct(
+                value,
+                withAutoComplete = true,
+                store.sellerUnitCode
+            )
+        }
+
         fun startSearch(check: Boolean) {
+            productSearch.value = ""
             EventCollector.sendEvent(
                 Event.Action.Search.SearchInput(
                     isOneOf = check,

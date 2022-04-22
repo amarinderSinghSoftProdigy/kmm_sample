@@ -467,6 +467,16 @@
     <string name="previous">Previous</string>
     <string name="expires_in">Expires in</string>
     <string name="total_amount_message">Amount entered should not be more than the Outstanding amount (Out. Amount : $)</string>
+    <string name="add_employee">Add Employee</string>
+    <string name="view_employee">View Employee</string>
+    <string name="employees">Employees</string>
+    <string name="employee_reg_success">Employee Registration Successful</string>
+    <string name="done">Done</string>
+    <string name="employee">Employee</string>
+    <string name="no_employee">No Employee/Partner Found!</string>
+    <string name="add_partner">Add Partner</string>
+    <string name="more_details">More Details</string>
+    <string name="delete">Delete</string>
     <string name="drug_licence_expiry">Drug License Expiry</string>
     <string name="food_licence_expiry">Food License Expiry</string>
     <string name="auto_approve">Auto Approve</string>
@@ -476,6 +486,9 @@
     <string name="share_medico">Share Medicostores App</string>
     <string name="share_content">Checkout Medicostores app on\n\nGoogle Play: https://play.google.com/store/apps/details?id=com.zealsoftsol.medico\n\n
     App Store: https://apps.apple.com/in/app/medicostores/id1578471027?uo=4</string>
+    <string name="warning_employee_add">An employee is already added. Please delete to add a new employee.</string>
+    <string name="warning_partner_add">A partner is already added. Please delete to add a new partner.</string>
+    <string name="less_details">Less Details</string>
     <string name="companies">Companies</string>
     <string name="no_companies">No Companies</string>
 

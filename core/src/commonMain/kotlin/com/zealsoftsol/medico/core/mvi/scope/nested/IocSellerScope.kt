@@ -22,6 +22,7 @@ import com.zealsoftsol.medico.data.InvUserData
 import com.zealsoftsol.medico.data.InvoiceDetails
 import com.zealsoftsol.medico.data.RetailerData
 import com.zealsoftsol.medico.data.UploadResponseData
+import com.zealsoftsol.medico.data.UserType
 
 
 sealed class IocSellerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
@@ -39,7 +40,7 @@ sealed class IocSellerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         PaymentTypes.NET_BANKING,
     )
 
-    class InvUserListing : IocSellerScope(), Loadable<InvUserData>, CommonScope.CanGoBack {
+    class InvUserListing (val userType : UserType): IocSellerScope(), Loadable<InvUserData>, CommonScope.CanGoBack {
 
         override val isRoot: Boolean = false
         override val pagination: Pagination = Pagination()
