@@ -242,6 +242,12 @@ internal class TransitionEventDelegate(
                 is Event.Transition.IOCBuyer -> setScope(IocBuyerScope.InvUserListing())
                 is Event.Transition.AddEmployee -> setScope(EmployeeScope.SelectUserType.get())
                 is Event.Transition.Preference -> setScope(PreferenceScope())
+                is Event.Transition.Companies -> setScope(
+                    ManagementScope.CompaniesScope(
+                        event.title,
+                        event.unitCode
+                    )
+                )
             }
         }
     }

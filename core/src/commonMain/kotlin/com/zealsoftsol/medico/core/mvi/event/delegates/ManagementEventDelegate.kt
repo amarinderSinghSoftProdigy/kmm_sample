@@ -42,6 +42,23 @@ internal class ManagementEventDelegate(
         )
         is Event.Action.Management.VerifyRetailerTraderDetails -> verifyRetailerTraderDetails()
         is Event.Action.Management.SelectAction -> selectAction(event.notificationId, event.action)
+        is Event.Action.Management.GetCompanies -> getCompanies(event.page, event.unitCode)
+    }
+
+
+    /**
+     * get companies list from server
+     */
+    private suspend fun getCompanies(page: Int, unitCode: String) {
+        navigator.withScope<ManagementScope.CompaniesScope> {
+            withProgress {
+                networkManagementScope.getCompanies(unitCode, page)
+                    .onSuccess { data ->
+                        it.updateCompanies(data.results)
+                        it.totalResults = data.totalResults
+                    }.onError(navigator)
+            }
+        }
     }
 
     private suspend fun openRetailerDetails(item: String, showConnectionOption: Boolean) {

@@ -40,6 +40,7 @@ import com.zealsoftsol.medico.data.InStoreUser
 import com.zealsoftsol.medico.data.InStoreUserRegistration
 import com.zealsoftsol.medico.data.InfoResponse
 import com.zealsoftsol.medico.data.InvListingData
+import com.zealsoftsol.medico.data.InventoryCompanies
 import com.zealsoftsol.medico.data.InventoryData
 import com.zealsoftsol.medico.data.Invoice
 import com.zealsoftsol.medico.data.InvoiceDetails
@@ -201,6 +202,8 @@ interface NetworkScope {
             id: String,
             actionRequest: NotificationActionRequest
         ): AnyResponse
+
+        suspend fun getCompanies(unitCode: String, page: Int): BodyResponse<InventoryCompanies>
 
     }
 

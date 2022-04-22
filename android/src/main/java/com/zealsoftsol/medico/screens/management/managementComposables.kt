@@ -99,7 +99,6 @@ private fun EntityManagementScreen(scope: ManagementScope.User, isInProgress: Da
     val showSearchOverlay = remember { mutableStateOf(true) }
     val activeTab = scope.activeTab.flow.collectAsState()
     val totalItems = scope.totalItems.flow.collectAsState()
-
     Space(16.dp)
     if (showSearchOverlay.value) {
         Row(
@@ -266,7 +265,6 @@ private fun EntityManagementScreen(scope: ManagementScope.User, isInProgress: Da
     } else {
         LazyColumn(
             state = rememberLazyListState(),
-            contentPadding = PaddingValues(top = 16.dp),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp),
@@ -278,13 +276,20 @@ private fun EntityManagementScreen(scope: ManagementScope.User, isInProgress: Da
                     if (isSeasonBoy) {
                         SeasonBoyItem(item) { scope.selectItem(item) }
                     } else {
-                        NonSeasonBoyItem(item) { scope.selectItem(item) }
+                        NonSeasonBoyItem(
+                            item,
+                            activeTab.value.name,
+                            scope
+                        ) { scope.selectItem(item) }
                     }
                     if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
                         scope.loadItems()
                     }
                 },
             )
+            item {
+                Space(dp = 80.dp)
+            }
         }
     }
     if (showAlert.value)
@@ -296,6 +301,8 @@ private fun EntityManagementScreen(scope: ManagementScope.User, isInProgress: Da
 @Composable
 private fun NonSeasonBoyItem(
     entityInfo: EntityInfo,
+    activeTab: String,
+    scope: ManagementScope.User,
     onClick: () -> Unit,
 ) {
     BaseManagementItem(onClick) {
@@ -372,13 +379,28 @@ private fun NonSeasonBoyItem(
                         } ?: Space(4.dp)
                     }
 
-
-                    Box(
-                        modifier = Modifier
-                            .width(maxWidth / 2)
-                            .align(Alignment.BottomEnd),
-                        contentAlignment = Alignment.BottomEnd,
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
+                        Text(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable {
+                                    if (activeTab == ManagementScope.Tab.ALL_STOCKISTS.name)
+                                        scope.loadCompanies(
+                                            entityInfo.tradeName,
+                                            entityInfo.unitCode
+                                        )
+                                },
+                            text = if (activeTab == ManagementScope.Tab.ALL_STOCKISTS.name) stringResource(
+                                id = R.string.companies
+                            ) else "",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.W600,
+                            color = ConstColors.green
+                        )
                         Row {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_location),
@@ -397,6 +419,7 @@ private fun NonSeasonBoyItem(
                         }
                     }
                 }
+
             }
         }
     }

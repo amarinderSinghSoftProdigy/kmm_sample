@@ -218,6 +218,8 @@ sealed class Event {
                 val notificationId: String,
                 val action: NotificationActionRequest
             ) : Management()
+
+            data class GetCompanies(val unitCode: String, val page: Int) : Management()
         }
 
         sealed class Notification : Action() {
@@ -535,7 +537,6 @@ sealed class Event {
                 Inventory()
 
             data class UpdateBatch(val batchData: BatchUpdateRequest) : Inventory()
-
         }
 
         sealed class QrCode : Action() {
@@ -648,7 +649,6 @@ sealed class Event {
             object GetPreferences : Preferences()
             data class SetAutoConnectPreferences(val isEnabled: Boolean) : Preferences()
         }
-
     }
 
 
@@ -712,5 +712,6 @@ sealed class Event {
         object IOCBuyer : Transition()
         object AddEmployee : Transition()
         object Preference : Transition()
+        data class Companies(val title: String, val unitCode: String) : Transition()
     }
 }

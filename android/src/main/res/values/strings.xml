@@ -489,7 +489,10 @@
     <string name="warning_employee_add">An employee is already added. Please delete to add a new employee.</string>
     <string name="warning_partner_add">A partner is already added. Please delete to add a new partner.</string>
     <string name="less_details">Less Details</string>
-    <!-- Terms and Cond -->
+    <string name="companies">Companies</string>
+    <string name="no_companies">No Companies</string>
+
+    <!-- Termrs and Cond -->
 
     <string name="tandc_line_1">Terms &amp; Conditions</string>
     <string name="tandc_line_2">Please Read These Terms Carefully Before Using this Service</string>

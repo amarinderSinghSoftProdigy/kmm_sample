@@ -152,6 +152,7 @@ import com.zealsoftsol.medico.screens.ioc.IocBuyerListingScreen
 import com.zealsoftsol.medico.screens.ioc.IocListingScreen
 import com.zealsoftsol.medico.screens.ioc.IocScreen
 import com.zealsoftsol.medico.screens.management.AddRetailerScreen
+import com.zealsoftsol.medico.screens.management.CompaniesScreen
 import com.zealsoftsol.medico.screens.management.ManagementScreen
 import com.zealsoftsol.medico.screens.management.StoresScreen
 import com.zealsoftsol.medico.screens.menu.MenuScreen
@@ -369,6 +370,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     }
                     is ManagementScope.User -> ManagementScreen(it, scope.isInProgress)
                     is ManagementScope.AddRetailer -> AddRetailerScreen(it)
+                    is ManagementScope.CompaniesScope -> CompaniesScreen(it)
                     is NotificationScope -> NotificationScreen(it, notificationList)
                     is StoresScope -> {
                         StoresScreen(it)

@@ -51,6 +51,7 @@ import com.zealsoftsol.medico.data.InStoreUser
 import com.zealsoftsol.medico.data.InStoreUserRegistration
 import com.zealsoftsol.medico.data.InfoResponse
 import com.zealsoftsol.medico.data.InvListingData
+import com.zealsoftsol.medico.data.InventoryCompanies
 import com.zealsoftsol.medico.data.InventoryData
 import com.zealsoftsol.medico.data.Invoice
 import com.zealsoftsol.medico.data.InvoiceDetails
@@ -1412,6 +1413,21 @@ class NetworkClient(
             }
         }
 
+    override suspend fun getCompanies(
+        unitCode: String,
+        page: Int
+    ): BodyResponse<InventoryCompanies> =
+        simpleRequest {
+            client.post("${baseUrl.url}/inventory/companies/view") {
+                header("X-TENANT-ID", unitCode)
+                withMainToken()
+                url {
+                    parameters.append("page", page.toString())
+                    parameters.append("pageSize", Pagination.DEFAULT_ITEMS_PER_PAGE.toString())
+                }
+            }
+        }
+
     // Utils
     private inline fun HttpRequestBuilder.withB2bCodeToken(finalToken: String) {
         applyHeader(finalToken)
@@ -1515,7 +1531,6 @@ class NetworkClient(
         STAG("https://staging-api-gateway.medicostores.com"),
         PROD("https://partner-api-gateway.medicostores.com");
     }
-
 
 }
 
