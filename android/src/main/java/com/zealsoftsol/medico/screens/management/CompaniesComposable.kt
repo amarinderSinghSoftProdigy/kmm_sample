@@ -166,7 +166,7 @@ fun CompanyItem(item: CompanyData) {
                                         overflow = TextOverflow.Ellipsis,
                                         fontSize = 14.sp
                                     )
-                                    Space(dp = 5.dp)
+                                     Space(dp = 5.dp)
                                     if (index != it.size - 1)
                                         Divider()
                                 }
