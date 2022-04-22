@@ -212,7 +212,8 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
         topBar = {
 
             if (childScope.value !is OrderHsnEditScope && childScope.value !is InventoryScope && childScope.value !is IocSellerScope.InvUserListing
-                && childScope.value !is IocBuyerScope.InvUserListing && childScope.value !is ManagementScope.User && mUserType != UserType.STOCKIST_EMPLOYEE) //don't show top bar for OrderEditHsnScreen and Inventory and IOC listing
+                && childScope.value !is IocBuyerScope.InvUserListing && childScope.value !is ManagementScope.User && mUserType != UserType.STOCKIST_EMPLOYEE
+            ) //don't show top bar for OrderEditHsnScreen and Inventory and IOC listing
             {
                 val tabBarInfo = scope.tabBar.flow.collectAsState()
                 TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
@@ -285,7 +286,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                                 scope,
                                 info,
                             )
-                            is TabBarInfo.NoHeader -> Box{}
+                            is TabBarInfo.NoHeader -> Box {}
                         }
                     }
                 }
@@ -294,10 +295,11 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
         content = {
             var padding = 56
             if (childScope.value is OrderHsnEditScope || childScope.value is ViewOrderScope ||
-                childScope.value is SignUpScope || childScope.value is ManagementScope.User) {// no bottom padding while editing order entries
+                childScope.value is SignUpScope || childScope.value is ManagementScope.User
+            ) {// no bottom padding while editing order entries
                 padding = 0
             }
-            
+
             Crossfade(
                 childScope.value,
                 animationSpec = tween(durationMillis = 200),
@@ -415,7 +417,12 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     }
                     is BatchesScope -> ViewBatchesScreen(it)
                     is QrCodeScope -> QrCodeScreen(it)
-                    is IocSellerScope.InvUserListing -> IocListingScreen(it)
+                    is IocSellerScope.InvUserListing -> {
+                        if (mUserType == UserType.STOCKIST_EMPLOYEE) {
+                            manageBottomNavState(BottomNavKey.DEBT_COLLECTION)
+                        }
+                        IocListingScreen(it)
+                    }
                     is IocSellerScope.InvListing -> IocListingScreen(it)
                     is IocSellerScope.InvDetails -> IocListingScreen(it)
                     is IocSellerScope.IOCListing -> IocScreen(it, scaffoldState)
@@ -1337,7 +1344,7 @@ sealed class BottomNavigationItem(
 
     object DebtCollection :
         BottomNavigationItem(
-            Event.Transition.IOCBuyer,
+            Event.Transition.IOCSeller,
             R.drawable.ic_debt_collection_grey,
             R.drawable.ic_debt_selected,
             mutableStateOf(false),
