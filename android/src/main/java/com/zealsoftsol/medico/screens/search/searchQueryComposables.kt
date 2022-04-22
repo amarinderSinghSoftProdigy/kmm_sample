@@ -994,6 +994,7 @@ fun BasicSearchBar(
     isSearchCross: Boolean = false,
     start: Dp = 24.dp,
     backgroundColor: Color = Color.White,
+    showSearchIcon: Boolean = false
 ) {
     SearchBarBox(
         elevation = elevation,
@@ -1060,6 +1061,21 @@ fun BasicSearchBar(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.End
                     ) {
+                        if (showSearchIcon) {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = null,
+                                tint = ConstColors.gray,
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .clickable(
+                                        indication = null,
+                                        onClick = {
+                                            onSearch(input, true)
+                                        }
+                                    )
+                            )
+                        }
                         if (input.isNotEmpty() && isSearchCross) {
                             Icon(
                                 imageVector = Icons.Default.Close,
