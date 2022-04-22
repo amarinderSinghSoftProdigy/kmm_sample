@@ -49,6 +49,7 @@ import com.zealsoftsol.medico.data.BuyerDetailsData
 import com.zealsoftsol.medico.data.FormattedData
 import com.zealsoftsol.medico.data.InvContactDetails
 import com.zealsoftsol.medico.data.InvUserData
+import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
@@ -338,6 +339,7 @@ private fun InvSellerListing(sellerScope: IocSellerScope.InvListing) {
 private fun InvSellerUserListing(sellerScope: IocSellerScope.InvUserListing) {
     val search = sellerScope.searchText.flow.collectAsState()
     val items = sellerScope.items.flow.collectAsState()
+
     remember {
         sellerScope.load("")
     }
@@ -354,19 +356,20 @@ private fun InvSellerUserListing(sellerScope: IocSellerScope.InvUserListing) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(start = 10.dp)
-                    .clickable(
-                        indication = null,
-                        onClick = {
-                            sellerScope.goBack()
-                        }
-                    )
-            )
-
+            if (sellerScope.userType != UserType.STOCKIST_EMPLOYEE) { //don;t show back icon for employee role
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(start = 10.dp)
+                        .clickable(
+                            indication = null,
+                            onClick = {
+                                sellerScope.goBack()
+                            }
+                        )
+                )
+            }
             BasicSearchBar(
                 input = search.value,
                 hint = R.string.search_tradename,

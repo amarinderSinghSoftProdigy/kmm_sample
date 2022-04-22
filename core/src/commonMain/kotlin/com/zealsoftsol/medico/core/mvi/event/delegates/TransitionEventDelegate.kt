@@ -216,7 +216,12 @@ internal class TransitionEventDelegate(
                 is Event.Transition.WhatsappPreference -> setScope(
                     WhatsappPreferenceScope("whatsapp_preference")
                 )
-                is Event.Transition.Inventory -> setScope(InventoryScope(DataSource(event.type), manufacturerCode = event.manufacturer))
+                is Event.Transition.Inventory -> setScope(
+                    InventoryScope(
+                        DataSource(event.type),
+                        manufacturerCode = event.manufacturer
+                    )
+                )
                 is Event.Transition.Menu -> setScope(
                     MenuScope(
                         userRepo.requireUser(),
@@ -233,7 +238,7 @@ internal class TransitionEventDelegate(
                     )
                 )
                 is Event.Transition.QrCode -> setScope(QrCodeScope())
-                is Event.Transition.IOCSeller -> setScope(IocSellerScope.InvUserListing())
+                is Event.Transition.IOCSeller -> setScope(IocSellerScope.InvUserListing(userRepo.userV2Flow.value!!.type))
                 is Event.Transition.IOCBuyer -> setScope(IocBuyerScope.InvUserListing())
                 is Event.Transition.AddEmployee -> setScope(EmployeeScope.SelectUserType.get())
                 is Event.Transition.Preference -> setScope(PreferenceScope())
