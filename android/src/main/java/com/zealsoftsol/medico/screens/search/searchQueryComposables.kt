@@ -26,6 +26,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -264,10 +265,10 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                             .fillMaxSize()
                             .background(color = Color.White)
                     ) {
-                        items(
+                        itemsIndexed(
                             items = autoComplete.value,
-                            key = { item -> item.suggestion },
-                            itemContent = { item ->
+                            key = { index, _ -> index },
+                            itemContent = { _, item ->
                                 AutoCompleteItem(
                                     item,
                                     search.value

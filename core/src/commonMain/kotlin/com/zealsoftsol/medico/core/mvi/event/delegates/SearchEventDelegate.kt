@@ -263,7 +263,7 @@ internal class SearchEventDelegate(
     }
 
     private suspend fun selectAutocomplete(autoComplete: AutoComplete) {
-        userRepo.saveLocalSearchHistory(autoComplete)
+//        userRepo.saveLocalSearchHistory(autoComplete) //un comment to save local search history
         navigator.withScope<BaseSearchScope> {
             it.productSearch.value = autoComplete.suggestion
             it.pagination.reset()
@@ -471,6 +471,7 @@ internal class SearchEventDelegate(
                 body.products /*else products.value + body.products*/
             totalResults.value = body.totalResults
             sortOptions.value = body.sortOptions
+            autoComplete.value = emptyList()
             if (body.products.isEmpty()) {
                 showNoProducts.value = true
             }

@@ -151,7 +151,7 @@ class SearchScope(
                 )
             }
         } else {
-            EventCollector.sendEvent(Event.Action.Search.GetLocalSearchData)
+            EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true))
         }
     }
 
