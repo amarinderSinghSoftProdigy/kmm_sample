@@ -96,6 +96,8 @@ class DashboardScope private constructor(
 
     fun goToNotifications() = EventCollector.sendEvent(Event.Transition.Notifications)
 
+    fun sendEvent(event: Event) = EventCollector.sendEvent(event)
+
     fun goToOrders() =
         EventCollector.sendEvent(if (userType == UserType.STOCKIST) Event.Transition.PoOrdersAndHistory else Event.Transition.Orders)
 

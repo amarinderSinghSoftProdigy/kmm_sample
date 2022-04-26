@@ -2,9 +2,11 @@ package com.zealsoftsol.medico.screens.dashboard
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,15 +43,19 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,7 +63,9 @@ import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.flowlayout.SizeMode
 import com.zealsoftsol.medico.ConstColors
+import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.data.BannerData
@@ -96,6 +104,7 @@ private fun ShowRetailerAndHospitalDashboard(
     scope: DashboardScope
 ) {
     val lazyListState = rememberLazyListState()
+    val activity = LocalContext.current as MainActivity
 
     Box(
         modifier = Modifier
@@ -121,7 +130,7 @@ private fun ShowRetailerAndHospitalDashboard(
                                 BannerItem(
                                     item, scope, modifier = Modifier
                                         .fillParentMaxWidth()
-                                        .height(180.dp)
+                                        .height(150.dp)
                                         .padding(horizontal = 16.dp)
                                 )
                             },
@@ -142,25 +151,6 @@ private fun ShowRetailerAndHospitalDashboard(
                             lazyListState.animateScrollToItem(newPosition.value)
                         }
                     }
-
-                    //show pager indicator
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        for (i in it.indices) {
-                            Canvas(
-                                modifier = Modifier
-                                    .size(if (i == newPosition.value) 12.dp else 10.dp)
-                                    .padding(horizontal = 2.dp)
-                            ) {
-                                drawCircle(color = if (i == newPosition.value) Color.Black else ConstColors.txtGrey)
-                            }
-                        }
-                    }
                 }
             }
 
@@ -169,30 +159,48 @@ private fun ShowRetailerAndHospitalDashboard(
                 modifier = Modifier
                     .background(Color.White)
                     .padding(vertical = 16.dp)
+                    .horizontalScroll(rememberScrollState())
             ) {
+                val shareText = stringResource(id = R.string.share_content)
                 Row(
-                    modifier = Modifier.padding(horizontal = 16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                 ) {
-                    BigButtonRetailer(
-                        icon = R.drawable.ic_orders_dashboard,
-                        text = stringResource(id = R.string.orders),
-                        counter = dashboard.value?.ordersCount ?: 0,
-                        onClick = { scope.goToOrders() },
-                    )
+                    QuickActionItem(
+                        title = stringResource(id = R.string.stockist),
+                        icon = R.drawable.ic_menu_stockist
+                    ) {
+                        scope.selectSection(scope.sections[1])
+                    }
                     Space(16.dp)
-                    BigButtonRetailer(
-                        icon = R.drawable.ic_bell_dashboard,
-                        text = stringResource(id = R.string.notifications),
-                        counter = unreadNotifications.value,
-                        onClick = { scope.goToNotifications() },
-                    )
+                    QuickActionItem(
+                        title = stringResource(id = R.string.orders),
+                        icon = R.drawable.ic_menu_orders
+                    ) {
+                        scope.goToOrders()
+                    }
                     Space(16.dp)
-                    BigButtonRetailer(
-                        icon = R.drawable.ic_stockist_dashboard,
-                        text = stringResource(id = R.string.stockist),
-                        counter = scope.sections[1].getCount(dashboard = dashboard.value),
-                        onClick = { scope.selectSection(scope.sections[1]) },
-                    )
+                    QuickActionItem(
+                        title = stringResource(id = R.string.stores),
+                        icon = R.drawable.ic_menu_stores
+                    ) {
+                        scope.sendEvent(Event.Transition.Stores)
+                    }
+                    Space(16.dp)
+                    QuickActionItem(
+                        title = stringResource(id = R.string.my_account),
+                        icon = R.drawable.ic_personal
+                    ) {
+                        scope.sendEvent(Event.Transition.Settings(true))
+                    }
+                    Space(16.dp)
+                    QuickActionItem(
+                        title = stringResource(id = R.string.share_medico),
+                        icon = R.drawable.ic_share
+                    ) {
+                        activity.shareTextContent(shareText)
+                    }
                 }
             }
 
@@ -258,6 +266,43 @@ private fun ShowRetailerAndHospitalDashboard(
 }
 
 /**
+ * items for quick action
+ */
+@Composable
+private fun QuickActionItem(title: String, icon: Int, onClick: () -> Unit) {
+    Column(horizontalAlignment = CenterHorizontally) {
+        Box(modifier = Modifier.clickable { onClick() }) {
+            Surface(
+                modifier = Modifier
+                    .size(80.dp),
+                color = Color.White,
+                shape = CircleShape,
+                elevation = 5.dp
+            ) {
+            }
+            Image(
+                modifier = Modifier
+                    .size(35.dp)
+                    .align(Center),
+                painter = painterResource(id = icon),
+                contentDescription = null,
+            )
+        }
+        Space(dp = 5.dp)
+        Text(
+            modifier = Modifier.width(80.dp),
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1,
+            text = title,
+            color = Color.Gray,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.W600,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+/**
  * UI for items in Banner on top
  */
 @Composable
@@ -278,7 +323,7 @@ private fun BannerItem(item: BannerData, scope: DashboardScope, modifier: Modifi
             contentScale = ContentScale.FillBounds,
             onError = { ItemPlaceholder() },
             onLoading = { ItemPlaceholder() },
-            height = 180.dp,
+            height = 150.dp,
         )
     }
     Space(12.dp)
