@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.dashboard
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -37,6 +38,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -97,113 +100,151 @@ private fun ShowRetailerAndHospitalDashboard(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(ConstColors.newDesignGray)
             .verticalScroll(rememberScrollState())
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            Space(dp = 16.dp)
-            LazyRow(state = lazyListState) {
+            Column(
+                modifier = Modifier
+                    .background(Color.White)
+                    .padding(vertical = 16.dp)
+            ) {
                 dashboard.value?.banners?.let {
-                    itemsIndexed(
-                        items = it,
-                        key = { pos, _ -> pos },
-                        itemContent = { _, item ->
-                            BannerItem(
-                                item, scope, modifier = Modifier
-                                    .fillParentMaxWidth()
-                                    .height(180.dp)
-                                    .padding(horizontal = 16.dp)
-                            )
-                        },
-                    )
-                }
-            }
-            //auto rotate banner after every 3 seconds
-            dashboard.value?.banners?.let {
-                LaunchedEffect(lazyListState.firstVisibleItemIndex) {
-                    delay(3000) // wait for 3 seconds.
-                    // increasing the position and check the limit
-                    var newPosition = lazyListState.firstVisibleItemIndex + 1
-                    if (newPosition > it.size - 1) newPosition = 0
-                    // scrolling to the new position.
-                    if (newPosition == 0) {
-                        lazyListState.scrollToItem(newPosition)
-                    } else {
-                        lazyListState.animateScrollToItem(newPosition)
+                    LazyRow(state = lazyListState) {
+                        itemsIndexed(
+                            items = it,
+                            key = { pos, _ -> pos },
+                            itemContent = { _, item ->
+                                BannerItem(
+                                    item, scope, modifier = Modifier
+                                        .fillParentMaxWidth()
+                                        .height(180.dp)
+                                        .padding(horizontal = 16.dp)
+                                )
+                            },
+                        )
+                    }
+
+                    val newPosition = remember{ mutableStateOf(0)}
+                    //auto rotate banner after every 3 seconds
+                    LaunchedEffect(lazyListState.firstVisibleItemIndex) {
+                        delay(3000) // wait for 3 seconds.
+                        // increasing the position and check the limit
+                        newPosition.value = lazyListState.firstVisibleItemIndex + 1
+                        if (newPosition.value > it.size - 1) newPosition.value = 0
+                        // scrolling to the new position.
+                        if (newPosition.value == 0) {
+                            lazyListState.scrollToItem(newPosition.value)
+                        } else {
+                            lazyListState.animateScrollToItem(newPosition.value)
+                        }
+                    }
+
+                    //show pager indicator
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
+                    ) {
+                        for (i in it.indices) {
+                            Canvas(modifier = Modifier.size(10.dp).padding(horizontal = 2.dp)) {
+                                drawCircle(color = if (i == newPosition.value) Color.Black else ConstColors.txtGrey)
+                            }
+                        }
                     }
                 }
             }
 
             Space(dp = 16.dp)
-            Row(
-                modifier = Modifier.padding(horizontal = 16.dp),
+            Box(
+                modifier = Modifier
+                    .background(Color.White)
+                    .padding(vertical = 16.dp)
             ) {
-                BigButtonRetailer(
-                    icon = R.drawable.ic_orders_dashboard,
-                    text = stringResource(id = R.string.orders),
-                    counter = dashboard.value?.ordersCount ?: 0,
-                    onClick = { scope.goToOrders() },
-                )
-                Space(16.dp)
-                BigButtonRetailer(
-                    icon = R.drawable.ic_bell_dashboard,
-                    text = stringResource(id = R.string.notifications),
-                    counter = unreadNotifications.value,
-                    onClick = { scope.goToNotifications() },
-                )
-                Space(16.dp)
-                BigButtonRetailer(
-                    icon = R.drawable.ic_stockist_dashboard,
-                    text = stringResource(id = R.string.stockist),
-                    counter = scope.sections[1].getCount(dashboard = dashboard.value),
-                    onClick = { scope.selectSection(scope.sections[1]) },
-                )
-            }
-            Space(dp = 16.dp)
-            Text(
-                text = stringResource(id = R.string.our_brands),
-                color = ConstColors.lightBlue,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.W600,
-                modifier = Modifier.padding(horizontal = 16.dp),
-            )
-            Space(dp = 16.dp)
-            LazyRow(
-                modifier = Modifier.padding(horizontal = 14.dp)
-            ) {
-                dashboard.value?.brands?.let {
-                    itemsIndexed(
-                        items = it,
-                        key = { index, _ -> index },
-                        itemContent = { _, item ->
-                            BrandsItem(item, scope) {
-                                scope.startBrandSearch(item.searchTerm, item.field)
-                            }
-                        },
+                Row(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                ) {
+                    BigButtonRetailer(
+                        icon = R.drawable.ic_orders_dashboard,
+                        text = stringResource(id = R.string.orders),
+                        counter = dashboard.value?.ordersCount ?: 0,
+                        onClick = { scope.goToOrders() },
+                    )
+                    Space(16.dp)
+                    BigButtonRetailer(
+                        icon = R.drawable.ic_bell_dashboard,
+                        text = stringResource(id = R.string.notifications),
+                        counter = unreadNotifications.value,
+                        onClick = { scope.goToNotifications() },
+                    )
+                    Space(16.dp)
+                    BigButtonRetailer(
+                        icon = R.drawable.ic_stockist_dashboard,
+                        text = stringResource(id = R.string.stockist),
+                        counter = scope.sections[1].getCount(dashboard = dashboard.value),
+                        onClick = { scope.selectSection(scope.sections[1]) },
                     )
                 }
             }
-            Space(dp = 16.dp)
-            Text(
-                text = stringResource(id = R.string.our_categories),
-                color = ConstColors.lightBlue,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.W600,
-                modifier = Modifier.padding(horizontal = 16.dp),
-            )
-            Space(dp = 16.dp)
-            val itemSize: Dp = (LocalConfiguration.current.screenWidthDp.dp / 2) - 8.dp
 
-            FlowRow(
-                mainAxisSize = SizeMode.Expand,
-                mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
+            Space(dp = 16.dp)
+            Column(
+                modifier = Modifier
+                    .background(Color.White)
+                    .padding(vertical = 16.dp)
             ) {
-                dashboard.value?.categories?.let {
-                    it.forEachIndexed { index, _ ->
-                        CategoriesItem(it[index], scope, modifier = Modifier.width(itemSize))
+                Text(
+                    text = stringResource(id = R.string.our_brands),
+                    color = ConstColors.lightBlue,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W600,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                )
+                Space(dp = 16.dp)
+                LazyRow(
+                    modifier = Modifier.padding(horizontal = 14.dp)
+                ) {
+                    dashboard.value?.brands?.let {
+                        itemsIndexed(
+                            items = it,
+                            key = { index, _ -> index },
+                            itemContent = { _, item ->
+                                BrandsItem(item, scope) {
+                                    scope.startBrandSearch(item.searchTerm, item.field)
+                                }
+                            },
+                        )
+                    }
+                }
+            }
+            Space(dp = 16.dp)
+            Column(
+                modifier = Modifier
+                    .background(Color.White)
+                    .padding(vertical = 16.dp)
+            ) {
+                Text(
+                    text = stringResource(id = R.string.our_categories),
+                    color = ConstColors.lightBlue,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W600,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                )
+                Space(dp = 16.dp)
+                val itemSize: Dp = (LocalConfiguration.current.screenWidthDp.dp / 2) - 8.dp
+
+                FlowRow(
+                    mainAxisSize = SizeMode.Expand,
+                    mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
+                ) {
+                    dashboard.value?.categories?.let {
+                        it.forEachIndexed { index, _ ->
+                            CategoriesItem(it[index], scope, modifier = Modifier.width(itemSize))
+                        }
                     }
                 }
             }
@@ -423,7 +464,7 @@ private fun ShowStockistDashBoard(
                 fontWeight = FontWeight.Bold,
             )
             Space(dp = 16.dp)
-            LazyRow{
+            LazyRow {
                 dashboard.value?.manufacturers?.let {
                     itemsIndexed(
                         items = it,
