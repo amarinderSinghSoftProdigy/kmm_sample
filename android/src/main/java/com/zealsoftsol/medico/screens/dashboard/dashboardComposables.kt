@@ -128,7 +128,7 @@ private fun ShowRetailerAndHospitalDashboard(
                         )
                     }
 
-                    val newPosition = remember{ mutableStateOf(0)}
+                    val newPosition = remember { mutableStateOf(0) }
                     //auto rotate banner after every 3 seconds
                     LaunchedEffect(lazyListState.firstVisibleItemIndex) {
                         delay(3000) // wait for 3 seconds.
@@ -148,10 +148,15 @@ private fun ShowRetailerAndHospitalDashboard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
                     ) {
                         for (i in it.indices) {
-                            Canvas(modifier = Modifier.size(10.dp).padding(horizontal = 2.dp)) {
+                            Canvas(
+                                modifier = Modifier
+                                    .size(if (i == newPosition.value) 12.dp else 10.dp)
+                                    .padding(horizontal = 2.dp)
+                            ) {
                                 drawCircle(color = if (i == newPosition.value) Color.Black else ConstColors.txtGrey)
                             }
                         }
