@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.screens.dashboard
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,13 +27,10 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -78,18 +73,16 @@ import com.zealsoftsol.medico.screens.common.CoilImageBrands
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.ShimmerItem
 import com.zealsoftsol.medico.screens.common.Space
-import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.inventory.ManufacturersItem
 import kotlinx.coroutines.delay
 
 @Composable
 fun DashboardScreen(scope: DashboardScope) {
-    val unreadNotifications = scope.unreadNotifications.flow.collectAsState()
     val dashboard = scope.dashboard.flow.collectAsState()
     if (scope.userType == UserType.STOCKIST) {
-        ShowStockistDashBoard(unreadNotifications, dashboard, scope)
+        ShowStockistDashBoard(dashboard, scope)
     } else if (scope.userType == UserType.RETAILER || scope.userType == UserType.HOSPITAL) {
-        ShowRetailerAndHospitalDashboard(unreadNotifications, dashboard, scope)
+        ShowRetailerAndHospitalDashboard(dashboard, scope)
     }
 }
 
@@ -99,7 +92,6 @@ fun DashboardScreen(scope: DashboardScope) {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ShowRetailerAndHospitalDashboard(
-    unreadNotifications: State<Int>,
     dashboard: State<DashboardData?>,
     scope: DashboardScope
 ) {
@@ -404,7 +396,7 @@ private fun BrandsImageItem(item: ProductSold, scope: DashboardScope) {
         Space(8.dp)
         if (!item.isSkeletonItem) {
             Text(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
+                modifier = Modifier.align(CenterHorizontally),
                 text = item.productName,
                 color = MaterialTheme.colors.background,
                 fontSize = 12.sp,
@@ -414,7 +406,6 @@ private fun BrandsImageItem(item: ProductSold, scope: DashboardScope) {
         } else {
             ShimmerItem(padding = PaddingValues(end = 12.dp, top = 8.dp))
         }
-        Space(8.dp)
     }
 }
 
@@ -437,7 +428,7 @@ private fun CategoriesItem(item: BrandsData, scope: DashboardScope, modifier: Mo
         shape = RoundedCornerShape(5.dp),
         backgroundColor = Color.White,
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(horizontalAlignment = CenterHorizontally) {
             CoilImageBrands(
                 src = item.imageUrl,
                 contentScale = ContentScale.Crop,
@@ -462,551 +453,409 @@ private fun CategoriesItem(item: BrandsData, scope: DashboardScope, modifier: Mo
  */
 @Composable
 private fun ShowStockistDashBoard(
-    unreadNotifications: State<Int>,
     dashboard: State<DashboardData?>,
     scope: DashboardScope
 ) {
+    val activity = LocalContext.current as MainActivity
+    val shareText = stringResource(id = R.string.share_content)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
-            .padding(horizontal = 16.dp)
+            .background(ConstColors.newDesignGray)
             .verticalScroll(rememberScrollState()),
     ) {
-        Space(dp = 16.dp)
+
         dashboard.value.let { dash ->
-            scope.sections.windowed(3, 3).forEach { (first, second, third) ->
-                Space(4.dp)
-                Row {
-                    SectionButton(
-                        icon = first.getIcon(),
-                        text = stringResourceByName(first.stringId),
-                        isClickable = first.isClickable,
-                        counter = dash?.let { first.getCount(dashboard = dash) },
-                        counterSupported = first.countSupported(),
-                        onClick = { scope.selectSection(first) },
-                    )
+            Box(
+                modifier = Modifier
+                    .background(Color.White)
+                    .padding(14.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = 2.dp)
+                ) {
+                    QuickActionItem(
+                        title = stringResource(id = R.string.orders),
+                        icon = R.drawable.ic_menu_orders
+                    ) {
+                        scope.goToOrders()
+                    }
                     Space(16.dp)
-                    SectionButton(
-                        icon = second.getIcon(),
-                        text = stringResourceByName(second.stringId),
-                        isClickable = second.isClickable,
-                        counter = dash?.let { second.getCount(dashboard = dash) },
-                        counterSupported = second.countSupported(),
-                        onClick = { scope.selectSection(second) },
-                    )
+                    QuickActionItem(
+                        title = stringResource(id = R.string.retailers),
+                        icon = R.drawable.ic_menu_retailers
+                    ) {
+                        scope.sendEvent(Event.Transition.Management(UserType.RETAILER))
+                    }
                     Space(16.dp)
-                    SectionButton(
-                        icon = third.getIcon(),
-                        text = stringResourceByName(third.stringId),
-                        isClickable = third.isClickable,
-                        counter = dash?.let { third.getCount(dashboard = dash) },
-                        counterSupported = third.countSupported(),
-                        onClick = { scope.selectSection(third) },
-                    )
+                    QuickActionItem(
+                        title = stringResource(id = R.string.online_collections),
+                        icon = R.drawable.ic_menu_invoice
+                    ) {
+                        scope.sendEvent(Event.Transition.IOCSeller)
+                    }
+                    Space(dp = 16.dp)
+                    QuickActionItem(
+                        title = stringResource(id = R.string.hospitals),
+                        icon = R.drawable.ic_menu_hospitals
+                    ) {
+                        scope.sendEvent(Event.Transition.Management(UserType.HOSPITAL))
+                    }
+                    Space(dp = 16.dp)
+                    QuickActionItem(
+                        title = stringResource(id = R.string.stockists),
+                        icon = R.drawable.ic_menu_stockist
+                    ) {
+                        scope.sendEvent(Event.Transition.Management(UserType.STOCKIST))
+                    }
+                    Space(dp = 16.dp)
+                    QuickActionItem(
+                        title = stringResource(id = R.string.stores),
+                        icon = R.drawable.ic_menu_stores
+                    ) {
+                        scope.sendEvent(Event.Transition.Stores)
+                    }
+                    Space(dp = 16.dp)
+                    QuickActionItem(
+                        title = stringResource(id = R.string.inventory),
+                        icon = R.drawable.ic_menu_inventory
+                    ) {
+                        scope.sendEvent(Event.Transition.Inventory(InventoryScope.InventoryType.ALL))
+                    }
+                    Space(dp = 16.dp)
+                    QuickActionItem(
+                        title = stringResource(id = R.string.deal_offer),
+                        icon = R.drawable.ic_offer
+                    ) {
+                        scope.sendEvent(Event.Transition.Offers(OfferStatus.ALL))
+                    }
+                    Space(dp = 16.dp)
+                    QuickActionItem(
+                        title = stringResource(id = R.string.my_account),
+                        icon = R.drawable.ic_personal
+                    ) {
+                        scope.sendEvent(Event.Transition.Settings(true))
+                    }
+                    Space(dp = 16.dp)
+                    QuickActionItem(
+                        title = stringResource(id = R.string.share_medico),
+                        icon = R.drawable.ic_share
+                    ) {
+                        activity.shareTextContent(shareText)
+                    }
+                    Space(dp = 16.dp)
+                    QuickActionItem(
+                        title = stringResource(id = R.string.employees),
+                        icon = R.drawable.ic_customer_care_acc
+                    ) {
+                        scope.sendEvent(Event.Transition.AddEmployee)
+                    }
+                    Space(dp = 16.dp)
+                    QuickActionItem(
+                        title = stringResource(id = R.string.delivery_qr_code),
+                        icon = R.drawable.ic_qr_code
+                    ) {
+                        scope.sendEvent(Event.Transition.QrCode)
+                    }
                 }
             }
             Space(dp = 16.dp)
-            Text(
-                text = stringResource(id = R.string.manufacturers),
-                color = ConstColors.lightBlue,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-            )
-            Space(dp = 16.dp)
-            LazyRow {
-                dashboard.value?.manufacturers?.let {
-                    itemsIndexed(
-                        items = it,
-                        key = { index, _ -> index },
-                        itemContent = { _, item ->
-                            ManufacturersItem(item) {
-                                scope.moveToInventoryScreen(manufacturerCode = item.code)
-                            }
-                        },
-                    )
-                }
-            }
-            Space(16.dp)
-            Text(
-                text = stringResource(id = R.string.inventory),
-                color = ConstColors.lightBlue,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-            )
-            Space(dp = 8.dp)
-            Row(modifier = Modifier.fillMaxWidth()) {
-                val shape1 = MaterialTheme.shapes.large.copy(
-                    topEnd = CornerSize(0.dp),
-                    bottomEnd = CornerSize(0.dp)
-                )
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clickable {
-                            scope.moveToInventoryScreen(InventoryScope.InventoryType.IN_STOCK)
-                        }
-                        .background(Color.White/*ConstColors.green.copy(alpha = .2f)*/, shape1)
-                        .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape1)
-                        .padding(20.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-
-                    Row {
-                        Icon(
-                            contentDescription = null,
-                            tint = ConstColors.lightGreen,
-                            painter = painterResource(id = R.drawable.ic_menu_inventory)
-                        )
-                        Space(dp = 8.dp)
-                        dash?.stockStatusData?.inStock?.let {
-                            Text(
-                                text = it.toString(),
-                                color = MaterialTheme.colors.background,
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.W700,
-                            )
-                        } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 8.dp))
-                    }
-                    Text(
-                        text = stringResource(id = R.string.in_stock),
-                        color = MaterialTheme.colors.background,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.W600,
-                    )
-                }
-                val shape2 = MaterialTheme.shapes.large.copy(
-                    topStart = CornerSize(0.dp),
-                    bottomStart = CornerSize(0.dp)
-                )
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clickable {
-                            scope.moveToInventoryScreen(InventoryScope.InventoryType.OUT_OF_STOCK)
-                        }
-                        .background(Color.White/*ConstColors.red.copy(alpha = .2f)*/, shape2)
-                        .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape2)
-                        .padding(20.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Row {
-                        Icon(
-                            contentDescription = null,
-                            tint = ConstColors.orange,
-                            painter = painterResource(id = R.drawable.ic_menu_inventory)
-                        )
-                        Space(dp = 8.dp)
-                        dash?.stockStatusData?.outOfStock?.let {
-                            Text(
-                                text = it.toString(),
-                                color = MaterialTheme.colors.background,
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.W700,
-                            )
-                        } ?: ShimmerItem(padding = PaddingValues(start = 12.dp, top = 8.dp))
-                    }
-                    Text(
-                        text = stringResource(id = R.string.out_stock),
-                        color = MaterialTheme.colors.background,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.W600,
-                    )
-                }
-            }
-            Space(16.dp)
-            Text(
-                text = stringResource(id = R.string.offers),
-                color = ConstColors.lightBlue,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-            )
-            Space(dp = 8.dp)
-            Row(modifier = Modifier.fillMaxWidth()) {
-                val shape1 = MaterialTheme.shapes.large.copy(
-                    topEnd = CornerSize(0.dp),
-                    bottomEnd = CornerSize(0.dp)
-                )
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .background(Color.White, shape1)
-                        .clickable {
-                            scope.moveToOffersScreen(OfferStatus.RUNNING)
-                        }
-                        .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape1)
-                        .padding(20.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-
-                    Row {
-                        Icon(
-                            contentDescription = null,
-                            tint = ConstColors.lightGreen,
-                            painter = painterResource(id = R.drawable.ic_offer)
-                        )
-                        Space(dp = 8.dp)
-                        dash?.offers?.let { it ->
-                            val total: String =
-                                it.find { data -> data.status == OfferStatus.RUNNING }?.total.toString()
-                            Text(
-                                text = if (total == "null") "0" else total,
-                                color = MaterialTheme.colors.background,
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.W700,
-                            )
-                        } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 8.dp))
-                    }
-                    Text(
-                        text = stringResource(id = R.string.running),
-                        color = MaterialTheme.colors.background,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.W600,
-                    )
-                }
-                val shape2 = MaterialTheme.shapes.large.copy(
-                    topStart = CornerSize(0.dp),
-                    bottomStart = CornerSize(0.dp)
-                )
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .background(Color.White, shape2)
-                        .clickable {
-                            scope.moveToOffersScreen(OfferStatus.ENDED)
-                        }
-                        .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape2)
-                        .padding(20.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Row {
-                        Icon(
-                            contentDescription = null,
-                            tint = ConstColors.orange,
-                            painter = painterResource(id = R.drawable.ic_offer)
-                        )
-                        Space(dp = 8.dp)
-                        dash?.offers?.let {
-                            val total: String =
-                                it.find { data -> data.status == OfferStatus.ENDED }?.total.toString()
-                            Text(
-                                text = if (total == "null") "0" else total,
-                                color = MaterialTheme.colors.background,
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.W700,
-                            )
-                        } ?: ShimmerItem(padding = PaddingValues(start = 12.dp, top = 8.dp))
-                    }
-                    Text(
-                        text = stringResource(id = R.string.ended),
-                        color = MaterialTheme.colors.background,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.W600,
-                    )
-                }
-            }
-            Space(16.dp)
-
-            if (dash?.productInfo != null && dash.productInfo?.mostSold?.isNotEmpty()!!) {
+            Column(
+                modifier = Modifier
+                    .background(Color.White)
+                    .padding(16.dp)
+            ) {
                 Text(
-                    text = stringResource(id = R.string.today_sold),
+                    text = stringResource(id = R.string.manufacturers),
                     color = ConstColors.lightBlue,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                 )
-                Space(8.dp)
-
-                dash.productInfo?.mostSold?.let {
-                    LazyRow {
+                Space(dp = 16.dp)
+                LazyRow(
+                    contentPadding = PaddingValues(3.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    dashboard.value?.manufacturers?.let {
                         itemsIndexed(
                             items = it,
+                            key = { index, _ -> index },
                             itemContent = { _, item ->
-                                BrandsImageItem(item, scope)
+                                ManufacturersItem(item) {
+                                    scope.moveToInventoryScreen(manufacturerCode = item.code)
+                                }
                             },
                         )
                     }
-                } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 12.dp))
+                }
             }
+            Space(16.dp)
 
-            Space(8.dp)
-            if (dash?.productInfo != null && dash.productInfo?.mostSearched?.isNotEmpty()!!) {
+            Column(
+                modifier = Modifier
+                    .background(Color.White)
+                    .padding(16.dp)
+            ) {
                 Text(
-                    text = stringResource(id = R.string.most_searched),
+                    text = stringResource(id = R.string.inventory),
                     color = ConstColors.lightBlue,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                 )
-                Space(8.dp)
-
-                dash.productInfo?.mostSearched?.let {
-                    LazyRow {
-                        itemsIndexed(
-                            items = it,
-                            itemContent = { _, item ->
-                                BrandsImageItem(item, scope)
-                            },
-                        )
-                    }
-                } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 12.dp))
-            }
-        }
-        Space(dp = 16.dp)
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-private fun RowScope.BigButton(
-    icon: Int,
-    text: String,
-    counter: Int,
-    onClick: () -> Unit,
-) {
-    Surface(
-        modifier = Modifier.weight(1f),
-        shape = MaterialTheme.shapes.medium,
-        color = Color.White,
-        onClick = onClick,
-    ) {
-        Box(modifier = Modifier.padding(10.dp)) {
-            Icon(
-                imageVector = Icons.Default.ChevronRight,
-                tint = MaterialTheme.colors.background,
-                contentDescription = null,
-                modifier = Modifier.align(Alignment.TopEnd),
-            )
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Box(modifier = Modifier.size(60.dp)) {
-                    Icon(
-                        painter = painterResource(id = icon),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(40.dp)
-                            .align(Alignment.Center),
+                Space(dp = 8.dp)
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    val shape1 = MaterialTheme.shapes.large.copy(
+                        topEnd = CornerSize(0.dp),
+                        bottomEnd = CornerSize(0.dp)
                     )
-                    if (counter > 0) {
-                        RedCounter(
-                            modifier = Modifier.align(Alignment.TopEnd),
-                            count = counter,
-                        )
-                    }
-                }
-                Text(
-                    text = text,
-                    color = ConstColors.gray,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.W600,
-                )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-private fun RowScope.BigButtonRetailer(
-    icon: Int,
-    text: String,
-    counter: Int?,
-    onClick: () -> Unit,
-) {
-    Surface(
-        modifier = Modifier.weight(1f),
-        shape = MaterialTheme.shapes.medium,
-        color = ConstColors.yellow,
-        onClick = onClick,
-        elevation = 3.dp
-    ) {
-        Box(modifier = Modifier.padding(10.dp)) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Box(modifier = Modifier.size(50.dp)) {
-                    Icon(
-                        painter = painterResource(id = icon),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(30.dp)
-                            .align(Alignment.Center),
-                    )
-                    if (counter != null && counter > 0) {
-                        RedCounter(
-                            modifier = Modifier.align(Alignment.TopEnd),
-                            count = counter,
-                        )
-                    }
-                }
-                Text(
-                    text = text,
-                    color = ConstColors.gray,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.W600,
-                )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-private fun RowScope.SectionButton(
-    icon: Painter,
-    text: String,
-    isClickable: Boolean,
-    counter: Int?,
-    counterSupported: Boolean,
-    onClick: () -> Unit,
-) {
-    Surface(
-        modifier = Modifier.weight(1f),
-        shape = MaterialTheme.shapes.medium,
-        color = ConstColors.yellow,
-        enabled = isClickable,
-        onClick = onClick,
-    ) {
-
-        Box(
-            modifier = Modifier
-                .padding(10.dp)
-                .height(80.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            /* if (isClickable) Icon(
-                 imageVector = Icons.Default.ChevronRight,
-                 tint = MaterialTheme.colors.background,
-                 contentDescription = null,
-                 modifier = Modifier.align(Alignment.TopEnd),
-             )*/
-            if (counterSupported) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    contentAlignment = Alignment.BottomCenter
-                ) {
                     Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable {
+                                scope.moveToInventoryScreen(InventoryScope.InventoryType.IN_STOCK)
+                            }
+                            .background(Color.White/*ConstColors.green.copy(alpha = .2f)*/, shape1)
+                            .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape1)
+                            .padding(20.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = CenterHorizontally,
                     ) {
 
-                        Box(
-                            modifier = Modifier
-                                .height(50.dp)
-                                .width(50.dp),
-                        ) {
-
-                            Box(
-                                modifier = Modifier
-                                    .height(50.dp)
-                                    .width(50.dp),
-                                contentAlignment = Alignment.BottomCenter
-                            ) {
-
-                                Icon(
-                                    painter = icon,
-                                    tint = MaterialTheme.colors.background,//ConstColors.gray.copy(alpha = .5f),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .size(36.dp),
-                                )
-                            }
-                            if (counter != null)
-                                RedCounter(
-                                    modifier = Modifier
-                                        .align(Alignment.TopEnd)
-                                        .padding(all = 4.dp),
-                                    count = counter,
-                                )
-
-                        }
-
-
-                        /*Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp),
-                            contentAlignment = Alignment.TopCenter
-                        ) {
+                        Row {
                             Icon(
-                                painter = icon,
-                                tint = MaterialTheme.colors.background,//ConstColors.gray.copy(alpha = .5f),
                                 contentDescription = null,
-                                modifier = Modifier
-                                    .size(36.dp),
+                                tint = ConstColors.lightGreen,
+                                painter = painterResource(id = R.drawable.ic_menu_inventory)
                             )
-                            Box(
-                                modifier = Modifier
-                                    .align(Alignment.TopEnd),
-                                contentAlignment = Alignment.TopEnd
-                            ) {
-                                Surface(
-                                    shape = CircleShape,
-                                    color = ConstColors.red,
-                                    modifier = Modifier.size(25.dp)
-                                ) {
-                                    if (counter != null) {
-                                        Text(
-                                            modifier = Modifier.padding(start = 7.dp, top = 3.dp),
-                                            text = counter.toString(),
-                                            color = Color.White,
-                                            fontSize = 12.sp,
-                                            fontWeight = FontWeight.W700,
-                                        )
-                                    } *//*else {
-                                ShimmerItem(padding = PaddingValues(end = 48.dp, top = 8.dp))
-                            }*//*
-
-                                }
-                            }
-
+                            Space(dp = 8.dp)
+                            dash?.stockStatusData?.inStock?.let {
+                                Text(
+                                    text = it.toString(),
+                                    color = MaterialTheme.colors.background,
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.W700,
+                                )
+                            } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 8.dp))
                         }
-*/
-                        Space(dp = 4.dp)
                         Text(
-                            text = text,
+                            text = stringResource(id = R.string.in_stock),
+                            color = MaterialTheme.colors.background,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.W600,
+                        )
+                    }
+                    val shape2 = MaterialTheme.shapes.large.copy(
+                        topStart = CornerSize(0.dp),
+                        bottomStart = CornerSize(0.dp)
+                    )
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable {
+                                scope.moveToInventoryScreen(InventoryScope.InventoryType.OUT_OF_STOCK)
+                            }
+                            .background(Color.White/*ConstColors.red.copy(alpha = .2f)*/, shape2)
+                            .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape2)
+                            .padding(20.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = CenterHorizontally,
+                    ) {
+                        Row {
+                            Icon(
+                                contentDescription = null,
+                                tint = ConstColors.orange,
+                                painter = painterResource(id = R.drawable.ic_menu_inventory)
+                            )
+                            Space(dp = 8.dp)
+                            dash?.stockStatusData?.outOfStock?.let {
+                                Text(
+                                    text = it.toString(),
+                                    color = MaterialTheme.colors.background,
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.W700,
+                                )
+                            } ?: ShimmerItem(padding = PaddingValues(start = 12.dp, top = 8.dp))
+                        }
+                        Text(
+                            text = stringResource(id = R.string.out_stock),
                             color = MaterialTheme.colors.background,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.W600,
                         )
                     }
                 }
-            } else {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Box(
-                        modifier = Modifier.size(60.dp),
-                        contentAlignment = Alignment.Center
+            }
+            Space(16.dp)
+            Column(
+                modifier = Modifier
+                    .background(Color.White)
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = stringResource(id = R.string.offers),
+                    color = ConstColors.lightBlue,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+                Space(dp = 8.dp)
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    val shape1 = MaterialTheme.shapes.large.copy(
+                        topEnd = CornerSize(0.dp),
+                        bottomEnd = CornerSize(0.dp)
+                    )
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(Color.White, shape1)
+                            .clickable {
+                                scope.moveToOffersScreen(OfferStatus.RUNNING)
+                            }
+                            .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape1)
+                            .padding(20.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = CenterHorizontally,
                     ) {
-                        Icon(
-                            painter = icon,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(40.dp)
-                                .align(Alignment.Center),
+
+                        Row {
+                            Icon(
+                                contentDescription = null,
+                                tint = ConstColors.lightGreen,
+                                painter = painterResource(id = R.drawable.ic_offer)
+                            )
+                            Space(dp = 8.dp)
+                            dash?.offers?.let { it ->
+                                val total: String =
+                                    it.find { data -> data.status == OfferStatus.RUNNING }?.total.toString()
+                                Text(
+                                    text = if (total == "null") "0" else total,
+                                    color = MaterialTheme.colors.background,
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.W700,
+                                )
+                            } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 8.dp))
+                        }
+                        Text(
+                            text = stringResource(id = R.string.running),
+                            color = MaterialTheme.colors.background,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.W600,
                         )
                     }
-                    Text(
-                        text = text,
-                        color = MaterialTheme.colors.background,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.W600,
+                    val shape2 = MaterialTheme.shapes.large.copy(
+                        topStart = CornerSize(0.dp),
+                        bottomStart = CornerSize(0.dp)
                     )
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(Color.White, shape2)
+                            .clickable {
+                                scope.moveToOffersScreen(OfferStatus.ENDED)
+                            }
+                            .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape2)
+                            .padding(20.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = CenterHorizontally,
+                    ) {
+                        Row {
+                            Icon(
+                                contentDescription = null,
+                                tint = ConstColors.orange,
+                                painter = painterResource(id = R.drawable.ic_offer)
+                            )
+                            Space(dp = 8.dp)
+                            dash?.offers?.let {
+                                val total: String =
+                                    it.find { data -> data.status == OfferStatus.ENDED }?.total.toString()
+                                Text(
+                                    text = if (total == "null") "0" else total,
+                                    color = MaterialTheme.colors.background,
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.W700,
+                                )
+                            } ?: ShimmerItem(padding = PaddingValues(start = 12.dp, top = 8.dp))
+                        }
+                        Text(
+                            text = stringResource(id = R.string.ended),
+                            color = MaterialTheme.colors.background,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.W600,
+                        )
+                    }
+                }
+            }
+
+            Space(16.dp)
+
+            if (dash?.productInfo != null && dash.productInfo?.mostSold?.isNotEmpty()!!) {
+                Column(
+                    modifier = Modifier
+                        .background(Color.White)
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.today_sold),
+                        color = ConstColors.lightBlue,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Space(8.dp)
+
+                    dash.productInfo?.mostSold?.let {
+                        LazyRow(
+                            contentPadding = PaddingValues(3.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            itemsIndexed(
+                                items = it,
+                                itemContent = { _, item ->
+                                    BrandsImageItem(item, scope)
+                                },
+                            )
+                        }
+                    } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 12.dp))
+                }
+            }
+
+            Space(8.dp)
+
+            if (dash?.productInfo != null && dash.productInfo?.mostSearched?.isNotEmpty()!!) {
+                Column(
+                    modifier = Modifier
+                        .background(Color.White)
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.most_searched),
+                        color = ConstColors.lightBlue,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Space(8.dp)
+
+                    dash.productInfo?.mostSearched?.let {
+                        LazyRow(
+                            contentPadding = PaddingValues(3.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            itemsIndexed(
+                                items = it,
+                                itemContent = { _, item ->
+                                    BrandsImageItem(item, scope)
+                                },
+                            )
+                        }
+                    } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 12.dp))
                 }
             }
         }
+        Space(dp = 16.dp)
     }
 }
+
 
 @Composable
 private fun RedCounter(
