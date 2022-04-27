@@ -75,6 +75,10 @@ data class InStoreUser(
 
 }
 
+enum class ConnectionStatus(val value: String){
+    CONNECTED("CONNECTED"), NOT_CONNECTED("NOT_CONNECTED")
+}
+
 @Serializable
 data class InStoreUserRegistration(
     @Required

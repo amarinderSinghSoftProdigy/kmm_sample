@@ -111,6 +111,7 @@ private fun ShowRetailerAndHospitalDashboard(
             Column(
                 modifier = Modifier
                     .background(Color.White)
+                    .fillMaxWidth()
                     .padding(vertical = 16.dp)
             ) {
                 dashboard.value?.banners?.let {
@@ -150,6 +151,7 @@ private fun ShowRetailerAndHospitalDashboard(
             Box(
                 modifier = Modifier
                     .background(Color.White)
+                    .fillMaxWidth()
                     .padding(vertical = 16.dp)
                     .horizontalScroll(rememberScrollState())
             ) {
@@ -181,6 +183,13 @@ private fun ShowRetailerAndHospitalDashboard(
                     }
                     Space(16.dp)
                     QuickActionItem(
+                        title = stringResource(id = R.string.digital_invoice_payments),
+                        icon = R.drawable.ic_menu_invoice
+                    ) {
+                        scope.sendEvent(Event.Transition.IOCBuyer)
+                    }
+                    Space(16.dp)
+                    QuickActionItem(
                         title = stringResource(id = R.string.my_account),
                         icon = R.drawable.ic_personal
                     ) {
@@ -200,6 +209,7 @@ private fun ShowRetailerAndHospitalDashboard(
             Column(
                 modifier = Modifier
                     .background(Color.White)
+                    .fillMaxWidth()
                     .padding(vertical = 16.dp)
             ) {
                 Text(
@@ -230,6 +240,7 @@ private fun ShowRetailerAndHospitalDashboard(
             Column(
                 modifier = Modifier
                     .background(Color.White)
+                    .fillMaxWidth()
                     .padding(vertical = 16.dp)
             ) {
                 Text(
@@ -266,7 +277,7 @@ private fun QuickActionItem(title: String, icon: Int, onClick: () -> Unit) {
         Box(modifier = Modifier.clickable { onClick() }) {
             Surface(
                 modifier = Modifier
-                    .size(80.dp),
+                    .size(60.dp),
                 color = Color.White,
                 shape = CircleShape,
                 elevation = 5.dp
@@ -274,7 +285,7 @@ private fun QuickActionItem(title: String, icon: Int, onClick: () -> Unit) {
             }
             Image(
                 modifier = Modifier
-                    .size(35.dp)
+                    .size(30.dp)
                     .align(Center),
                 painter = painterResource(id = icon),
                 contentDescription = null,
@@ -470,6 +481,7 @@ private fun ShowStockistDashBoard(
             Box(
                 modifier = Modifier
                     .background(Color.White)
+                    .fillMaxWidth()
                     .padding(14.dp)
             ) {
                 Row(
@@ -566,6 +578,7 @@ private fun ShowStockistDashBoard(
             Column(
                 modifier = Modifier
                     .background(Color.White)
+                    .fillMaxWidth()
                     .padding(16.dp)
             ) {
                 Text(
@@ -597,6 +610,7 @@ private fun ShowStockistDashBoard(
             Column(
                 modifier = Modifier
                     .background(Color.White)
+                    .fillMaxWidth()
                     .padding(16.dp)
             ) {
                 Text(
@@ -692,6 +706,7 @@ private fun ShowStockistDashBoard(
             Column(
                 modifier = Modifier
                     .background(Color.White)
+                    .fillMaxWidth()
                     .padding(16.dp)
             ) {
                 Text(
@@ -794,6 +809,7 @@ private fun ShowStockistDashBoard(
                 Column(
                     modifier = Modifier
                         .background(Color.White)
+                        .fillMaxWidth()
                         .padding(16.dp)
                 ) {
                     Text(
@@ -826,6 +842,7 @@ private fun ShowStockistDashBoard(
                 Column(
                     modifier = Modifier
                         .background(Color.White)
+                        .fillMaxWidth()
                         .padding(16.dp)
                 ) {
                     Text(

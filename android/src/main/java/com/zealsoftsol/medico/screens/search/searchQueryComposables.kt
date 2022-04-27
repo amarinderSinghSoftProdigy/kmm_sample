@@ -246,7 +246,7 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                                         coroutineScope.launch {
                                             listStateScroll.scrollTo(0)
                                         }
-                                        scope.startSearch(true)
+                                        scope.startSearch(false)
                                     }, {
                                         coroutineScope.launch {
                                             listStateScroll.scrollTo(0)
