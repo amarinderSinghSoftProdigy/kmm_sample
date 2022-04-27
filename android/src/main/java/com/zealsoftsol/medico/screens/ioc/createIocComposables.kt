@@ -27,14 +27,10 @@ import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +39,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -117,7 +114,7 @@ private fun IOCListing(sellerScope: IocSellerScope.IOCListing) {
                 onIconClick = {
                     sellerScope.search("")
                 },
-                backgroundColor = ConstColors.lightBlue.copy(alpha = 0.1f)
+                backgroundColor = ConstColors.newDesignGray,
             )
 
 
@@ -132,6 +129,7 @@ private fun IOCListing(sellerScope: IocSellerScope.IOCListing) {
             } else {
                 LazyColumn(
                     state = rememberLazyListState(),
+                    verticalArrangement = Arrangement.spacedBy(15.dp),
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = 12.dp, vertical = 12.dp),
@@ -188,55 +186,58 @@ private fun ParentIocItem(
     val items = ArrayList<RetailerData>()
     items.add(store)
     val expanded = remember { mutableStateOf(false) }
-    Column {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(5.dp),
+        color = Color.White,
+        elevation = 5.dp,
+    ) {
         FoldableItem(
             expanded = expanded.value,
             headerBackground = Color.White,
             headerBorder = BorderStroke(0.dp, Color.Transparent),
             headerMinHeight = 50.dp,
-            header = {
-                Surface(
-                    shape = RoundedCornerShape(5.dp),
-                    elevation = 1.dp,
-                    color = Color.White,
+            header = { isExpanded ->
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
-                        .padding(horizontal = 4.dp, vertical = 4.dp)
-                        .height(60.dp)
+                        .fillMaxWidth()
+                        .padding(start = 5.dp, end = 15.dp)
                 ) {
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 5.dp, end = 5.dp)
+                        modifier = Modifier.weight(0.9f),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(modifier = Modifier.weight(0.9f)) {
-                            Space(4.dp)
-                            Checkbox(
-                                checked = selectedIndex == index,
-                                colors = CheckboxDefaults.colors(checkedColor = ConstColors.lightBlue),
-                                onCheckedChange = { sellerScope.updateIndex(index) },
-                                modifier = Modifier.align(Alignment.CenterVertically),
-                            )
-                            Space(12.dp)
-                            Text(
-                                text = store.tradeName,
-                                color = ConstColors.lightBlue,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp,
-                                maxLines = 2,
-                            )
-                            Space(12.dp)
-                        }
-                        Icon(
-                            imageVector = if (expanded.value) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                            contentDescription = null,
-                            tint = ConstColors.gray,
-                            modifier = Modifier.padding(end = 16.dp)
+                        Space(4.dp)
+                        Checkbox(
+                            checked = selectedIndex == index,
+                            colors = CheckboxDefaults.colors(
+                                uncheckedColor = ConstColors.txtGrey,
+                                checkedColor = ConstColors.green
+                            ),
+                            onCheckedChange = { sellerScope.updateIndex(index) },
+                            modifier = Modifier.align(Alignment.CenterVertically),
                         )
+                        Space(12.dp)
+                        Text(
+                            text = store.tradeName,
+                            color = MaterialTheme.colors.background,
+                            fontWeight = FontWeight.W600,
+                            fontSize = 14.sp,
+                            maxLines = 2,
+                        )
+                        Space(12.dp)
                     }
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_arrow_right),
+                        modifier = Modifier
+                            .rotate(if (isExpanded) 270f else 90f),
+                        contentDescription = null
+                    )
                 }
-
             },
             childItems = items,
             hasItemLeadingSpacing = false,
@@ -250,7 +251,6 @@ private fun ParentIocItem(
                 )
             }
         )
-        Space(dp = 4.dp)
     }
 }
 
@@ -260,15 +260,9 @@ fun IocItem(
     item: RetailerData,
 ) {
 
-    Surface(
-        shape = RoundedCornerShape(bottomEnd = 5.dp, bottomStart = 5.dp),
-        elevation = 1.dp,
-        color = Color.White,
-        modifier = Modifier.padding(start = 4.dp, end = 4.dp, bottom = 5.dp)
-    ) {
         Column(
             modifier = Modifier
-                .padding(all = 16.dp)
+                .padding(horizontal = 16.dp, vertical = 5.dp)
                 .fillMaxWidth()
         ) {
             Text(
@@ -278,7 +272,7 @@ fun IocItem(
                     append(item.pincode)
                 },
                 color = MaterialTheme.colors.background,
-                fontWeight = FontWeight.W800,
+                fontWeight = FontWeight.W500,
                 fontSize = 14.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -288,9 +282,9 @@ fun IocItem(
 
             Text(
                 text = item.gstin,
-                color = ConstColors.lightBlue,
-                fontWeight = FontWeight.W500,
-                fontSize = 14.sp,
+                color = MaterialTheme.colors.background,
+                fontWeight = FontWeight.W600,
+                fontSize = 12.sp,
             )
 
             Space(4.dp)
@@ -301,15 +295,15 @@ fun IocItem(
                     append(item.drugLicenseNo1)
                     addStyle(
                         SpanStyle(
-                            color = ConstColors.txtGrey,
-                            fontWeight = FontWeight.W500
+                            color = MaterialTheme.colors.background,
+                            fontWeight = FontWeight.W600
                         ),
                         startIndex,
                         length,
                     )
                 },
-                color = ConstColors.txtGrey,
-                fontWeight = FontWeight.W500,
+                color = MaterialTheme.colors.background,
+                fontWeight = FontWeight.W600,
                 fontSize = 12.sp,
             )
 
@@ -321,16 +315,16 @@ fun IocItem(
                     append(item.drugLicenseNo2)
                     addStyle(
                         SpanStyle(
-                            color = ConstColors.txtGrey,
-                            fontWeight = FontWeight.W500
+                            color = MaterialTheme.colors.background,
+                            fontWeight = FontWeight.W600
                         ),
                         startIndex,
                         length,
                     )
                 },
-                color = ConstColors.txtGrey,
+                color = MaterialTheme.colors.background,
                 fontSize = 12.sp,
-                fontWeight = FontWeight.W500
+                fontWeight = FontWeight.W600
             )
 
             Space(4.dp)
@@ -338,11 +332,11 @@ fun IocItem(
             Text(
                 text = item.paymentMethod,
                 fontSize = 12.sp,
-                color = ConstColors.lightBlue,
+                color = ConstColors.lightGreen,
+                fontWeight = FontWeight.W600
             )
             Space(4.dp)
         }
-    }
 }
 
 
