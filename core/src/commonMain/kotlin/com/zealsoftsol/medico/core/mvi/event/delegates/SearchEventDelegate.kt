@@ -98,7 +98,8 @@ internal class SearchEventDelegate(
                 )
             )
             it.autoComplete.value =
-                userRepo.getLocalSearchHistory().toMutableList().plus(prefilledList).toSet().toList()
+                userRepo.getLocalSearchHistory().toMutableList().plus(prefilledList).toSet()
+                    .toList()
         }
     }
 
@@ -141,6 +142,7 @@ internal class SearchEventDelegate(
      * search autocomplete items directly on global search
      */
     private suspend fun selectAutoCompleteGlobal(autoComplete: AutoComplete) {
+        reset()
         navigator.withScope<BaseSearchScope> {
             it.showNoProducts.value = false
             it.productSearch.value = autoComplete.suggestion
@@ -148,7 +150,7 @@ internal class SearchEventDelegate(
             networkSearchScope.autocomplete(autoComplete.suggestion, null)
                 .onSuccess { body ->
                     it.autoComplete.value = body
-                    if(it.autoComplete.value.isEmpty()){
+                    if (it.autoComplete.value.isEmpty()) {
                         it.showNoProducts.value = true
                     }
                     if (body.isEmpty() && it.products.value.isNotEmpty()) {
@@ -178,7 +180,8 @@ internal class SearchEventDelegate(
         search: String?,
         query: Map<String, String>,
     ) {
-        reset()
+        if (isOneOf)
+            reset()
         navigator.withScope<BaseSearchScope> {
             if (search != null) it.pagination.reset()
             if (search != null) it.productSearch.value = search
@@ -236,7 +239,7 @@ internal class SearchEventDelegate(
      * @param sellerB2bCode - send seller B2B code is searching for stores products
      */
     private suspend fun searchAutoComplete(value: String, sellerB2bCode: String? = null) {
-
+        reset()
         navigator.withScope<BaseSearchScope> {
             it.showNoProducts.value = false
             it.productSearch.value = value
@@ -251,7 +254,7 @@ internal class SearchEventDelegate(
                 networkSearchScope.autocomplete(value, unitCodeForStores)
                     .onSuccess { body ->
                         it.autoComplete.value = body
-                        if(it.autoComplete.value.isEmpty()){
+                        if (it.autoComplete.value.isEmpty()) {
                             it.showNoProducts.value = true
                         }
                         if (value.isNotEmpty() && body.isEmpty() && it.products.value.isNotEmpty()) {
@@ -264,6 +267,15 @@ internal class SearchEventDelegate(
 
     private suspend fun selectAutocomplete(autoComplete: AutoComplete) {
 //        userRepo.saveLocalSearchHistory(autoComplete) //un comment to save local search history
+        reset()
+        activeFilters.putAll(
+            mapOf(
+                autoComplete.query to Option.StringValue(
+                    autoComplete.suggestion,
+                    false
+                )
+            )
+        )
         navigator.withScope<BaseSearchScope> {
             it.productSearch.value = autoComplete.suggestion
             it.pagination.reset()
@@ -272,12 +284,6 @@ internal class SearchEventDelegate(
                 addPage = false,
                 withDelay = false,
                 withProgress = true,
-                extraFilters = mapOf(
-                    autoComplete.query to Option.StringValue(
-                        autoComplete.suggestion,
-                        false
-                    )
-                ),
                 onEnd = { it.autoComplete.value = emptyList() },
             )
         }
