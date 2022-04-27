@@ -266,7 +266,7 @@ private fun QuickActionItem(title: String, icon: Int, onClick: () -> Unit) {
         Box(modifier = Modifier.clickable { onClick() }) {
             Surface(
                 modifier = Modifier
-                    .size(80.dp),
+                    .size(60.dp),
                 color = Color.White,
                 shape = CircleShape,
                 elevation = 5.dp
@@ -274,7 +274,7 @@ private fun QuickActionItem(title: String, icon: Int, onClick: () -> Unit) {
             }
             Image(
                 modifier = Modifier
-                    .size(35.dp)
+                    .size(30.dp)
                     .align(Center),
                 painter = painterResource(id = icon),
                 contentDescription = null,
