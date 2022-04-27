@@ -183,6 +183,13 @@ private fun ShowRetailerAndHospitalDashboard(
                     }
                     Space(16.dp)
                     QuickActionItem(
+                        title = stringResource(id = R.string.digital_invoice_payments),
+                        icon = R.drawable.ic_menu_invoice
+                    ) {
+                        scope.sendEvent(Event.Transition.IOCBuyer)
+                    }
+                    Space(16.dp)
+                    QuickActionItem(
                         title = stringResource(id = R.string.my_account),
                         icon = R.drawable.ic_personal
                     ) {
