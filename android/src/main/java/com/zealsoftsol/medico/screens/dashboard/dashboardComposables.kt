@@ -111,6 +111,7 @@ private fun ShowRetailerAndHospitalDashboard(
             Column(
                 modifier = Modifier
                     .background(Color.White)
+                    .fillMaxWidth()
                     .padding(vertical = 16.dp)
             ) {
                 dashboard.value?.banners?.let {
@@ -150,6 +151,7 @@ private fun ShowRetailerAndHospitalDashboard(
             Box(
                 modifier = Modifier
                     .background(Color.White)
+                    .fillMaxWidth()
                     .padding(vertical = 16.dp)
                     .horizontalScroll(rememberScrollState())
             ) {
@@ -200,6 +202,7 @@ private fun ShowRetailerAndHospitalDashboard(
             Column(
                 modifier = Modifier
                     .background(Color.White)
+                    .fillMaxWidth()
                     .padding(vertical = 16.dp)
             ) {
                 Text(
@@ -230,6 +233,7 @@ private fun ShowRetailerAndHospitalDashboard(
             Column(
                 modifier = Modifier
                     .background(Color.White)
+                    .fillMaxWidth()
                     .padding(vertical = 16.dp)
             ) {
                 Text(
@@ -470,6 +474,7 @@ private fun ShowStockistDashBoard(
             Box(
                 modifier = Modifier
                     .background(Color.White)
+                    .fillMaxWidth()
                     .padding(14.dp)
             ) {
                 Row(
@@ -566,6 +571,7 @@ private fun ShowStockistDashBoard(
             Column(
                 modifier = Modifier
                     .background(Color.White)
+                    .fillMaxWidth()
                     .padding(16.dp)
             ) {
                 Text(
@@ -597,6 +603,7 @@ private fun ShowStockistDashBoard(
             Column(
                 modifier = Modifier
                     .background(Color.White)
+                    .fillMaxWidth()
                     .padding(16.dp)
             ) {
                 Text(
@@ -692,6 +699,7 @@ private fun ShowStockistDashBoard(
             Column(
                 modifier = Modifier
                     .background(Color.White)
+                    .fillMaxWidth()
                     .padding(16.dp)
             ) {
                 Text(
@@ -794,6 +802,7 @@ private fun ShowStockistDashBoard(
                 Column(
                     modifier = Modifier
                         .background(Color.White)
+                        .fillMaxWidth()
                         .padding(16.dp)
                 ) {
                     Text(
@@ -826,6 +835,7 @@ private fun ShowStockistDashBoard(
                 Column(
                     modifier = Modifier
                         .background(Color.White)
+                        .fillMaxWidth()
                         .padding(16.dp)
                 ) {
                     Text(
