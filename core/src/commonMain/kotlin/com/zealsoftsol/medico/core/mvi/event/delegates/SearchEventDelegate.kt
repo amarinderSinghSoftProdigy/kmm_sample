@@ -147,16 +147,18 @@ internal class SearchEventDelegate(
             it.showNoProducts.value = false
             it.productSearch.value = autoComplete.suggestion
             it.pagination.reset()
-            networkSearchScope.autocomplete(autoComplete.suggestion, null)
-                .onSuccess { body ->
-                    it.autoComplete.value = body
-                    if (it.autoComplete.value.isEmpty()) {
-                        it.showNoProducts.value = true
-                    }
-                    if (body.isEmpty() && it.products.value.isNotEmpty()) {
-                        it.products.value = emptyList()
-                    }
-                }.onError(navigator)
+            withProgress {
+                networkSearchScope.autocomplete(autoComplete.suggestion, null)
+                    .onSuccess { body ->
+                        it.autoComplete.value = body
+                        if (it.autoComplete.value.isEmpty()) {
+                            it.showNoProducts.value = true
+                        }
+                        if (body.isEmpty() && it.products.value.isNotEmpty()) {
+                            it.products.value = emptyList()
+                        }
+                    }.onError(navigator)
+            }
         }
     }
 
@@ -279,13 +281,15 @@ internal class SearchEventDelegate(
         navigator.withScope<BaseSearchScope> {
             it.productSearch.value = autoComplete.suggestion
             it.pagination.reset()
-            it.search(
-                it.pagination,
-                addPage = false,
-                withDelay = false,
-                withProgress = true,
-                onEnd = { it.autoComplete.value = emptyList() },
-            )
+            withProgress {
+                it.search(
+                    it.pagination,
+                    addPage = false,
+                    withDelay = false,
+                    withProgress = true,
+                    onEnd = { it.autoComplete.value = emptyList() },
+                )
+            }
         }
     }
 
