@@ -146,7 +146,7 @@ class InStoreProductsScope(
     )
 }
 
-class InStoreUsersScope : Scope.Child.TabBar(), Loadable<InStoreUser> {
+class InStoreUsersScope : Scope.Child.TabBar(), Loadable<InStoreUser>, CommonScope.CanGoBack {
 
     override val items: DataSource<List<InStoreUser>> = DataSource(emptyList())
     override val totalItems: DataSource<Int> = DataSource(0)

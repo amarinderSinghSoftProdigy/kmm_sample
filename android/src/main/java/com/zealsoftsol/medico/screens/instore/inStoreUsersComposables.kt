@@ -10,19 +10,23 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.RadioButton
 import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -45,6 +49,7 @@ import com.zealsoftsol.medico.data.InStoreUser
 import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
 
@@ -54,27 +59,51 @@ fun InStoreUsersScreen(scope: InStoreUsersScope) {
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .padding(16.dp),
     ) {
         val selectedUser = remember { mutableStateOf<InStoreUser?>(null) }
+        val items = scope.items.flow.collectAsState()
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(bottom = 72.dp)
         ) {
             val search = scope.searchText.flow.collectAsState()
-            BasicSearchBar(
-                backgroundColor = ConstColors.newDesignGray,
-                input = search.value,
-                hint = R.string.search_tradename,
-                searchBarEnd = SearchBarEnd.Eraser,
-                icon = Icons.Default.Search,
-                elevation = 0.dp,
-                horizontalPadding = 10.dp,
-                isSearchFocused = false,
-                onSearch = { v, _ -> scope.search(v) },
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(start = 10.dp)
+                        .clickable(
+                            indication = null,
+                            onClick = {
+                                scope.goBack()
+                            }
+                        )
+                )
+                BasicSearchBar(
+                    backgroundColor = ConstColors.newDesignGray,
+                    input = search.value,
+                    hint = R.string.search_tradename,
+                    searchBarEnd = SearchBarEnd.Eraser,
+                    icon = Icons.Default.Search,
+                    elevation = 0.dp,
+                    horizontalPadding = 15.dp,
+                    isSearchFocused = false,
+                    onSearch = { v, _ -> scope.search(v) },
+                )
+            }
+            Divider(
+                color = ConstColors.lightBlue,
+                thickness = 0.5.dp,
+                startIndent = 0.dp
             )
-            val items = scope.items.flow.collectAsState()
             if (items.value.isEmpty() && scope.items.updateCount > 0) {
 //            NoRecords(
 //                icon = R.drawable.ic_missing_invoices,
@@ -83,6 +112,7 @@ fun InStoreUsersScreen(scope: InStoreUsersScope) {
 //            )
             } else {
                 LazyColumn(
+                    modifier = Modifier.padding(16.dp),
                     state = rememberLazyListState(),
                     contentPadding = PaddingValues(top = 16.dp, bottom = 10.dp),
                     verticalArrangement = Arrangement.spacedBy(15.dp)
