@@ -38,12 +38,14 @@ fun <T> FoldableItem(
     itemsBackground: Color = Color.White,
     itemSpacing: Dp = 12.dp,
     item: @Composable ColumnScope.(T, Int) -> Unit,
+    elevation: Dp = 0.dp
 ) {
     val isExpanded = remember { mutableStateOf(expanded) }
     Surface(
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
         border = headerBorder,
+        elevation = elevation
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(
