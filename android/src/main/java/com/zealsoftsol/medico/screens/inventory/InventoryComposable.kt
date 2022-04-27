@@ -304,10 +304,11 @@ fun InventoryMainComposable(scope: InventoryScope) {
     }
 
     AnimatedVisibility(visible = showManufacturers.value) {
-        Space(10.dp)
+        Space(12.dp)
         LazyRow(
             contentPadding = PaddingValues(start = 3.dp),
             modifier = Modifier.padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             manufacturersList.let {
                 itemsIndexed(
@@ -736,7 +737,6 @@ fun ManufacturersItem(
             overflow = TextOverflow.Ellipsis,
         )
     }
-    Space(12.dp)
 }
 
 /**
