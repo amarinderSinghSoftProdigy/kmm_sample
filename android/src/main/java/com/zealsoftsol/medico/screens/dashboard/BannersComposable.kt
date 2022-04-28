@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.screens.dashboard
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,8 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.mvi.event.Event
-import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.regular.BannersScope
 import com.zealsoftsol.medico.data.BannerItemData
 import com.zealsoftsol.medico.data.BuyingOption
@@ -46,7 +45,6 @@ import com.zealsoftsol.medico.screens.common.CoilImageBrands
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.ShowAlert
-import com.zealsoftsol.medico.screens.common.ShowToastGlobal
 import com.zealsoftsol.medico.screens.common.clickable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -197,13 +195,17 @@ fun BannerItem(item: BannerItemData, scope: BannersScope) {
         backgroundColor = White,
     ) {
         Column {
-            CoilImageBrands(
-                src = item.url,
-                contentScale = ContentScale.FillBounds,
-                onError = { ItemPlaceholder() },
-                onLoading = { ItemPlaceholder() },
-                height = 150.dp,
-            )
+            Box(modifier = Modifier.clickable{
+                scope.zoomImage(item.url)
+            }) {
+                CoilImageBrands(
+                    src = item.url,
+                    contentScale = ContentScale.FillBounds,
+                    onError = { ItemPlaceholder() },
+                    onLoading = { ItemPlaceholder() },
+                    height = 150.dp,
+                )
+            }
 
             MedicoButton(
                 modifier = Modifier

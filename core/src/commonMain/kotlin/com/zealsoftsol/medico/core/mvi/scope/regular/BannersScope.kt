@@ -98,4 +98,9 @@ class BannersScope : Scope.Child.TabBar(),
             bannersList.value.addAll(list)
         }
     }
+
+    /**
+     * zoom selected image
+     */
+    fun zoomImage(url: String) = EventCollector.sendEvent(Event.Action.Banners.ZoomImage(url))
 }

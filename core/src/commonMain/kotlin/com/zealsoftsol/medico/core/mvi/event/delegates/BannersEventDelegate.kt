@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
+import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.regular.BannersScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
@@ -23,6 +24,11 @@ internal class BannersEventDelegate(
             event.sellerUnitCode, event.productCode,
             event.buyingOption, event.id, event.quantity, event.freeQuantity
         )
+        is Event.Action.Banners.ZoomImage -> zoomImage(event.url)
+    }
+
+    private fun zoomImage(url: String) {
+        navigator.scope.value.bottomSheet.value = BottomSheet.ViewLargeImage(url, null)
     }
 
     private suspend fun addItemToCart(

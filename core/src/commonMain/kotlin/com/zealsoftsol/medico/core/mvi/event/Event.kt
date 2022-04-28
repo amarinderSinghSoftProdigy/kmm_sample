@@ -665,6 +665,8 @@ sealed class Event {
                 val quantity: Double,
                 val freeQuantity: Double,
             ) : Banners()
+
+            data class ZoomImage(val url: String) : Banners()
         }
     }
 
