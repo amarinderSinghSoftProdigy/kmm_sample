@@ -656,6 +656,15 @@ sealed class Event {
             override val typeClazz: KClass<*> = Banners::class
 
             data class GetAllBanners(val page: Int, val search: String) : Banners()
+
+            data class AddItemToCart(
+                val sellerUnitCode: String?,
+                val productCode: String,
+                val buyingOption: BuyingOption,
+                val id: CartIdentifier?,
+                val quantity: Double,
+                val freeQuantity: Double,
+            ) : Banners()
         }
     }
 
@@ -721,6 +730,6 @@ sealed class Event {
         object AddEmployee : Transition()
         object Preference : Transition()
         data class Companies(val title: String, val unitCode: String) : Transition()
-        object Banners: Transition()
+        object Banners : Transition()
     }
 }

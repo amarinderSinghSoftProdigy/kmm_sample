@@ -7,6 +7,10 @@ import com.zealsoftsol.medico.core.mvi.scope.regular.BannersScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.core.repository.requireUser
+import com.zealsoftsol.medico.data.BuyingOption
+import com.zealsoftsol.medico.data.CartIdentifier
+import com.zealsoftsol.medico.data.CartRequest
 
 internal class BannersEventDelegate(
     navigator: Navigator,
@@ -15,6 +19,38 @@ internal class BannersEventDelegate(
 ) : EventDelegate<Event.Action.Banners>(navigator) {
     override suspend fun handleEvent(event: Event.Action.Banners) = when (event) {
         is Event.Action.Banners.GetAllBanners -> getAllBanners(event.page, event.search)
+        is Event.Action.Banners.AddItemToCart -> addItemToCart(
+            event.sellerUnitCode, event.productCode,
+            event.buyingOption, event.id, event.quantity, event.freeQuantity
+        )
+    }
+
+    private suspend fun addItemToCart(
+        sellerUnitCode: String?,
+        productCode: String,
+        buyingOption: BuyingOption,
+        id: CartIdentifier?,
+        quantity: Double,
+        freeQuantity: Double,
+    ) {
+        navigator.withScope<BannersScope> {
+            val result = withProgress {
+                bannersRepo.addCartEntry(
+                    CartRequest(
+                        userRepo.requireUser().unitCode,
+                        sellerUnitCode,
+                        productCode,
+                        buyingOption,
+                        id,
+                        quantity,
+                        freeQuantity,
+                    )
+                )
+            }
+            result.onSuccess { _ ->
+                it.updateAlertVisibility(true)
+            }.onError(navigator)
+        }
     }
 
     /**

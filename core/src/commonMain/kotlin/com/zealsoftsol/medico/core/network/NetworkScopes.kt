@@ -558,5 +558,8 @@ interface NetworkScope {
             page: Int,
             search: String
         ): BodyResponse<AllBanners>
+
+        suspend fun addCartEntry(request: CartRequest): BodyResponse<CartData>
+
     }
 }

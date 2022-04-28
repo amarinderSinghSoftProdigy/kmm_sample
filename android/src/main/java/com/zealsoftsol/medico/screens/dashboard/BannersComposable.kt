@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.screens.dashboard
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -35,11 +36,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.regular.BannersScope
 import com.zealsoftsol.medico.data.BannerItemData
+import com.zealsoftsol.medico.data.BuyingOption
+import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.screens.common.CoilImageBrands
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
+import com.zealsoftsol.medico.screens.common.ShowAlert
+import com.zealsoftsol.medico.screens.common.ShowToastGlobal
 import com.zealsoftsol.medico.screens.common.clickable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -53,119 +60,127 @@ fun BannersScreen(scope: BannersScope) {
     val bannerList = scope.bannersList.flow.collectAsState().value
     val searchTerm = remember { mutableStateOf("") }
     var queryTextChangedJob: Job? = null
+    val showToast = scope.showToast.flow.collectAsState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(White)
-    ) {
-        Row(
+    Box {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+                .fillMaxSize()
+                .background(White)
         ) {
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(start = 10.dp)
-                    .clickable(
-                        indication = null,
-                        onClick = {
-                            scope.goBack()
-                        }
-                    )
-            )
-            Surface(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(45.dp)
-                    .padding(start = 10.dp)
-                    .padding(end = 45.dp)
-                    .align(Alignment.CenterVertically),
-                shape = RoundedCornerShape(3.dp),
-                elevation = 3.dp,
-                color = White
+                    .height(56.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row(
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = null,
                     modifier = Modifier
+                        .padding(start = 10.dp)
+                        .clickable(
+                            indication = null,
+                            onClick = {
+                                scope.goBack()
+                            }
+                        )
+                )
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .height(45.dp)
-                        .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+                        .padding(start = 10.dp)
+                        .padding(end = 45.dp)
+                        .align(Alignment.CenterVertically),
+                    shape = RoundedCornerShape(3.dp),
+                    elevation = 3.dp,
+                    color = White
                 ) {
-                    BasicTextField(
+                    Row(
                         modifier = Modifier
-                            .weight(1f)
-                            .padding(horizontal = 5.dp),
-                        value = searchTerm.value,
-                        maxLines = 1,
-                        singleLine = true,
-                        onValueChange = {
-                            searchTerm.value = it
+                            .height(45.dp)
+                            .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        BasicTextField(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(horizontal = 5.dp),
+                            value = searchTerm.value,
+                            maxLines = 1,
+                            singleLine = true,
+                            onValueChange = {
+                                searchTerm.value = it
 
-                            queryTextChangedJob?.cancel()
+                                queryTextChangedJob?.cancel()
 
-                            queryTextChangedJob = CoroutineScope(Dispatchers.Main).launch {
-                                delay(500)
-                                scope.startSearch(it)
-                            }
-                        },
-                        textStyle = LocalTextStyle.current.copy(
-                            color = Color.Black,
-                            fontSize = 14.sp,
-                            background = White,
-                        ),
-                        decorationBox = { innerTextField ->
-                            Row(modifier = Modifier) {
-                                if (searchTerm.value.isEmpty()) {
-                                    Text(
-                                        text = stringResource(id = R.string.search),
-                                        color = Color.Gray,
-                                        fontSize = 14.sp,
-                                        maxLines = 1,
-                                    )
+                                queryTextChangedJob = CoroutineScope(Dispatchers.Main).launch {
+                                    delay(500)
+                                    scope.startSearch(it)
                                 }
+                            },
+                            textStyle = LocalTextStyle.current.copy(
+                                color = Color.Black,
+                                fontSize = 14.sp,
+                                background = White,
+                            ),
+                            decorationBox = { innerTextField ->
+                                Row(modifier = Modifier) {
+                                    if (searchTerm.value.isEmpty()) {
+                                        Text(
+                                            text = stringResource(id = R.string.search),
+                                            color = Color.Gray,
+                                            fontSize = 14.sp,
+                                            maxLines = 1,
+                                        )
+                                    }
+                                }
+                                innerTextField()
                             }
-                            innerTextField()
+                        )
+                    }
+                }
+            }
+            Divider(
+                color = ConstColors.lightBlue,
+                thickness = 0.5.dp,
+                startIndent = 0.dp
+            )
+            LazyColumn(
+                contentPadding = PaddingValues(start = 3.dp),
+                modifier = Modifier
+                    .padding(16.dp)
+                    .weight(0.9f),
+                verticalArrangement = Arrangement.spacedBy(25.dp)
+            ) {
+                itemsIndexed(
+                    items = bannerList,
+                    key = { index, _ -> index },
+                    itemContent = { _, item ->
+                        BannerItem(item, scope)
+                    },
+                )
+
+                item {
+                    if (bannerList.size < totalResults) {
+                        MedicoButton(
+                            modifier = Modifier
+                                .padding(horizontal = 20.dp)
+                                .padding(top = 5.dp, bottom = 5.dp)
+                                .height(40.dp),
+                            text = stringResource(id = R.string.more),
+                            isEnabled = true,
+                        ) {
+                            scope.getBanners(search = searchTerm.value)
                         }
-                    )
+                    }
                 }
             }
         }
-        Divider(
-            color = ConstColors.lightBlue,
-            thickness = 0.5.dp,
-            startIndent = 0.dp
-        )
-        LazyColumn(
-            contentPadding = PaddingValues(start = 3.dp),
-            modifier = Modifier
-                .padding(16.dp)
-                .weight(0.9f),
-            verticalArrangement = Arrangement.spacedBy(25.dp)
-        ) {
-            itemsIndexed(
-                items = bannerList,
-                key = { index, _ -> index },
-                itemContent = { _, item ->
-                    BannerItem(item, scope)
-                },
-            )
-
-            item {
-                if (bannerList.size < totalResults) {
-                    MedicoButton(
-                        modifier = Modifier
-                            .padding(horizontal = 20.dp)
-                            .padding(top = 5.dp, bottom = 5.dp)
-                            .height(40.dp),
-                        text = stringResource(id = R.string.more),
-                        isEnabled = true,
-                    ) {
-                        scope.getBanners(search = searchTerm.value)
-                    }
-                }
+        if (showToast.value) {
+            ShowAlert(stringResource(id = R.string.add_cart_success)) {
+                scope.updateAlertVisibility(false)
             }
         }
     }
@@ -196,7 +211,14 @@ fun BannerItem(item: BannerItemData, scope: BannersScope) {
                 text = stringResource(id = R.string.add_to_cart),
                 isEnabled = true
             ) {
-
+                scope.addToCart(
+                    item.sellerUnitCode,
+                    item.productCode,
+                    BuyingOption.BUY,
+                    CartIdentifier(item.spid, null),
+                    item.quantity,
+                    item.free
+                )
             }
         }
 

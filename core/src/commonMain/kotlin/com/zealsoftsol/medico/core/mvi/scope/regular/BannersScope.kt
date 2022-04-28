@@ -7,6 +7,8 @@ import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.data.BannerItemData
+import com.zealsoftsol.medico.data.BuyingOption
+import com.zealsoftsol.medico.data.CartIdentifier
 
 class BannersScope : Scope.Child.TabBar(),
     CommonScope.CanGoBack {
@@ -15,6 +17,8 @@ class BannersScope : Scope.Child.TabBar(),
         TabBarInfo.OnlyBackHeader("offers")
 
     val bannersList = DataSource<MutableList<BannerItemData>>(mutableListOf())
+    val showToast = DataSource(false)
+
     var totalItems = 0
     private var mCurrentPage = 0
 
@@ -22,6 +26,28 @@ class BannersScope : Scope.Child.TabBar(),
     init {
         getBanners(true)
     }
+
+    fun updateAlertVisibility(visibility: Boolean) {
+        this.showToast.value = visibility
+    }
+
+    fun addToCart(
+        sellerUnitCode: String?,
+        productCode: String,
+        buyingOption: BuyingOption,
+        id: CartIdentifier?,
+        quantity: Double,
+        freeQuantity: Double
+    ) = EventCollector.sendEvent(
+        Event.Action.Banners.AddItemToCart(
+            sellerUnitCode,
+            productCode,
+            buyingOption,
+            id,
+            quantity,
+            freeQuantity
+        )
+    )
 
     /**
      * get all available
