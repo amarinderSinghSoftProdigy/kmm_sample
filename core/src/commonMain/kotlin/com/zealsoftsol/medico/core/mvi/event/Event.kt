@@ -204,7 +204,9 @@ sealed class Event {
 
             data class Search(val value: String) : Management()
             data class Load(val isFirstLoad: Boolean) : Management()
-            data class GetDetails(val item: String , val showConnectionOption: Boolean = false) : Management()
+            data class GetDetails(val item: String, val showConnectionOption: Boolean = false) :
+                Management()
+
             data class RequestSubscribe(
                 val item: HeaderData,
                 val connectingStockistUnitCode: String
@@ -649,6 +651,12 @@ sealed class Event {
             object GetPreferences : Preferences()
             data class SetAutoConnectPreferences(val isEnabled: Boolean) : Preferences()
         }
+
+        sealed class Banners : Action() {
+            override val typeClazz: KClass<*> = Banners::class
+
+            data class GetAllBanners(val page: Int, val search: String) : Banners()
+        }
     }
 
 
@@ -713,5 +721,6 @@ sealed class Event {
         object AddEmployee : Transition()
         object Preference : Transition()
         data class Companies(val title: String, val unitCode: String) : Transition()
+        object Banners: Transition()
     }
 }

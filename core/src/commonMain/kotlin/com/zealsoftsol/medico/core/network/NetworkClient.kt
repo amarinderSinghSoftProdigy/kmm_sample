@@ -14,6 +14,7 @@ import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AddEmployee
 import com.zealsoftsol.medico.data.AddInvoice
+import com.zealsoftsol.medico.data.AllBanners
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoApprove
 import com.zealsoftsol.medico.data.AutoComplete
@@ -167,7 +168,8 @@ class NetworkClient(
     NetworkScope.BottomSheetStore,
     NetworkScope.QrCodeStore,
     NetworkScope.PreferencesStore,
-    NetworkScope.EmployeeStore {
+    NetworkScope.EmployeeStore,
+    NetworkScope.BannersStore {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -1427,6 +1429,21 @@ class NetworkClient(
                 }
             }
         }
+
+    override suspend fun getAllBanners(
+        page: Int,
+        search: String
+    ): BodyResponse<AllBanners> = simpleRequest {
+        client.get("${baseUrl.url}/dashboard/banners/all") {
+            withMainToken()
+            url {
+                if (search.isNotEmpty())
+                    parameters.append("search", search)
+                parameters.append("page", page.toString())
+                parameters.append("pageSize", Pagination.DEFAULT_ITEMS_PER_PAGE.toString())
+            }
+        }
+    }
 
     // Utils
     private inline fun HttpRequestBuilder.withB2bCodeToken(finalToken: String) {

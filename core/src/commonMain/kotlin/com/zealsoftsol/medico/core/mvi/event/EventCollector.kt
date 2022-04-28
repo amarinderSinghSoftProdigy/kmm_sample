@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.interop.Time
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.delegates.AddEmployeeEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.AuthEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.BannersEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.BatchesEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.CartEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.EventDelegate
@@ -79,6 +80,7 @@ class EventCollector(
     iocBuyerNetworkScope: NetworkScope.IOCBuyerStore,
     employeeStore: NetworkScope.EmployeeStore,
     preferenceNetworkScope: NetworkScope.PreferencesStore,
+    bannersNetworkScope: NetworkScope.BannersStore,
     private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
     private val cartRepo: CartRepo,
@@ -194,6 +196,11 @@ class EventCollector(
             navigator,
             userRepo,
             preferenceNetworkScope
+        ),
+        Event.Action.Banners::class to BannersEventDelegate(
+            navigator,
+            userRepo,
+            bannersNetworkScope
         ),
     )
 
