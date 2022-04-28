@@ -81,7 +81,8 @@ sealed class ManagementScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
             EventCollector.sendEvent(Event.Transition.Companies(title, unitCode))
 
         class Stockist(
-            override val notifications: DataSource<ScopeNotification?> = DataSource(null)
+            override val notifications: DataSource<ScopeNotification?> = DataSource(null),
+            val search: String = ""
         ) : User(
             forType = UserType.STOCKIST,
             tabs = listOf(Tab.YOUR_STOCKISTS, Tab.ALL_STOCKISTS),

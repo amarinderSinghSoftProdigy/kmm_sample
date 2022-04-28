@@ -19,5 +19,7 @@ data class BannerItemData(
     val spid: String,
     val url: String,
     val documentId: String,
-    val productName: String? = null
+    val productName: String,
+    val isAddToCartAllowed: Boolean,
+    val tradeName: String
 )

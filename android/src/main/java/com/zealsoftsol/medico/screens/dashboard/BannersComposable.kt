@@ -214,21 +214,34 @@ fun BannerItem(item: BannerItemData, scope: BannersScope) {
                 )
             }
 
-            MedicoButton(
-                modifier = Modifier
-                    .padding(10.dp),
-                text = stringResource(id = R.string.add_to_cart),
-                isEnabled = true
-            ) {
-                scope.addToCart(
-                    item.sellerUnitCode,
-                    item.productCode,
-                    BuyingOption.BUY,
-                    CartIdentifier(item.spid, null),
-                    item.quantity,
-                    item.free,
-                    item.productName
-                )
+            if (!item.isAddToCartAllowed) {
+                MedicoButton(
+                    modifier = Modifier
+                        .padding(10.dp),
+                    text = stringResource(id = R.string.connect_stockist),
+                    isEnabled = true
+                ) {
+                    scope.moveToStockist(item.tradeName)
+                }
+            } else {
+                MedicoButton(
+                    modifier = Modifier
+                        .padding(10.dp),
+                    text = stringResource(id = R.string.add_to_cart),
+                    isEnabled = true
+                ) {
+                    scope.addToCart(
+                        item.sellerUnitCode,
+                        item.productCode,
+                        BuyingOption.BUY,
+                        CartIdentifier(item.spid, null),
+                        item.quantity,
+                        item.free,
+                        item.productName
+                    )
+//                    scope.moveToStockist(item.tradeName)
+
+                }
             }
         }
 

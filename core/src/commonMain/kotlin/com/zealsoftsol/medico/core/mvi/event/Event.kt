@@ -686,7 +686,7 @@ sealed class Event {
         object Address : Transition()
         object GstinDetails : Transition()
         object WhatsappPreference : Transition()
-        data class Management(val manageUserType: UserType) : Transition()
+        data class Management(val manageUserType: UserType, val search: String = "") : Transition()
         object RequestCreateRetailer : Transition()
         object AddRetailerAddress : Transition()
 //        data class PreviewUser(

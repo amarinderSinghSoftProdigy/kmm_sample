@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.data.BannerItemData
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartIdentifier
+import com.zealsoftsol.medico.data.UserType
 
 class BannersScope : Scope.Child.TabBar(),
     CommonScope.CanGoBack {
@@ -20,7 +21,7 @@ class BannersScope : Scope.Child.TabBar(),
     val showToast = DataSource(false)
     var qty: String = ""
     var freeQty: String = ""
-    var productName: String? = ""
+    var productName: String = ""
 
     var totalItems = 0
     private var mCurrentPage = 0
@@ -41,7 +42,7 @@ class BannersScope : Scope.Child.TabBar(),
         id: CartIdentifier?,
         quantity: Double,
         freeQuantity: Double,
-        prodName:String?
+        prodName: String
     ) {
         this.productName = prodName
         this.freeQty = freeQuantity.toString()
@@ -113,4 +114,10 @@ class BannersScope : Scope.Child.TabBar(),
      * zoom selected image
      */
     fun zoomImage(url: String) = EventCollector.sendEvent(Event.Action.Banners.ZoomImage(url))
+
+    /**
+     * move to stockist screen and connect
+     */
+    fun moveToStockist(tradeName: String) =
+        EventCollector.sendEvent(Event.Transition.Management(UserType.STOCKIST, tradeName))
 }

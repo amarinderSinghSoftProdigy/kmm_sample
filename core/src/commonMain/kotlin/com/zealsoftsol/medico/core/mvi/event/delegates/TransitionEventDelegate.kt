@@ -112,7 +112,7 @@ internal class TransitionEventDelegate(
                 )
                 is Event.Transition.Management -> setScope(
                     when (event.manageUserType) {
-                        UserType.STOCKIST -> ManagementScope.User.Stockist()
+                        UserType.STOCKIST -> ManagementScope.User.Stockist(search = event.search)
                         UserType.RETAILER -> ManagementScope.User.Retailer(
                             canAdd = userRepo.requireUser().type == UserType.SEASON_BOY
                         )
