@@ -18,5 +18,6 @@ data class BannerItemData(
     val free: Double,
     val spid: String,
     val url: String,
-    val documentId: String
+    val documentId: String,
+    val productName: String? = null
 )

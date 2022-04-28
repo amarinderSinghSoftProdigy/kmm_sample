@@ -18,6 +18,9 @@ class BannersScope : Scope.Child.TabBar(),
 
     val bannersList = DataSource<MutableList<BannerItemData>>(mutableListOf())
     val showToast = DataSource(false)
+    var qty: String = ""
+    var freeQty: String = ""
+    var productName: String? = ""
 
     var totalItems = 0
     private var mCurrentPage = 0
@@ -37,17 +40,24 @@ class BannersScope : Scope.Child.TabBar(),
         buyingOption: BuyingOption,
         id: CartIdentifier?,
         quantity: Double,
-        freeQuantity: Double
-    ) = EventCollector.sendEvent(
-        Event.Action.Banners.AddItemToCart(
-            sellerUnitCode,
-            productCode,
-            buyingOption,
-            id,
-            quantity,
-            freeQuantity
+        freeQuantity: Double,
+        prodName:String?
+    ) {
+        this.productName = prodName
+        this.freeQty = freeQuantity.toString()
+        this.qty = quantity.toString()
+
+        EventCollector.sendEvent(
+            Event.Action.Banners.AddItemToCart(
+                sellerUnitCode,
+                productCode,
+                buyingOption,
+                id,
+                quantity,
+                freeQuantity
+            )
         )
-    )
+    }
 
     /**
      * get all available

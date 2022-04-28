@@ -54,7 +54,7 @@ internal class BannersEventDelegate(
                 )
             }
             result.onSuccess { _ ->
-                it.updateAlertVisibility(true)
+                it.showToast.value = true
             }.onError(navigator)
         }
     }

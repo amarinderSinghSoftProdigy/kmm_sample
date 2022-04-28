@@ -44,7 +44,7 @@ import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.screens.common.CoilImageBrands
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
-import com.zealsoftsol.medico.screens.common.ShowAlert
+import com.zealsoftsol.medico.screens.common.ShowToastGlobal
 import com.zealsoftsol.medico.screens.common.clickable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -177,9 +177,16 @@ fun BannersScreen(scope: BannersScope) {
             }
         }
         if (showToast.value) {
-            ShowAlert(stringResource(id = R.string.add_cart_success)) {
-                scope.updateAlertVisibility(false)
-            }
+            ShowToastGlobal(
+                msg = scope.productName + " " +
+                        stringResource(id = R.string.added_to_cart) + " " +
+                        stringResource(id = R.string.qty) +
+                        " : " +
+                        scope.qty + " + " +
+                        stringResource(id = R.string.free) + " " +
+                        scope.freeQty
+            )
+            scope.updateAlertVisibility(false)
         }
     }
 }
@@ -195,7 +202,7 @@ fun BannerItem(item: BannerItemData, scope: BannersScope) {
         backgroundColor = White,
     ) {
         Column {
-            Box(modifier = Modifier.clickable{
+            Box(modifier = Modifier.clickable {
                 scope.zoomImage(item.url)
             }) {
                 CoilImageBrands(
@@ -219,7 +226,8 @@ fun BannerItem(item: BannerItemData, scope: BannersScope) {
                     BuyingOption.BUY,
                     CartIdentifier(item.spid, null),
                     item.quantity,
-                    item.free
+                    item.free,
+                    item.productName
                 )
             }
         }
