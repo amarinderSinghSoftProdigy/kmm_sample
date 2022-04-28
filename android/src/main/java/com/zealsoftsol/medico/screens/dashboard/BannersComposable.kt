@@ -219,7 +219,9 @@ fun BannerItem(item: BannerItemData, scope: BannersScope) {
                     modifier = Modifier
                         .padding(10.dp),
                     text = stringResource(id = R.string.connect_stockist),
-                    isEnabled = true
+                    isEnabled = true,
+                    color = ConstColors.lightBlue,
+                    txtColor = White
                 ) {
                     scope.moveToStockist(item.tradeName)
                 }
