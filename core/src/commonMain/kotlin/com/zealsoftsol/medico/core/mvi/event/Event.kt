@@ -204,7 +204,9 @@ sealed class Event {
 
             data class Search(val value: String) : Management()
             data class Load(val isFirstLoad: Boolean) : Management()
-            data class GetDetails(val item: String , val showConnectionOption: Boolean = false) : Management()
+            data class GetDetails(val item: String, val showConnectionOption: Boolean = false) :
+                Management()
+
             data class RequestSubscribe(
                 val item: HeaderData,
                 val connectingStockistUnitCode: String
@@ -649,6 +651,23 @@ sealed class Event {
             object GetPreferences : Preferences()
             data class SetAutoConnectPreferences(val isEnabled: Boolean) : Preferences()
         }
+
+        sealed class Banners : Action() {
+            override val typeClazz: KClass<*> = Banners::class
+
+            data class GetAllBanners(val page: Int, val search: String) : Banners()
+
+            data class AddItemToCart(
+                val sellerUnitCode: String?,
+                val productCode: String,
+                val buyingOption: BuyingOption,
+                val id: CartIdentifier?,
+                val quantity: Double,
+                val freeQuantity: Double,
+            ) : Banners()
+
+            data class ZoomImage(val url: String) : Banners()
+        }
     }
 
 
@@ -667,7 +686,7 @@ sealed class Event {
         object Address : Transition()
         object GstinDetails : Transition()
         object WhatsappPreference : Transition()
-        data class Management(val manageUserType: UserType) : Transition()
+        data class Management(val manageUserType: UserType, val search: String = "") : Transition()
         object RequestCreateRetailer : Transition()
         object AddRetailerAddress : Transition()
 //        data class PreviewUser(
@@ -713,5 +732,6 @@ sealed class Event {
         object AddEmployee : Transition()
         object Preference : Transition()
         data class Companies(val title: String, val unitCode: String) : Transition()
+        object Banners : Transition()
     }
 }

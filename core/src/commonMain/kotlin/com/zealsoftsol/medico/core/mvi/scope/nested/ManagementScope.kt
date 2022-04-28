@@ -30,6 +30,7 @@ sealed class ManagementScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
     sealed class User(
         val tabs: List<Tab>,
         internal val forType: UserType,
+        search: String = ""
     ) : ManagementScope(), Loadable<EntityInfo> {
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
@@ -49,7 +50,12 @@ sealed class ManagementScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
         }
 
         init {
-            EventCollector.sendEvent(Event.Action.Management.Load(isFirstLoad = true))
+            if (search.isEmpty())
+                EventCollector.sendEvent(Event.Action.Management.Load(isFirstLoad = true))
+            else {
+                selectTab(Tab.ALL_STOCKISTS)
+                search(search)
+            }
         }
 
         fun selectTab(tab: Tab) {
@@ -81,10 +87,12 @@ sealed class ManagementScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
             EventCollector.sendEvent(Event.Transition.Companies(title, unitCode))
 
         class Stockist(
-            override val notifications: DataSource<ScopeNotification?> = DataSource(null)
+            override val notifications: DataSource<ScopeNotification?> = DataSource(null),
+            val search: String = ""
         ) : User(
             forType = UserType.STOCKIST,
             tabs = listOf(Tab.YOUR_STOCKISTS, Tab.ALL_STOCKISTS),
+            search = search
         ), CommonScope.WithNotifications
 
         class Retailer(val canAdd: Boolean) : User(

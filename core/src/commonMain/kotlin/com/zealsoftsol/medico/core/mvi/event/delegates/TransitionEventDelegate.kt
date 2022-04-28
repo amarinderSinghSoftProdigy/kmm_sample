@@ -25,6 +25,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.BannersScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.BatchesScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.PreferenceScope
@@ -111,7 +112,7 @@ internal class TransitionEventDelegate(
                 )
                 is Event.Transition.Management -> setScope(
                     when (event.manageUserType) {
-                        UserType.STOCKIST -> ManagementScope.User.Stockist()
+                        UserType.STOCKIST -> ManagementScope.User.Stockist(search = event.search)
                         UserType.RETAILER -> ManagementScope.User.Retailer(
                             canAdd = userRepo.requireUser().type == UserType.SEASON_BOY
                         )
@@ -248,6 +249,7 @@ internal class TransitionEventDelegate(
                         event.unitCode
                     )
                 )
+                is Event.Transition.Banners -> setScope(BannersScope())
             }
         }
     }

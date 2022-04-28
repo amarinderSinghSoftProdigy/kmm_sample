@@ -315,7 +315,7 @@ private fun BannerItem(item: BannerData, scope: DashboardScope, modifier: Modifi
             .selectable(
                 selected = true,
                 onClick = {
-                    //send parameters for search based on category
+                    scope.sendEvent(Event.Transition.Banners)
                 }),
         elevation = 3.dp,
         shape = RoundedCornerShape(5.dp),

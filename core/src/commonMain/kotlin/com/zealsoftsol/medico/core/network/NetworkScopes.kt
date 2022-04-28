@@ -5,6 +5,7 @@ import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AddEmployee
 import com.zealsoftsol.medico.data.AddInvoice
+import com.zealsoftsol.medico.data.AllBanners
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoApprove
 import com.zealsoftsol.medico.data.AutoComplete
@@ -550,5 +551,15 @@ interface NetworkScope {
         ): BodyResponse<AutoApprove>
 
         suspend fun setAutoApprovePreference(isEnabled: Boolean): BodyResponse<AutoApprove>
+    }
+
+    interface BannersStore : NetworkScope {
+        suspend fun getAllBanners(
+            page: Int,
+            search: String
+        ): BodyResponse<AllBanners>
+
+        suspend fun addCartEntry(request: CartRequest): BodyResponse<CartData>
+
     }
 }
