@@ -239,8 +239,6 @@ fun BannerItem(item: BannerItemData, scope: BannersScope) {
                         item.free,
                         item.productName
                     )
-//                    scope.moveToStockist(item.tradeName)
-
                 }
             }
         }
