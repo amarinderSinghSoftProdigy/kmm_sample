@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,7 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
@@ -53,10 +56,12 @@ import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.search.ChipString
 
 @Composable
 fun ProductScreen(scope: ProductInfoScope) {
     val isDetailsOpened = scope.isDetailsOpened.flow.collectAsState()
+    val product = scope.product
 
     Column(
         modifier = Modifier
@@ -67,7 +72,7 @@ fun ProductScreen(scope: ProductInfoScope) {
         Space(28.dp)
         Row(modifier = Modifier.fillMaxWidth()) {
             CoilImage(
-                src = CdnUrlProvider.urlFor(scope.product.imageCode!!, CdnUrlProvider.Size.Px320),
+                src = CdnUrlProvider.urlFor(product.imageCode, CdnUrlProvider.Size.Px320),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp),
@@ -79,7 +84,7 @@ fun ProductScreen(scope: ProductInfoScope) {
         Space(10.dp)
 
         Text(
-            text = scope.product.name,
+            text = product.name,
             color = MaterialTheme.colors.background,
             fontWeight = FontWeight.W600,
             fontSize = 16.sp,
@@ -90,18 +95,18 @@ fun ProductScreen(scope: ProductInfoScope) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = scope.product.manufacturer,
+                text = product.manufacturer,
                 color = MaterialTheme.colors.background,
                 fontSize = 12.sp,
             )
             /*Space(10.dp)
             Text(
-                text = scope.product.formattedPrice.orEmpty(),
+                text = product.formattedPrice.orEmpty(),
                 color = MaterialTheme.colors.background,
                 fontWeight = FontWeight.W700,
                 fontSize = 20.sp,
             )*/
-            scope.product.stockInfo?.let {
+            product.stockInfo?.let {
                 Text(
                     text = it.formattedStatus,
                     color = when (it.status) {
@@ -123,7 +128,7 @@ fun ProductScreen(scope: ProductInfoScope) {
                 text = buildAnnotatedString {
                     append("PTR: ")
                     val startIndex = length
-                    append(scope.product.formattedMrp)
+                    append(product.formattedPrice ?: "")
                     addStyle(
                         SpanStyle(
                             color = MaterialTheme.colors.background,
@@ -141,7 +146,7 @@ fun ProductScreen(scope: ProductInfoScope) {
                 text = buildAnnotatedString {
                     append("MRP: ")
                     val startIndex = length
-                    append(scope.product.formattedMrp)
+                    append(product.formattedMrp)
                     addStyle(
                         SpanStyle(
                             color = MaterialTheme.colors.background,
@@ -155,7 +160,7 @@ fun ProductScreen(scope: ProductInfoScope) {
                 fontSize = 12.sp,
             )
         }
-        scope.product.marginPercent?.let {
+        product.marginPercent?.let {
             Space(8.dp)
             Text(
                 text = "Margin: $it",
@@ -165,36 +170,32 @@ fun ProductScreen(scope: ProductInfoScope) {
         }
 
         Space(8.dp)
-        Text(
-            text = scope.product.uomName,
-            color = ConstColors.gray,
-            fontSize = 12.sp,
-        )
-        //Space(4.dp)
 
-        /*Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text(
-                text = "Description: ${scope.product.uomName}",
-                color = ConstColors.lightBlue,
-                fontSize = 14.sp,
-            )
-            scope.product.stockInfo?.let {
-                Text(
-                    text = it.formattedStatus,
-                    color = when (it.status) {
-                        StockStatus.IN_STOCK -> ConstColors.green
-                        StockStatus.LIMITED_STOCK -> ConstColors.orange
-                        StockStatus.OUT_OF_STOCK -> ConstColors.red
-                    },
-                    fontWeight = FontWeight.W700,
-                    fontSize = 12.sp,
+        val sliderList = ArrayList<String>()
+        product.manufacturer.let { sliderList.add(it) }
+        if (product.drugFormName.isNotEmpty())
+            sliderList.add(product.drugFormName)
+        product.standardUnit?.let { sliderList.add(it) }
+        if (product.compositions.isNotEmpty())
+            sliderList.addAll(product.compositions)
+        product.sellerInfo?.priceInfo?.marginPercent?.let {
+            sliderList.add(
+                "Margin: ".plus(
+                    it
                 )
-            }
-        }*/
-        Space(12.dp)
+            )
+        }
+        LazyRow(
+            state = rememberLazyListState(),
+            contentPadding = PaddingValues(top = 6.dp),
+        ) {
+            items(
+                items = sliderList,
+                itemContent = { value -> if (value.isNotEmpty()) ChipString(value) {} }
+            )
+        }
+        Space(8.dp)
+        
         Text(
             text = stringResource(id = R.string.variants),
             color = MaterialTheme.colors.background,
@@ -214,7 +215,7 @@ fun ProductScreen(scope: ProductInfoScope) {
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = scope.product.name,
+                        text = product.name,
                         color = MaterialTheme.colors.background,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.W500,
@@ -253,7 +254,7 @@ fun ProductScreen(scope: ProductInfoScope) {
         )
         Space(12.dp)
         val context = LocalContext.current
-        when (scope.product.buyingOption) {
+        when (product.buyingOption) {
             BuyingOption.BUY -> {
                 MedicoButton(text = stringResource(id = R.string.add_to_cart), isEnabled = true) {
                     if (!scope.buy()) {
@@ -321,7 +322,7 @@ fun ProductScreen(scope: ProductInfoScope) {
             Column {
                 ProductDetail(
                     title = stringResource(id = R.string.manufacturer),
-                    description = scope.product.manufacturer,
+                    description = product.manufacturer,
                 )
                 Space(12.dp)
                 ProductDetail(
