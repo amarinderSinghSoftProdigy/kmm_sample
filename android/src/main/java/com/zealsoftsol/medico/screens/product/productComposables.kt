@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.screens.product
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,21 +24,19 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -71,7 +70,7 @@ fun ProductScreen(scope: ProductInfoScope) {
                 .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            Space(28.dp)
+            Space(25.dp)
             Surface(modifier = Modifier.align(CenterHorizontally), shape = CircleShape, elevation = 5.dp) {
                 CoilImage(
                     src = CdnUrlProvider.urlFor(product.imageCode, CdnUrlProvider.Size.Px320),
@@ -87,11 +86,11 @@ fun ProductScreen(scope: ProductInfoScope) {
                     isCrossFadeEnabled = false
                 )
             }
-            Space(10.dp)
+            Space(16.dp)
 
             Text(
                 text = product.name,
-                color = MaterialTheme.colors.background,
+                color = Color.Black,
                 fontWeight = FontWeight.W600,
                 fontSize = 16.sp,
             )
@@ -102,8 +101,8 @@ fun ProductScreen(scope: ProductInfoScope) {
             ) {
                 Text(
                     text = product.manufacturer,
-                    color = MaterialTheme.colors.background,
-                    fontSize = 12.sp,
+                    color = Color.Black,
+                    fontSize = 13.sp,
                 )
 
                 product.stockInfo?.let {
@@ -115,7 +114,7 @@ fun ProductScreen(scope: ProductInfoScope) {
                             StockStatus.OUT_OF_STOCK -> ConstColors.red
                         },
                         fontWeight = FontWeight.W700,
-                        fontSize = 12.sp,
+                        fontSize = 13.sp,
                     )
                 }
             }
@@ -131,7 +130,7 @@ fun ProductScreen(scope: ProductInfoScope) {
                         append(product.formattedPrice ?: "")
                         addStyle(
                             SpanStyle(
-                                color = MaterialTheme.colors.background,
+                                color = Color.Black,
                                 fontWeight = FontWeight.Bold
                             ),
                             startIndex,
@@ -139,7 +138,7 @@ fun ProductScreen(scope: ProductInfoScope) {
                         )
                     },
                     color = ConstColors.gray,
-                    fontSize = 12.sp,
+                    fontSize = 13.sp,
                 )
 
                 Text(
@@ -149,7 +148,7 @@ fun ProductScreen(scope: ProductInfoScope) {
                         append(product.formattedMrp)
                         addStyle(
                             SpanStyle(
-                                color = MaterialTheme.colors.background,
+                                color = Color.Black,
                                 fontWeight = FontWeight.Bold
                             ),
                             startIndex,
@@ -157,7 +156,7 @@ fun ProductScreen(scope: ProductInfoScope) {
                         )
                     },
                     color = ConstColors.gray,
-                    fontSize = 12.sp,
+                    fontSize = 13.sp,
                 )
             }
 
@@ -186,17 +185,19 @@ fun ProductScreen(scope: ProductInfoScope) {
                     itemContent = { value -> if (value.isNotEmpty()) ChipString(value) {} }
                 )
             }
-            Space(8.dp)
+
+            Space(16.dp)
 
             Text(
                 text = stringResource(id = R.string.variants),
-                color = MaterialTheme.colors.background,
-                fontWeight = FontWeight.W500,
+                color = Color.Black,
+                fontWeight = FontWeight.W600,
                 fontSize = 16.sp,
             )
-            Space(4.dp)
+            Space(8.dp)
             FoldableItem(
                 expanded = false,
+                elevation = 3.dp,
                 headerBackground = Color.White,
                 header = { isExpanded ->
                     Row(
@@ -208,15 +209,17 @@ fun ProductScreen(scope: ProductInfoScope) {
                     ) {
                         Text(
                             text = product.name,
-                            color = MaterialTheme.colors.background,
+                            color = Color.Black,
                             fontSize = 15.sp,
                             fontWeight = FontWeight.W500,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
                         )
-                        Icon(
-                            imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                            tint = ConstColors.lightBlue,
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp),
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_arrow_right),
+                            modifier = Modifier
+                                .rotate(if (isExpanded) 270f else 90f),
+                            contentDescription = null
                         )
                     }
                 },
@@ -235,7 +238,7 @@ fun ProductScreen(scope: ProductInfoScope) {
                     ) {
                         Text(
                             text = item.name,
-                            color = MaterialTheme.colors.background,
+                            color = Color.Black,
                             fontSize = 15.sp,
                             fontWeight = FontWeight.W500,
                             maxLines = 1,
@@ -244,7 +247,7 @@ fun ProductScreen(scope: ProductInfoScope) {
                     }
                 }
             )
-            Space(12.dp)
+            Space(25.dp)
             val context = LocalContext.current
             when (product.buyingOption) {
                 BuyingOption.BUY -> {
@@ -292,7 +295,6 @@ fun ProductScreen(scope: ProductInfoScope) {
                     }
                 }
             }
-            Space(32.dp)
             /*Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -334,7 +336,7 @@ fun ProductScreen(scope: ProductInfoScope) {
             if (scope.alternativeBrands.isNotEmpty()) {
                 Space(24.dp)
                 Text(
-                    text = stringResource(id = R.string.alternative_brands),
+                    text = "${stringResource(id = R.string.alternative_brands)} ${product.sellerInfo?.tradeName} ",
                     color = MaterialTheme.colors.background,
                     fontWeight = FontWeight.W500,
                     fontSize = 16.sp,
@@ -349,10 +351,7 @@ fun ProductScreen(scope: ProductInfoScope) {
                     )
                 }
 
-                scope.alternativeBrands.forEach {
-
-                    Space(8.dp)
-                }
+                Space(20.dp)
             }
         }
     }
