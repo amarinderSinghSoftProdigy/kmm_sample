@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.ToastScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
@@ -164,7 +165,7 @@ internal class SearchEventDelegate(
 
 
     private fun showToast(msg: String, cartData: CartData?) {
-        navigator.withScope<StoresScope.StorePreview> {
+        navigator.withScope<ToastScope> {
             it.showToast.value = msg == "success"
             it.cartData.value = cartData
         }

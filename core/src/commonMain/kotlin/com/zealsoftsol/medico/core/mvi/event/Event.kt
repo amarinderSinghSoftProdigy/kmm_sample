@@ -197,6 +197,8 @@ sealed class Event {
             ) : Product()
 
             data class PreviewStockistBottomSheet(val sellerInfo: SellerInfo) : Product()
+            data class ShowLargeImage(val url: String) : Product()
+            data class ShowStockist(val stockist: List<ConnectedStockist>) : Product()
         }
 
         sealed class Management : Action() {

@@ -144,7 +144,8 @@ sealed class TabBarInfo {
     }
 
     data class OnlyBackHeader(
-        val title: String //pass the string resource id
+        val title: String, //pass the string resource id
+        val cartItemsCount: ReadOnlyDataSource<Int>? = null
     ) : TabBarInfo() {
         override val icon: ScopeIcon = ScopeIcon.BACK
     }

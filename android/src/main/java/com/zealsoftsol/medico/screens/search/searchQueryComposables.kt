@@ -230,7 +230,8 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                                 products.value.forEachIndexed { index, productSearch ->
                                     ProductItem(
                                         productSearch,
-                                        onClick = { //scope.selectProduct(item)
+                                        onClick = {
+                                            scope.selectProduct(productSearch)
                                         },
                                         onBuy = { scope.buy(productSearch) },
                                         scope = scope

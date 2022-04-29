@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,8 +18,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
@@ -36,18 +33,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.mvi.event.Event
-import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreSellerScope
 import com.zealsoftsol.medico.data.InStoreSeller
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
+import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.Space
-import com.zealsoftsol.medico.screens.search.BasicSearchBar
-import com.zealsoftsol.medico.screens.search.SearchBarEnd
 
 @Composable
 fun InStoreSellersScreen(scope: InStoreSellerScope) {
-    remember {scope.loadItems(true)}
+    remember { scope.loadItems(true) }
 
     Box(
         modifier = Modifier
@@ -82,11 +76,11 @@ fun InStoreSellersScreen(scope: InStoreSellerScope) {
             val items = scope.items.flow.collectAsState()
             val listState = rememberLazyListState()
             if (items.value.isEmpty() && scope.items.updateCount > 0) {
-//            NoRecords(
-//                icon = R.drawable.ic_missing_invoices,
-//                text = R.string.missing_invoices,
-//                onHome = { scope.goHome() },
-//            )
+                NoRecords(
+                    icon = R.drawable.ic_grey_cart,
+                    text = R.string.order_not_found,
+                    onHome = { scope.goHome() },
+                )
             } else {
                 LazyColumn(
                     state = listState,

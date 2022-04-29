@@ -249,7 +249,7 @@ internal class TransitionEventDelegate(
                         event.unitCode
                     )
                 )
-                is Event.Transition.Banners -> setScope(BannersScope())
+                is Event.Transition.Banners -> setScope(BannersScope(cartRepo.getEntriesCountDataSource()))
             }
         }
     }

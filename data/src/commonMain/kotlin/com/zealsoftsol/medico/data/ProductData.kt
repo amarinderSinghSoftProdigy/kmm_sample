@@ -26,6 +26,9 @@ data class AlternateProductData(
     val priceRange: String,
     val manufacturerName: String,
     val availableVariants: String,
+    val imageCode: String,
+    val ptr: FormattedData<Double>,
+    val mrp: FormattedData<Double>
 )
 
 @Serializable

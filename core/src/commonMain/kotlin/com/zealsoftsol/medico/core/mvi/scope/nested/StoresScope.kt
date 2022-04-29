@@ -76,7 +76,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
         override val totalResults: DataSource<Int> = DataSource(0),
         override var showNoProducts: DataSource<Boolean> = DataSource(false)
 
-    ) : StoresScope(), BaseSearchScope {
+    ) : StoresScope(), BaseSearchScope, ToastScope {
 
         override val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList())
         override val pagination: Pagination = Pagination(Pagination.ITEMS_PER_PAGE_30)

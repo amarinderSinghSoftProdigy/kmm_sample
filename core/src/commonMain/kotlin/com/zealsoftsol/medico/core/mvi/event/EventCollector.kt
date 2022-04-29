@@ -110,6 +110,7 @@ class EventCollector(
             userRepo,
             productNetworkScope,
             tapModeHelper,
+            cartRepo
         ),
         Event.Action.Management::class to ManagementEventDelegate(
             navigator,
@@ -200,6 +201,7 @@ class EventCollector(
         Event.Action.Banners::class to BannersEventDelegate(
             navigator,
             userRepo,
+            cartRepo,
             bannersNetworkScope
         ),
     )

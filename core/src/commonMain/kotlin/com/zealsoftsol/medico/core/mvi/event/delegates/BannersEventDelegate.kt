@@ -7,15 +7,16 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.regular.BannersScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
+import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartIdentifier
-import com.zealsoftsol.medico.data.CartRequest
 
 internal class BannersEventDelegate(
     navigator: Navigator,
     private val userRepo: UserRepo,
+    private val cartRepo: CartRepo,
     private val bannersRepo: NetworkScope.BannersStore
 ) : EventDelegate<Event.Action.Banners>(navigator) {
     override suspend fun handleEvent(event: Event.Action.Banners) = when (event) {
@@ -38,25 +39,25 @@ internal class BannersEventDelegate(
         id: CartIdentifier?,
         quantity: Double,
         freeQuantity: Double,
-    ) {
+    ) = async {
         navigator.withScope<BannersScope> {
-            val result = withProgress {
-                bannersRepo.addCartEntry(
-                    CartRequest(
-                        userRepo.requireUser().unitCode,
-                        sellerUnitCode,
-                        productCode,
-                        buyingOption,
-                        id,
-                        quantity,
-                        freeQuantity,
-                    )
-                )
-            }
-            result.onSuccess { _ ->
+            cartRepo.addCartItem(
+                userRepo.requireUser().unitCode,
+                sellerUnitCode,
+                productCode,
+                buyingOption,
+                id,
+                quantity,
+                freeQuantity,
+            ).onSuccess { body ->
                 it.showToast.value = true
             }.onError(navigator)
         }
+
+    }
+
+    private suspend inline fun async(crossinline block: suspend () -> Unit) {
+        block()
     }
 
     /**

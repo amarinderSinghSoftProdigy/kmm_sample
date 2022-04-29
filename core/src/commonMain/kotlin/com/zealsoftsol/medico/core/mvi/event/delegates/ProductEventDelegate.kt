@@ -9,15 +9,17 @@ import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.BuyProductScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
+import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.utils.TapModeHelper
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartIdentifier
+import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.UserType
@@ -28,6 +30,7 @@ internal class ProductEventDelegate(
     private val userRepo: UserRepo,
     private val networkProductScope: NetworkScope.Product,
     private val tapModeHelper: TapModeHelper,
+    private val cartRepo: CartRepo
 ) : EventDelegate<Event.Action.Product>(navigator) {
 
     override suspend fun handleEvent(event: Event.Action.Product) = when (event) {
@@ -40,6 +43,25 @@ internal class ProductEventDelegate(
             event.sellerInfo
         )
         is Event.Action.Product.PreviewStockistBottomSheet -> previewStockistBottomSheet(event.sellerInfo)
+        is Event.Action.Product.ShowLargeImage -> selectProductLargeImage(event.url)
+        is Event.Action.Product.ShowStockist -> showConnectedStockist(event.stockist)
+    }
+
+    /**
+     *  load the searched stockists on a bottom sheet
+     */
+    private fun showConnectedStockist(stockist: List<ConnectedStockist>) {
+        navigator.withScope<ProductInfoScope> {
+            val hostScope = scope.value
+            hostScope.bottomSheet.value = BottomSheet.ShowConnectedStockist(stockist)
+        }
+    }
+
+    /**
+     * show zoomable image
+     */
+    private fun selectProductLargeImage(item: String) {
+        navigator.scope.value.bottomSheet.value = BottomSheet.ViewLargeImage(item, null)
     }
 
     private suspend fun selectProduct(productCode: String) {
@@ -51,6 +73,8 @@ internal class ProductEventDelegate(
                     product = body.product!!,
                     alternativeBrands = body.alternateProducts,
                     variants = body.variants.filter { it.code != body.product!!.code },
+                    cartItemsCount = cartRepo.getEntriesCountDataSource(),
+                    userType = userRepo.userV2Flow.value!!.type
                 )
             )
         }.onError(navigator)
@@ -68,25 +92,23 @@ internal class ProductEventDelegate(
     }
 
     private suspend fun buyProduct(product: ProductSearch, buyingOption: BuyingOption) {
-        navigator.searchQueuesFor<StoresScope.StorePreview>()?.store?.let {
-            if (userRepo.requireUser().type != UserType.SEASON_BOY) {
-                product.sellerInfo?.spid?.let { spid ->
-                    EventCollector.sendEvent(
-                        Event.Action.Cart.AddItem(
-                            it.sellerUnitCode,
-                            product.code,
-                            product.buyingOption!!,
-                            CartIdentifier(spid),
-                            product.quantity,
-                            product.freeQuantity,
-                        )
+        if (userRepo.requireUser().type != UserType.SEASON_BOY) {
+            product.sellerInfo?.spid?.let { spid ->
+                EventCollector.sendEvent(
+                    Event.Action.Cart.AddItem(
+                        product.sellerInfo?.unitCode,
+                        product.code,
+                        product.buyingOption!!,
+                        CartIdentifier(spid),
+                        product.quantity,
+                        product.freeQuantity,
                     )
-                    return
-                }
-            } else {
-                selectSeasonBoyRetailer(product.code, product.sellerInfo!!)
+                )
                 return
             }
+        } else {
+            selectSeasonBoyRetailer(product.code, product.sellerInfo!!)
+            return
         }
         navigator.withProgress {
             val address = userRepo.requireUser()//userRepo.requireUser().addressData
