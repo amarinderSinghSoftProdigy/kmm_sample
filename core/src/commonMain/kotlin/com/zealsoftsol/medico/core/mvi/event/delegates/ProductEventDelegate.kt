@@ -40,6 +40,14 @@ internal class ProductEventDelegate(
             event.sellerInfo
         )
         is Event.Action.Product.PreviewStockistBottomSheet -> previewStockistBottomSheet(event.sellerInfo)
+        is Event.Action.Product.ShowLargeImage -> selectProductLargeImage(event.url)
+    }
+
+    /**
+     * show zoomable image
+     */
+    private fun selectProductLargeImage(item: String) {
+        navigator.scope.value.bottomSheet.value = BottomSheet.ViewLargeImage(item, null)
     }
 
     private suspend fun selectProduct(productCode: String) {

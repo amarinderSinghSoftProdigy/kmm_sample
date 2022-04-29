@@ -5,6 +5,7 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.ProductVariant
@@ -35,4 +36,11 @@ class ProductInfoScope(
 
     fun selectVariantProduct(variant: ProductVariant) =
         EventCollector.sendEvent(Event.Action.Product.SelectFromSearch(variant.code))
+
+    fun zoomImage(imageCode: String) {
+        val url = CdnUrlProvider.urlFor(
+            imageCode, CdnUrlProvider.Size.Px320
+        )
+        EventCollector.sendEvent(Event.Action.Product.ShowLargeImage(url))
+    }
 }
