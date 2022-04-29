@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.core.mvi.scope.regular
 
 import com.zealsoftsol.medico.core.interop.DataSource
+import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
@@ -11,11 +12,11 @@ import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.UserType
 
-class BannersScope : Scope.Child.TabBar(),
+class BannersScope(var cartItemsCount: ReadOnlyDataSource<Int>) : Scope.Child.TabBar(),
     CommonScope.CanGoBack {
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
-        TabBarInfo.OnlyBackHeader("offers")
+        TabBarInfo.OnlyBackHeader("offers", cartItemsCount)
 
     val bannersList = DataSource<MutableList<BannerItemData>>(mutableListOf())
     val showToast = DataSource(false)

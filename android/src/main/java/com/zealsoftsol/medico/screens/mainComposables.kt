@@ -294,6 +294,20 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                         }
                     }
                 }
+            } else if(childScope.value is BannersScope) {
+                val info = scope.tabBar.flow.collectAsState().value
+                if (info is TabBarInfo.OnlyBackHeader) {
+                    val cartCount = info.cartItemsCount?.flow?.collectAsState()
+                    if (cartCount != null) {
+                        if (cartCount.value > 0) {
+                            val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
+                            cart?.cartCount?.value = cartCount.value
+                        } else {
+                            val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
+                            cart?.cartCount?.value = 0
+                        }
+                    }
+                }
             }
         },
         content = {
@@ -920,8 +934,8 @@ private fun NoIconHeader(
                     Color(0xFF003657)
                 )
             )
-            val cartItems = info.cartItemsCount?.flow?.collectAsState()
-            if (cartItems?.value != null && cartItems.value > 0) {
+            val notification = info.notificationItemsCount?.flow?.collectAsState()
+            if (notification?.value != null && notification.value > 0) {
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -1093,6 +1107,17 @@ private fun OnlyBackHeader(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
+    }
+
+    val cartCount = info.cartItemsCount?.flow?.collectAsState()
+    if (cartCount != null) {
+        if (cartCount.value > 0) {
+            val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
+            cart?.cartCount?.value = cartCount.value
+        } else {
+            val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
+            cart?.cartCount?.value = 0
+        }
     }
 }
 

@@ -200,6 +200,7 @@ class EventCollector(
         Event.Action.Banners::class to BannersEventDelegate(
             navigator,
             userRepo,
+            cartRepo,
             bannersNetworkScope
         ),
     )
