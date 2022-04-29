@@ -48,6 +48,7 @@ import com.zealsoftsol.medico.data.ConnectionStatus
 import com.zealsoftsol.medico.data.InStoreUser
 import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
+import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
@@ -105,11 +106,11 @@ fun InStoreUsersScreen(scope: InStoreUsersScope) {
                 startIndent = 0.dp
             )
             if (items.value.isEmpty() && scope.items.updateCount > 0) {
-//            NoRecords(
-//                icon = R.drawable.ic_missing_invoices,
-//                text = R.string.missing_invoices,
-//                onHome = { scope.goHome() },
-//            )
+            NoRecords(
+                icon = R.drawable.ic_user_placeholder,
+                text = R.string.no_users_found,
+                onHome = { scope.goHome() },
+            )
             } else {
                 LazyColumn(
                     modifier = Modifier.padding(16.dp),
