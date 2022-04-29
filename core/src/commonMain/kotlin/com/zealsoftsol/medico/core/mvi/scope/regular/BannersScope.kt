@@ -12,7 +12,7 @@ import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.UserType
 
-class BannersScope(var cartItemsCount: ReadOnlyDataSource<Int>) : Scope.Child.TabBar(),
+class BannersScope(val cartItemsCount: ReadOnlyDataSource<Int>) : Scope.Child.TabBar(),
     CommonScope.CanGoBack {
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =

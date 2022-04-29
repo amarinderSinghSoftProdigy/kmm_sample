@@ -110,6 +110,7 @@ class EventCollector(
             userRepo,
             productNetworkScope,
             tapModeHelper,
+            cartRepo
         ),
         Event.Action.Management::class to ManagementEventDelegate(
             navigator,

@@ -11,12 +11,12 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.WelcomeScope
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AddressData
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.Expiry
+import com.zealsoftsol.medico.data.FormattedData
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.StockInfo
 import com.zealsoftsol.medico.data.StockStatus
@@ -272,10 +272,15 @@ object DebugScopeCreator {
                         priceRange = "from ₹ 110.23 to ₹ 120.99",
                         manufacturerName = "Company Name",
                         availableVariants = "10 variants",
+                        imageCode = "AAA",
+                        ptr = FormattedData("10.0", 10.0),
+                        mrp = FormattedData("10.0", 10.0)
                     )
                 ),
                 isDetailsOpened = DataSource(false),
                 variants = emptyList(),
+                cartItemsCount = ReadOnlyDataSource(MutableStateFlow(0)),
+                userType = UserType.RETAILER
             )
         )
     }
