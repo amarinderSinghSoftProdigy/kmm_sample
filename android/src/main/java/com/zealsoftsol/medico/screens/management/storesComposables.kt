@@ -747,7 +747,7 @@ fun ProductItemStore(
                     ) {
                         items(
                             items = sliderList,
-                            itemContent = { value -> ChipString(value) {} }
+                            itemContent = { value -> if (value.isNotEmpty()) ChipString(value) {} }
                         )
                     }
                     Space(8.dp)
