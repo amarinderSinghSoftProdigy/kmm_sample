@@ -10,10 +10,16 @@ import com.zealsoftsol.medico.data.FileType
 class OcrScope : Scope.Child.TabBar(),
     CommonScope.CanGoBack, CommonScope.UploadDocument {
 
-    fun previewImage(value: String) =
-        EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(value,"file"))
-
     val imagePath = DataSource("")
+    var listOfText = DataSource(emptyList<String>())
+
+    fun previewImage(value: String) =
+        EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(value, "file"))
+
+    fun updateRecognisedList(processText: List<String>) {
+        listOfText.value = processText
+    }
+
     override val supportedFileTypes: Array<FileType> = FileType.forDrugLicense()
 
 }

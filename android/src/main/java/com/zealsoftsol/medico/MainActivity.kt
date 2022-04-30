@@ -43,11 +43,14 @@ import com.github.tutorialsandroid.appxupdater.objects.Update
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.zealsoftsol.medico.core.UiLink
+import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.UiNavigator
 import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.OcrScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.WelcomeScope
 import com.zealsoftsol.medico.data.FileType
@@ -355,15 +358,32 @@ class MainActivity : ComponentActivity(), DIAware {
         startActivity(shareIntent)
     }
 
-    fun startOcr(value: String) {
+    /**
+     * start process of recognising image from text
+     */
+    fun startOcr(value: String, scope: OcrScope) {
         val image = InputImage.fromFilePath(this, Uri.fromFile(File(value)))
         val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
         recognizer.process(image)
             .addOnSuccessListener { texts ->
-                Log.e("text", texts.text)
+                scope.updateRecognisedList(processText(texts))
             }
             .addOnFailureListener { e -> // Task failed with an exception
                 e.printStackTrace()
             }
+    }
+
+
+    /**
+     * create a list of recognised text
+     */
+    private fun processText(result: Text): List<String> {
+        val listOfText = mutableListOf<String>()
+        for (block in result.textBlocks) {
+            for (line in block.lines) {
+                listOfText.add(line.text)
+            }
+        }
+        return listOfText
     }
 }
