@@ -36,6 +36,7 @@ import com.zealsoftsol.medico.data.TaxInfo
 import com.zealsoftsol.medico.data.UpdateInvoiceRequest
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserType
+import java.io.File
 
 sealed class BottomSheet {
 
@@ -123,6 +124,29 @@ sealed class BottomSheet {
                 EventCollector.sendEvent(Event.Action.Profile.UploadFileTooBig)
                 false
             }
+        }
+
+        private fun sizeInBytes(base64: String): Int =
+            (base64.length * 3 / 4) - base64.takeLast(2).count { it == '=' }
+
+        companion object {
+            private const val MAX_FILE_SIZE = 10_000_000
+        }
+    }
+
+    class GetOcrImageData(
+        val type: String,
+        val supportedFileTypes: Array<FileType>,
+        val isSeasonBoy: Boolean,
+    ) : BottomSheet() {
+
+        fun handleOcrImage(file: File, fileType: FileType, type: String): Boolean {
+            EventCollector.sendEvent(
+                Event.Action.Ocr.GetOcrImage(
+                    filePath = file.absolutePath
+                )
+            )
+            return true
         }
 
         private fun sizeInBytes(base64: String): Int =

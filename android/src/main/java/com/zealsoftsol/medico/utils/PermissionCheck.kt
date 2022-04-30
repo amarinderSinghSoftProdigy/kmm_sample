@@ -29,11 +29,19 @@ fun PermissionCheckUI(scaffoldState: ScaffoldState, permissionViewModel: Permiss
             when (permissionAction) {
                 is PermissionAction.OnPermissionGranted -> {
                     permissionViewModel.setPerformLocationAction(false, performTypeAction)
-                    EventCollector.sendEvent(
-                        Event.Action.Profile.ShowUploadBottomSheet(
-                            performTypeAction
+                    if (performTypeAction == "OCR") {
+                        EventCollector.sendEvent(
+                            Event.Action.Ocr.ShowUploadBottomSheet(
+                                performTypeAction
+                            )
                         )
-                    )
+                    } else {
+                        EventCollector.sendEvent(
+                            Event.Action.Profile.ShowUploadBottomSheet(
+                                performTypeAction
+                            )
+                        )
+                    }
                 }
                 is PermissionAction.OnPermissionDenied -> {
                     permissionViewModel.setPerformLocationAction(false, performTypeAction)

@@ -181,6 +181,16 @@ fun Scope.Host.showBottomSheet(
                     onDismiss = { dismissBottomSheet() },
                 )
             }
+            is BottomSheet.GetOcrImageData -> {
+                DocumentUploadBottomSheet(
+                    supportedFileTypes = bs.supportedFileTypes,
+                    useCamera = true,
+                    activity = activity,
+                    coroutineScope = coroutineScope,
+                    onFileReady = { bs.handleOcrImage(it, bs.type) },
+                    onDismiss = { dismissBottomSheet() },
+                )
+            }
             is BottomSheet.UploadInvoiceData -> {
                 DocumentUploadBottomSheet(
                     supportedFileTypes = bs.supportedFileTypes,
