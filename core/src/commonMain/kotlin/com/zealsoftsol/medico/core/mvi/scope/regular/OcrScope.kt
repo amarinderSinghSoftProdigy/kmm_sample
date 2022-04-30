@@ -11,7 +11,7 @@ class OcrScope : Scope.Child.TabBar(),
     CommonScope.CanGoBack, CommonScope.UploadDocument {
 
     fun previewImage(value: String) =
-        EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(value))
+        EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(value,"file"))
 
     val imagePath = DataSource("")
     override val supportedFileTypes: Array<FileType> = FileType.forDrugLicense()

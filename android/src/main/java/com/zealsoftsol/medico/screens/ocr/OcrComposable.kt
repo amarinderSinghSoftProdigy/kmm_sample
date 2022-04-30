@@ -7,8 +7,10 @@ import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.regular.OcrScope
 import com.zealsoftsol.medico.screens.common.ImageLabel
@@ -22,9 +24,14 @@ fun OcrScreen(
 ) {
 
     val imagePath = scope.imagePath.flow.collectAsState()
+    val activity = LocalContext.current as MainActivity
 
     val permissionViewModel = PermissionViewModel()
     PermissionCheckUI(scaffoldState, permissionViewModel)
+
+    if(imagePath.value.isNotEmpty()){
+        activity.startOcr(imagePath.value)
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         ImageLabel(
