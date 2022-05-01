@@ -21,6 +21,12 @@ inline fun BottomSheet.UploadProfileData.handleProfileUpload(file: File, type: S
     uploadProfile(base64, FileType.fromExtension(file.extension), type)
 }
 
+inline fun BottomSheet.GetOcrImageData.handleOcrImage(file: File, type: String) {
+    val bytes = file.readBytes()
+    val base64 = Base64.encodeToString(bytes, Base64.NO_WRAP)
+    handleOcrImage(file, FileType.fromExtension(file.extension), type)
+}
+
 inline fun BottomSheet.UploadInvoiceData.handleInvoiceUpload(file: File, type: String) {
     val bytes = file.readBytes()
     val base64 = Base64.encodeToString(bytes, Base64.NO_WRAP)

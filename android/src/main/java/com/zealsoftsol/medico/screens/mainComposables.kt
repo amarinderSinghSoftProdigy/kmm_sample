@@ -103,6 +103,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.BannersScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.BatchesScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.OcrScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.PreferenceScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.QrCodeScope
@@ -159,6 +160,7 @@ import com.zealsoftsol.medico.screens.management.ManagementScreen
 import com.zealsoftsol.medico.screens.management.StoresScreen
 import com.zealsoftsol.medico.screens.menu.MenuScreen
 import com.zealsoftsol.medico.screens.notification.NotificationScreen
+import com.zealsoftsol.medico.screens.ocr.OcrScreen
 import com.zealsoftsol.medico.screens.offers.CreateOffersScreen
 import com.zealsoftsol.medico.screens.offers.OffersScreen
 import com.zealsoftsol.medico.screens.orders.ConfirmOrderScreen
@@ -462,6 +464,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     is EmployeeScope.PreviewDetails -> EmployeePreview(it)
                     is PreferenceScope -> PreferenceScreen(it)
                     is BannersScope -> BannersScreen(it)
+                    is OcrScope -> OcrScreen(it, scaffoldState)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }
