@@ -23,6 +23,19 @@ data class DashboardData(
 
 @Serializable
 data class AllDeals(
+    val pageableData: PageableData,
+    val stockists : List<SellerInfoData>,
+    val promoTypes: List<PromoTypeData>
+)
+
+@Serializable
+data class PromoTypeData(
+    val code: String,
+    val name: String
+)
+
+@Serializable
+data class PageableData(
     val results: List<DealsData>,
     val totalResults: Int,
 )

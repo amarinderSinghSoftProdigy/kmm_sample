@@ -674,7 +674,13 @@ sealed class Event {
         sealed class Deals : Action() {
             override val typeClazz: KClass<*> = Deals::class
 
-            data class GetAllDeals(val page: Int, val search: String) : Deals()
+            data class GetAllDeals(
+                val page: Int,
+                val search: String,
+                val unitCode: String,
+                val promoCode: String
+            ) :
+                Deals()
 
             data class AddItemToCart(
                 val sellerUnitCode: String?,

@@ -296,7 +296,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                         }
                     }
                 }
-            } else if(childScope.value is BannersScope) {
+            } else if(childScope.value is BannersScope || childScope.value is DealsScope) {
                 val info = scope.tabBar.flow.collectAsState().value
                 if (info is TabBarInfo.OnlyBackHeader) {
                     val cartCount = info.cartItemsCount?.flow?.collectAsState()

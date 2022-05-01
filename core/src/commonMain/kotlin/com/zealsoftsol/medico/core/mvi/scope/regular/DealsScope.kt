@@ -10,6 +10,8 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.DealsData
+import com.zealsoftsol.medico.data.PromoTypeData
+import com.zealsoftsol.medico.data.SellerInfoData
 import com.zealsoftsol.medico.data.UserType
 
 class DealsScope(val cartItemsCount: ReadOnlyDataSource<Int>) : Scope.Child.TabBar(),
@@ -19,6 +21,12 @@ class DealsScope(val cartItemsCount: ReadOnlyDataSource<Int>) : Scope.Child.TabB
         TabBarInfo.OnlyBackHeader("offers", cartItemsCount)
 
     val dealsList = DataSource<MutableList<DealsData>>(mutableListOf())
+    val stockistList = DataSource(emptyList<SellerInfoData>())
+    val offersChoices = DataSource(emptyList<PromoTypeData>())
+    val selectedStockist = DataSource<SellerInfoData?>(null)
+    val showNoDeals = DataSource(false)
+
+    var offerStatus = DataSource("")
     val showToast = DataSource(false)
     var qty: String = ""
     var freeQty: String = ""
@@ -34,6 +42,24 @@ class DealsScope(val cartItemsCount: ReadOnlyDataSource<Int>) : Scope.Child.TabB
 
     fun updateAlertVisibility(visibility: Boolean) {
         this.showToast.value = visibility
+    }
+
+    /**
+     * update offer Status to API
+     */
+    fun updateOfferStatus(status: String) {
+        offerStatus.value = status
+        dealsList.value.clear()
+        getDeals(true)
+    }
+
+    /**
+     * update search based on selected stockist
+     */
+    fun updateStockist(stockist: SellerInfoData) {
+        selectedStockist.value = stockist
+        dealsList.value.clear()
+        getDeals(true)
     }
 
     fun addToCart(
@@ -77,6 +103,8 @@ class DealsScope(val cartItemsCount: ReadOnlyDataSource<Int>) : Scope.Child.TabB
             Event.Action.Deals.GetAllDeals(
                 page = mCurrentPage,
                 search = search,
+                unitCode = selectedStockist.value?.unitCode ?: "",
+                promoCode = offerStatus.value
             )
         )
     }
@@ -94,6 +122,8 @@ class DealsScope(val cartItemsCount: ReadOnlyDataSource<Int>) : Scope.Child.TabB
                 Event.Action.Deals.GetAllDeals(
                     page = 0,
                     search = search,
+                    unitCode = selectedStockist.value?.unitCode ?: "",
+                    promoCode = offerStatus.value
                 )
             )
         }

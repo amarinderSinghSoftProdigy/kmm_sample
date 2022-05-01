@@ -569,7 +569,8 @@ interface NetworkScope {
         suspend fun getAllDeals(
             page: Int,
             search: String,
-            unitCode: String
+            unitCode: String,
+            promoCode: String
         ): BodyResponse<AllDeals>
 
     }

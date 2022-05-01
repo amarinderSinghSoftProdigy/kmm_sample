@@ -494,6 +494,8 @@
     <string name="add_cart_success">Add to cart successful</string>
     <string name="order_not_found">No orders found</string>
     <string name="deals_of_the_day">Deals Of The Day</string>
+    <string name="search_deals_here">Search Deals</string>
+    <string name="no_deals_found">No Deals Found</string>
 
     <!-- Termrs and Cond -->
 
