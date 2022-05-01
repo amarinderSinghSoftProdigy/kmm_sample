@@ -261,7 +261,10 @@ private fun ShowRetailerAndHospitalDashboard(
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.End
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier.clickable {
+                            scope.sendEvent(Event.Transition.Deals)
+                        }
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_eye),
@@ -501,7 +504,7 @@ private fun DealsItem(item: DealsData, scope: DashboardScope, modifier: Modifier
         shape = RoundedCornerShape(5.dp),
         backgroundColor = Color.White,
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(horizontalAlignment = CenterHorizontally) {
             CoilImage(
                 src = CdnUrlProvider.urlFor(item.productInfo.imageCode, CdnUrlProvider.Size.Px123),
                 size = 150.dp,

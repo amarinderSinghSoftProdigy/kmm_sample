@@ -22,6 +22,13 @@ data class DashboardData(
 )
 
 @Serializable
+data class AllDeals(
+    val results: List<DealsData>,
+    val totalResults: Int,
+)
+
+
+@Serializable
 data class DealsData(
     val productInfo: ProductInfoData,
     val sellerInfo: SellerInfoData,

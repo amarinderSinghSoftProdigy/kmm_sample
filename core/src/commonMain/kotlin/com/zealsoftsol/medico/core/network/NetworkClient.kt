@@ -15,6 +15,7 @@ import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AddEmployee
 import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.AllBanners
+import com.zealsoftsol.medico.data.AllDeals
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoApprove
 import com.zealsoftsol.medico.data.AutoComplete
@@ -35,6 +36,7 @@ import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
 import com.zealsoftsol.medico.data.DashboardData
+import com.zealsoftsol.medico.data.DealsData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EditOfferRequest
 import com.zealsoftsol.medico.data.EmployeeRegistration1
@@ -169,7 +171,8 @@ class NetworkClient(
     NetworkScope.QrCodeStore,
     NetworkScope.PreferencesStore,
     NetworkScope.EmployeeStore,
-    NetworkScope.BannersStore {
+    NetworkScope.BannersStore,
+    NetworkScope.DealsStore {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -1441,6 +1444,23 @@ class NetworkClient(
                     parameters.append("search", search)
                 parameters.append("page", page.toString())
                 parameters.append("pageSize", Pagination.DEFAULT_ITEMS_PER_PAGE.toString())
+            }
+        }
+    }
+
+    override suspend fun getAllDeals(
+        page: Int,
+        search: String,
+        unitCode: String
+    ): BodyResponse<AllDeals> = simpleRequest {
+        client.get("${baseUrl.url}/dashboard/deals/all") {
+            withMainToken()
+            url {
+                if (search.isNotEmpty())
+                    parameters.append("search", search)
+                parameters.append("page", page.toString())
+                parameters.append("pageSize", Pagination.DEFAULT_ITEMS_PER_PAGE.toString())
+                parameters.append("b2bUnitCode", unitCode)
             }
         }
     }

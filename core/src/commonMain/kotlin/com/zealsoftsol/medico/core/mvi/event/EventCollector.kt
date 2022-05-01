@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.core.mvi.event.delegates.AuthEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.BannersEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.BatchesEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.CartEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.DealsEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.EventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.HelpEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.IOCBuyerEventDelegate
@@ -81,6 +82,7 @@ class EventCollector(
     employeeStore: NetworkScope.EmployeeStore,
     preferenceNetworkScope: NetworkScope.PreferencesStore,
     bannersNetworkScope: NetworkScope.BannersStore,
+    dealsNetworkScope: NetworkScope.DealsStore,
     private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
     private val cartRepo: CartRepo,
@@ -203,6 +205,12 @@ class EventCollector(
             userRepo,
             cartRepo,
             bannersNetworkScope
+        ),
+        Event.Action.Deals::class to DealsEventDelegate(
+            navigator,
+            userRepo,
+            cartRepo,
+            dealsNetworkScope
         ),
     )
 

@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AddEmployee
 import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.AllBanners
+import com.zealsoftsol.medico.data.AllDeals
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoApprove
 import com.zealsoftsol.medico.data.AutoComplete
@@ -26,6 +27,7 @@ import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
 import com.zealsoftsol.medico.data.DashboardData
+import com.zealsoftsol.medico.data.DealsData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EmployeeRegistration1
 import com.zealsoftsol.medico.data.EmployeeRegistration2
@@ -560,6 +562,15 @@ interface NetworkScope {
         ): BodyResponse<AllBanners>
 
         suspend fun addCartEntry(request: CartRequest): BodyResponse<CartData>
+
+    }
+
+    interface DealsStore : NetworkScope {
+        suspend fun getAllDeals(
+            page: Int,
+            search: String,
+            unitCode: String
+        ): BodyResponse<AllDeals>
 
     }
 }

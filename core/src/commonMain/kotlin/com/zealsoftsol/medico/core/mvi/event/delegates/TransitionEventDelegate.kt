@@ -27,6 +27,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.BannersScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.BatchesScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.DealsScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.PreferenceScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.QrCodeScope
@@ -250,6 +251,7 @@ internal class TransitionEventDelegate(
                     )
                 )
                 is Event.Transition.Banners -> setScope(BannersScope(cartRepo.getEntriesCountDataSource()))
+                is Event.Transition.Deals -> setScope(DealsScope(cartRepo.getEntriesCountDataSource()))
             }
         }
     }
