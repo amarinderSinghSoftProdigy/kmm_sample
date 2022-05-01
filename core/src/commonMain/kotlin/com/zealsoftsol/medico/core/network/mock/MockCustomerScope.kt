@@ -41,7 +41,8 @@ class MockCustomerScope : NetworkScope.Customer {
                     listOf(ProductSold(100, "product")),
                     listOf(ProductSold(100, "product")),
                     listOf(ProductSold(100, "product"))
-                ), StockStatusData(10, 10, 10)
+                ), StockStatusData(10, 10, 10),
+                dealsOfDay = emptyList()
             )
         }
 

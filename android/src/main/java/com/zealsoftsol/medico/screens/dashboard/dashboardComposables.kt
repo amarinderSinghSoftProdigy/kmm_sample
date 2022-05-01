@@ -63,12 +63,15 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
+import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.BannerData
 import com.zealsoftsol.medico.data.BrandsData
 import com.zealsoftsol.medico.data.DashboardData
+import com.zealsoftsol.medico.data.DealsData
 import com.zealsoftsol.medico.data.OfferStatus
 import com.zealsoftsol.medico.data.ProductSold
 import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.CoilImageBrands
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.ShimmerItem
@@ -233,6 +236,67 @@ private fun ShowRetailerAndHospitalDashboard(
                                 }
                             },
                         )
+                    }
+                }
+            }
+            Space(dp = 16.dp)
+            Column(
+                modifier = Modifier
+                    .background(Color.White)
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.deals_of_the_day),
+                        color = ConstColors.lightBlue,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.W600,
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                    )
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_eye),
+                            contentDescription = null,
+                            tint = ConstColors.lightBlue,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Text(
+                            text = stringResource(id = R.string.view_all),
+                            color = ConstColors.lightBlue,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.W600,
+                            modifier = Modifier
+                                .padding(horizontal = 3.dp)
+                                .padding(end = 16.dp),
+                        )
+                    }
+                }
+
+                Space(dp = 16.dp)
+                val itemSize: Dp = (LocalConfiguration.current.screenWidthDp.dp / 2) - 8.dp
+
+                FlowRow(
+                    mainAxisSize = SizeMode.Expand,
+                    mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
+                ) {
+                    dashboard.value?.dealsOfDay?.let {
+                        it.forEachIndexed { index, _ ->
+                            DealsItem(
+                                it[index],
+                                scope,
+                                modifier = Modifier.width(itemSize),
+                                itemSize
+                            )
+                        }
                     }
                 }
             }
@@ -419,6 +483,87 @@ private fun BrandsImageItem(item: ProductSold, scope: DashboardScope) {
         }
     }
 }
+
+/**
+ * ui item for deals of the day listing
+ */
+@Composable
+private fun DealsItem(item: DealsData, scope: DashboardScope, modifier: Modifier, width: Dp) {
+    Card(
+        modifier = modifier
+            .selectable(
+                selected = true,
+                onClick = {
+
+                })
+            .padding(horizontal = 8.dp, vertical = 8.dp),
+        elevation = 3.dp,
+        shape = RoundedCornerShape(5.dp),
+        backgroundColor = Color.White,
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            CoilImage(
+                src = CdnUrlProvider.urlFor(item.productInfo.imageCode, CdnUrlProvider.Size.Px123),
+                size = 150.dp,
+                onError = {
+                    ItemPlaceholder()
+                },
+                onLoading = {
+                    ItemPlaceholder()
+                },
+            )
+            Column(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp)
+                    .padding(bottom = 10.dp)
+            ) {
+                Space(5.dp)
+                Surface(
+                    shape = RoundedCornerShape(3.dp),
+                    color = ConstColors.magenta,
+                    modifier = Modifier.padding(2.dp)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.deals_of_the_day),
+                        textAlign = TextAlign.Center,
+                        color = Color.White,
+                        fontWeight = FontWeight.W600,
+                        fontSize = 11.sp,
+                    )
+                }
+
+                Space(5.dp)
+                Text(
+                    text = item.productInfo.name,
+                    textAlign = TextAlign.Center,
+                    color = ConstColors.txtGrey,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 13.sp,
+                )
+                Space(5.dp)
+                Row {
+                    Text(
+                        text = item.promotionInfo.buy.formatted,
+                        textAlign = TextAlign.Center,
+                        color = Color.Black,
+                        fontWeight = FontWeight.W700,
+                        fontSize = 15.sp,
+                    )
+                    Space(5.dp)
+                    Text(
+                        text = "(${item.promotionInfo.offer} ${stringResource(id = R.string.offer)})",
+                        textAlign = TextAlign.Center,
+                        color = ConstColors.magenta,
+                        fontWeight = FontWeight.W700,
+                        fontSize = 15.sp,
+                    )
+                }
+            }
+        }
+    }
+}
+
 
 /**
  * ui item for categories listing

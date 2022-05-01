@@ -17,7 +17,35 @@ data class DashboardData(
     val categories: List<BrandsData> = emptyList(),
     val banners: List<BannerData> = emptyList(),
     val offers: List<OffersData> = emptyList(),
-    val manufacturers: List<ManufacturerData> = emptyList()
+    val manufacturers: List<ManufacturerData> = emptyList(),
+    val dealsOfDay: List<DealsData>
+)
+
+@Serializable
+data class DealsData(
+    val productInfo: ProductInfoData,
+    val sellerInfo: SellerInfoData,
+    val promotionInfo: PromotionInfoData
+)
+
+@Serializable
+data class ProductInfoData(
+    val id: String, val code: String, val name: String, val mnfrCode: String, val quantity: Double,
+    val free: Double, val spid: String, val imageCode: String, val isAddToCartAllowed: Boolean
+)
+
+@Serializable
+data class SellerInfoData(
+    val unitCode: String,
+    val tradeName: String,
+    val cityOrTown: String,
+    val pincode: String
+)
+
+@Serializable
+data class PromotionInfoData(
+    val promoCode: String, val buy: FormattedData<Double>, val free: FormattedData<Double>,
+    val offer: String, val type: String, val productDiscount: FormattedData<Double>
 )
 
 @Serializable
