@@ -85,7 +85,7 @@ fun DealsScreen(scope: DealsScope) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(White)
+                .background(ConstColors.newDesignGray)
         ) {
             Row(
                 modifier = Modifier
@@ -359,17 +359,17 @@ fun DealsItem(item: DealsData, scope: DealsScope) {
                     )
                 )
             }) {
-            CoilImage(
-                modifier = Modifier
-                    .width(130.dp)
-                    .height(150.dp),
-                src = CdnUrlProvider.urlFor(
-                    item.productInfo.imageCode,
-                    CdnUrlProvider.Size.Px123
-                ),
-                onError = { ItemPlaceholder() },
-                onLoading = { ItemPlaceholder() },
-            )
+            Surface(shape = RoundedCornerShape(5.dp), color = White, elevation = 5.dp) {
+                CoilImage(
+                    src = CdnUrlProvider.urlFor(
+                        item.productInfo.imageCode,
+                        CdnUrlProvider.Size.Px123
+                    ),
+                    size = 90.dp,
+                    onError = { ItemPlaceholder() },
+                    onLoading = { ItemPlaceholder() },
+                )
+            }
             Space(10.dp)
             Column(horizontalAlignment = Alignment.End) {
                 Surface(

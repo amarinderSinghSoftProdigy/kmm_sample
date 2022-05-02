@@ -24,7 +24,7 @@ data class DashboardData(
 @Serializable
 data class AllDeals(
     val pageableData: PageableData,
-    val stockists : List<SellerInfoData>,
+    val stockists: List<SellerInfoData>,
     val promoTypes: List<PromoTypeData>
 )
 
@@ -51,7 +51,8 @@ data class DealsData(
 @Serializable
 data class ProductInfoData(
     val id: String, val code: String, val name: String, val mnfrCode: String, val quantity: Double,
-    val free: Double, val spid: String, val imageCode: String, val isAddToCartAllowed: Boolean
+    val free: Double, val spid: String, val imageCode: String, val isAddToCartAllowed: Boolean,
+    val mrp: FormattedData<Double>, val ptr: FormattedData<Double>
 )
 
 @Serializable
