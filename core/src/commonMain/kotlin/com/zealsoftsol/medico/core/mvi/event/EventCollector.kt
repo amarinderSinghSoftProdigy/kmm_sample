@@ -19,6 +19,7 @@ import com.zealsoftsol.medico.core.mvi.event.delegates.InventoryEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.InvoicesEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ManagementEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.NotificationEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.OcrEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.OffersEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.OrdersEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.OrdersHsnEventDelegate
@@ -206,11 +207,17 @@ class EventCollector(
             cartRepo,
             bannersNetworkScope
         ),
+
         Event.Action.Deals::class to DealsEventDelegate(
             navigator,
             userRepo,
             cartRepo,
             dealsNetworkScope
+        ),
+
+        Event.Action.Ocr::class to OcrEventDelegate(
+            navigator,
+            userRepo,
         ),
     )
 

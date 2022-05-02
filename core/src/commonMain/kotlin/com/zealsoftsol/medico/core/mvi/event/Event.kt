@@ -693,6 +693,15 @@ sealed class Event {
 
             data class ZoomImage(val url: String) : Deals()
         }
+
+        sealed class Ocr : Action() {
+            override val typeClazz: KClass<*> = Ocr::class
+
+            data class ShowUploadBottomSheet(val type: String) : Ocr()
+
+            data class GetOcrImage(val filePath: String) : Ocr()
+
+        }
     }
 
 
@@ -759,5 +768,6 @@ sealed class Event {
         data class Companies(val title: String, val unitCode: String) : Transition()
         object Banners : Transition()
         object Deals : Transition()
+        object Ocr : Transition()
     }
 }

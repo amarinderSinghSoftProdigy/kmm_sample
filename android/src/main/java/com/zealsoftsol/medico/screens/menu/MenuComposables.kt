@@ -142,6 +142,14 @@ fun RetailerAndHospitalMenu(scope: MenuScope) {
         stringResourceId = R.string.stockists,
         scope = scope
     )
+
+    Separator(thickness = 0.5f)
+    AccountContentItem(
+        route = Event.Transition.Ocr,
+        drawableResourceId = R.drawable.ic_gstin_account,
+        stringResourceId = R.string.ocr,
+        scope = scope
+    )
 }
 
 /**
