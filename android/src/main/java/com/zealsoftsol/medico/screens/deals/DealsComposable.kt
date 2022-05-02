@@ -91,7 +91,7 @@ fun DealsScreen(scope: DealsScope) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Icon(
@@ -112,7 +112,7 @@ fun DealsScreen(scope: DealsScope) {
                         .height(45.dp)
                         .padding(start = 10.dp)
                         .padding(end = 45.dp)
-                        .align(Alignment.CenterVertically),
+                        .align(CenterVertically),
                     shape = RoundedCornerShape(3.dp),
                     elevation = 3.dp,
                     color = White
@@ -120,7 +120,7 @@ fun DealsScreen(scope: DealsScope) {
                     Row(
                         modifier = Modifier
                             .height(45.dp)
-                            .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+                            .fillMaxWidth(), verticalAlignment = CenterVertically
                     ) {
                         BasicTextField(
                             modifier = Modifier
@@ -266,7 +266,7 @@ fun ExpandableItem(scope: DealsScope) {
 
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = CenterVertically,
                 modifier = Modifier
                     .background(White)
                     .fillMaxWidth()
@@ -278,7 +278,7 @@ fun ExpandableItem(scope: DealsScope) {
                         .fillMaxWidth()
                         .padding(horizontal = 12.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalAlignment = CenterVertically,
                 ) {
                     Text(
                         text = selectedStockist?.tradeName
@@ -317,7 +317,7 @@ fun ExpandableItem(scope: DealsScope) {
                                 }
                                 .padding(horizontal = 12.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
+                            verticalAlignment = CenterVertically,
                         ) {
                             Text(
                                 text = value.tradeName,
@@ -361,7 +361,9 @@ fun DealsItem(item: DealsData, scope: DealsScope) {
             }) {
             Surface(
                 shape = RoundedCornerShape(5.dp), color = White, elevation = 5.dp,
-                modifier = Modifier.align(CenterVertically).padding(start = 10.dp)
+                modifier = Modifier
+                    .align(CenterVertically)
+                    .padding(start = 10.dp)
             ) {
                 CoilImage(
                     src = CdnUrlProvider.urlFor(
@@ -374,7 +376,7 @@ fun DealsItem(item: DealsData, scope: DealsScope) {
                 )
             }
             Space(10.dp)
-            Column(horizontalAlignment = Alignment.End) {
+            Column(modifier = Modifier.fillMaxWidth()) {
                 Surface(
                     color = ConstColors.red,
                     modifier = Modifier
@@ -391,7 +393,9 @@ fun DealsItem(item: DealsData, scope: DealsScope) {
                 }
                 Space(10.dp)
                 Text(
-                    modifier = Modifier.padding(end = 16.dp),
+                    modifier = Modifier
+                        .padding(end = 16.dp)
+                        .padding(start = 30.dp),
                     text = item.productInfo.name,
                     textAlign = TextAlign.Center,
                     color = ConstColors.txtGrey,
@@ -399,39 +403,77 @@ fun DealsItem(item: DealsData, scope: DealsScope) {
                     fontSize = 13.sp,
                 )
                 Space(dp = 5.dp)
-                Surface(
-                    shape = RoundedCornerShape(10.dp),
-                    color = ConstColors.green,
+                Row(
                     modifier = Modifier
-                        .padding(5.dp)
-                        .padding(end = 11.dp)
-                        .align(Alignment.End)
+                        .fillMaxWidth()
+                        .padding(start = 25.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = CenterVertically
                 ) {
-                    Text(
-                        modifier = Modifier.padding(5.dp),
-                        text = buildAnnotatedString {
-                            append(stringResource(id = R.string.mrp))
-                            append(": ")
-                            val startIndex = length
-                            append(item.promotionInfo.buy.formatted)
-                            addStyle(
-                                SpanStyle(fontWeight = FontWeight.W600),
-                                startIndex,
-                                length,
-                            )
-                        },
-                        textAlign = TextAlign.Center,
-                        color = White,
-                        fontWeight = FontWeight.W600,
-                        fontSize = 11.sp,
-                    )
+                    Surface(
+                        shape = RoundedCornerShape(10.dp),
+                        color = ConstColors.green,
+                        modifier = Modifier
+                            .padding(5.dp)
+                            .padding(end = 11.dp)
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .padding(5.dp)
+                                .padding(horizontal = 5.dp),
+                            text = buildAnnotatedString {
+                                append(stringResource(id = R.string.ptr))
+                                append(": ")
+                                val startIndex = length
+                                append(item.productInfo.ptr.formatted)
+                                addStyle(
+                                    SpanStyle(fontWeight = FontWeight.W600),
+                                    startIndex,
+                                    length,
+                                )
+                            },
+                            textAlign = TextAlign.Center,
+                            color = White,
+                            fontWeight = FontWeight.W600,
+                            fontSize = 12.sp,
+                        )
+                    }
+                    Surface(
+                        shape = RoundedCornerShape(10.dp),
+                        color = ConstColors.green,
+                        modifier = Modifier
+                            .padding(5.dp)
+                            .padding(end = 11.dp)
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .padding(5.dp)
+                                .padding(horizontal = 5.dp),
+                            text = buildAnnotatedString {
+                                append(stringResource(id = R.string.mrp))
+                                append(": ")
+                                val startIndex = length
+                                append(item.productInfo.mrp.formatted)
+                                addStyle(
+                                    SpanStyle(fontWeight = FontWeight.W600),
+                                    startIndex,
+                                    length,
+                                )
+                            },
+                            textAlign = TextAlign.Center,
+                            color = White,
+                            fontWeight = FontWeight.W600,
+                            fontSize = 12.sp,
+                        )
+                    }
                 }
+
                 if (!item.productInfo.isAddToCartAllowed) {
                     MedicoButton(
                         modifier = Modifier
                             .padding(10.dp)
                             .height(35.dp)
-                            .padding(start = 20.dp),
+                            .padding(start = 20.dp, end = 10.dp),
                         text = stringResource(id = R.string.connect_stockist),
                         isEnabled = true,
                         color = ConstColors.lightBlue,
@@ -444,7 +486,7 @@ fun DealsItem(item: DealsData, scope: DealsScope) {
                         modifier = Modifier
                             .padding(10.dp)
                             .height(35.dp)
-                            .padding(start = 20.dp),
+                            .padding(start = 20.dp, end = 10.dp),
                         text = stringResource(id = R.string.add_to_cart),
                         isEnabled = true
                     ) {
@@ -475,7 +517,7 @@ fun OfferChoice(scope: DealsScope) {
     val options = scope.offersChoices.flow.collectAsState().value
     val offerStatus = scope.offerStatus.flow.collectAsState().value
     Row(
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 10.dp)
@@ -496,7 +538,7 @@ fun OfferChoice(scope: DealsScope) {
                     modifier = Modifier
                         .clip(
                             shape = RoundedCornerShape(
-                                size = 10.dp,
+                                size = 5.dp,
                             ),
                         )
                         .clickable {
@@ -506,12 +548,12 @@ fun OfferChoice(scope: DealsScope) {
                             if (it.code == offerStatus) {
                                 ConstColors.green
                             } else {
-                                ConstColors.lightGrey
+                                ConstColors.txtGrey
                             }
                         )
                         .padding(
                             vertical = 5.dp,
-                            horizontal = 5.dp,
+                            horizontal = 15.dp,
                         ),
                 )
             }
