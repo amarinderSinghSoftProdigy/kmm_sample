@@ -395,7 +395,7 @@ fun DealsItem(item: DealsData, scope: DealsScope) {
                 Text(
                     modifier = Modifier
                         .padding(end = 16.dp)
-                        .padding(start = 30.dp),
+                        .padding(start = 10.dp),
                     text = item.productInfo.name,
                     textAlign = TextAlign.Center,
                     color = ConstColors.txtGrey,
@@ -406,7 +406,7 @@ fun DealsItem(item: DealsData, scope: DealsScope) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 25.dp),
+                        .padding(start = 10.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = CenterVertically
                 ) {
@@ -471,11 +471,11 @@ fun DealsItem(item: DealsData, scope: DealsScope) {
                 if (!item.productInfo.isAddToCartAllowed) {
                     MedicoButton(
                         modifier = Modifier
-                            .padding(10.dp)
-                            .height(35.dp)
-                            .padding(start = 20.dp, end = 10.dp),
+                            .height(40.dp)
+                            .padding(start = 10.dp, end = 10.dp),
                         text = stringResource(id = R.string.connect_stockist),
                         isEnabled = true,
+                        textSize = 12.sp,
                         color = ConstColors.lightBlue,
                         txtColor = White
                     ) {
@@ -484,12 +484,12 @@ fun DealsItem(item: DealsData, scope: DealsScope) {
                 } else {
                     MedicoButton(
                         modifier = Modifier
-                            .padding(10.dp)
-                            .height(35.dp)
-                            .padding(start = 20.dp, end = 10.dp),
+                            .height(40.dp)
+                            .padding(start = 10.dp, end = 10.dp),
                         text = stringResource(id = R.string.add_to_cart),
-                        isEnabled = true
-                    ) {
+                        isEnabled = true,
+                        textSize = 12.sp,
+                        ) {
                         scope.addToCart(
                             item.sellerInfo.unitCode,
                             item.productInfo.code,
