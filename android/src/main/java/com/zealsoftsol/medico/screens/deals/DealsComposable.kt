@@ -343,8 +343,7 @@ fun ExpandableItem(scope: DealsScope) {
 fun DealsItem(item: DealsData, scope: DealsScope) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(150.dp),
+            .fillMaxWidth(),
         elevation = 5.dp,
         shape = RoundedCornerShape(5.dp),
         backgroundColor = White,
@@ -403,76 +402,68 @@ fun DealsItem(item: DealsData, scope: DealsScope) {
                     fontSize = 13.sp,
                 )
                 Space(dp = 5.dp)
-                Row(
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = ConstColors.green,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 10.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = CenterVertically
+                        .padding(5.dp)
+                        .padding(end = 11.dp)
                 ) {
-                    Surface(
-                        shape = RoundedCornerShape(10.dp),
-                        color = ConstColors.green,
+                    Text(
                         modifier = Modifier
                             .padding(5.dp)
-                            .padding(end = 11.dp)
-                    ) {
-                        Text(
-                            modifier = Modifier
-                                .padding(5.dp)
-                                .padding(horizontal = 5.dp),
-                            text = buildAnnotatedString {
-                                append(stringResource(id = R.string.ptr))
-                                append(": ")
-                                val startIndex = length
-                                append(item.productInfo.ptr.formatted)
-                                addStyle(
-                                    SpanStyle(fontWeight = FontWeight.W600),
-                                    startIndex,
-                                    length,
-                                )
-                            },
-                            textAlign = TextAlign.Center,
-                            color = White,
-                            fontWeight = FontWeight.W600,
-                            fontSize = 12.sp,
-                        )
-                    }
-                    Surface(
-                        shape = RoundedCornerShape(10.dp),
-                        color = ConstColors.green,
+                            .padding(horizontal = 5.dp),
+                        text = buildAnnotatedString {
+                            append(stringResource(id = R.string.ptr))
+                            append(": ")
+                            val startIndex = length
+                            append(item.productInfo.ptr.formatted)
+                            addStyle(
+                                SpanStyle(fontWeight = FontWeight.W600),
+                                startIndex,
+                                length,
+                            )
+                        },
+                        textAlign = TextAlign.Center,
+                        color = White,
+                        fontWeight = FontWeight.W600,
+                        fontSize = 12.sp,
+                    )
+                }
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = ConstColors.green,
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .padding(end = 11.dp)
+                ) {
+                    Text(
                         modifier = Modifier
                             .padding(5.dp)
-                            .padding(end = 11.dp)
-                    ) {
-                        Text(
-                            modifier = Modifier
-                                .padding(5.dp)
-                                .padding(horizontal = 5.dp),
-                            text = buildAnnotatedString {
-                                append(stringResource(id = R.string.mrp))
-                                append(": ")
-                                val startIndex = length
-                                append(item.productInfo.mrp.formatted)
-                                addStyle(
-                                    SpanStyle(fontWeight = FontWeight.W600),
-                                    startIndex,
-                                    length,
-                                )
-                            },
-                            textAlign = TextAlign.Center,
-                            color = White,
-                            fontWeight = FontWeight.W600,
-                            fontSize = 12.sp,
-                        )
-                    }
+                            .padding(horizontal = 5.dp),
+                        text = buildAnnotatedString {
+                            append(stringResource(id = R.string.mrp))
+                            append(": ")
+                            val startIndex = length
+                            append(item.productInfo.mrp.formatted)
+                            addStyle(
+                                SpanStyle(fontWeight = FontWeight.W600),
+                                startIndex,
+                                length,
+                            )
+                        },
+                        textAlign = TextAlign.Center,
+                        color = White,
+                        fontWeight = FontWeight.W600,
+                        fontSize = 12.sp,
+                    )
                 }
 
                 if (!item.productInfo.isAddToCartAllowed) {
                     MedicoButton(
                         modifier = Modifier
                             .height(40.dp)
-                            .padding(start = 10.dp, end = 10.dp),
+                            .padding(start = 25.dp, end = 10.dp, bottom = 10.dp),
                         text = stringResource(id = R.string.connect_stockist),
                         isEnabled = true,
                         textSize = 12.sp,
@@ -485,11 +476,11 @@ fun DealsItem(item: DealsData, scope: DealsScope) {
                     MedicoButton(
                         modifier = Modifier
                             .height(40.dp)
-                            .padding(start = 10.dp, end = 10.dp),
+                            .padding(start = 25.dp, end = 10.dp,  bottom = 10.dp),
                         text = stringResource(id = R.string.add_to_cart),
                         isEnabled = true,
                         textSize = 12.sp,
-                        ) {
+                    ) {
                         scope.addToCart(
                             item.sellerInfo.unitCode,
                             item.productInfo.code,

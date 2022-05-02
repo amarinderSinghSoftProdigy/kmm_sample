@@ -532,7 +532,7 @@ private fun DealsItem(item: DealsData, scope: DashboardScope, modifier: Modifier
                     Surface(
                         modifier = Modifier.padding(1.dp),
                         shape = RoundedCornerShape(1.dp),
-                        color = ConstColors.highlightGrey
+                        color = ConstColors.red
                     ) {
                         Text(
                             text = stringResource(id = R.string.deals_of_the_day),
@@ -553,47 +553,42 @@ private fun DealsItem(item: DealsData, scope: DashboardScope, modifier: Modifier
                         fontSize = 13.sp,
                     )
                     Space(5.dp)
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = buildAnnotatedString {
-                                append(stringResource(id = R.string.ptr))
-                                append(": ")
-                                val startIndex = length
-                                append(item.productInfo.ptr.formatted)
-                                addStyle(
-                                    SpanStyle(fontWeight = FontWeight.W600, color = Color.Black),
-                                    startIndex,
-                                    length,
-                                )
-                            },
-                            textAlign = TextAlign.Center,
-                            color = ConstColors.txtGrey,
-                            fontWeight = FontWeight.W600,
-                            fontSize = 13.sp,
-                        )
 
-                        Text(
-                            text = buildAnnotatedString {
-                                append(stringResource(id = R.string.mrp))
-                                append(": ")
-                                val startIndex = length
-                                append(item.productInfo.mrp.formatted)
-                                addStyle(
-                                    SpanStyle(fontWeight = FontWeight.W600, color = Color.Black),
-                                    startIndex,
-                                    length,
-                                )
-                            },
-                            textAlign = TextAlign.Center,
-                            color = ConstColors.txtGrey,
-                            fontWeight = FontWeight.W600,
-                            fontSize = 13.sp,
-                        )
-                    }
+                    Text(
+                        text = buildAnnotatedString {
+                            append(stringResource(id = R.string.ptr))
+                            append(": ")
+                            val startIndex = length
+                            append(item.productInfo.ptr.formatted)
+                            addStyle(
+                                SpanStyle(fontWeight = FontWeight.W600, color = Color.Black),
+                                startIndex,
+                                length,
+                            )
+                        },
+                        textAlign = TextAlign.Center,
+                        color = ConstColors.txtGrey,
+                        fontWeight = FontWeight.W600,
+                        fontSize = 13.sp,
+                    )
+
+                    Text(
+                        text = buildAnnotatedString {
+                            append(stringResource(id = R.string.mrp))
+                            append(": ")
+                            val startIndex = length
+                            append(item.productInfo.mrp.formatted)
+                            addStyle(
+                                SpanStyle(fontWeight = FontWeight.W600, color = Color.Black),
+                                startIndex,
+                                length,
+                            )
+                        },
+                        textAlign = TextAlign.Center,
+                        color = ConstColors.txtGrey,
+                        fontWeight = FontWeight.W600,
+                        fontSize = 13.sp,
+                    )
 
                 }
             }
