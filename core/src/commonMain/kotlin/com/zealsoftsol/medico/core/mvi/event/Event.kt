@@ -671,7 +671,30 @@ sealed class Event {
             data class ZoomImage(val url: String) : Banners()
         }
 
-        sealed class Ocr: Action(){
+        sealed class Deals : Action() {
+            override val typeClazz: KClass<*> = Deals::class
+
+            data class GetAllDeals(
+                val page: Int,
+                val search: String,
+                val unitCode: String,
+                val promoCode: String
+            ) :
+                Deals()
+
+            data class AddItemToCart(
+                val sellerUnitCode: String?,
+                val productCode: String,
+                val buyingOption: BuyingOption,
+                val id: CartIdentifier?,
+                val quantity: Double,
+                val freeQuantity: Double,
+            ) : Deals()
+
+            data class ZoomImage(val url: String) : Deals()
+        }
+
+        sealed class Ocr : Action() {
             override val typeClazz: KClass<*> = Ocr::class
 
             data class ShowUploadBottomSheet(val type: String) : Ocr()
@@ -744,6 +767,7 @@ sealed class Event {
         object Preference : Transition()
         data class Companies(val title: String, val unitCode: String) : Transition()
         object Banners : Transition()
+        object Deals : Transition()
         object Ocr : Transition()
     }
 }

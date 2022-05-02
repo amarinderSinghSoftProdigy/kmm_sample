@@ -442,7 +442,7 @@ fun StockStatus(scope: InventoryScope) {
                         )
                         .padding(
                             vertical = 5.dp,
-                            horizontal = 5.dp,
+                            horizontal = 15.dp,
                         ),
                 )
             }

@@ -40,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.TopEnd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
@@ -48,6 +49,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -63,12 +66,15 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
+import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.BannerData
 import com.zealsoftsol.medico.data.BrandsData
 import com.zealsoftsol.medico.data.DashboardData
+import com.zealsoftsol.medico.data.DealsData
 import com.zealsoftsol.medico.data.OfferStatus
 import com.zealsoftsol.medico.data.ProductSold
 import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.CoilImageBrands
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.ShimmerItem
@@ -233,6 +239,70 @@ private fun ShowRetailerAndHospitalDashboard(
                                 }
                             },
                         )
+                    }
+                }
+            }
+            Space(dp = 16.dp)
+            Column(
+                modifier = Modifier
+                    .background(Color.White)
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.deals_of_the_day),
+                        color = ConstColors.lightBlue,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.W600,
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                    )
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier.clickable {
+                            scope.sendEvent(Event.Transition.Deals)
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_eye),
+                            contentDescription = null,
+                            tint = ConstColors.lightBlue,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Text(
+                            text = stringResource(id = R.string.view_all),
+                            color = ConstColors.lightBlue,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.W600,
+                            modifier = Modifier
+                                .padding(horizontal = 3.dp)
+                                .padding(end = 16.dp),
+                        )
+                    }
+                }
+
+                Space(dp = 16.dp)
+                val itemSize: Dp = (LocalConfiguration.current.screenWidthDp.dp / 2) - 8.dp
+
+                FlowRow(
+                    mainAxisSize = SizeMode.Expand,
+                    mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
+                ) {
+                    dashboard.value?.dealsOfDay?.let {
+                        it.forEachIndexed { index, _ ->
+                            DealsItem(
+                                it[index],
+                                scope,
+                                modifier = Modifier.width(itemSize),
+                                itemSize
+                            )
+                        }
                     }
                 }
             }
@@ -419,6 +489,130 @@ private fun BrandsImageItem(item: ProductSold, scope: DashboardScope) {
         }
     }
 }
+
+/**
+ * ui item for deals of the day listing
+ */
+@Composable
+private fun DealsItem(item: DealsData, scope: DashboardScope, modifier: Modifier, width: Dp) {
+    Card(
+        modifier = modifier
+            .selectable(
+                selected = true,
+                onClick = {
+
+                })
+            .padding(horizontal = 8.dp, vertical = 8.dp),
+        elevation = 3.dp,
+        shape = RoundedCornerShape(5.dp),
+        backgroundColor = Color.White,
+    ) {
+        Box {
+            Column(horizontalAlignment = CenterHorizontally) {
+                CoilImage(
+                    src = CdnUrlProvider.urlFor(
+                        item.productInfo.imageCode,
+                        CdnUrlProvider.Size.Px123
+                    ),
+                    size = 150.dp,
+                    onError = {
+                        ItemPlaceholder()
+                    },
+                    onLoading = {
+                        ItemPlaceholder()
+                    },
+                )
+                Column(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp)
+                        .padding(bottom = 10.dp)
+                ) {
+                    Space(5.dp)
+                    Surface(
+                        modifier = Modifier.padding(1.dp),
+                        shape = RoundedCornerShape(1.dp),
+                        color = ConstColors.red
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.deals_of_the_day),
+                            textAlign = TextAlign.Center,
+                            color = Color.White,
+                            fontWeight = FontWeight.W600,
+                            fontSize = 11.sp,
+                            modifier = Modifier.padding(horizontal = 2.dp)
+                        )
+                    }
+
+                    Space(5.dp)
+                    Text(
+                        text = item.productInfo.name,
+                        textAlign = TextAlign.Center,
+                        color = ConstColors.txtGrey,
+                        fontWeight = FontWeight.W600,
+                        fontSize = 13.sp,
+                    )
+                    Space(5.dp)
+
+                    Text(
+                        text = buildAnnotatedString {
+                            append(stringResource(id = R.string.ptr))
+                            append(": ")
+                            val startIndex = length
+                            append(item.productInfo.ptr.formatted)
+                            addStyle(
+                                SpanStyle(fontWeight = FontWeight.W600, color = Color.Black),
+                                startIndex,
+                                length,
+                            )
+                        },
+                        textAlign = TextAlign.Center,
+                        color = ConstColors.txtGrey,
+                        fontWeight = FontWeight.W600,
+                        fontSize = 13.sp,
+                    )
+
+                    Text(
+                        text = buildAnnotatedString {
+                            append(stringResource(id = R.string.mrp))
+                            append(": ")
+                            val startIndex = length
+                            append(item.productInfo.mrp.formatted)
+                            addStyle(
+                                SpanStyle(fontWeight = FontWeight.W600, color = Color.Black),
+                                startIndex,
+                                length,
+                            )
+                        },
+                        textAlign = TextAlign.Center,
+                        color = ConstColors.txtGrey,
+                        fontWeight = FontWeight.W600,
+                        fontSize = 13.sp,
+                    )
+
+                }
+            }
+            Surface(
+                modifier = Modifier.align(TopEnd),
+                shape = RoundedCornerShape(2.dp),
+                color = ConstColors.red
+            ) {
+                Text(
+                    text = "${item.promotionInfo.offer} ${stringResource(id = R.string.offer)}",
+                    textAlign = TextAlign.Center,
+                    color = Color.White,
+                    fontWeight = FontWeight.W700,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(3.dp)
+                )
+            }
+
+        }
+    }
+}
+
 
 /**
  * ui item for categories listing

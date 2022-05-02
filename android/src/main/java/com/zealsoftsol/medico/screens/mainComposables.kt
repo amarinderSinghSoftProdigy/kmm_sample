@@ -102,6 +102,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.BannersScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.BatchesScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.DealsScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.OcrScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
@@ -135,6 +136,7 @@ import com.zealsoftsol.medico.screens.common.showNotificationAlert
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.dashboard.BannersScreen
 import com.zealsoftsol.medico.screens.dashboard.DashboardScreen
+import com.zealsoftsol.medico.screens.deals.DealsScreen
 import com.zealsoftsol.medico.screens.employee.AddEmployeeAadharInfoScreen
 import com.zealsoftsol.medico.screens.employee.AddEmployeeAddressDetailsScreen
 import com.zealsoftsol.medico.screens.employee.AddEmployeeScreen
@@ -218,8 +220,8 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
 
             if (childScope.value !is OrderHsnEditScope && childScope.value !is InventoryScope && childScope.value !is IocSellerScope.InvUserListing
                 && childScope.value !is IocBuyerScope.InvUserListing && childScope.value !is ManagementScope.User && mUserType != UserType.STOCKIST_EMPLOYEE
-                && childScope.value !is InStoreUsersScope && childScope.value !is BannersScope
-            ) //don't show top bar for OrderEditHsnScreen and Inventory and IOC listing
+                && childScope.value !is InStoreUsersScope && childScope.value !is BannersScope && childScope.value !is DealsScope
+            ) //don't show top bar for OrderEditHsnScreen and Inventory and IOC listing & deals & banners
             {
                 val tabBarInfo = scope.tabBar.flow.collectAsState()
                 TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
@@ -296,7 +298,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                         }
                     }
                 }
-            } else if(childScope.value is BannersScope) {
+            } else if(childScope.value is BannersScope || childScope.value is DealsScope) {
                 val info = scope.tabBar.flow.collectAsState().value
                 if (info is TabBarInfo.OnlyBackHeader) {
                     val cartCount = info.cartItemsCount?.flow?.collectAsState()
@@ -464,6 +466,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     is EmployeeScope.PreviewDetails -> EmployeePreview(it)
                     is PreferenceScope -> PreferenceScreen(it)
                     is BannersScope -> BannersScreen(it)
+                    is DealsScope -> DealsScreen(it)
                     is OcrScope -> OcrScreen(it, scaffoldState)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()

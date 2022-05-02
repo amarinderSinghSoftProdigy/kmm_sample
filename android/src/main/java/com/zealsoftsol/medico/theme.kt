@@ -47,6 +47,8 @@ object ConstColors {
     val blueBack = Color(0xffF6FDFF)
     val greenBack = Color(0xffF9FDF4)
     val redBack = Color(0xffFFF5F5)
+    val magenta = Color(0xffB22C45)
+    val highlightGrey = Color(0xff979797)
 }
 
 @Composable
