@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -26,9 +25,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -43,7 +39,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
@@ -51,7 +46,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -513,12 +507,14 @@ private fun CartItem(
                     }
                 },
                 mainBodyContent = {
-                    Row(
-                        verticalAlignment = Alignment.Top,
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        Column {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
                             Text(
                                 text = buildAnnotatedString {
                                     append("ST: ")
@@ -555,7 +551,7 @@ private fun CartItem(
                                     },
                                     color = ConstColors.gray.copy(alpha = 0.5f),
                                     fontWeight = FontWeight.Normal,
-                                    fontSize = 10.sp,
+                                    fontSize = 12.sp,
                                 )
                             } else {
                                 Text(
@@ -566,43 +562,50 @@ private fun CartItem(
                                 )
                             }
                         }
-                        Text(
-                            text = buildAnnotatedString {
-                                append("QTY: ")
-                                val startIndex = length
-                                append(cartItem.quantity.formatted)
-                                addStyle(
-                                    SpanStyle(
-                                        color = MaterialTheme.colors.background,
-                                        fontWeight = FontWeight.W700
-                                    ),
-                                    startIndex,
-                                    length,
-                                )
-                            },
-                            color = ConstColors.gray.copy(alpha = 0.5f),
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 12.sp,
-                        )
+                        Space(10.dp)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = buildAnnotatedString {
+                                    append("QTY: ")
+                                    val startIndex = length
+                                    append(cartItem.quantity.formatted)
+                                    addStyle(
+                                        SpanStyle(
+                                            color = MaterialTheme.colors.background,
+                                            fontWeight = FontWeight.W700
+                                        ),
+                                        startIndex,
+                                        length,
+                                    )
+                                },
+                                color = ConstColors.gray.copy(alpha = 0.5f),
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 12.sp,
+                            )
 
-                        Text(
-                            text = buildAnnotatedString {
-                                append("FREE: ")
-                                val startIndex = length
-                                append(cartItem.freeQuantity.formatted)
-                                addStyle(
-                                    SpanStyle(
-                                        color = MaterialTheme.colors.background,
-                                        fontWeight = FontWeight.W700
-                                    ),
-                                    startIndex,
-                                    length,
-                                )
-                            },
-                            color = ConstColors.gray.copy(alpha = 0.5f),
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 12.sp,
-                        )
+                            Text(
+                                text = buildAnnotatedString {
+                                    append("FREE: ")
+                                    val startIndex = length
+                                    append(cartItem.freeQuantity.formatted)
+                                    addStyle(
+                                        SpanStyle(
+                                            color = MaterialTheme.colors.background,
+                                            fontWeight = FontWeight.W700
+                                        ),
+                                        startIndex,
+                                        length,
+                                    )
+                                },
+                                color = ConstColors.gray.copy(alpha = 0.5f),
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 12.sp,
+                            )
+                        }
                     }
                 },
                 openBottomSheet = openBottomSheet,

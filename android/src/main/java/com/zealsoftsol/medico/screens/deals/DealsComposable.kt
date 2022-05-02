@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
@@ -36,6 +35,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
@@ -254,7 +254,7 @@ fun DealsScreen(scope: DealsScope) {
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun ExpandableItem(scope: DealsScope){
+fun ExpandableItem(scope: DealsScope) {
     val isExpanded = remember { mutableStateOf(false) }
     Surface(
         shape = MaterialTheme.shapes.medium,
@@ -359,13 +359,16 @@ fun DealsItem(item: DealsData, scope: DealsScope) {
                     )
                 )
             }) {
-            Surface(shape = RoundedCornerShape(5.dp), color = White, elevation = 5.dp) {
+            Surface(
+                shape = RoundedCornerShape(5.dp), color = White, elevation = 5.dp,
+                modifier = Modifier.align(CenterVertically).padding(start = 10.dp)
+            ) {
                 CoilImage(
                     src = CdnUrlProvider.urlFor(
                         item.productInfo.imageCode,
                         CdnUrlProvider.Size.Px123
                     ),
-                    size = 90.dp,
+                    size = 100.dp,
                     onError = { ItemPlaceholder() },
                     onLoading = { ItemPlaceholder() },
                 )
