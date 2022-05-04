@@ -1029,7 +1029,7 @@ fun BasicSearchBar(
             val focusRequester = FocusRequester()
             if (isSearchFocused) SideEffect { focusRequester.requestFocus() }
             BasicTextField(
-                value = input.uppercase(),
+                value = input,
                 cursorBrush = SolidColor(ConstColors.lightBlue),
                 onValueChange = { onSearch(it.replace("+", "").replace("*", ""), false) },
                 singleLine = true,
