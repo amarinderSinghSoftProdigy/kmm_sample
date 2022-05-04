@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
+import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.CartData
@@ -174,6 +175,13 @@ class SearchScope(
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
         return TabBarInfo.ActiveSearch(productSearch, activeFilterIds)
+    }
+
+    fun selectItem(item: String) {
+        val url = CdnUrlProvider.urlFor(
+            item, CdnUrlProvider.Size.Px320
+        )
+        EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(url))
     }
 
 }
