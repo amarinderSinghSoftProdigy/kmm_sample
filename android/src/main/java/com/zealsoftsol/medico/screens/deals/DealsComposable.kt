@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
@@ -397,74 +398,65 @@ fun DealsItem(item: DealsData, scope: DealsScope) {
                         .padding(start = 10.dp),
                     text = item.productInfo.name,
                     textAlign = TextAlign.Center,
-                    color = ConstColors.txtGrey,
+                    color = Color.Black,
                     fontWeight = FontWeight.W600,
-                    fontSize = 13.sp,
+                    fontSize = 16.sp,
                 )
                 Space(dp = 5.dp)
-                Surface(
-                    shape = RoundedCornerShape(10.dp),
-                    color = ConstColors.green,
+                Text(
                     modifier = Modifier
                         .padding(5.dp)
-                        .padding(end = 11.dp)
-                ) {
-                    Text(
-                        modifier = Modifier
-                            .padding(5.dp)
-                            .padding(horizontal = 5.dp),
-                        text = buildAnnotatedString {
-                            append(stringResource(id = R.string.ptr))
-                            append(": ")
-                            val startIndex = length
-                            append(item.productInfo.ptr.formatted)
-                            addStyle(
-                                SpanStyle(fontWeight = FontWeight.W600),
-                                startIndex,
-                                length,
-                            )
-                        },
-                        textAlign = TextAlign.Center,
-                        color = White,
-                        fontWeight = FontWeight.W600,
-                        fontSize = 12.sp,
-                    )
-                }
-                Surface(
-                    shape = RoundedCornerShape(10.dp),
-                    color = ConstColors.green,
+                        .padding(horizontal = 5.dp),
+                    text = buildAnnotatedString {
+                        append(stringResource(id = R.string.ptr))
+                        append(": ")
+                        val startIndex = length
+                        append(item.productInfo.ptr.formatted)
+                        addStyle(
+                            SpanStyle(
+                                color = MaterialTheme.colors.background,
+                                fontWeight = FontWeight.W600
+                            ),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    textAlign = TextAlign.Center,
+                    color = ConstColors.gray,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 12.sp,
+                )
+                Text(
                     modifier = Modifier
                         .padding(5.dp)
-                        .padding(end = 11.dp)
-                ) {
-                    Text(
-                        modifier = Modifier
-                            .padding(5.dp)
-                            .padding(horizontal = 5.dp),
-                        text = buildAnnotatedString {
-                            append(stringResource(id = R.string.mrp))
-                            append(": ")
-                            val startIndex = length
-                            append(item.productInfo.mrp.formatted)
-                            addStyle(
-                                SpanStyle(fontWeight = FontWeight.W600),
-                                startIndex,
-                                length,
-                            )
-                        },
-                        textAlign = TextAlign.Center,
-                        color = White,
-                        fontWeight = FontWeight.W600,
-                        fontSize = 12.sp,
-                    )
-                }
-
+                        .padding(horizontal = 5.dp),
+                    text = buildAnnotatedString {
+                        append(stringResource(id = R.string.mrp))
+                        append(": ")
+                        val startIndex = length
+                        append(item.productInfo.mrp.formatted)
+                        addStyle(
+                            SpanStyle(
+                                color = MaterialTheme.colors.background,
+                                fontWeight = FontWeight.W600
+                            ),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    textAlign = TextAlign.Center,
+                    color = ConstColors.gray,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 12.sp,
+                )
                 if (!item.productInfo.isAddToCartAllowed) {
                     MedicoButton(
                         modifier = Modifier
                             .height(40.dp)
-                            .padding(start = 25.dp, end = 10.dp, bottom = 10.dp),
-                        text = stringResource(id = R.string.connect_stockist),
+                            .width(150.dp)
+                            .padding(start = 25.dp, end = 10.dp, bottom = 10.dp)
+                            .align(Alignment.End),
+                        text = stringResource(id = R.string.subscribe),
                         isEnabled = true,
                         textSize = 12.sp,
                         color = ConstColors.lightBlue,
@@ -476,7 +468,9 @@ fun DealsItem(item: DealsData, scope: DealsScope) {
                     MedicoButton(
                         modifier = Modifier
                             .height(40.dp)
-                            .padding(start = 25.dp, end = 10.dp,  bottom = 10.dp),
+                            .width(150.dp)
+                            .align(Alignment.End)
+                            .padding(start = 25.dp, end = 10.dp, bottom = 10.dp),
                         text = stringResource(id = R.string.add_to_cart),
                         isEnabled = true,
                         textSize = 12.sp,

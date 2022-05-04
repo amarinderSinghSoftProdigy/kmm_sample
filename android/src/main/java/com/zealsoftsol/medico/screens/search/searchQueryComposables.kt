@@ -5,6 +5,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.IndicationInstance
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -385,23 +386,36 @@ fun ProductItem(
             }
 
             Column(
-                modifier = Modifier.padding(12.dp),
+                modifier = Modifier.padding(all = 16.dp),
             ) {
+
                 Row {
-                    CoilImage(
-                        src = CdnUrlProvider.urlFor(product.imageCode!!, CdnUrlProvider.Size.Px123),
-                        size = 80.dp,
-                        onError = { ItemPlaceholder() },
-                        onLoading = { ItemPlaceholder() },
-                    )
-                    Space(10.dp)
-                    Column {
-                        Text(
-                            text = product.name,
-                            color = MaterialTheme.colors.background,
-                            fontWeight = FontWeight.W600,
-                            fontSize = 16.sp,
+                    Surface(onClick = { scope.selectItem(product.imageCode) }) {
+                        CoilImage(
+                            src = CdnUrlProvider.urlFor(
+                                product.imageCode,
+                                CdnUrlProvider.Size.Px123
+                            ),
+                            size = 70.dp,
+                            onError = { ItemPlaceholder() },
+                            onLoading = { ItemPlaceholder() },
                         )
+                    }
+                    Space(10.dp)
+                    Column(modifier = Modifier.padding(top = 8.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            Text(
+                                text = product.name,
+                                color = MaterialTheme.colors.background,
+                                fontWeight = FontWeight.W800,
+                                fontSize = 16.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                         Space(4.dp)
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -409,23 +423,41 @@ fun ProductItem(
                         ) {
                             Column {
                                 Text(
-                                    text = product.formattedPrice.orEmpty(),
-                                    color = MaterialTheme.colors.background,
-                                    fontWeight = FontWeight.W900,
-                                    fontSize = 16.sp,
-                                )
-                                Space(4.dp)
-                                Text(
-                                    text = product.code,
+                                    text = buildAnnotatedString {
+                                        append("PTR: ")
+                                        val startIndex = length
+                                        append(product.formattedPrice.orEmpty())
+                                        addStyle(
+                                            SpanStyle(
+                                                color = MaterialTheme.colors.background,
+                                                fontWeight = FontWeight.W600
+                                            ),
+                                            startIndex,
+                                            length,
+                                        )
+                                    },
                                     color = ConstColors.gray,
+                                    fontWeight = FontWeight.W500,
                                     fontSize = 12.sp,
                                 )
                                 product.stockInfo?.let {
                                     Space(4.dp)
                                     Text(
-                                        text = it.formattedStatus,
+                                        text = buildAnnotatedString {
+                                            append(it.formattedStatus)
+                                            val startIndex = length
+                                            append("(" + it.availableQty + ")")
+                                            addStyle(
+                                                SpanStyle(
+                                                    color = labelColor,
+                                                    fontWeight = FontWeight.W600
+                                                ),
+                                                startIndex,
+                                                length,
+                                            )
+                                        },
                                         color = labelColor,
-                                        fontWeight = FontWeight.W700,
+                                        fontWeight = FontWeight.W500,
                                         fontSize = 12.sp,
                                     )
                                 }
@@ -438,8 +470,8 @@ fun ProductItem(
                                         append(product.formattedMrp)
                                         addStyle(
                                             SpanStyle(
-                                                color = ConstColors.lightBlue,
-                                                fontWeight = FontWeight.W800
+                                                color = MaterialTheme.colors.background,
+                                                fontWeight = FontWeight.W600
                                             ),
                                             startIndex,
                                             length,
@@ -447,31 +479,86 @@ fun ProductItem(
                                     },
                                     color = ConstColors.gray,
                                     fontSize = 12.sp,
+                                    fontWeight = FontWeight.W500
                                 )
-                                Space(4.dp)
-                                product.marginPercent?.let {
-                                    Text(
-                                        text = buildAnnotatedString {
-                                            append("Margin: ")
-                                            val startIndex = length
-                                            append(it)
-                                            addStyle(
-                                                SpanStyle(
-                                                    color = ConstColors.lightBlue,
-                                                    fontWeight = FontWeight.W800
-                                                ),
-                                                startIndex,
-                                                length,
-                                            )
-                                        },
-                                        color = ConstColors.gray,
-                                        fontSize = 12.sp,
-                                    )
-                                }
                             }
                         }
                     }
                 }
+
+                val cartInfo = product.sellerInfo?.cartInfo
+                val sliderList = ArrayList<String>()
+                product.manufacturer.let { sliderList.add(it) }
+                if (product.drugFormName.isNotEmpty())
+                    sliderList.add(product.drugFormName)
+                product.standardUnit?.let { sliderList.add(it) }
+                if (product.compositions.isNotEmpty())
+                    sliderList.addAll(product.compositions)
+                product.sellerInfo?.priceInfo?.marginPercent?.let {
+                    sliderList.add(
+                        "Margin: ".plus(
+                            it
+                        )
+                    )
+                }
+                LazyRow(
+                    state = rememberLazyListState(),
+                    contentPadding = PaddingValues(top = 6.dp),
+                ) {
+                    items(
+                        items = sliderList,
+                        itemContent = { value -> if (value.isNotEmpty()) ChipString(value) {} }
+                    )
+                }
+                Space(8.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Bottom,
+                ) {
+                    Box {
+                        if (cartInfo != null) {
+                            product.quantity = cartInfo.quantity.value
+                            product.freeQuantity = cartInfo.freeQuantity.value
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.qty).uppercase(),
+                                    fontSize = 12.sp,
+                                    color = ConstColors.gray,
+                                )
+                                Space(6.dp)
+                                Text(
+                                    text = cartInfo.quantity.formatted,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.W700,
+                                    color = MaterialTheme.colors.background,
+                                )
+                                Space(6.dp)
+                                Text(
+                                    text = "+${cartInfo.freeQuantity.formatted}",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.W700,
+                                    color = ConstColors.lightBlue,
+                                    modifier = Modifier
+                                        .background(
+                                            ConstColors.lightBlue.copy(alpha = 0.05f),
+                                            RoundedCornerShape(4.dp)
+                                        )
+                                        .border(
+                                            1.dp,
+                                            ConstColors.lightBlue,
+                                            RoundedCornerShape(4.dp)
+                                        )
+                                        .padding(horizontal = 4.dp, vertical = 2.dp),
+                                )
+                            }
+                        }
+                    }
+
+                }
+
                 Space(10.dp)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
