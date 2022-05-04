@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.instore
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,6 +29,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,6 +37,7 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreSellerScope
 import com.zealsoftsol.medico.data.InStoreSeller
+import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.Space
@@ -76,11 +79,34 @@ fun InStoreSellersScreen(scope: InStoreSellerScope) {
             val items = scope.items.flow.collectAsState()
             val listState = rememberLazyListState()
             if (items.value.isEmpty() && scope.items.updateCount > 0) {
-                NoRecords(
-                    icon = R.drawable.ic_grey_cart,
-                    text = R.string.order_not_found,
-                    onHome = { scope.goHome() },
-                )
+                if (scope.userType == UserType.STOCKIST_EMPLOYEE) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 36.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_grey_cart),
+                            contentDescription = null,
+                        )
+                        Space(16.dp)
+                        Text(
+                            text = stringResource(id = R.string.order_not_found),
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.W700,
+                            color = MaterialTheme.colors.background,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                } else {
+                    NoRecords(
+                        icon = R.drawable.ic_grey_cart,
+                        text = R.string.order_not_found,
+                        onHome = { scope.goHome() },
+                    )
+                }
             } else {
                 LazyColumn(
                     state = listState,

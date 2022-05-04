@@ -4,7 +4,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
@@ -40,7 +38,6 @@ import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -79,7 +76,6 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
-import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartInfo
 import com.zealsoftsol.medico.data.CartItem
@@ -98,6 +94,7 @@ import com.zealsoftsol.medico.screens.common.PaginationButtons
 import com.zealsoftsol.medico.screens.common.ShowToastGlobal
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
+import com.zealsoftsol.medico.screens.search.AutoCompleteItem
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.ChipString
 import com.zealsoftsol.medico.screens.search.FilterSection
@@ -386,65 +383,6 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
             )
         EventCollector.sendEvent(Event.Action.Search.showToast("", null))
         //scope.startSearchWithNoLoader()
-    }
-}
-
-/**
- * items to be displayed in autocomplete dropdown list
- */
-@Composable
-private fun AutoCompleteItem(autoComplete: AutoComplete, input: String, onClick: () -> Unit) {
-    val regex = "(?i)$input".toRegex()
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(vertical = 12.dp, horizontal = 24.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            BoxWithConstraints {
-                Column(modifier = Modifier.widthIn(max = maxWidth - 24.dp)) {
-                    Text(
-                        text = buildAnnotatedString {
-                            append(autoComplete.suggestion)
-                            regex.find(autoComplete.suggestion)?.let {
-                                addStyle(
-                                    SpanStyle(fontWeight = FontWeight.W700),
-                                    it.range.first,
-                                    it.range.last + 1,
-                                )
-                            }
-                        },
-                        color = MaterialTheme.colors.background,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.W400,
-                    )
-                    if (autoComplete.details.isNotEmpty()) {
-                        Text(
-                            text = autoComplete.details,
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colors.background,
-                            fontWeight = FontWeight.W400,
-                        )
-                    }
-                }
-            }
-            Icon(
-                imageVector = Icons.Default.ArrowForward,
-                tint = ConstColors.lightBlue,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp),
-            )
-        }
-        Divider(
-            modifier = Modifier.align(Alignment.BottomCenter),
-            color = Color(0xFFE6F0F7),
-        )
     }
 }
 

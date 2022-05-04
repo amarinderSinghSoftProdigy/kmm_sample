@@ -305,53 +305,69 @@ private fun NoProduct(productName: String) {
 
 
 @Composable
-private fun AutoCompleteItem(autoComplete: AutoComplete, input: String, onClick: () -> Unit) {
+fun AutoCompleteItem(autoComplete: AutoComplete, input: String, onClick: () -> Unit) {
     val regex = "(?i)$input".toRegex()
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(vertical = 12.dp, horizontal = 24.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.End
         ) {
-            BoxWithConstraints {
-                Column(modifier = Modifier.widthIn(max = maxWidth - 24.dp)) {
-                    Text(
-                        text = buildAnnotatedString {
-                            append(autoComplete.suggestion)
-                            regex.find(autoComplete.suggestion)?.let {
-                                addStyle(
-                                    SpanStyle(fontWeight = FontWeight.W700),
-                                    it.range.first,
-                                    it.range.last + 1,
-                                )
-                            }
-                        },
-                        color = MaterialTheme.colors.background,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.W400,
-                    )
-                    if (autoComplete.details.isNotEmpty()) {
+
+            Row(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                BoxWithConstraints {
+                    Column(modifier = Modifier.widthIn(max = maxWidth - 24.dp)) {
                         Text(
-                            text = autoComplete.details,
-                            fontSize = 12.sp,
+                            text = buildAnnotatedString {
+                                append(autoComplete.suggestion)
+                                regex.find(autoComplete.suggestion)?.let {
+                                    addStyle(
+                                        SpanStyle(fontWeight = FontWeight.W700),
+                                        it.range.first,
+                                        it.range.last + 1,
+                                    )
+                                }
+                            },
                             color = MaterialTheme.colors.background,
+                            fontSize = 15.sp,
                             fontWeight = FontWeight.W400,
                         )
+                        if (autoComplete.details.isNotEmpty()) {
+                            Text(
+                                text = autoComplete.details,
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colors.background,
+                                fontWeight = FontWeight.W400,
+                            )
+                        }
                     }
                 }
+                Icon(
+                    imageVector = Icons.Default.ArrowForward,
+                    tint = ConstColors.lightBlue,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                )
+
+
             }
-            Icon(
-                imageVector = Icons.Default.ArrowForward,
-                tint = ConstColors.lightBlue,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp),
-            )
+            if (autoComplete.stockists.isNotEmpty())
+                Text(
+                    text = autoComplete.stockists,
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colors.background,
+                    fontWeight = FontWeight.W400,
+                )
         }
         Divider(
             modifier = Modifier.align(Alignment.BottomCenter),
