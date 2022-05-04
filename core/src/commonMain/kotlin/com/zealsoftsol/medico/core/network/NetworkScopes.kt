@@ -27,7 +27,6 @@ import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
 import com.zealsoftsol.medico.data.DashboardData
-import com.zealsoftsol.medico.data.DealsData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EmployeeRegistration1
 import com.zealsoftsol.medico.data.EmployeeRegistration2
@@ -571,6 +570,15 @@ interface NetworkScope {
             search: String,
             unitCode: String,
             promoCode: String
+        ): BodyResponse<AllDeals>
+
+    }
+
+    interface ManufacturerStore : NetworkScope {
+        suspend fun getManufacturers(
+            page: Int,
+            search: String,
+            unitCode: String,
         ): BodyResponse<AllDeals>
 
     }

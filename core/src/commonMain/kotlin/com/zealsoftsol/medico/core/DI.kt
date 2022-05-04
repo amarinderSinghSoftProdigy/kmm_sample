@@ -172,6 +172,9 @@ fun startKodein(
     bind<NetworkScope.DealsStore>() with singleton {
         instance<NetworkClient>()
     }
+    bind<NetworkScope.ManufacturerStore>() with singleton {
+        instance<NetworkClient>()
+    }
     bind<UserRepo>() with singleton {
         UserRepo(
             instance(),
@@ -193,6 +196,7 @@ fun startKodein(
     bind<Navigator>() with singleton { Navigator(useNavigatorSafeCasts) }
     bind<EventCollector>() with singleton {
         EventCollector(
+            instance(),
             instance(),
             instance(),
             instance(),

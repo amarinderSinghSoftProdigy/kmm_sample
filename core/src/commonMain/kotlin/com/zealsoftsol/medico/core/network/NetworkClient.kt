@@ -171,7 +171,8 @@ class NetworkClient(
     NetworkScope.PreferencesStore,
     NetworkScope.EmployeeStore,
     NetworkScope.BannersStore,
-    NetworkScope.DealsStore {
+    NetworkScope.DealsStore,
+    NetworkScope.ManufacturerStore {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -1466,6 +1467,14 @@ class NetworkClient(
         }
     }
 
+    override suspend fun getManufacturers(
+        page: Int,
+        search: String,
+        unitCode: String
+    ): BodyResponse<AllDeals> {
+        TODO("Not yet implemented")
+    }
+
     // Utils
     private inline fun HttpRequestBuilder.withB2bCodeToken(finalToken: String) {
         applyHeader(finalToken)
@@ -1569,6 +1578,7 @@ class NetworkClient(
         STAG("https://staging-api-gateway.medicostores.com"),
         PROD("https://partner-api-gateway.medicostores.com");
     }
+
 
 }
 

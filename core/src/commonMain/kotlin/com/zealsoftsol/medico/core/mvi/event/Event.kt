@@ -702,6 +702,25 @@ sealed class Event {
             data class GetOcrImage(val filePath: String) : Ocr()
 
         }
+
+        sealed class Manufacturers : Action() {
+            override val typeClazz: KClass<*> = Manufacturers::class
+
+            data class GetManufacturers(
+                val page: Int,
+                val search: String,
+                val unitCode: String
+            ) : Manufacturers()
+
+            data class SearchManufacturers(
+                val page: Int,
+                val search: String,
+                val unitCode: String
+            ) : Manufacturers()
+
+            object SelectItem : Manufacturers()
+
+        }
     }
 
 
@@ -769,5 +788,6 @@ sealed class Event {
         object Banners : Transition()
         object Deals : Transition()
         object Ocr : Transition()
+        object Manufacturers : Transition()
     }
 }

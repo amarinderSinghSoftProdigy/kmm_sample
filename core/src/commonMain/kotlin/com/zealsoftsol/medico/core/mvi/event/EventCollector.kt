@@ -18,6 +18,7 @@ import com.zealsoftsol.medico.core.mvi.event.delegates.InStoreEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.InventoryEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.InvoicesEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ManagementEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.ManufacturerEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.NotificationEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.OcrEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.OffersEventDelegate
@@ -84,6 +85,7 @@ class EventCollector(
     preferenceNetworkScope: NetworkScope.PreferencesStore,
     bannersNetworkScope: NetworkScope.BannersStore,
     dealsNetworkScope: NetworkScope.DealsStore,
+    manufacturerScope: NetworkScope.ManufacturerStore,
     private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
     private val cartRepo: CartRepo,
@@ -218,6 +220,12 @@ class EventCollector(
         Event.Action.Ocr::class to OcrEventDelegate(
             navigator,
             userRepo,
+        ),
+
+        Event.Action.Manufacturers::class to ManufacturerEventDelegate(
+            navigator,
+            userRepo,
+            manufacturerScope
         ),
     )
 
