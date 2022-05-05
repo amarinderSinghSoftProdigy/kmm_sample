@@ -548,7 +548,7 @@ private fun DealsItem(item: DealsData, scope: DashboardScope, modifier: Modifier
                     Text(
                         text = item.productInfo.name,
                         textAlign = TextAlign.Center,
-                        color = ConstColors.txtGrey,
+                        color = Color.Black,
                         fontWeight = FontWeight.W600,
                         fontSize = 13.sp,
                     )

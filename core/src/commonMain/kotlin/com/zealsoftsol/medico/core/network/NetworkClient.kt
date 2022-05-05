@@ -411,7 +411,7 @@ class NetworkClient(
         unitCodeForStores: String?
     ) = simpleRequest {
         val path =
-            if (unitCodeForStores == null) "/search/suggest" else "/search/stores/suggest-vvb"
+            if (unitCodeForStores == null) "/search/v2/suggest" else "/search/stores/suggest-vvb"
         client.get<BodyResponse<List<AutoComplete>>>("${baseUrl.url}$path") {
             withMainToken()
             url {

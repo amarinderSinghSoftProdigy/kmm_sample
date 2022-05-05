@@ -178,6 +178,7 @@ data class AutoComplete(
     @SerialName("suggester")
     val details: String,
     val suggestion: String,
+    val stockists: String = ""
 )
 
 data class Filter(
