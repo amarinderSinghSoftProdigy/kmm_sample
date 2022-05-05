@@ -1478,7 +1478,7 @@ class NetworkClient(
                 if (search.isNotEmpty())
                     parameters.append("search", search)
                 parameters.append("page", page.toString())
-                parameters.append("pageSize", (Pagination.DEFAULT_ITEMS_PER_PAGE + 1).toString())
+                parameters.append("pageSize", Pagination.DEFAULT_ITEMS_PER_PAGE.toString())
             }
         }
     }

@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,6 +23,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalTextStyle
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -37,6 +40,7 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -75,7 +79,6 @@ fun ManufacturerScreen(scope: ManufacturerScope) {
             modifier = Modifier
                 .fillMaxSize()
                 .background(ConstColors.newDesignGray)
-                .verticalScroll(rememberScrollState())
         ) {
             Row(
                 modifier = Modifier
@@ -158,30 +161,64 @@ fun ManufacturerScreen(scope: ManufacturerScope) {
             )
             Space(16.dp)
 
-            val itemSize: Dp = (LocalConfiguration.current.screenWidthDp.dp / 3) - 15.dp
+            LazyRow(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .height(30.dp),
+                verticalAlignment = CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
 
-            FlowRow(
-                mainAxisSize = SizeMode.Expand,
-                mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
             ) {
-                manufacturerList.let {
-                    it.forEachIndexed { _, item ->
-                        ManufacturerListItem(item, itemSize) {
-                            scope.startBrandSearch(item.name)
+                itemsIndexed(
+                    items = listOf("0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G",
+                        "H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"),
+                    key = { index, _ -> index },
+                    itemContent = { _, item ->
+
+                        Text(
+                            text = item,
+                            fontWeight = FontWeight.W600,
+                            fontSize = 20.sp,
+                            color = MaterialTheme.colors.background
+                        )
+
+                    },
+                )
+            }
+
+            Space(16.dp)
+
+            val itemSize: Dp = (LocalConfiguration.current.screenWidthDp.dp / 2) - 20.dp
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                FlowRow(
+                    mainAxisSize = SizeMode.Expand,
+                    mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
+                ) {
+                    manufacturerList.let {
+                        it.forEachIndexed { _, item ->
+                            ManufacturerListItem(item, itemSize) {
+                                scope.startBrandSearch(item.name)
+                            }
                         }
                     }
-                }
 
-                if (manufacturerList.size < totalResults) {
-                    MedicoButton(
-                        modifier = Modifier
-                            .padding(horizontal = 20.dp)
-                            .padding(top = 5.dp, bottom = 5.dp)
-                            .height(40.dp),
-                        text = stringResource(id = R.string.more),
-                        isEnabled = true,
-                    ) {
-                        scope.getManufacturers(search = searchTerm.value)
+                    if (manufacturerList.size < totalResults) {
+                        MedicoButton(
+                            modifier = Modifier
+                                .padding(horizontal = 20.dp)
+                                .padding(top = 5.dp, bottom = 5.dp)
+                                .height(40.dp),
+                            text = stringResource(id = R.string.more),
+                            isEnabled = true,
+                        ) {
+                            scope.getManufacturers(search = searchTerm.value)
+                        }
                     }
                 }
             }

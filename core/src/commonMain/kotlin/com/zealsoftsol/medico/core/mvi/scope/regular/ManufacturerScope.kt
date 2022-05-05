@@ -34,7 +34,7 @@ class ManufacturerScope : Scope.Child.TabBar(),
 
         EventCollector.sendEvent(
             Event.Action.Manufacturers.GetManufacturers(
-                page = 1,
+                page = mCurrentPage,
                 search = search,
             )
         )
