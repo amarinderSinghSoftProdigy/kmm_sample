@@ -19,8 +19,26 @@ class ManufacturerScope : Scope.Child.TabBar(),
     var totalItems = 0
     private var mCurrentPage = 0
 
+    val segmentList: DataSource<MutableList<SegmentedScroller>>  = DataSource(mutableListOf())
+
+    data class SegmentedScroller(
+        val title: String,
+        var isSelected: Boolean
+    )
+
+    private fun prepareSegmentedList(){
+       val titles = listOf("0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G",
+            "H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z")
+
+        titles.forEach {
+            val segmentData = SegmentedScroller(it, false)
+            segmentList.value.add(segmentData)
+        }
+    }
+
     init {
         getManufacturers(true)
+        prepareSegmentedList()
     }
 
     fun getManufacturers(
@@ -83,6 +101,18 @@ class ManufacturerScope : Scope.Child.TabBar(),
             suggestion = searchTerm
         )
         EventCollector.sendEvent(Event.Transition.Search(autoComplete))
+    }
+
+    fun refreshCheckStatus(index: Int) {
+        val tempList = segmentList.value
+        tempList.forEachIndexed { ind, it ->
+            if (it.isSelected) {
+                tempList[ind].isSelected = false
+            }
+        }
+        tempList[index].isSelected = true
+        segmentList.value = tempList
+        startSearch(segmentList.value[index].title)
     }
 
 

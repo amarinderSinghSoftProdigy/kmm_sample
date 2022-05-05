@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Card
@@ -487,10 +488,9 @@ fun InventoryStatus(scope: InventoryScope) {
                     },
                     fontSize = 12.sp,
                     modifier = Modifier
+                        .height(40.dp)
                         .clip(
-                            shape = RoundedCornerShape(
-                                size = 10.dp,
-                            ),
+                            shape = CircleShape,
                         )
                         .clickable {
                             scope.updateInventoryType(it)

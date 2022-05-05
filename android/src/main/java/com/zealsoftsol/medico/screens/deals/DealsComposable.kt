@@ -522,6 +522,7 @@ fun OfferChoice(scope: DealsScope) {
                     },
                     fontSize = 14.sp,
                     modifier = Modifier
+                        .height(40.dp)
                         .clip(
                             shape = CircleShape
                         )

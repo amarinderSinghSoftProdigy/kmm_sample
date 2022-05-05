@@ -3,19 +3,22 @@ package com.zealsoftsol.medico.screens.manufacturers
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
@@ -73,6 +76,7 @@ fun ManufacturerScreen(scope: ManufacturerScope) {
     val manufacturerList = scope.manufacturers.flow.collectAsState().value
     val searchTerm = remember { mutableStateOf("") }
     var queryTextChangedJob: Job? = null
+    val segmentedList = scope.segmentList.flow.collectAsState()
 
     Box {
         Column(
@@ -161,65 +165,89 @@ fun ManufacturerScreen(scope: ManufacturerScope) {
             )
             Space(16.dp)
 
-            LazyRow(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .height(30.dp),
-                verticalAlignment = CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
+            val itemSize: Dp = (LocalConfiguration.current.screenWidthDp.dp / 2) - 40.dp
+            Row(modifier = Modifier.fillMaxSize()) {
 
-            ) {
-                itemsIndexed(
-                    items = listOf("0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G",
-                        "H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"),
-                    key = { index, _ -> index },
-                    itemContent = { _, item ->
-
-                        Text(
-                            text = item,
-                            fontWeight = FontWeight.W600,
-                            fontSize = 20.sp,
-                            color = MaterialTheme.colors.background
-                        )
-
-                    },
-                )
-            }
-
-            Space(16.dp)
-
-            val itemSize: Dp = (LocalConfiguration.current.screenWidthDp.dp / 2) - 20.dp
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                FlowRow(
-                    mainAxisSize = SizeMode.Expand,
-                    mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
+                Column(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(LocalConfiguration.current.screenWidthDp.dp - 50.dp)
+                        .verticalScroll(rememberScrollState())
                 ) {
-                    manufacturerList.let {
-                        it.forEachIndexed { _, item ->
-                            ManufacturerListItem(item, itemSize) {
-                                scope.startBrandSearch(item.name)
+                    FlowRow(
+                        mainAxisSize = SizeMode.Expand,
+                        mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
+                    ) {
+                        manufacturerList.let {
+                            it.forEachIndexed { _, item ->
+                                ManufacturerListItem(item, itemSize) {
+                                    scope.startBrandSearch(item.name)
+                                }
+                            }
+                        }
+
+                        if (manufacturerList.size < totalResults) {
+                            MedicoButton(
+                                modifier = Modifier
+                                    .padding(horizontal = 20.dp)
+                                    .padding(top = 5.dp, bottom = 5.dp)
+                                    .height(40.dp),
+                                text = stringResource(id = R.string.more),
+                                isEnabled = true,
+                            ) {
+                                scope.getManufacturers(search = searchTerm.value)
                             }
                         }
                     }
 
-                    if (manufacturerList.size < totalResults) {
-                        MedicoButton(
-                            modifier = Modifier
-                                .padding(horizontal = 20.dp)
-                                .padding(top = 5.dp, bottom = 5.dp)
-                                .height(40.dp),
-                            text = stringResource(id = R.string.more),
-                            isEnabled = true,
-                        ) {
-                            scope.getManufacturers(search = searchTerm.value)
-                        }
+                    if (manufacturerList.isEmpty()) {
+                        Text(
+                            modifier = Modifier.fillMaxSize(),
+                            text = stringResource(id = R.string.no_manufacturers),
+                            fontWeight = FontWeight.W600,
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colors.background,
+                            textAlign = TextAlign.Center
+                        )
                     }
+                }
+
+                LazyColumn(
+                    Modifier
+                        .width(50.dp)
+                        .padding(horizontal = 16.dp)
+                        .fillMaxHeight(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+
+                ) {
+                    itemsIndexed(
+                        items = segmentedList.value,
+                        key = { index, _ -> index },
+                        itemContent = { index, item ->
+                            Column(modifier = Modifier
+                                .fillMaxSize()
+                                .clickable {
+                                    searchTerm.value = item.title
+                                    scope.refreshCheckStatus(index)
+                                }) {
+                                Surface(
+                                    shape = CircleShape,
+                                    color = if (item.isSelected) ConstColors.yellow else ConstColors.newDesignGray,
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    Text(
+                                        modifier = Modifier.fillMaxSize(),
+                                        text = item.title,
+                                        fontWeight = FontWeight.W600,
+                                        fontSize = 20.sp,
+                                        color = MaterialTheme.colors.background,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
+                        },
+                    )
                 }
             }
         }
