@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Card
@@ -38,7 +40,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
@@ -501,6 +502,7 @@ fun OfferChoice(scope: DealsScope) {
 
     val options = scope.offersChoices.flow.collectAsState().value
     val offerStatus = scope.offerStatus.flow.collectAsState().value
+
     Row(
         verticalAlignment = CenterVertically,
         modifier = Modifier
@@ -508,42 +510,46 @@ fun OfferChoice(scope: DealsScope) {
             .padding(horizontal = 10.dp)
             .horizontalScroll(
                 rememberScrollState()
-            ),
+            )
+            .height(45.dp)
+            .background(ConstColors.ltgray, CircleShape)
     ) {
         options.forEach {
-            Row(Modifier.padding(all = 5.dp)) {
+
+            var boxMod = Modifier
+                .fillMaxHeight()
+                .padding(1.dp)
+
+            boxMod = if (options.size == 1) {
+                boxMod
+            } else {
+                boxMod
+                    .padding(1.dp)
+                    .clickable { scope.updateOfferStatus(it.code) }
+            }
+            boxMod = if (it.code == offerStatus) {
+                boxMod.background(ConstColors.lightGreen, CircleShape)
+            } else {
+                boxMod
+            }
+
+            Row(
+                modifier = boxMod,
+                verticalAlignment = CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+            ) {
                 Text(
                     text = it.name,
-                    color = if (it.code == offerStatus) {
-                        White
-                    } else {
-                        Color.Black
-                    },
                     fontSize = 14.sp,
-                    modifier = Modifier
-                        .clip(
-                            shape = RoundedCornerShape(
-                                size = 5.dp,
-                            ),
-                        )
-                        .clickable {
-                            scope.updateOfferStatus(it.code)
-                        }
-                        .background(
-                            if (it.code == offerStatus) {
-                                ConstColors.green
-                            } else {
-                                ConstColors.txtGrey
-                            }
-                        )
-                        .padding(
-                            vertical = 5.dp,
-                            horizontal = 15.dp,
-                        ),
+                    fontWeight = FontWeight.W600,
+                    color = if (it.code == offerStatus) White else Color.Black,
+                    modifier = Modifier.padding(horizontal = 20.dp)
                 )
             }
         }
     }
+    Space(dp = 8.dp)
 }
+
 
 

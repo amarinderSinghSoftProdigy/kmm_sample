@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,6 +24,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Card
@@ -123,62 +125,62 @@ fun InventoryMainComposable(scope: InventoryScope) {
                         }
                     )
             )
-                AnimatedVisibility(visible = showSearchBar.value) {
-                    Surface(
+            AnimatedVisibility(visible = showSearchBar.value) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(45.dp)
+                        .padding(start = 10.dp)
+                        .padding(end = 45.dp)
+                        .align(CenterVertically),
+                    shape = RoundedCornerShape(3.dp),
+                    elevation = 3.dp,
+                    color = Color.White
+                ) {
+                    Row(
                         modifier = Modifier
-                            .fillMaxWidth()
                             .height(45.dp)
-                            .padding(start = 10.dp)
-                            .padding(end = 45.dp)
-                            .align(CenterVertically),
-                        shape = RoundedCornerShape(3.dp),
-                        elevation = 3.dp,
-                        color = Color.White
+                            .fillMaxWidth(), verticalAlignment = CenterVertically
                     ) {
-                        Row(
+                        BasicTextField(
                             modifier = Modifier
-                                .height(45.dp)
-                                .fillMaxWidth(), verticalAlignment = CenterVertically
-                        ) {
-                            BasicTextField(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(horizontal = 5.dp),
-                                value = searchTerm.value,
-                                maxLines = 1,
-                                singleLine = true,
-                                onValueChange = {
-                                    searchTerm.value = it
+                                .weight(1f)
+                                .padding(horizontal = 5.dp),
+                            value = searchTerm.value,
+                            maxLines = 1,
+                            singleLine = true,
+                            onValueChange = {
+                                searchTerm.value = it
 
-                                    queryTextChangedJob?.cancel()
+                                queryTextChangedJob?.cancel()
 
-                                    queryTextChangedJob = CoroutineScope(Dispatchers.Main).launch {
-                                        delay(500)
-                                        scope.startSearch(it)
-                                    }
-                                },
-                                textStyle = LocalTextStyle.current.copy(
-                                    color = Color.Black,
-                                    fontSize = 14.sp,
-                                    background = Color.White,
-                                ),
-                                decorationBox = { innerTextField ->
-                                    Row(modifier = Modifier) {
-                                        if (searchTerm.value.isEmpty()) {
-                                            Text(
-                                                text = stringResource(id = R.string.search_inventory),
-                                                color = Color.Gray,
-                                                fontSize = 14.sp,
-                                                maxLines = 1,
-                                            )
-                                        }
-                                    }
-                                    innerTextField()
+                                queryTextChangedJob = CoroutineScope(Dispatchers.Main).launch {
+                                    delay(500)
+                                    scope.startSearch(it)
                                 }
-                            )
-                        }
+                            },
+                            textStyle = LocalTextStyle.current.copy(
+                                color = Color.Black,
+                                fontSize = 14.sp,
+                                background = Color.White,
+                            ),
+                            decorationBox = { innerTextField ->
+                                Row(modifier = Modifier) {
+                                    if (searchTerm.value.isEmpty()) {
+                                        Text(
+                                            text = stringResource(id = R.string.search_inventory),
+                                            color = Color.Gray,
+                                            fontSize = 14.sp,
+                                            maxLines = 1,
+                                        )
+                                    }
+                                }
+                                innerTextField()
+                            }
+                        )
                     }
                 }
+            }
 
 
             if (!showSearchBar.value) {
@@ -251,82 +253,83 @@ fun InventoryMainComposable(scope: InventoryScope) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             StockStatus(scope)
+            Space(10.dp)
             InventoryStatus(scope)
         }
-
-    AnimatedVisibility(visible = showGraphs.value) {
         Space(10.dp)
-        LazyRow(
-            state = lazyListState,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .padding(10.dp)
-        ) {
-            item {
-                StatusView(
-                    scope = scope, modifier = Modifier
-                        .fillParentMaxWidth()
-                        .padding(8.dp)
-                )
+        AnimatedVisibility(visible = showGraphs.value) {
+            Space(10.dp)
+            LazyRow(
+                state = lazyListState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .padding(10.dp)
+            ) {
+                item {
+                    StatusView(
+                        scope = scope, modifier = Modifier
+                            .fillParentMaxWidth()
+                            .padding(8.dp)
+                    )
+                }
+                item {
+                    AvailabilityView(
+                        scope = scope,
+                        modifier = Modifier
+                            .fillParentMaxWidth()
+                            .padding(8.dp),
+                    )
+                }
+                item {
+                    ExpiryView(
+                        scope = scope,
+                        modifier = Modifier
+                            .fillParentMaxWidth()
+                            .padding(8.dp),
+                    )
+                }
             }
-            item {
-                AvailabilityView(
-                    scope = scope,
-                    modifier = Modifier
-                        .fillParentMaxWidth()
-                        .padding(8.dp),
-                )
-            }
-            item {
-                ExpiryView(
-                    scope = scope,
-                    modifier = Modifier
-                        .fillParentMaxWidth()
-                        .padding(8.dp),
-                )
+
+            //auto rotate banner after every 3 seconds
+            LaunchedEffect(lazyListState.firstVisibleItemIndex) {
+                delay(5000) // wait for 5 seconds.
+                // increasing the position and check the limit
+                var newPosition = lazyListState.firstVisibleItemIndex + 1
+                if (newPosition > 3 - 1) newPosition = 0
+                // scrolling to the new position.
+                if (newPosition == 0) {
+                    lazyListState.scrollToItem(newPosition)
+                } else {
+                    lazyListState.animateScrollToItem(newPosition)
+                }
             }
         }
 
-        //auto rotate banner after every 3 seconds
-        LaunchedEffect(lazyListState.firstVisibleItemIndex) {
-            delay(5000) // wait for 5 seconds.
-            // increasing the position and check the limit
-            var newPosition = lazyListState.firstVisibleItemIndex + 1
-            if (newPosition > 3 - 1) newPosition = 0
-            // scrolling to the new position.
-            if (newPosition == 0) {
-                lazyListState.scrollToItem(newPosition)
-            } else {
-                lazyListState.animateScrollToItem(newPosition)
-            }
-        }
-    }
-
-    AnimatedVisibility(visible = showManufacturers.value) {
-        Space(12.dp)
-        LazyRow(
-            contentPadding = PaddingValues(start = 3.dp),
-            modifier = Modifier.padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            manufacturersList.let {
-                itemsIndexed(
-                    items = it,
-                    key = { index, _ -> index },
-                    itemContent = { index, item ->
-                        ManufacturersItem(item) {
-                            it.forEachIndexed { _, it ->
-                                it.isChecked = false
+        AnimatedVisibility(visible = showManufacturers.value) {
+            Space(12.dp)
+            LazyRow(
+                contentPadding = PaddingValues(start = 3.dp),
+                modifier = Modifier.padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                manufacturersList.let {
+                    itemsIndexed(
+                        items = it,
+                        key = { index, _ -> index },
+                        itemContent = { index, item ->
+                            ManufacturersItem(item) {
+                                it.forEachIndexed { _, it ->
+                                    it.isChecked = false
+                                }
+                                it[index].isChecked = true
+                                scope.updateManufacturer(item.code)
                             }
-                            it[index].isChecked = true
-                            scope.updateManufacturer(item.code)
-                        }
-                    },
-                )
+                        },
+                    )
+                }
             }
         }
-    }
 
         Space(dp = 16.dp)
         Card(
@@ -403,9 +406,6 @@ fun StockStatus(scope: InventoryScope) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 10.dp)
-            .horizontalScroll(
-                rememberScrollState()
-            ),
     ) {
         Text(
             modifier = Modifier.padding(end = 5.dp),
@@ -414,37 +414,48 @@ fun StockStatus(scope: InventoryScope) {
             fontSize = 13.sp,
             fontWeight = FontWeight.W600
         )
-        options.forEach {
-            Row(Modifier.padding(all = 5.dp)) {
-                Text(
-                    text = it.title,
-                    color = if (it == stockStatus) {
-                        Color.White
-                    } else {
-                        Color.Black
-                    },
-                    fontSize = 12.sp,
-                    modifier = Modifier
-                        .clip(
-                            shape = RoundedCornerShape(
-                                size = 10.dp,
-                            ),
-                        )
-                        .clickable {
-                            scope.updateInventoryStatus(it)
-                        }
-                        .background(
-                            if (it == stockStatus) {
-                                ConstColors.green
-                            } else {
-                                Color.LightGray
-                            }
-                        )
-                        .padding(
-                            vertical = 5.dp,
-                            horizontal = 15.dp,
-                        ),
+
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+                .horizontalScroll(
+                    rememberScrollState()
                 )
+                .height(30.dp)
+                .background(ConstColors.ltgray, CircleShape)
+        ) {
+            options.forEach {
+
+                var boxMod = Modifier
+                    .fillMaxHeight()
+                    .padding(1.dp)
+
+                boxMod = if (options.size == 1) {
+                    boxMod
+                } else {
+                    boxMod
+                        .padding(1.dp)
+                        .clickable { scope.updateInventoryStatus(it) }
+                }
+                boxMod = if (it == stockStatus) {
+                    boxMod.background(ConstColors.lightGreen, CircleShape)
+                } else {
+                    boxMod
+                }
+
+                Row(
+                    modifier = boxMod,
+                    verticalAlignment = CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    Text(
+                        text = it.name,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W600,
+                        color = if (it == stockStatus) Color.White else Color.Black,
+                        modifier = Modifier.padding(horizontal = 20.dp)
+                    )
+                }
             }
         }
     }
@@ -465,9 +476,6 @@ fun InventoryStatus(scope: InventoryScope) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 10.dp)
-            .horizontalScroll(
-                rememberScrollState()
-            )
     ) {
         Text(
             modifier = Modifier.padding(end = 5.dp),
@@ -476,37 +484,50 @@ fun InventoryStatus(scope: InventoryScope) {
             fontSize = 13.sp,
             fontWeight = FontWeight.W600
         )
-        options.forEach {
-            Row(modifier = Modifier.padding(all = 5.dp)) {
-                Text(
-                    text = it.title,
-                    color = if (it == inventoryStatus) {
-                        Color.White
-                    } else {
-                        Color.Black
-                    },
-                    fontSize = 12.sp,
-                    modifier = Modifier
-                        .clip(
-                            shape = RoundedCornerShape(
-                                size = 10.dp,
-                            ),
-                        )
-                        .clickable {
-                            scope.updateInventoryType(it)
-                        }
-                        .background(
-                            if (it == inventoryStatus) {
-                                ConstColors.green
-                            } else {
-                                Color.LightGray
-                            }
-                        )
-                        .padding(
-                            vertical = 5.dp,
-                            horizontal = 5.dp,
-                        ),
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp)
+                .height(30.dp)
+                .horizontalScroll(
+                    rememberScrollState()
                 )
+                .background(ConstColors.ltgray, CircleShape)
+        ) {
+
+            options.forEach {
+
+                var boxMod = Modifier
+                    .fillMaxHeight()
+                    .padding(1.dp)
+
+                boxMod = if (options.size == 1) {
+                    boxMod
+                } else {
+                    boxMod
+                        .padding(1.dp)
+                        .clickable { scope.updateInventoryType(it) }
+                }
+                boxMod = if (it == inventoryStatus) {
+                    boxMod.background(ConstColors.lightGreen, CircleShape)
+                } else {
+                    boxMod
+                }
+
+                Row(
+                    modifier = boxMod,
+                    verticalAlignment = CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    Text(
+                        text = it.name,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W600,
+                        color = if (it == inventoryStatus) Color.White else Color.Black,
+                        modifier = Modifier.padding(horizontal = 20.dp)
+                    )
+                }
             }
         }
     }
@@ -1033,7 +1054,7 @@ private fun MyChartParent(
  * common rounded textview
  */
 @Composable
-private fun CommonRoundedView(
+fun CommonRoundedView(
     text: String,
     modifier: Modifier,
     color: Color,

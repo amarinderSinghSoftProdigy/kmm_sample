@@ -61,6 +61,7 @@ import com.zealsoftsol.medico.data.InvoiceResponse
 import com.zealsoftsol.medico.data.LicenseDocumentData
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
+import com.zealsoftsol.medico.data.ManufacturersListData
 import com.zealsoftsol.medico.data.MapBody
 import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
@@ -171,7 +172,8 @@ class NetworkClient(
     NetworkScope.PreferencesStore,
     NetworkScope.EmployeeStore,
     NetworkScope.BannersStore,
-    NetworkScope.DealsStore {
+    NetworkScope.DealsStore,
+    NetworkScope.ManufacturerStore {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -1466,6 +1468,21 @@ class NetworkClient(
         }
     }
 
+    override suspend fun getManufacturers(
+        page: Int,
+        search: String
+    ): BodyResponse<ManufacturersListData> = simpleRequest {
+        client.get("${baseUrl.url}/products/mnfr/search") {
+            withMainToken()
+            url {
+                if (search.isNotEmpty())
+                    parameters.append("search", search)
+                parameters.append("page", page.toString())
+                parameters.append("pageSize", Pagination.DEFAULT_ITEMS_PER_PAGE.toString())
+            }
+        }
+    }
+
     // Utils
     private inline fun HttpRequestBuilder.withB2bCodeToken(finalToken: String) {
         applyHeader(finalToken)
@@ -1569,6 +1586,7 @@ class NetworkClient(
         STAG("https://staging-api-gateway.medicostores.com"),
         PROD("https://partner-api-gateway.medicostores.com");
     }
+
 
 }
 
