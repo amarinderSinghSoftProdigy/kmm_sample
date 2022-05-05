@@ -17,35 +17,24 @@ internal class ManufacturerEventDelegate(
         is Event.Action.Manufacturers.GetManufacturers -> getManufacturers(
             event.page,
             event.search,
-            event.unitCode,
         )
-        is Event.Action.Manufacturers.SelectItem -> selectItem()
-        is Event.Action.Manufacturers.SearchManufacturers -> {}
-    }
-
-
-    private suspend fun selectItem() {
-
     }
 
     /**
-     * get all deals from server
+     * get all manufactuerers from server
      */
     private suspend fun getManufacturers(
         page: Int,
         search: String,
-        unitCode: String
     ) {
         navigator.withScope<ManufacturerScope> {
             val result = withProgress {
-                manufacturerRepo.getManufacturers(page, search, unitCode)
+                manufacturerRepo.getManufacturers(page, search)
             }
 
             result.onSuccess { body ->
-              /*  if (it.manufacturers.value.isEmpty()) {
-                    it.manufacturers.value = body.promoTypes
-                }
-                it.totalItems = body.pageableData.totalResults*/
+                it.updateManufacturers(body.manufacturers.toMutableList())
+                it.totalItems = body.totalManufacturers
             }.onError(navigator)
         }
     }

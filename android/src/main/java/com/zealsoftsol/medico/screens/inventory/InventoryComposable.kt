@@ -1033,7 +1033,7 @@ private fun MyChartParent(
  * common rounded textview
  */
 @Composable
-private fun CommonRoundedView(
+fun CommonRoundedView(
     text: String,
     modifier: Modifier,
     color: Color,

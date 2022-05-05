@@ -709,17 +709,7 @@ sealed class Event {
             data class GetManufacturers(
                 val page: Int,
                 val search: String,
-                val unitCode: String
             ) : Manufacturers()
-
-            data class SearchManufacturers(
-                val page: Int,
-                val search: String,
-                val unitCode: String
-            ) : Manufacturers()
-
-            object SelectItem : Manufacturers()
-
         }
     }
 

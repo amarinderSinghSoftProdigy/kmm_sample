@@ -50,6 +50,7 @@ import com.zealsoftsol.medico.data.InvoiceResponse
 import com.zealsoftsol.medico.data.LicenseDocumentData
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
+import com.zealsoftsol.medico.data.ManufacturersListData
 import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
@@ -578,8 +579,7 @@ interface NetworkScope {
         suspend fun getManufacturers(
             page: Int,
             search: String,
-            unitCode: String,
-        ): BodyResponse<AllDeals>
+        ): BodyResponse<ManufacturersListData>
 
     }
 }

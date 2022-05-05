@@ -134,7 +134,7 @@ class SearchScope(
 
     override val unitCode: String? = null
     override val supportsAutoComplete: Boolean = true
-    override val pagination: Pagination = Pagination(Pagination.ITEMS_PER_PAGE_30)
+    override val pagination: Pagination = Pagination(Pagination.ITEMS_PER_PAGE_10)
     val showNoStockistAlert = DataSource(false)
 
     init {

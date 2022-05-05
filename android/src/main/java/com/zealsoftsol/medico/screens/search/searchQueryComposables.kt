@@ -240,7 +240,7 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                                 }
                             }
                             Space(dp = 12.dp)
-                            if (products.value.isNotEmpty() && totalResults.value == Pagination.ITEMS_PER_PAGE_30) {
+                            if (products.value.isNotEmpty() && products.value.size == Pagination.ITEMS_PER_PAGE_10) {
                                 PaginationButtons(modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
@@ -248,7 +248,7 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                                         coroutineScope.launch {
                                             listStateScroll.scrollTo(0)
                                         }
-                                        scope.startSearch(false)
+                                        scope.startSearch(true)
                                     }, {
                                         coroutineScope.launch {
                                             listStateScroll.scrollTo(0)

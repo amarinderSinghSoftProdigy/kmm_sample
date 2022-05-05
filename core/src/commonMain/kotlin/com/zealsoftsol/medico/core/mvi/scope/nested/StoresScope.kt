@@ -79,7 +79,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
     ) : StoresScope(), BaseSearchScope, ToastScope {
 
         override val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList())
-        override val pagination: Pagination = Pagination(Pagination.ITEMS_PER_PAGE_30)
+        override val pagination: Pagination = Pagination(Pagination.ITEMS_PER_PAGE_10)
         override val unitCode: String = store.sellerUnitCode
         override val supportsAutoComplete: Boolean = true
 
