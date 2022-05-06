@@ -506,7 +506,6 @@ fun OfferChoice(scope: DealsScope) {
     Row(
         verticalAlignment = CenterVertically,
         modifier = Modifier
-            .fillMaxWidth()
             .padding(horizontal = 10.dp)
             .horizontalScroll(
                 rememberScrollState()
