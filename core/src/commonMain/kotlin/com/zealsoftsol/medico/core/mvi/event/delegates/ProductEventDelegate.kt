@@ -93,26 +93,17 @@ internal class ProductEventDelegate(
     }
 
     private suspend fun buyProduct(product: ProductSearch, buyingOption: BuyingOption) {
+
         navigator.searchQueuesFor<StoresScope.StorePreview>()?.store?.let {
-            if (userRepo.requireUser().type != UserType.SEASON_BOY) {
-                if (product.sellerInfo != null) {
-                    EventCollector.sendEvent(
-                        Event.Action.Cart.AddItem(
-                            product.sellerInfo?.unitCode,
-                            product.code,
-                            product.buyingOption!!,
-                            CartIdentifier(product.sellerInfo?.spid),
-                            product.quantity,
-                            product.freeQuantity,
-                        )
-                    )
-                }
-                return
-            } else {
-                selectSeasonBoyRetailer(product.code, product.sellerInfo!!)
-                return
-            }
+            addToCartItems(product)
+            return
         }
+
+        navigator.searchQueuesFor<ProductInfoScope>()?.cartData?.let {
+            addToCartItems(product)
+            return
+        }
+
         navigator.withProgress {
             val address = userRepo.requireUser()//userRepo.requireUser().addressData
             when (buyingOption) {
@@ -143,6 +134,25 @@ internal class ProductEventDelegate(
             }
             navigator.setScope(nextScope)
         }.onError(navigator)
+    }
+
+    private suspend fun addToCartItems(product: ProductSearch) {
+        if (userRepo.requireUser().type != UserType.SEASON_BOY) {
+            product.sellerInfo?.spid?.let { spid ->
+                EventCollector.sendEvent(
+                    Event.Action.Cart.AddItem(
+                        product.sellerInfo?.unitCode,
+                        product.code,
+                        product.buyingOption!!,
+                        CartIdentifier(spid),
+                        product.quantity,
+                        product.freeQuantity,
+                    )
+                )
+            }
+        } else {
+            selectSeasonBoyRetailer(product.code, product.sellerInfo!!)
+        }
     }
 
     private fun filterProduct(filter: String) {
