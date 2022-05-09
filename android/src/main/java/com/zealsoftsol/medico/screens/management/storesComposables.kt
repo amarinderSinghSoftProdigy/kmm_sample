@@ -169,7 +169,9 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                     hint = R.string.search_products,
                     icon = null,
                     horizontalPadding = 16.dp,
+/*
                     searchBarEnd = SearchBarEnd.Filter(isHighlighted = activeFilterIds.value.isNotEmpty()) { scope.toggleFilter() },
+*/
                     onIconClick = null,
                     isSearchFocused = false,//scope.storage.restore("focus") as? Boolean ?: true,
                     onSearch = { value, _ ->
