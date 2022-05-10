@@ -738,10 +738,10 @@ private fun ActiveSearchTabBar(
         input = search.value,
         hint = R.string.search_products,
         icon = Icons.Default.ArrowBack,
-        searchBarEnd = SearchBarEnd.Filter(isHighlighted = activeFilterIds.value.isNotEmpty()) {
+     /*   searchBarEnd = SearchBarEnd.Filter(isHighlighted = activeFilterIds.value.isNotEmpty()) {
             keyboard?.hide()
             info.toggleFilter()
-        },
+        },*/
         onIconClick = { scope.goBack() },
         isSearchFocused = scope.storage.restore("focus") as? Boolean ?: true,
         onSearch = { value, isFromKeyboard ->

@@ -84,7 +84,8 @@ sealed class StoresScope : Scope.Child.TabBar() {
         override val supportsAutoComplete: Boolean = true
 
         init {
-            startSearch(false)
+
+            startSearch(true)
         }
 
         fun selectItem(item: String) {

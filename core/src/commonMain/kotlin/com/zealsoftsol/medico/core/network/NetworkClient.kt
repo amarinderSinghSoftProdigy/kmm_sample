@@ -1461,7 +1461,7 @@ class NetworkClient(
                 if (search.isNotEmpty())
                     parameters.append("search", search)
                 parameters.append("page", page.toString())
-                parameters.append("pageSize", Pagination.DEFAULT_ITEMS_PER_PAGE.toString())
+                parameters.append("pageSize", Pagination.ITEMS_PER_PAGE_10.toString())
                 parameters.append("b2bUnitCode", unitCode)
                 parameters.append("promoType", promoCode)
             }

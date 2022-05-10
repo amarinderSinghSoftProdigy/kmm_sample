@@ -230,7 +230,8 @@ private fun ShowRetailerAndHospitalDashboard(
                         fontWeight = FontWeight.W600,
                         modifier = Modifier.padding(horizontal = 16.dp),
                     )
-                    Row(
+                    //todo uncomment for view more on brands
+                 /*   Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.End,
                         modifier = Modifier.clickable {
@@ -252,7 +253,7 @@ private fun ShowRetailerAndHospitalDashboard(
                                 .padding(horizontal = 3.dp)
                                 .padding(end = 16.dp),
                         )
-                    }
+                    }*/
                 }
                 Space(dp = 16.dp)
 
@@ -816,29 +817,31 @@ private fun ShowStockistDashBoard(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                     )
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.End,
-                        modifier = Modifier.clickable {
-                            scope.sendEvent(Event.Transition.Manufacturers)
-                        }
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_eye),
-                            contentDescription = null,
-                            tint = ConstColors.lightBlue,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Text(
-                            text = stringResource(id = R.string.view_all),
-                            color = ConstColors.lightBlue,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.W600,
-                            modifier = Modifier
-                                .padding(horizontal = 3.dp)
-                                .padding(end = 16.dp),
-                        )
-                    }
+                    //todo uncomment for view more on manufactrers
+
+                    /*  Row(
+                          verticalAlignment = Alignment.CenterVertically,
+                          horizontalArrangement = Arrangement.End,
+                          modifier = Modifier.clickable {
+                              scope.sendEvent(Event.Transition.Manufacturers)
+                          }
+                      ) {
+                          Icon(
+                              painter = painterResource(id = R.drawable.ic_eye),
+                              contentDescription = null,
+                              tint = ConstColors.lightBlue,
+                              modifier = Modifier.size(20.dp)
+                          )
+                          Text(
+                              text = stringResource(id = R.string.view_all),
+                              color = ConstColors.lightBlue,
+                              fontSize = 16.sp,
+                              fontWeight = FontWeight.W600,
+                              modifier = Modifier
+                                  .padding(horizontal = 3.dp)
+                                  .padding(end = 16.dp),
+                          )
+                      }*/
                 }
                 Space(dp = 16.dp)
 

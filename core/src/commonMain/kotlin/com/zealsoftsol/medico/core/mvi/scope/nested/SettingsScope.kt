@@ -31,7 +31,7 @@ sealed class SettingsScope(
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
         if (showBackIcon)
-            (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(""))
+            (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(titleId))
         else
             TabBarInfo.NoIconTitle("", unreadNotifications)
 

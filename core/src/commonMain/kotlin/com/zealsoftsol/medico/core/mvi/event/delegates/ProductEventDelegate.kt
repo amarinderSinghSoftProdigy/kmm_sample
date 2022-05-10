@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.BuyProductScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.CartRepo
@@ -92,24 +93,17 @@ internal class ProductEventDelegate(
     }
 
     private suspend fun buyProduct(product: ProductSearch, buyingOption: BuyingOption) {
-        if (userRepo.requireUser().type != UserType.SEASON_BOY) {
-            product.sellerInfo?.spid?.let { spid ->
-                EventCollector.sendEvent(
-                    Event.Action.Cart.AddItem(
-                        product.sellerInfo?.unitCode,
-                        product.code,
-                        product.buyingOption!!,
-                        CartIdentifier(spid),
-                        product.quantity,
-                        product.freeQuantity,
-                    )
-                )
-                return
-            }
-        } else {
-            selectSeasonBoyRetailer(product.code, product.sellerInfo!!)
+
+        navigator.searchQueuesFor<StoresScope.StorePreview>()?.store?.let {
+            addToCartItems(product)
             return
         }
+
+        navigator.searchQueuesFor<ProductInfoScope>()?.cartData?.let {
+            addToCartItems(product)
+            return
+        }
+
         navigator.withProgress {
             val address = userRepo.requireUser()//userRepo.requireUser().addressData
             when (buyingOption) {
@@ -142,17 +136,36 @@ internal class ProductEventDelegate(
         }.onError(navigator)
     }
 
-    private fun filterProduct(filter: String) {
-        navigator.withScope<BuyProductScope<WithTradeName>> {
-            it.itemsFilter.value = filter
-            it.items.value = if (filter.isNotEmpty()) {
-                it.allItems.filter { seller ->
-                    seller.tradeName.contains(filter, ignoreCase = true)
-                }
-            } else {
-                it.allItems
+    private suspend fun addToCartItems(product: ProductSearch) {
+        if (userRepo.requireUser().type != UserType.SEASON_BOY) {
+            product.sellerInfo?.spid?.let { spid ->
+                EventCollector.sendEvent(
+                    Event.Action.Cart.AddItem(
+                        product.sellerInfo?.unitCode,
+                        product.code,
+                        product.buyingOption!!,
+                        CartIdentifier(spid),
+                        product.quantity,
+                        product.freeQuantity,
+                    )
+                )
             }
+        } else {
+            selectSeasonBoyRetailer(product.code, product.sellerInfo!!)
         }
+    }
+
+    private fun filterProduct(filter: String) {
+          navigator.withScope<BuyProductScope<WithTradeName>> {
+              it.itemsFilter.value = filter
+              it.items.value = if (filter.isNotEmpty()) {
+                  it.allItems.filter { seller ->
+                      seller.tradeName.contains(filter, ignoreCase = true)
+                  }
+              } else {
+                  it.allItems
+              }
+          }
     }
 
     private suspend fun selectSeasonBoyRetailer(productCode: String, sellerInfo: SellerInfo?) {
