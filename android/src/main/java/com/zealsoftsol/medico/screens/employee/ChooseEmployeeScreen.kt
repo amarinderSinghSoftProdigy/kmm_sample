@@ -82,11 +82,14 @@ fun AddEmployeeScreen(scope: EmployeeScope.SelectUserType) {
                 ) {
                     scope.chooseUserType(UserType.PARTNER)
                     optionSelected.value = EmployeeScope.OptionSelected.ADD_PARTNER
-                    if (canAddMoreItems(employeeData.value, UserType.PARTNER.serverValue)) {
+                    //todo uncomment for single partner check
+                    /*if (canAddMoreItems(employeeData.value, UserType.PARTNER.serverValue)) {
                         scope.goToPersonalData()
                     } else {
                         scope.updateWarningVisibility(true)
-                    }
+                    }*/
+                    scope.goToPersonalData()
+
                 }
                 Space(20.dp)
                 ChooseOption(
@@ -97,11 +100,14 @@ fun AddEmployeeScreen(scope: EmployeeScope.SelectUserType) {
                 ) {
                     scope.chooseUserType(UserType.EMPLOYEE)
                     optionSelected.value = EmployeeScope.OptionSelected.ADD_EMPLOYEE
-                    if (canAddMoreItems(employeeData.value, UserType.EMPLOYEE.serverValue)) {
-                        scope.goToPersonalData()
-                    } else {
-                        scope.updateWarningVisibility(true)
-                    }
+                    //todo uncomment for single employee check
+                    /*if (canAddMoreItems(employeeData.value, UserType.EMPLOYEE.serverValue)) {
+                                         scope.goToPersonalData()
+                                     } else {
+                                         scope.updateWarningVisibility(true)
+                                     }*/
+                    scope.goToPersonalData()
+
                 }
             }
             Space(dp = 10.dp)
