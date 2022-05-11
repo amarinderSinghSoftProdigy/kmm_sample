@@ -108,7 +108,7 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
                     src = CdnUrlProvider.urlFor(product.imageCode, CdnUrlProvider.Size.Px320),
                     modifier = Modifier
                         .clip(CircleShape)
-                        .size(180.dp)
+                        .size(100.dp)
                         .align(Alignment.CenterHorizontally)
                         .clickable {
                             scope.zoomImage(product.imageCode)
@@ -757,7 +757,7 @@ private fun SellerInfoItem(
                     text = buildAnnotatedString {
                         append("Stock: ")
                         val startIndex = length
-                        append(sellerInfo.stockInfo?.formattedStatus ?: "")
+                        append(sellerInfo.stockInfo?.availableQty.toString() ?: "")
                         addStyle(
                             SpanStyle(
                                 color = labelColor,

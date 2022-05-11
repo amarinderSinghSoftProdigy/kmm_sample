@@ -70,19 +70,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -828,7 +832,11 @@ fun ImageLabel(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Surface(onClick = onClick, shape = MaterialTheme.shapes.large, modifier = Modifier.padding(start =10.dp)) {
+                Surface(
+                    onClick = onClick,
+                    shape = MaterialTheme.shapes.large,
+                    modifier = Modifier.padding(start = 10.dp)
+                ) {
                     CoilImage(
                         src = if (direct) value else File(value),
                         modifier = Modifier
@@ -842,7 +850,9 @@ fun ImageLabel(
                 Image(
                     painter = painterResource(id = R.drawable.ic_verified),
                     contentDescription = null,
-                    modifier = Modifier.padding(end = 10.dp).size(15.dp)
+                    modifier = Modifier
+                        .padding(end = 10.dp)
+                        .size(15.dp)
                 )
             }
             Space(16.dp)
@@ -1023,24 +1033,37 @@ fun PaginationButtons(
 }
 
 @Composable
-fun ShowAlertDialog(message: String, onDismiss: () -> Unit, onClick: () -> Unit) {
+fun ShowAlertDialog(message: String, stockist: String, onDismiss: () -> Unit, onClick: () -> Unit) {
+
+
+    val annotation =
+        buildAnnotatedString {
+            append("$message ")
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)) {
+                append(stockist)
+            }
+        }
+
 
     MaterialTheme {
 
         AlertDialog(
+            backgroundColor = White,
             onDismissRequest =
             onDismiss,
-            text = {
-                Text(message)
-            },
+            text = { Text(text = annotation, color = Color.Black) },
             dismissButton = {
-                Button(onClick = onDismiss) {
+                Button(
+                    onClick = onDismiss,
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray)
+                ) {
                     Text(stringResource(id = R.string.cancel))
                 }
             },
             confirmButton = {
                 Button(
-                    onClick = onClick
+                    onClick = onClick,
+                    colors = ButtonDefaults.buttonColors(backgroundColor = ConstColors.yellow)
                 ) {
                     Text(stringResource(id = R.string.okay))
                 }

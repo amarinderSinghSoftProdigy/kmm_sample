@@ -75,7 +75,9 @@ fun CartScreen(scope: CartScope) {
     val isContinueEnabled = scope.isContinueEnabled.flow.collectAsState()
     val isPreviewEnabled = scope.isPreviewEnabled.flow.collectAsState()
     val showErrorAlert = remember { mutableStateOf(false) }
-
+    var stockistName = remember {
+        mutableStateOf("")
+    }
     remember {
         scope.updatePreviewStatus(false)
     }
@@ -142,6 +144,7 @@ fun CartScreen(scope: CartScope) {
                             key = { it.sellerCode },
                             itemContent = { value ->
                                 Box(modifier = Modifier.padding(vertical = 4.dp)) {
+                                    stockistName.value = value.sellerName
                                     SellerCartItem(
                                         sellerCart = value,
                                         expand = true,
@@ -250,8 +253,8 @@ fun CartScreen(scope: CartScope) {
                                 Space(2.dp)
                                 Text(
                                     text = stringResource(id = R.string.tax_exclusive),
-                                    color = MaterialTheme.colors.background,
-                                    fontWeight = FontWeight.W600,
+                                    color = Color.Red,
+                                    fontWeight = FontWeight.Bold,
                                     fontSize = 10.sp,
                                 )
                             }
@@ -295,7 +298,9 @@ fun CartScreen(scope: CartScope) {
 
     if (showErrorAlert.value)
         ShowAlertDialog(
-            message = "Please check again before preview an order", { showErrorAlert.value = false }
+            message = "Please check again before placing order with",
+            stockistName.value,
+            { showErrorAlert.value = false }
         ) {
             scope.updatePreviewStatus(true)
             showErrorAlert.value = false
@@ -464,16 +469,19 @@ private fun CartItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            Surface(shape = RoundedCornerShape(5.dp), color = Color.White, elevation = 5.dp) {
-                CoilImage(
-                    src = CdnUrlProvider.urlFor(
-                        cartItem.imageCode,
-                        CdnUrlProvider.Size.Px123
-                    ),
-                    size = 90.dp,
-                    onError = { ItemPlaceholder() },
-                    onLoading = { ItemPlaceholder() },
-                )
+            if (!isPreview) {
+
+                Surface(shape = RoundedCornerShape(5.dp), color = Color.White, elevation = 5.dp) {
+                    CoilImage(
+                        src = CdnUrlProvider.urlFor(
+                            cartItem.imageCode,
+                            CdnUrlProvider.Size.Px123
+                        ),
+                        size = 90.dp,
+                        onError = { ItemPlaceholder() },
+                        onLoading = { ItemPlaceholder() },
+                    )
+                }
             }
             BaseCartItem(
                 qtyInitial = cartItem.quantity.value,
