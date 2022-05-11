@@ -89,7 +89,9 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
     val product = scope.product
 
     Column(
-        modifier = Modifier.fillMaxSize().background(Color.White)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
     ) {
         Column(
             modifier = Modifier
@@ -148,48 +150,6 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
                     )
                 }
             }
-            Space(8.dp)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = buildAnnotatedString {
-                        append("PTR: ")
-                        val startIndex = length
-                        append(product.formattedPrice ?: "")
-                        addStyle(
-                            SpanStyle(
-                                color = Color.Black,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            startIndex,
-                            length,
-                        )
-                    },
-                    color = ConstColors.gray,
-                    fontSize = 13.sp,
-                )
-
-                Text(
-                    text = buildAnnotatedString {
-                        append("MRP: ")
-                        val startIndex = length
-                        append(product.formattedMrp)
-                        addStyle(
-                            SpanStyle(
-                                color = Color.Black,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            startIndex,
-                            length,
-                        )
-                    },
-                    color = ConstColors.gray,
-                    fontSize = 13.sp,
-                )
-            }
-
             Space(8.dp)
 
             val sliderList = ArrayList<String>()
@@ -707,6 +667,13 @@ private fun SellerInfoItem(
     onSaveQty: (Double?, Double?) -> Unit,
     onItemClick: (() -> Unit)?,
 ) {
+    val labelColor = when (sellerInfo.stockInfo?.status) {
+        StockStatus.IN_STOCK -> ConstColors.green
+        StockStatus.LIMITED_STOCK -> ConstColors.orange
+        StockStatus.OUT_OF_STOCK -> ConstColors.red
+        null -> ConstColors.gray
+    }
+
     BaseSellerItem(
         qtyInitial = quantity,
         freeQtyInitial = quantityFree,
@@ -716,12 +683,7 @@ private fun SellerInfoItem(
         onItemClick = onItemClick,
         canAddToCart = sellerInfo.stockInfo?.status != StockStatus.OUT_OF_STOCK,
         headerContent = {
-            val labelColor = when (sellerInfo.stockInfo?.status) {
-                StockStatus.IN_STOCK -> ConstColors.green
-                StockStatus.LIMITED_STOCK -> ConstColors.orange
-                StockStatus.OUT_OF_STOCK -> ConstColors.red
-                null -> ConstColors.gray
-            }
+
             Canvas(modifier = Modifier.size(10.dp)) {
                 drawRoundRect(labelColor, cornerRadius = CornerRadius(8.dp.value))
             }
@@ -736,6 +698,13 @@ private fun SellerInfoItem(
             )
         },
         mainBodyContent = {
+            Text(
+                text = sellerInfo.geoData.full(),
+                color = ConstColors.lightBlue,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.W600,
+            )
+            Space(8.dp)
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
@@ -757,15 +726,16 @@ private fun SellerInfoItem(
                     },
                     color = ConstColors.gray,
                     fontWeight = FontWeight.W700,
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                 )
                 Text(
                     text = buildAnnotatedString {
-                        append("Stock: ")
+                        append("MRP: ")
                         val startIndex = length
-                        append("N/A")
+                        append(sellerInfo.priceInfo?.mrp?.formattedPrice.orEmpty())
                         addStyle(
                             SpanStyle(
+                                color = MaterialTheme.colors.background,
                                 fontWeight = FontWeight.W800
                             ),
                             startIndex,
@@ -773,7 +743,8 @@ private fun SellerInfoItem(
                         )
                     },
                     color = ConstColors.gray,
-                    fontSize = 12.sp,
+                    fontWeight = FontWeight.W700,
+                    fontSize = 14.sp,
                 )
             }
             Space(8.dp)
@@ -782,6 +753,73 @@ private fun SellerInfoItem(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(),
             ) {
+                Text(
+                    text = buildAnnotatedString {
+                        append("Stock: ")
+                        val startIndex = length
+                        append(sellerInfo.stockInfo?.formattedStatus ?: "")
+                        addStyle(
+                            SpanStyle(
+                                color = labelColor,
+                                fontWeight = FontWeight.W800
+                            ),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    color = ConstColors.gray,
+                    fontWeight = FontWeight.W700,
+                    fontSize = 14.sp,
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .background(
+                            color = ConstColors.lightBlue.copy(alpha = 0.1f),
+                            shape = MaterialTheme.shapes.small
+                        )
+                        .padding(4.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.LocationOn,
+                        contentDescription = null,
+                        tint = ConstColors.lightBlue,
+                        modifier = Modifier.size(10.dp),
+                    )
+                    Space(4.dp)
+                    Text(
+                        text = "${sellerInfo.geoData.distance} km",
+                        color = ConstColors.lightBlue,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W600,
+                    )
+                }
+            }
+            Space(8.dp)
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        append("${stringResource(id = R.string.margin_perc)}: ")
+                        val startIndex = length
+                        append(sellerInfo.priceInfo?.marginPercent ?: "N/A")
+                        addStyle(
+                            SpanStyle(
+                                color = MaterialTheme.colors.background,
+                                fontWeight = FontWeight.W800
+                            ),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    color = ConstColors.gray,
+                    fontWeight = FontWeight.W700,
+                    fontSize = 14.sp,
+                )
                 sellerInfo.stockInfo?.expiry?.let { expiry ->
                     val color = Color(expiry.color.toColorInt())
                     Box(
@@ -805,33 +843,10 @@ private fun SellerInfoItem(
                                 )
                             },
                             color = ConstColors.gray,
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             modifier = Modifier.padding(4.dp),
                         )
                     }
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .background(
-                            color = ConstColors.lightBlue.copy(alpha = 0.1f),
-                            shape = MaterialTheme.shapes.small
-                        )
-                        .padding(4.dp),
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.LocationOn,
-                        contentDescription = null,
-                        tint = ConstColors.lightBlue,
-                        modifier = Modifier.size(10.dp),
-                    )
-                    Space(4.dp)
-                    Text(
-                        text = "${sellerInfo.geoData.distance} km",
-                        color = ConstColors.lightBlue,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.W600,
-                    )
                 }
             }
         },
