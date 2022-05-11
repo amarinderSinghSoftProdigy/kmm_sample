@@ -1021,3 +1021,30 @@ fun PaginationButtons(
         )
     }
 }
+
+@Composable
+fun ShowAlertDialog(message: String, onDismiss: () -> Unit, onClick: () -> Unit) {
+
+    MaterialTheme {
+
+        AlertDialog(
+            onDismissRequest =
+            onDismiss,
+            text = {
+                Text(message)
+            },
+            dismissButton = {
+                Button(onClick = onDismiss) {
+                    Text(stringResource(id = R.string.cancel))
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = onClick
+                ) {
+                    Text(stringResource(id = R.string.okay))
+                }
+            }
+        )
+    }
+}
