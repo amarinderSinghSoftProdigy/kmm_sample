@@ -291,6 +291,7 @@ sealed class Event {
             object PreviewCart : Cart()
             data class ConfirmCartOrder(val cartScope: Scope) : Cart()
             data class PlaceCartOrder(val checkForQuotedItems: Boolean) : Cart()
+            object HideBackButton : Cart()
         }
 
         sealed class Help : Action() {
