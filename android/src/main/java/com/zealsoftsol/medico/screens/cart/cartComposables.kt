@@ -62,6 +62,7 @@ import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
+import com.zealsoftsol.medico.screens.common.ShowAlertDialog
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.product.BottomSectionMode
 
@@ -73,6 +74,7 @@ fun CartScreen(scope: CartScope) {
     val total = scope.total.flow.collectAsState()
     val isContinueEnabled = scope.isContinueEnabled.flow.collectAsState()
     val isPreviewEnabled = scope.isPreviewEnabled.flow.collectAsState()
+    val showErrorAlert = remember { mutableStateOf(false) }
 
     remember {
         scope.updatePreviewStatus(false)
@@ -103,12 +105,14 @@ fun CartScreen(scope: CartScope) {
                             .width(58.dp)
                             .align(Alignment.CenterEnd)
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_delete),
-                            contentDescription = null,
-                            tint = ConstColors.red,
-                            modifier = Modifier.padding(10.dp)
-                        )
+                        if (!isPreviewEnabled.value) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_delete),
+                                contentDescription = null,
+                                tint = ConstColors.red,
+                                modifier = Modifier.padding(10.dp)
+                            )
+                        }
                     }
                     Row(
                         modifier = Modifier
@@ -218,25 +222,42 @@ fun CartScreen(scope: CartScope) {
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text(
-                            text = buildAnnotatedString {
-                                append(stringResource(id = R.string.total))
-                                val startIndex = length
-                                append(it.formattedPrice)
-                                addStyle(
-                                    SpanStyle(
-                                        color = MaterialTheme.colors.background,
-                                        fontWeight = FontWeight.W700
-                                    ),
-                                    startIndex,
-                                    length,
+                        Column(modifier = Modifier.weight(0.3f)) {
+                            Text(
+                                text = buildAnnotatedString {
+                                    append(stringResource(id = R.string.total))
+                                    val startIndex = length
+                                    append(it.formattedPrice)
+                                    if (it.formattedPrice != "N/A") {
+                                        append("*")
+                                    }
+
+                                    addStyle(
+                                        SpanStyle(
+                                            color = MaterialTheme.colors.background,
+                                            fontWeight = FontWeight.W700
+                                        ),
+                                        startIndex,
+                                        length,
+                                    )
+                                },
+                                fontWeight = FontWeight.W500,
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colors.background,
+                            )
+
+                            if (it.formattedPrice != "N/A") {
+                                Space(2.dp)
+                                Text(
+                                    text = stringResource(id = R.string.tax_exclusive),
+                                    color = MaterialTheme.colors.background,
+                                    fontWeight = FontWeight.W600,
+                                    fontSize = 10.sp,
                                 )
-                            },
-                            fontWeight = FontWeight.W500,
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colors.background,
-                            modifier = Modifier.weight(0.3f)
-                        )
+                            }
+                        }
+
+
                         /* Space(4.dp)
                          Text(
                              text = it.formattedPrice,
@@ -255,10 +276,10 @@ fun CartScreen(scope: CartScope) {
                             isEnabled = isContinueEnabled.value,
                             onClick = {
                                 if (isPreviewEnabled.value) {
-                                    // scope.updatePreviewStatus(false)
                                     scope.placeOrder(scope)
+
                                 } else {
-                                    scope.updatePreviewStatus(true)
+                                    showErrorAlert.value = true
                                 }
                             },
                             height = 35.dp,
@@ -271,6 +292,14 @@ fun CartScreen(scope: CartScope) {
             }
         }
     }
+
+    if (showErrorAlert.value)
+        ShowAlertDialog(
+            message = "Please check again before preview an order", { showErrorAlert.value = false }
+        ) {
+            scope.updatePreviewStatus(true)
+            showErrorAlert.value = false
+        }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -306,11 +335,15 @@ private fun SellerCartItem(
                         modifier = Modifier.size(40.dp),
                     ) {
                         Box(contentAlignment = Alignment.Center) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_delete),
-                                contentDescription = null,
-                                tint = ConstColors.red,
-                            )
+
+                            if (!isPreview) {
+
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_delete),
+                                    contentDescription = null,
+                                    tint = ConstColors.red,
+                                )
+                            }
                         }
                     }
                     Space(12.dp)

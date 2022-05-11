@@ -1100,7 +1100,8 @@ fun BasicSearchBar(
     isSearchCross: Boolean = false,
     start: Dp = 24.dp,
     backgroundColor: Color = Color.White,
-    showSearchIcon: Boolean = false
+    showSearchIcon: Boolean = false,
+    onSearchKeyPress:(() -> Unit)? = null
 ) {
     SearchBarBox(
         elevation = elevation,
@@ -1137,7 +1138,13 @@ fun BasicSearchBar(
                 onValueChange = { onSearch(it.replace("+", "").replace("*", ""), false) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
-                keyboardActions = KeyboardActions { onSearch(input, true) },
+                keyboardActions = KeyboardActions {
+                    if (onSearchKeyPress != null) {
+                        onSearchKeyPress()
+                    } else {
+                        onSearch(input, true)
+                    }
+                },
                 modifier = Modifier
                     .focusRequester(focusRequester)
                     .fillMaxWidth()

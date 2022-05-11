@@ -738,10 +738,10 @@ private fun ActiveSearchTabBar(
         input = search.value,
         hint = R.string.search_products,
         icon = Icons.Default.ArrowBack,
-     /*   searchBarEnd = SearchBarEnd.Filter(isHighlighted = activeFilterIds.value.isNotEmpty()) {
-            keyboard?.hide()
-            info.toggleFilter()
-        },*/
+        /*   searchBarEnd = SearchBarEnd.Filter(isHighlighted = activeFilterIds.value.isNotEmpty()) {
+               keyboard?.hide()
+               info.toggleFilter()
+           },*/
         onIconClick = { scope.goBack() },
         isSearchFocused = scope.storage.restore("focus") as? Boolean ?: true,
         onSearch = { value, isFromKeyboard ->
@@ -848,33 +848,68 @@ private fun NoIconHeader(
     scope: TabBarScope,
     info: TabBarInfo.NoIconTitle,
 ) {
+    val isBackButtonEnabled = info.showBackButton?.flow?.collectAsState()
     Row(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (mUserType == UserType.STOCKIST) {
-            Image(
-                modifier = Modifier
-                    .weight(0.15f)
-                    .height(25.dp)
-                    .width(25.dp)
-                    .clickable {
-                        EventCollector.sendEvent(Event.Transition.Settings(true))
-                    },
-                painter = painterResource(id = R.drawable.ic_personal),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(
-                    Color(0xFF003657)
+            if (isBackButtonEnabled?.value == true) {
+                Icon(
+                    imageVector = info.icon.toLocalIcon(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .fillMaxHeight()
+                        .padding(end = 10.dp, start = 16.dp)
+                        .clickable(
+                            indication = null,
+                            onClick = {
+                                EventCollector.sendEvent(Event.Action.Cart.HideBackButton)
+                            },
+                        )
                 )
-            )
+            } else {
+                Image(
+                    modifier = Modifier
+                        .weight(0.15f)
+                        .height(25.dp)
+                        .width(25.dp)
+                        .clickable {
+                            EventCollector.sendEvent(Event.Transition.Settings(true))
+                        },
+                    painter = painterResource(id = R.drawable.ic_personal),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(
+                        Color(0xFF003657)
+                    )
+                )
+            }
         } else {
-            Image(
-                modifier = Modifier
-                    .weight(0.15f)
-                    .height(30.dp)
-                    .width(30.dp),
-                painter = painterResource(id = R.drawable.ic_small_logo),
-                contentDescription = null
-            )
+            if (isBackButtonEnabled?.value == true) {
+                Icon(
+                    imageVector = info.icon.toLocalIcon(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .fillMaxHeight()
+                        .padding(end = 10.dp, start = 16.dp)
+                        .clickable(
+                            indication = null,
+                            onClick = {
+                                EventCollector.sendEvent(Event.Action.Cart.HideBackButton)
+                            },
+                        )
+                )
+            } else{
+                Image(
+                    modifier = Modifier
+                        .weight(0.15f)
+                        .height(30.dp)
+                        .width(30.dp),
+                    painter = painterResource(id = R.drawable.ic_small_logo),
+                    contentDescription = null
+                )
+            }
         }
         when (scope.childScope.flow.collectAsState().value) {
             is StoresScope -> {

@@ -22,13 +22,16 @@ class CartScope(
 ) : Scope.Child.TabBar(), CommonScope.CanGoBack {
 
     val isPreviewEnabled: DataSource<Boolean> = DataSource(false)
+    private val isBackButtonEnabled = DataSource(false)
 
     fun updatePreviewStatus(boolean: Boolean) {
         isPreviewEnabled.value = boolean
+        isBackButtonEnabled.value = boolean
     }
 
+
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.NoIconTitle(
-        "", unreadNotifications, cartCount
+        "", unreadNotifications, cartCount, isBackButtonEnabled
     )
 
     fun placeOrder(scope: Scope) =

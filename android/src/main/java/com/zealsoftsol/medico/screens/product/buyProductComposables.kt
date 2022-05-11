@@ -5,12 +5,14 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -21,7 +23,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -45,6 +51,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -73,82 +80,104 @@ import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.management.GeoLocation
+import com.zealsoftsol.medico.screens.search.ChipString
 import kotlin.time.ExperimentalTime
 
 @Composable
 fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
+
+    val product = scope.product
+
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
     ) {
-        Row(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White)
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
-            CoilImage(
-                src = CdnUrlProvider.urlFor(
-                    scope.product.imageCode ?: "",
-                    CdnUrlProvider.Size.Px123
-                ),
-                size = 71.dp,
-                onError = { ItemPlaceholder() },
-                onLoading = { ItemPlaceholder() },
-            )
-            Space(16.dp)
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.SpaceBetween,
+            Space(25.dp)
+            Surface(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                shape = CircleShape,
+                elevation = 5.dp
             ) {
-                Text(
-                    text = scope.product.name,
-                    color = MaterialTheme.colors.background,
-                    fontWeight = FontWeight.W600,
-                    fontSize = 20.sp,
-                )
-                Space(4.dp)
-                Row {
-                    Text(
-                        text = scope.product.code,
-                        color = ConstColors.gray,
-                        fontSize = 14.sp,
-                    )
-                    Space(6.dp)
-                    Box(
-                        modifier = Modifier
-                            .height(14.dp)
-                            .width(1.dp)
-                            .background(MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
-                            .align(Alignment.CenterVertically)
-                    )
-                    Space(6.dp)
-                    Text(
-                        text = buildAnnotatedString {
-                            append("Units: ")
-                            val startIndex = length
-                            append(scope.product.standardUnit.orEmpty())
-                            addStyle(
-                                SpanStyle(
-                                    color = ConstColors.lightBlue,
-                                    fontWeight = FontWeight.W800
-                                ),
-                                startIndex,
-                                length,
-                            )
+                CoilImage(
+                    src = CdnUrlProvider.urlFor(product.imageCode, CdnUrlProvider.Size.Px320),
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .size(180.dp)
+                        .align(Alignment.CenterHorizontally)
+                        .clickable {
+                            scope.zoomImage(product.imageCode)
                         },
-                        color = ConstColors.gray,
-                        fontSize = 14.sp,
-                    )
-                }
-                Space(4.dp)
-                Text(
-                    text = scope.product.uomName,
-                    color = ConstColors.lightBlue,
-                    fontSize = 14.sp,
+                    onError = { ItemPlaceholder() },
+                    onLoading = { ItemPlaceholder() },
+                    isCrossFadeEnabled = false
                 )
             }
+            Space(16.dp)
+
+            Text(
+                text = product.name,
+                color = Color.Black,
+                fontWeight = FontWeight.W600,
+                fontSize = 16.sp,
+            )
+            Space(8.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = product.manufacturer,
+                    color = Color.Black,
+                    fontSize = 13.sp,
+                )
+
+                product.stockInfo?.let {
+                    Text(
+                        text = it.formattedStatus,
+                        color = when (it.status) {
+                            StockStatus.IN_STOCK -> ConstColors.green
+                            StockStatus.LIMITED_STOCK -> ConstColors.orange
+                            StockStatus.OUT_OF_STOCK -> ConstColors.red
+                        },
+                        fontWeight = FontWeight.W700,
+                        fontSize = 13.sp,
+                    )
+                }
+            }
+            Space(8.dp)
+
+            val sliderList = ArrayList<String>()
+            product.manufacturer.let { sliderList.add(it) }
+            if (product.drugFormName.isNotEmpty())
+                sliderList.add(product.drugFormName)
+            product.standardUnit?.let { sliderList.add(it) }
+            if (product.compositions.isNotEmpty())
+                sliderList.addAll(product.compositions)
+            product.sellerInfo?.priceInfo?.marginPercent?.let {
+                sliderList.add(
+                    "Margin: ".plus(
+                        it
+                    )
+                )
+            }
+            LazyRow(
+                state = rememberLazyListState(),
+                contentPadding = PaddingValues(top = 6.dp),
+            ) {
+                items(
+                    items = sliderList,
+                    itemContent = { value -> if (value.isNotEmpty()) ChipString(value) {} }
+                )
+            }
+            Space(15.dp)
         }
+
         (scope as? BuyProductScope.ChooseRetailer)?.sellerInfo?.let {
             Divider()
             Column(
@@ -638,6 +667,13 @@ private fun SellerInfoItem(
     onSaveQty: (Double?, Double?) -> Unit,
     onItemClick: (() -> Unit)?,
 ) {
+    val labelColor = when (sellerInfo.stockInfo?.status) {
+        StockStatus.IN_STOCK -> ConstColors.green
+        StockStatus.LIMITED_STOCK -> ConstColors.orange
+        StockStatus.OUT_OF_STOCK -> ConstColors.red
+        null -> ConstColors.gray
+    }
+
     BaseSellerItem(
         qtyInitial = quantity,
         freeQtyInitial = quantityFree,
@@ -647,12 +683,7 @@ private fun SellerInfoItem(
         onItemClick = onItemClick,
         canAddToCart = sellerInfo.stockInfo?.status != StockStatus.OUT_OF_STOCK,
         headerContent = {
-            val labelColor = when (sellerInfo.stockInfo?.status) {
-                StockStatus.IN_STOCK -> ConstColors.green
-                StockStatus.LIMITED_STOCK -> ConstColors.orange
-                StockStatus.OUT_OF_STOCK -> ConstColors.red
-                null -> ConstColors.gray
-            }
+
             Canvas(modifier = Modifier.size(10.dp)) {
                 drawRoundRect(labelColor, cornerRadius = CornerRadius(8.dp.value))
             }
@@ -667,6 +698,13 @@ private fun SellerInfoItem(
             )
         },
         mainBodyContent = {
+            Text(
+                text = sellerInfo.geoData.full(),
+                color = ConstColors.lightBlue,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.W600,
+            )
+            Space(8.dp)
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
@@ -688,15 +726,16 @@ private fun SellerInfoItem(
                     },
                     color = ConstColors.gray,
                     fontWeight = FontWeight.W700,
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                 )
                 Text(
                     text = buildAnnotatedString {
-                        append("Stock: ")
+                        append("MRP: ")
                         val startIndex = length
-                        append("N/A")
+                        append(sellerInfo.priceInfo?.mrp?.formattedPrice.orEmpty())
                         addStyle(
                             SpanStyle(
+                                color = MaterialTheme.colors.background,
                                 fontWeight = FontWeight.W800
                             ),
                             startIndex,
@@ -704,7 +743,8 @@ private fun SellerInfoItem(
                         )
                     },
                     color = ConstColors.gray,
-                    fontSize = 12.sp,
+                    fontWeight = FontWeight.W700,
+                    fontSize = 14.sp,
                 )
             }
             Space(8.dp)
@@ -713,6 +753,73 @@ private fun SellerInfoItem(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(),
             ) {
+                Text(
+                    text = buildAnnotatedString {
+                        append("Stock: ")
+                        val startIndex = length
+                        append(sellerInfo.stockInfo?.formattedStatus ?: "")
+                        addStyle(
+                            SpanStyle(
+                                color = labelColor,
+                                fontWeight = FontWeight.W800
+                            ),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    color = ConstColors.gray,
+                    fontWeight = FontWeight.W700,
+                    fontSize = 14.sp,
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .background(
+                            color = ConstColors.lightBlue.copy(alpha = 0.1f),
+                            shape = MaterialTheme.shapes.small
+                        )
+                        .padding(4.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.LocationOn,
+                        contentDescription = null,
+                        tint = ConstColors.lightBlue,
+                        modifier = Modifier.size(10.dp),
+                    )
+                    Space(4.dp)
+                    Text(
+                        text = "${sellerInfo.geoData.distance} km",
+                        color = ConstColors.lightBlue,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W600,
+                    )
+                }
+            }
+            Space(8.dp)
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        append("${stringResource(id = R.string.margin_perc)}: ")
+                        val startIndex = length
+                        append(sellerInfo.priceInfo?.marginPercent ?: "N/A")
+                        addStyle(
+                            SpanStyle(
+                                color = MaterialTheme.colors.background,
+                                fontWeight = FontWeight.W800
+                            ),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    color = ConstColors.gray,
+                    fontWeight = FontWeight.W700,
+                    fontSize = 14.sp,
+                )
                 sellerInfo.stockInfo?.expiry?.let { expiry ->
                     val color = Color(expiry.color.toColorInt())
                     Box(
@@ -736,33 +843,10 @@ private fun SellerInfoItem(
                                 )
                             },
                             color = ConstColors.gray,
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             modifier = Modifier.padding(4.dp),
                         )
                     }
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .background(
-                            color = ConstColors.lightBlue.copy(alpha = 0.1f),
-                            shape = MaterialTheme.shapes.small
-                        )
-                        .padding(4.dp),
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.LocationOn,
-                        contentDescription = null,
-                        tint = ConstColors.lightBlue,
-                        modifier = Modifier.size(10.dp),
-                    )
-                    Space(4.dp)
-                    Text(
-                        text = "${sellerInfo.geoData.distance} km",
-                        color = ConstColors.lightBlue,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.W600,
-                    )
                 }
             }
         },

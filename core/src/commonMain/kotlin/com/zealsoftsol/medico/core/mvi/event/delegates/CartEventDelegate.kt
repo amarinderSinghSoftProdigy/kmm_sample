@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
-import com.zealsoftsol.medico.core.extensions.safeCall
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
@@ -12,7 +11,6 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartOrderCompletedScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartPreviewScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
@@ -20,7 +18,6 @@ import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.CartItem
-import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.SellerCart
 
 internal class CartEventDelegate(
@@ -81,9 +78,19 @@ internal class CartEventDelegate(
             event.item,
             event.cartScope
         )
+        Event.Action.Cart.HideBackButton -> hideBackButton()
     }
 
-    fun openCartItemBottomSheet(
+    /**
+     * Hide back button on cart header
+     */
+    private fun hideBackButton() {
+        navigator.withScope<CartScope> {
+            it.updatePreviewStatus(false)
+        }
+    }
+
+    private fun openCartItemBottomSheet(
         qtyInitial: Double,
         freeQtyInitial: Double,
         sellerCart: SellerCart,
