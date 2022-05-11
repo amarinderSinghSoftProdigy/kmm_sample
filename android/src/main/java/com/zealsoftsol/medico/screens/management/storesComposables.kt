@@ -183,7 +183,8 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                             scope.searchProduct(value)
                         }
                     },
-                    isSearchCross = true
+                    isSearchCross = true,
+                    onSearchKeyPress = {scope.startSearch(true, searchedProduct)}
                 )
                 scope.storage.save("focus", false)
                 if (showFilter.value) {

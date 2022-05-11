@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -21,6 +22,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -73,6 +77,7 @@ import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.management.GeoLocation
+import com.zealsoftsol.medico.screens.search.ChipString
 import kotlin.time.ExperimentalTime
 
 @Composable
@@ -141,12 +146,31 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
                         fontSize = 14.sp,
                     )
                 }
-                Space(4.dp)
-                Text(
-                    text = scope.product.uomName,
-                    color = ConstColors.lightBlue,
-                    fontSize = 14.sp,
-                )
+
+                Space(8.dp)
+                val sliderList = ArrayList<String>()
+                scope.product.manufacturer.let { sliderList.add(it) }
+                if (scope.product.drugFormName.isNotEmpty())
+                    sliderList.add(scope.product.drugFormName)
+                scope.product.standardUnit?.let { sliderList.add(it) }
+                if (scope.product.compositions.isNotEmpty())
+                    sliderList.addAll(scope.product.compositions)
+                scope.product.sellerInfo?.priceInfo?.marginPercent?.let {
+                    sliderList.add(
+                        "Margin: ".plus(
+                            it
+                        )
+                    )
+                }
+                LazyRow(
+                    state = rememberLazyListState(),
+                    contentPadding = PaddingValues(top = 6.dp),
+                ) {
+                    items(
+                        items = sliderList,
+                        itemContent = { value -> if (value.isNotEmpty()) ChipString(value) {} }
+                    )
+                }
             }
         }
         (scope as? BuyProductScope.ChooseRetailer)?.sellerInfo?.let {
