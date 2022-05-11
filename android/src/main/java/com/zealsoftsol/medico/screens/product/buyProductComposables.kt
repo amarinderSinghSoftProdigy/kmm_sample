@@ -5,6 +5,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +27,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -49,6 +51,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -82,97 +85,139 @@ import kotlin.time.ExperimentalTime
 
 @Composable
 fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
+
+    val product = scope.product
+
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().background(Color.White)
     ) {
-        Row(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White)
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
-            CoilImage(
-                src = CdnUrlProvider.urlFor(
-                    scope.product.imageCode ?: "",
-                    CdnUrlProvider.Size.Px123
-                ),
-                size = 71.dp,
-                onError = { ItemPlaceholder() },
-                onLoading = { ItemPlaceholder() },
-            )
+            Space(25.dp)
+            Surface(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                shape = CircleShape,
+                elevation = 5.dp
+            ) {
+                CoilImage(
+                    src = CdnUrlProvider.urlFor(product.imageCode, CdnUrlProvider.Size.Px320),
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .size(180.dp)
+                        .align(Alignment.CenterHorizontally)
+                        .clickable {
+                            scope.zoomImage(product.imageCode)
+                        },
+                    onError = { ItemPlaceholder() },
+                    onLoading = { ItemPlaceholder() },
+                    isCrossFadeEnabled = false
+                )
+            }
             Space(16.dp)
-            Column(
+
+            Text(
+                text = product.name,
+                color = Color.Black,
+                fontWeight = FontWeight.W600,
+                fontSize = 16.sp,
+            )
+            Space(8.dp)
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = scope.product.name,
-                    color = MaterialTheme.colors.background,
-                    fontWeight = FontWeight.W600,
-                    fontSize = 20.sp,
+                    text = product.manufacturer,
+                    color = Color.Black,
+                    fontSize = 13.sp,
                 )
-                Space(4.dp)
-                Row {
-                    Text(
-                        text = scope.product.code,
-                        color = ConstColors.gray,
-                        fontSize = 14.sp,
-                    )
-                    Space(6.dp)
-                    Box(
-                        modifier = Modifier
-                            .height(14.dp)
-                            .width(1.dp)
-                            .background(MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
-                            .align(Alignment.CenterVertically)
-                    )
-                    Space(6.dp)
-                    Text(
-                        text = buildAnnotatedString {
-                            append("Units: ")
-                            val startIndex = length
-                            append(scope.product.standardUnit.orEmpty())
-                            addStyle(
-                                SpanStyle(
-                                    color = ConstColors.lightBlue,
-                                    fontWeight = FontWeight.W800
-                                ),
-                                startIndex,
-                                length,
-                            )
-                        },
-                        color = ConstColors.gray,
-                        fontSize = 14.sp,
-                    )
-                }
 
-                Space(8.dp)
-                val sliderList = ArrayList<String>()
-                scope.product.manufacturer.let { sliderList.add(it) }
-                if (scope.product.drugFormName.isNotEmpty())
-                    sliderList.add(scope.product.drugFormName)
-                scope.product.standardUnit?.let { sliderList.add(it) }
-                if (scope.product.compositions.isNotEmpty())
-                    sliderList.addAll(scope.product.compositions)
-                scope.product.sellerInfo?.priceInfo?.marginPercent?.let {
-                    sliderList.add(
-                        "Margin: ".plus(
-                            it
-                        )
-                    )
-                }
-                LazyRow(
-                    state = rememberLazyListState(),
-                    contentPadding = PaddingValues(top = 6.dp),
-                ) {
-                    items(
-                        items = sliderList,
-                        itemContent = { value -> if (value.isNotEmpty()) ChipString(value) {} }
+                product.stockInfo?.let {
+                    Text(
+                        text = it.formattedStatus,
+                        color = when (it.status) {
+                            StockStatus.IN_STOCK -> ConstColors.green
+                            StockStatus.LIMITED_STOCK -> ConstColors.orange
+                            StockStatus.OUT_OF_STOCK -> ConstColors.red
+                        },
+                        fontWeight = FontWeight.W700,
+                        fontSize = 13.sp,
                     )
                 }
             }
+            Space(8.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        append("PTR: ")
+                        val startIndex = length
+                        append(product.formattedPrice ?: "")
+                        addStyle(
+                            SpanStyle(
+                                color = Color.Black,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    color = ConstColors.gray,
+                    fontSize = 13.sp,
+                )
+
+                Text(
+                    text = buildAnnotatedString {
+                        append("MRP: ")
+                        val startIndex = length
+                        append(product.formattedMrp)
+                        addStyle(
+                            SpanStyle(
+                                color = Color.Black,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    color = ConstColors.gray,
+                    fontSize = 13.sp,
+                )
+            }
+
+            Space(8.dp)
+
+            val sliderList = ArrayList<String>()
+            product.manufacturer.let { sliderList.add(it) }
+            if (product.drugFormName.isNotEmpty())
+                sliderList.add(product.drugFormName)
+            product.standardUnit?.let { sliderList.add(it) }
+            if (product.compositions.isNotEmpty())
+                sliderList.addAll(product.compositions)
+            product.sellerInfo?.priceInfo?.marginPercent?.let {
+                sliderList.add(
+                    "Margin: ".plus(
+                        it
+                    )
+                )
+            }
+            LazyRow(
+                state = rememberLazyListState(),
+                contentPadding = PaddingValues(top = 6.dp),
+            ) {
+                items(
+                    items = sliderList,
+                    itemContent = { value -> if (value.isNotEmpty()) ChipString(value) {} }
+                )
+            }
+            Space(15.dp)
         }
+
         (scope as? BuyProductScope.ChooseRetailer)?.sellerInfo?.let {
             Divider()
             Column(
