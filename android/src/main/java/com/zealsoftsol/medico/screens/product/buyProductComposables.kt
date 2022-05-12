@@ -149,7 +149,7 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
                 }
             }
 
-            Space(16.dp)
+            Space(8.dp)
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
