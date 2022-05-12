@@ -118,7 +118,8 @@ sealed class StoresScope : Scope.Child.TabBar() {
             return TabBarInfo.StoreTitle(
                 storeName = store.tradeName,
                 showNotifications = false,
-                event = Event.Action.Management.GetDetails(store.sellerUnitCode)
+                event = Event.Action.Management.GetDetails(store.sellerUnitCode),
+                cartItemsCount = cartItemsCount
             )
         }
     }
