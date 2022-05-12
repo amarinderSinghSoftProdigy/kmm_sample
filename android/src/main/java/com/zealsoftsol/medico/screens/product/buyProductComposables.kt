@@ -56,6 +56,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -66,6 +67,8 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.nested.BuyProductScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.PromotionData
@@ -78,6 +81,8 @@ import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
+import com.zealsoftsol.medico.screens.common.ShowToastGlobal
+import com.zealsoftsol.medico.screens.common.SingleTextLabel
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.management.GeoLocation
 import com.zealsoftsol.medico.screens.search.ChipString
@@ -87,6 +92,10 @@ import kotlin.time.ExperimentalTime
 fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
 
     val product = scope.product
+    val showToast = scope.showToast.flow.collectAsState()
+    val cartData = scope.cartData.flow.collectAsState()
+    val entries = if (cartData.value != null) cartData.value?.sellerCarts?.get(0)?.items else null
+    val cartItem = entries?.get(entries.size - 1)
 
     Column(
         modifier = Modifier
@@ -99,43 +108,54 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
                 .verticalScroll(rememberScrollState())
         ) {
             Space(25.dp)
-            Surface(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                shape = CircleShape,
-                elevation = 5.dp
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                CoilImage(
-                    src = CdnUrlProvider.urlFor(product.imageCode, CdnUrlProvider.Size.Px320),
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(180.dp)
-                        .align(Alignment.CenterHorizontally)
-                        .clickable {
-                            scope.zoomImage(product.imageCode)
-                        },
-                    onError = { ItemPlaceholder() },
-                    onLoading = { ItemPlaceholder() },
-                    isCrossFadeEnabled = false
-                )
-            }
-            Space(16.dp)
+                Surface(
+                    shape = CircleShape,
+                    elevation = 5.dp
+                ) {
+                    CoilImage(
+                        src = CdnUrlProvider.urlFor(product.imageCode, CdnUrlProvider.Size.Px320),
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(100.dp)
+                            .clickable {
+                                scope.zoomImage(product.imageCode)
+                            },
+                        onError = { ItemPlaceholder() },
+                        onLoading = { ItemPlaceholder() },
+                        isCrossFadeEnabled = false
+                    )
+                }
 
-            Text(
-                text = product.name,
-                color = Color.Black,
-                fontWeight = FontWeight.W600,
-                fontSize = 16.sp,
-            )
+                Space(dp = 10.dp)
+
+                Column {
+                    Text(
+                        text = product.name,
+                        color = Color.Black,
+                        fontWeight = FontWeight.W600,
+                        fontSize = 16.sp,
+                    )
+                    Space(8.dp)
+
+                    Text(
+                        text = product.manufacturer,
+                        color = Color.Black,
+                        fontSize = 13.sp,
+                    )
+                }
+            }
+
             Space(8.dp)
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = product.manufacturer,
-                    color = Color.Black,
-                    fontSize = 13.sp,
-                )
+
 
                 product.stockInfo?.let {
                     Text(
@@ -451,6 +471,21 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
             }
         }
     }
+
+    if (showToast.value) {
+        if (cartItem != null)
+            ShowToastGlobal(
+                msg = cartItem.productName + " " +
+                        stringResource(id = R.string.added_to_cart) + " " +
+                        stringResource(id = R.string.qty) +
+                        " : " +
+                        cartItem.quantity.formatted + " + " +
+                        stringResource(id = R.string.free) + " " +
+                        cartItem.freeQuantity.formatted
+            )
+        EventCollector.sendEvent(Event.Action.Search.showToast("", null))
+        //scope.startSearchWithNoLoader()
+    }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -757,7 +792,16 @@ private fun SellerInfoItem(
                     text = buildAnnotatedString {
                         append("Stock: ")
                         val startIndex = length
-                        append(sellerInfo.stockInfo?.formattedStatus ?: "")
+                        append(sellerInfo.stockInfo?.formattedStatus.toString() + "(" ?: "")
+                        addStyle(
+                            SpanStyle(
+                                color = labelColor,
+                                fontWeight = FontWeight.W800
+                            ),
+                            startIndex,
+                            length,
+                        )
+                        append(sellerInfo.stockInfo?.availableQty.toString() + ")" ?: "")
                         addStyle(
                             SpanStyle(
                                 color = labelColor,
@@ -781,18 +825,29 @@ private fun SellerInfoItem(
                         )
                         .padding(4.dp),
                 ) {
+//                    Icon(
+//                        imageVector = Icons.Filled.LocationOn,
+//                        contentDescription = null,
+//                        tint = ConstColors.lightBlue,
+//                        modifier = Modifier.size(10.dp),
+//                    )
+//                    Space(4.dp)
+//                    Text(
+//                        text = "${sellerInfo.geoData.distance} km",
+//                        color = ConstColors.lightBlue,
+//                        fontSize = 14.sp,
+//                        fontWeight = FontWeight.W600,
+//                    )
+
                     Icon(
-                        imageVector = Icons.Filled.LocationOn,
+                        painter = painterResource(id = R.drawable.ic_location),
                         contentDescription = null,
-                        tint = ConstColors.lightBlue,
-                        modifier = Modifier.size(10.dp),
+                        modifier = Modifier.size(18.dp),
+                        tint = ConstColors.orange
                     )
                     Space(4.dp)
-                    Text(
-                        text = "${sellerInfo.geoData.distance} km",
-                        color = ConstColors.lightBlue,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W600,
+                    SingleTextLabel(
+                        data = "${sellerInfo.geoData.distance} km"
                     )
                 }
             }

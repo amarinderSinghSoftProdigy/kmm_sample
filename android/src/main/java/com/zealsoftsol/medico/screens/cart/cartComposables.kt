@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -41,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -75,7 +73,9 @@ fun CartScreen(scope: CartScope) {
     val isContinueEnabled = scope.isContinueEnabled.flow.collectAsState()
     val isPreviewEnabled = scope.isPreviewEnabled.flow.collectAsState()
     val showErrorAlert = remember { mutableStateOf(false) }
-
+    var stockistName = remember {
+        mutableStateOf("")
+    }
     remember {
         scope.updatePreviewStatus(false)
     }
@@ -90,28 +90,30 @@ fun CartScreen(scope: CartScope) {
             Column(
                 modifier = Modifier.fillMaxWidth()
             ) {
+                Space(10.dp)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp)
-                        .background(Color.White),
+                        .padding(start = 10.dp, end = 10.dp)
+                        .background(ConstColors.lightBackground, RoundedCornerShape(25.dp)),
                 ) {
-                    Surface(
-                        onClick = { scope.clearCart() },
-                        color = Color.White,
-                        shape = RectangleShape,
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(58.dp)
-                            .align(Alignment.CenterEnd)
-                    ) {
-                        if (!isPreviewEnabled.value) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_delete),
-                                contentDescription = null,
-                                tint = ConstColors.red,
-                                modifier = Modifier.padding(10.dp)
-                            )
+
+                    if (!isPreviewEnabled.value) {
+                        Surface(
+                            color = Color.Transparent,
+                            onClick = { scope.clearCart() },
+                            modifier = Modifier
+                                .size(40.dp)
+                                .align(Alignment.CenterEnd),
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_delete),
+                                    contentDescription = null,
+                                    tint = ConstColors.red,
+                                )
+                            }
                         }
                     }
                     Row(
@@ -142,6 +144,7 @@ fun CartScreen(scope: CartScope) {
                             key = { it.sellerCode },
                             itemContent = { value ->
                                 Box(modifier = Modifier.padding(vertical = 4.dp)) {
+                                    stockistName.value = value.sellerName
                                     SellerCartItem(
                                         sellerCart = value,
                                         expand = true,
@@ -172,7 +175,7 @@ fun CartScreen(scope: CartScope) {
                     }
                 }
             }
-
+            Space(10.dp)
             total.value?.let {
                 Column(
                     modifier = Modifier
@@ -250,8 +253,8 @@ fun CartScreen(scope: CartScope) {
                                 Space(2.dp)
                                 Text(
                                     text = stringResource(id = R.string.tax_exclusive),
-                                    color = MaterialTheme.colors.background,
-                                    fontWeight = FontWeight.W600,
+                                    color = Color.Red,
+                                    fontWeight = FontWeight.Bold,
                                     fontSize = 10.sp,
                                 )
                             }
@@ -295,7 +298,9 @@ fun CartScreen(scope: CartScope) {
 
     if (showErrorAlert.value)
         ShowAlertDialog(
-            message = "Please check again before preview an order", { showErrorAlert.value = false }
+            message = "Please check again before placing order with",
+            stockistName.value,
+            { showErrorAlert.value = false }
         ) {
             scope.updatePreviewStatus(true)
             showErrorAlert.value = false
@@ -328,15 +333,16 @@ private fun SellerCartItem(
                     .height(50.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Space(12.dp)
-                    Surface(
-                        color = Color.Transparent,
-                        onClick = onRemoveSeller,
-                        modifier = Modifier.size(40.dp),
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
 
-                            if (!isPreview) {
+                    Space(12.dp)
+                    if (!isPreview) {
+                        Surface(
+                            color = Color.Transparent,
+                            onClick = onRemoveSeller,
+                            modifier = Modifier.size(40.dp),
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+
 
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_delete),
@@ -452,28 +458,25 @@ private fun CartItem(
         elevation = 5.dp,
         modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 4.dp)
     ) {
-        /*Canvas(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(2.dp)
-        ) {
-            drawRect(labelColor)
-        }*/
         Row(
-            modifier = Modifier.padding(start = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            Surface(shape = RoundedCornerShape(5.dp), color = Color.White, elevation = 5.dp) {
-                CoilImage(
-                    src = CdnUrlProvider.urlFor(
-                        cartItem.imageCode,
-                        CdnUrlProvider.Size.Px123
-                    ),
-                    size = 90.dp,
-                    onError = { ItemPlaceholder() },
-                    onLoading = { ItemPlaceholder() },
-                )
+            if (!isPreview) {
+
+                Space(dp = 16.dp)
+
+                Surface(shape = RoundedCornerShape(5.dp), color = Color.White, elevation = 5.dp) {
+                    CoilImage(
+                        src = CdnUrlProvider.urlFor(
+                            cartItem.imageCode,
+                            CdnUrlProvider.Size.Px123
+                        ),
+                        size = 90.dp,
+                        onError = { ItemPlaceholder() },
+                        onLoading = { ItemPlaceholder() },
+                    )
+                }
             }
             BaseCartItem(
                 qtyInitial = cartItem.quantity.value,
@@ -548,24 +551,7 @@ private fun CartItem(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(
-                                text = buildAnnotatedString {
-                                    append("ST: ")
-                                    val startIndex = length
-                                    append(cartItem.subtotalPrice.formatted)
-                                    addStyle(
-                                        SpanStyle(
-                                            color = MaterialTheme.colors.background,
-                                            fontWeight = FontWeight.W700
-                                        ),
-                                        startIndex,
-                                        length,
-                                    )
-                                },
-                                color = ConstColors.gray.copy(alpha = 0.5f),
-                                fontWeight = FontWeight.Normal,
-                                fontSize = 12.sp,
-                            )
+
 
                             if (cartItem.quotedData?.isAvailable != false) {
                                 Text(
@@ -594,7 +580,26 @@ private fun CartItem(
                                     fontSize = 14.sp,
                                 )
                             }
+                            Text(
+                                text = buildAnnotatedString {
+                                    append("MRP: ")
+                                    val startIndex = length
+                                    append(cartItem.mrp.formatted)
+                                    addStyle(
+                                        SpanStyle(
+                                            color = ConstColors.lightGreen,
+                                            fontWeight = FontWeight.W700
+                                        ),
+                                        startIndex,
+                                        length,
+                                    )
+                                },
+                                color = ConstColors.gray.copy(alpha = 0.5f),
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 12.sp,
+                            )
                         }
+
                         Space(10.dp)
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -639,6 +644,7 @@ private fun CartItem(
                                 fontSize = 12.sp,
                             )
                         }
+
                     }
                 },
                 openBottomSheet = openBottomSheet,
@@ -718,17 +724,15 @@ private fun BaseCartItem(
                  wasError.value = isError
              }*/
         }
+
         Space(10.dp)
-        //Divider(color = ConstColors.ltgray)
-        //Space(10.dp)
-        if (!isPreview) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                when (mode.value) {
-                    BottomSectionMode.Select -> {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            when (mode.value) {
+                BottomSectionMode.Select -> {
+                    if (!isPreview) {
                         MedicoButton(
                             text = stringResource(id = R.string.select),
                             onClick = { onSaveQty(null, null) },
@@ -738,7 +742,9 @@ private fun BaseCartItem(
                             height = 35.dp
                         )
                     }
-                    BottomSectionMode.AddToCart -> {
+                }
+                BottomSectionMode.AddToCart -> {
+                    if (!isPreview) {
                         MedicoButton(
                             text = stringResource(id = R.string.add_to_cart),
                             onClick = { mode.value = BottomSectionMode.ConfirmQty },
@@ -748,7 +754,9 @@ private fun BaseCartItem(
                             height = 35.dp
                         )
                     }
-                    BottomSectionMode.ConfirmQty -> {
+                }
+                BottomSectionMode.ConfirmQty -> {
+                    if (!isPreview) {
                         MedicoButton(
                             text = stringResource(id = R.string.cancel),
                             color = ConstColors.ltgray,
@@ -782,47 +790,69 @@ private fun BaseCartItem(
                             height = 35.dp
                         )
                     }
-                    BottomSectionMode.Update -> {
-                        Row(
-                            verticalAlignment = Alignment.Bottom,
-                            modifier = Modifier.weight(2f),
-                        ) {
-                            if (cartItem.isPromotionActive) {
-                                cartItem.promotionData?.let {
-                                    Text(
-                                        text = it.displayLabel,
-                                        fontSize = 14.sp,
-                                        color = ConstColors.red,
-                                    )
-                                }
+                }
+                BottomSectionMode.Update -> {
+                    Row(
+                        verticalAlignment = Alignment.Bottom,
+                        modifier = Modifier.weight(2f),
+                    ) {
+                        if (cartItem.isPromotionActive || !isPreview) {
+                            cartItem.promotionData?.let {
+                                Text(
+                                    text = it.displayLabel,
+                                    fontSize = 14.sp,
+                                    color = ConstColors.red,
+                                )
                             }
-                            /*Text(
-                                text = stringResource(id = R.string.qty).uppercase(),
-                                fontSize = 12.sp,
-                                color = ConstColors.gray,
-                            )
-                            Space(6.dp)
-                            Text(
-                                text = qty.value.toString(),
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.W700,
-                                color = MaterialTheme.colors.background,
-                            )
-                            Space(6.dp)
-                            Text(
-                                text = "+${freeQty.value}",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.W700,
-                                color = ConstColors.lightBlue,
-                                modifier = Modifier
-                                    .background(
-                                        ConstColors.lightBlue.copy(alpha = 0.05f),
-                                        RoundedCornerShape(4.dp)
-                                    )
-                                    .border(1.dp, ConstColors.lightBlue, RoundedCornerShape(4.dp))
-                                    .padding(horizontal = 4.dp, vertical = 2.dp),
-                            )*/
                         }
+
+                        Text(
+                            text = buildAnnotatedString {
+                                append("ST: ")
+                                val startIndex = length
+                                append(cartItem.subtotalPrice.formatted)
+                                addStyle(
+                                    SpanStyle(
+                                        color = MaterialTheme.colors.background,
+                                        fontWeight = FontWeight.W700
+                                    ),
+                                    startIndex,
+                                    length,
+                                )
+                            },
+                            color = ConstColors.gray.copy(alpha = 0.5f),
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 12.sp,
+                        )
+
+                        /*Text(
+                            text = stringResource(id = R.string.qty).uppercase(),
+                            fontSize = 12.sp,
+                            color = ConstColors.gray,
+                        )
+                        Space(6.dp)
+                        Text(
+                            text = qty.value.toString(),
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.W700,
+                            color = MaterialTheme.colors.background,
+                        )
+                        Space(6.dp)
+                        Text(
+                            text = "+${freeQty.value}",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.W700,
+                            color = ConstColors.lightBlue,
+                            modifier = Modifier
+                                .background(
+                                    ConstColors.lightBlue.copy(alpha = 0.05f),
+                                    RoundedCornerShape(4.dp)
+                                )
+                                .border(1.dp, ConstColors.lightBlue, RoundedCornerShape(4.dp))
+                                .padding(horizontal = 4.dp, vertical = 2.dp),
+                        )*/
+                    }
+                    if (!isPreview) {
                         MedicoButton(
                             modifier = Modifier.weight(1.5f),
                             text = stringResource(id = R.string.update),
@@ -835,20 +865,21 @@ private fun BaseCartItem(
                     }
                 }
             }
-        } else {
+        }
+        if (isPreview && cartItem.isPromotionActive) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(35.dp),
             ) {
-                if (cartItem.isPromotionActive) {
-                    cartItem.promotionData?.let {
-                        Text(
-                            text = it.displayLabel,
-                            fontSize = 14.sp,
-                            color = ConstColors.red,
-                        )
-                    }
+
+                cartItem.promotionData?.let {
+                    Text(
+                        text = it.displayLabel,
+                        fontSize = 14.sp,
+                        color = ConstColors.red,
+                    )
+
                 }
             }
         }
