@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.core.utils.TapModeHelper
+import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SeasonBoyRetailer
@@ -19,8 +20,10 @@ sealed class BuyProductScope<T : WithTradeName>(
     val itemsFilter: DataSource<String> = DataSource(""),
     val quantities: DataSource<Map<T, Pair<Double, Double>>> = DataSource(mapOf()),
     private val tapModeHelper: TapModeHelper,
-) : Scope.Child.TabBar(), CommonScope.CanGoBack {
+) : Scope.Child.TabBar(), CommonScope.CanGoBack,ToastScope {
 
+    override val showToast: DataSource<Boolean> = DataSource(false)
+    override val cartData: DataSource<CartData?> = DataSource(null)
     internal val allItems = items.value
 
     fun saveQuantities(item: T, qty: Double, freeQty: Double) {

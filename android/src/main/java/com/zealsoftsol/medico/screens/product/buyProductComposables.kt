@@ -67,6 +67,8 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.nested.BuyProductScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.PromotionData
@@ -79,6 +81,7 @@ import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
+import com.zealsoftsol.medico.screens.common.ShowToastGlobal
 import com.zealsoftsol.medico.screens.common.SingleTextLabel
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.management.GeoLocation
@@ -89,6 +92,10 @@ import kotlin.time.ExperimentalTime
 fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
 
     val product = scope.product
+    val showToast = scope.showToast.flow.collectAsState()
+    val cartData = scope.cartData.flow.collectAsState()
+    val entries = if (cartData.value != null) cartData.value?.sellerCarts?.get(0)?.items else null
+    val cartItem = entries?.get(entries.size - 1)
 
     Column(
         modifier = Modifier
@@ -463,6 +470,21 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
                 }
             }
         }
+    }
+
+    if (showToast.value) {
+        if (cartItem != null)
+            ShowToastGlobal(
+                msg = cartItem.productName + " " +
+                        stringResource(id = R.string.added_to_cart) + " " +
+                        stringResource(id = R.string.qty) +
+                        " : " +
+                        cartItem.quantity.formatted + " + " +
+                        stringResource(id = R.string.free) + " " +
+                        cartItem.freeQuantity.formatted
+            )
+        EventCollector.sendEvent(Event.Action.Search.showToast("", null))
+        //scope.startSearchWithNoLoader()
     }
 }
 
