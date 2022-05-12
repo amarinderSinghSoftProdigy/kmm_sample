@@ -87,7 +87,8 @@ data class CartItem(
     val quotedData: QuotedData? = null,
     val isPromotionActive: Boolean = false,
     val promotionData: PromotionsData? = null,
-    val imageCode: String
+    val imageCode: String,
+    val mrp: FormattedData<Double>
 )
 
 @Serializable
