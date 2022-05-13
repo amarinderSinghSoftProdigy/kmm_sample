@@ -693,6 +693,7 @@ private fun ShowStockistDashBoard(
     val manufacturer = scope.manufacturerList.flow.collectAsState()
     val stockStatus  = scope.stockStatusData.flow.collectAsState()
     val recentProducts = scope.recentProductInfo.flow.collectAsState()
+    val promotionData = scope.promotionData.flow.collectAsState()
     val activity = LocalContext.current as MainActivity
     val shareText = stringResource(id = R.string.share_content)
 
@@ -997,16 +998,16 @@ private fun ShowStockistDashBoard(
                             painter = painterResource(id = R.drawable.ic_offer)
                         )
                         Space(dp = 8.dp)
-//                            dash?.offers?.let { it ->
-//                                val total: String =
-//                                    it.find { data -> data.status == OfferStatus.RUNNING }?.total.toString()
-//                                Text(
-//                                    text = if (total == "null") "0" else total,
-//                                    color = MaterialTheme.colors.background,
-//                                    fontSize = 24.sp,
-//                                    fontWeight = FontWeight.W700,
-//                                )
-//                            } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 8.dp))
+                            promotionData.value?.let { it ->
+                                val total: String =
+                                    it.find { data -> data.status == OfferStatus.RUNNING }?.total.toString()
+                                Text(
+                                    text = if (total == "null") "0" else total,
+                                    color = MaterialTheme.colors.background,
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.W700,
+                                )
+                            } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 8.dp))
                     }
                     Text(
                         text = stringResource(id = R.string.running),
@@ -1038,16 +1039,16 @@ private fun ShowStockistDashBoard(
                             painter = painterResource(id = R.drawable.ic_offer)
                         )
                         Space(dp = 8.dp)
-//                            dash?.offers?.let {
-//                                val total: String =
-//                                    it.find { data -> data.status == OfferStatus.ENDED }?.total.toString()
-//                                Text(
-//                                    text = if (total == "null") "0" else total,
-//                                    color = MaterialTheme.colors.background,
-//                                    fontSize = 24.sp,
-//                                    fontWeight = FontWeight.W700,
-//                                )
-//                            } ?: ShimmerItem(padding = PaddingValues(start = 12.dp, top = 8.dp))
+                        promotionData.value?.let {
+                                val total: String =
+                                    it.find { data -> data.status == OfferStatus.ENDED }?.total.toString()
+                                Text(
+                                    text = if (total == "null") "0" else total,
+                                    color = MaterialTheme.colors.background,
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.W700,
+                                )
+                            } ?: ShimmerItem(padding = PaddingValues(start = 12.dp, top = 8.dp))
                     }
                     Text(
                         text = stringResource(id = R.string.ended),

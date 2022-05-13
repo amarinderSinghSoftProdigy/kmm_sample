@@ -24,7 +24,6 @@ data class DashboardData(
 @Serializable
 data class DashboardManufacturer(
     val results: List<ManufacturerData> = emptyList(),
-    val type: String
 )
 
 @Serializable
@@ -73,6 +72,11 @@ data class SellerInfoData(
 data class PromotionInfoData(
     val promoCode: String, val buy: FormattedData<Double>, val free: FormattedData<Double>,
     val offer: String, val type: String, val productDiscount: FormattedData<Double>
+)
+
+@Serializable
+data class DashboardPromotion(
+    val results: List<OffersData>
 )
 
 @Serializable

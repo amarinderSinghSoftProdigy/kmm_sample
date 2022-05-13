@@ -27,6 +27,7 @@ import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
 import com.zealsoftsol.medico.data.DashboardManufacturer
+import com.zealsoftsol.medico.data.DashboardPromotion
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EmployeeRegistration1
 import com.zealsoftsol.medico.data.EmployeeRegistration2
@@ -146,6 +147,7 @@ interface NetworkScope {
         suspend fun getDashboardManufacturers(type: UserType): BodyResponse<DashboardManufacturer>
         suspend fun getStockStatusData(type: UserType): BodyResponse<StockStatusData>
         suspend fun getRecentProducts(type: UserType): BodyResponse<RecentProductInfo>
+        suspend fun getPromotionData(type: UserType): BodyResponse<DashboardPromotion>
         suspend fun getCustomerDataV2(): BodyResponse<CustomerDataV2>
         suspend fun getCustomerData(): BodyResponse<CustomerData>
     }

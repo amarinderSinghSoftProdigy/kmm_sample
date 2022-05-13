@@ -39,6 +39,7 @@ import com.zealsoftsol.medico.core.repository.NotificationRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.getManufacturerDataSource
+import com.zealsoftsol.medico.core.repository.getPromotionsDataSource
 import com.zealsoftsol.medico.core.repository.getRecentProductsDataSource
 import com.zealsoftsol.medico.core.repository.getStockDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
@@ -81,7 +82,8 @@ internal class TransitionEventDelegate(
                             unreadNotifications = notificationRepo.getUnreadMessagesDataSource(),
                             cartItemsCount = cartRepo.getEntriesCountDataSource(),
                             stockStatusData = userRepo.getStockDataSource(),
-                            recentProductInfo = userRepo.getRecentProductsDataSource()
+                            recentProductInfo = userRepo.getRecentProductsDataSource(),
+                            promotionData = userRepo.getPromotionsDataSource()
                         )
                     )
                 }

@@ -21,6 +21,7 @@ import com.zealsoftsol.medico.data.HeaderData
 import com.zealsoftsol.medico.data.LicenseDocumentData
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManufacturerData
+import com.zealsoftsol.medico.data.OffersData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.ProfileImageData
@@ -86,6 +87,7 @@ class UserRepo(
     val manufacturerFlow: MutableStateFlow<List<ManufacturerData>> = MutableStateFlow(emptyList())
     val stockDataFlow: MutableStateFlow<StockStatusData?> = MutableStateFlow(null)
     val recentProductFlow: MutableStateFlow<RecentProductInfo?> = MutableStateFlow(null)
+    val promotionDataFlow: MutableStateFlow<List<OffersData>> = MutableStateFlow(emptyList())
 
     fun getUserAccess(): UserAccess {
         return userV2Flow.value?.let {
@@ -179,9 +181,9 @@ class UserRepo(
     }
 
     suspend fun loadDashboard() {
-//        networkCustomerScope.getDashboardManufacturers(requireUser().type).onSuccess {
-//            manufacturerFlow.value = it.results
-//        }
+        networkCustomerScope.getDashboardManufacturers(requireUser().type).onSuccess {
+            manufacturerFlow.value = it.results
+        }
 
         networkCustomerScope.getStockStatusData(requireUser().type).onSuccess {
             stockDataFlow.value = it
@@ -189,6 +191,10 @@ class UserRepo(
 
         networkCustomerScope.getRecentProducts(requireUser().type).onSuccess {
             recentProductFlow.value = it
+        }
+
+        networkCustomerScope.getPromotionData(requireUser().type).onSuccess {
+            promotionDataFlow.value = it.results
         }
     }
 
@@ -474,6 +480,11 @@ internal inline fun UserRepo.getStockDataSource(): ReadOnlyDataSource<StockStatu
 internal inline fun UserRepo.getRecentProductsDataSource(): ReadOnlyDataSource<RecentProductInfo?> =
     ReadOnlyDataSource(
         recentProductFlow.stateIn(GlobalScope, SharingStarted.Eagerly, null)
+    )
+
+internal inline fun UserRepo.getPromotionsDataSource(): ReadOnlyDataSource<List<OffersData>?> =
+    ReadOnlyDataSource(
+        promotionDataFlow.stateIn(GlobalScope, SharingStarted.Eagerly, null)
     )
 
 private inline fun String.formatIndia() = "91$this"

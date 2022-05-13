@@ -36,6 +36,7 @@ import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
 import com.zealsoftsol.medico.data.DashboardManufacturer
+import com.zealsoftsol.medico.data.DashboardPromotion
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EditOfferRequest
 import com.zealsoftsol.medico.data.EmployeeRegistration1
@@ -370,6 +371,12 @@ class NetworkClient(
 
     override suspend fun getDashboardManufacturers(type: UserType) = simpleRequest {
         client.get<BodyResponse<DashboardManufacturer>>("${baseUrl.url}/dashboard/${type.serverValueSimple}/manufacturers") {
+            withMainToken()
+        }
+    }
+
+    override suspend fun getPromotionData(type: UserType) = simpleRequest {
+        client.get<BodyResponse<DashboardPromotion>>("${baseUrl.url}/dashboard/${type.serverValueSimple}/promotions") {
             withMainToken()
         }
     }

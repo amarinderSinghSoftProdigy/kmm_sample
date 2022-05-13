@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.ManufacturerData
 import com.zealsoftsol.medico.data.OfferStatus
+import com.zealsoftsol.medico.data.OffersData
 import com.zealsoftsol.medico.data.RecentProductInfo
 import com.zealsoftsol.medico.data.StockStatusData
 import com.zealsoftsol.medico.data.UserType
@@ -26,7 +27,8 @@ class DashboardScope private constructor(
     val cartItemsCount: ReadOnlyDataSource<Int>,
     val manufacturerList: ReadOnlyDataSource<List<ManufacturerData>?>,
     val stockStatusData: ReadOnlyDataSource<StockStatusData?>,
-    val recentProductInfo: ReadOnlyDataSource<RecentProductInfo?>
+    val recentProductInfo: ReadOnlyDataSource<RecentProductInfo?>,
+    val promotionData: ReadOnlyDataSource<List<OffersData>?>
 ) : Scope.Child.TabBar() {
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
@@ -135,7 +137,8 @@ class DashboardScope private constructor(
             unreadNotifications: ReadOnlyDataSource<Int>,
             cartItemsCount: ReadOnlyDataSource<Int>,
             stockStatusData: ReadOnlyDataSource<StockStatusData?>,
-            recentProductInfo: ReadOnlyDataSource<RecentProductInfo?>
+            recentProductInfo: ReadOnlyDataSource<RecentProductInfo?>,
+            promotionData: ReadOnlyDataSource<List<OffersData>?>
         ) = TabBarScope(
             childScope = DashboardScope(
                 user.type,
@@ -143,7 +146,8 @@ class DashboardScope private constructor(
                 cartItemsCount = cartItemsCount,
                 manufacturerList = manufacturerData,
                 stockStatusData = stockStatusData,
-                recentProductInfo = recentProductInfo
+                recentProductInfo = recentProductInfo,
+                promotionData = promotionData
             ),
             initialTabBarInfo = TabBarInfo.Search(
                 notificationItemsCount = unreadNotifications,
