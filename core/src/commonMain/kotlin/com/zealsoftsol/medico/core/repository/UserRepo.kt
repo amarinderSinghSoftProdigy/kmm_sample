@@ -44,6 +44,7 @@ import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
 import com.zealsoftsol.medico.data.ValidationResponse
 import com.zealsoftsol.medico.data.WhatsappData
+import com.zealsoftsol.medico.data.dashboard.DashBoardManufacturersData
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -81,7 +82,7 @@ class UserRepo(
         }.getOrNull()
     )
     val configFlow: MutableStateFlow<ConfigData> = MutableStateFlow(ConfigData())
-    val dashboardFlow: MutableStateFlow<DashboardData?> = MutableStateFlow(null)
+    val manufacturerFlow: MutableStateFlow<DashBoardManufacturersData?> = MutableStateFlow(null)
 
     fun getUserAccess(): UserAccess {
         return userV2Flow.value?.let {
@@ -175,8 +176,8 @@ class UserRepo(
     }
 
     suspend fun loadDashboard() {
-        networkCustomerScope.getDashboard(requireUser().unitCode).onSuccess {
-            dashboardFlow.value = it
+        networkCustomerScope.getManufacturers(requireUser().type).onSuccess {
+            manufacturerFlow.value = it
         }
     }
 
@@ -189,7 +190,7 @@ class UserRepo(
     fun clear() {
         clearUserData()
         userFlow.value = null
-        dashboardFlow.value = null
+        manufacturerFlow.value = null
     }
 
     fun getAuthCredentials(): AuthCredentials {

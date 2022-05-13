@@ -26,7 +26,6 @@ import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
-import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EmployeeRegistration1
 import com.zealsoftsol.medico.data.EmployeeRegistration2
@@ -101,6 +100,7 @@ import com.zealsoftsol.medico.data.UserValidation3
 import com.zealsoftsol.medico.data.ValidationResponse
 import com.zealsoftsol.medico.data.ViewEmployee
 import com.zealsoftsol.medico.data.WhatsappData
+import com.zealsoftsol.medico.data.dashboard.DashBoardManufacturersData
 
 
 interface NetworkScope {
@@ -141,7 +141,7 @@ interface NetworkScope {
     }
 
     interface Customer : NetworkScope {
-        suspend fun getDashboard(unitCode: String): BodyResponse<DashboardData>
+        suspend fun getManufacturers(type: UserType): DashBoardManufacturersData
         suspend fun getCustomerDataV2(): BodyResponse<CustomerDataV2>
         suspend fun getCustomerData(): BodyResponse<CustomerData>
     }

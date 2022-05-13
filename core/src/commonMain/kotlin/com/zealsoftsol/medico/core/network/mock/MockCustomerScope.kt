@@ -29,7 +29,7 @@ class MockCustomerScope : NetworkScope.Customer {
         getMockCustomerDataV2()
     }
 
-    override suspend fun getDashboard(unitCode: String): BodyResponse<DashboardData> =
+    override suspend fun getDashboard(unitCode: String, type: UserType): BodyResponse<DashboardData> =
         mockResponse {
             DashboardData(
                 ConnectedUserData(

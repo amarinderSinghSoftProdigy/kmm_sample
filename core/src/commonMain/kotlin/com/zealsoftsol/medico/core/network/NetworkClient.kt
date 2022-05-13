@@ -366,7 +366,7 @@ class NetworkClient(
         }
     }
 
-    override suspend fun getDashboard(unitCode: String) = simpleRequest {
+    override suspend fun getDashboard(unitCode: String, type: UserType) = simpleRequest {
         client.get<BodyResponse<DashboardData>>("${baseUrl.url}/dashboard") {
             withMainToken()
             url {
