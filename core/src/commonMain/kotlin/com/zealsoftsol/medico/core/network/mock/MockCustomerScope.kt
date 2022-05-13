@@ -7,9 +7,9 @@ import com.zealsoftsol.medico.data.BodyResponse
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
 import com.zealsoftsol.medico.data.CustomerMetaData
-import com.zealsoftsol.medico.data.DashBoardStockData
 import com.zealsoftsol.medico.data.DashboardManufacturer
 import com.zealsoftsol.medico.data.DashboardRecentProducts
+import com.zealsoftsol.medico.data.StockStatusData
 import com.zealsoftsol.medico.data.UserType
 
 class MockCustomerScope : NetworkScope.Customer {
@@ -26,7 +26,7 @@ class MockCustomerScope : NetworkScope.Customer {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getStockStatusData(type: UserType): BodyResponse<DashBoardStockData> {
+    override suspend fun getStockStatusData(type: UserType): BodyResponse<StockStatusData> {
         TODO("Not yet implemented")
     }
 

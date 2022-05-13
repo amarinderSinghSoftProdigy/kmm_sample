@@ -84,9 +84,8 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun DashboardScreen(scope: DashboardScope) {
-    val dashboard = scope.manufacturerList.flow.collectAsState()
     if (scope.userType == UserType.STOCKIST) {
-        ShowStockistDashBoard(dashboard, scope)
+        ShowStockistDashBoard(scope)
     } else if (scope.userType == UserType.RETAILER || scope.userType == UserType.HOSPITAL) {
 //        ShowRetailerAndHospitalDashboard(dashboard, scope)
     }
@@ -689,9 +688,10 @@ private fun CategoriesItem(item: BrandsData, scope: DashboardScope, modifier: Mo
  */
 @Composable
 private fun ShowStockistDashBoard(
-    dashboard: State<List<ManufacturerData>?>,
     scope: DashboardScope
 ) {
+    val manufacturer = scope.manufacturerList.flow.collectAsState()
+    val stockStatus  = scope.stockStatusData.flow.collectAsState()
     val activity = LocalContext.current as MainActivity
     val shareText = stringResource(id = R.string.share_content)
 
@@ -701,303 +701,301 @@ private fun ShowStockistDashBoard(
             .background(ConstColors.newDesignGray)
             .verticalScroll(rememberScrollState()),
     ) {
-
-        dashboard.value.let { dash ->
-            Box(
+        Box(
+            modifier = Modifier
+                .background(Color.White)
+                .fillMaxWidth()
+                .padding(14.dp)
+        ) {
+            Row(
                 modifier = Modifier
-                    .background(Color.White)
-                    .fillMaxWidth()
-                    .padding(14.dp)
+                    .horizontalScroll(rememberScrollState())
+                    .padding(horizontal = 2.dp)
             ) {
-                Row(
-                    modifier = Modifier
-                        .horizontalScroll(rememberScrollState())
-                        .padding(horizontal = 2.dp)
+                QuickActionItem(
+                    title = stringResource(id = R.string.orders),
+                    icon = R.drawable.ic_menu_orders
                 ) {
-                    QuickActionItem(
-                        title = stringResource(id = R.string.orders),
-                        icon = R.drawable.ic_menu_orders
-                    ) {
-                        scope.goToOrders()
-                    }
-                    Space(16.dp)
-                    QuickActionItem(
-                        title = stringResource(id = R.string.retailers),
-                        icon = R.drawable.ic_menu_retailers
-                    ) {
-                        scope.sendEvent(Event.Transition.Management(UserType.RETAILER))
-                    }
-                    Space(16.dp)
-                    QuickActionItem(
-                        title = stringResource(id = R.string.online_collections),
-                        icon = R.drawable.ic_menu_invoice
-                    ) {
-                        scope.sendEvent(Event.Transition.IOCSeller)
-                    }
-                    Space(dp = 16.dp)
-                    QuickActionItem(
-                        title = stringResource(id = R.string.hospitals),
-                        icon = R.drawable.ic_menu_hospitals
-                    ) {
-                        scope.sendEvent(Event.Transition.Management(UserType.HOSPITAL))
-                    }
-                    Space(dp = 16.dp)
-                    QuickActionItem(
-                        title = stringResource(id = R.string.stockists),
-                        icon = R.drawable.ic_menu_stockist
-                    ) {
-                        scope.sendEvent(Event.Transition.Management(UserType.STOCKIST))
-                    }
-                    Space(dp = 16.dp)
-                    QuickActionItem(
-                        title = stringResource(id = R.string.stores),
-                        icon = R.drawable.ic_menu_stores
-                    ) {
-                        scope.sendEvent(Event.Transition.Stores)
-                    }
-                    Space(dp = 16.dp)
-                    QuickActionItem(
-                        title = stringResource(id = R.string.inventory),
-                        icon = R.drawable.ic_menu_inventory
-                    ) {
-                        scope.sendEvent(Event.Transition.Inventory(InventoryScope.InventoryType.ALL))
-                    }
-                    Space(dp = 16.dp)
-                    QuickActionItem(
-                        title = stringResource(id = R.string.deal_offer),
-                        icon = R.drawable.ic_offer
-                    ) {
-                        scope.sendEvent(Event.Transition.Offers(OfferStatus.ALL))
-                    }
-                    Space(dp = 16.dp)
-                    QuickActionItem(
-                        title = stringResource(id = R.string.my_account),
-                        icon = R.drawable.ic_personal
-                    ) {
-                        scope.sendEvent(Event.Transition.Settings(true))
-                    }
-                    Space(dp = 16.dp)
-                    QuickActionItem(
-                        title = stringResource(id = R.string.share_medico),
-                        icon = R.drawable.ic_share
-                    ) {
-                        activity.shareTextContent(shareText)
-                    }
-                    Space(dp = 16.dp)
-                    QuickActionItem(
-                        title = stringResource(id = R.string.employees),
-                        icon = R.drawable.ic_customer_care_acc
-                    ) {
-                        scope.sendEvent(Event.Transition.AddEmployee)
-                    }
-                    Space(dp = 16.dp)
-                    QuickActionItem(
-                        title = stringResource(id = R.string.delivery_qr_code),
-                        icon = R.drawable.ic_qr_code
-                    ) {
-                        scope.sendEvent(Event.Transition.QrCode)
-                    }
+                    scope.goToOrders()
                 }
-            }
-            Space(dp = 16.dp)
-            Column(
-                modifier = Modifier
-                    .background(Color.White)
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                Space(16.dp)
+                QuickActionItem(
+                    title = stringResource(id = R.string.retailers),
+                    icon = R.drawable.ic_menu_retailers
                 ) {
-                    Text(
-                        text = stringResource(id = R.string.manufacturers),
-                        color = ConstColors.lightBlue,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    //todo uncomment for view more on manufactrers
-
-                    /*  Row(
-                          verticalAlignment = Alignment.CenterVertically,
-                          horizontalArrangement = Arrangement.End,
-                          modifier = Modifier.clickable {
-                              scope.sendEvent(Event.Transition.Manufacturers)
-                          }
-                      ) {
-                          Icon(
-                              painter = painterResource(id = R.drawable.ic_eye),
-                              contentDescription = null,
-                              tint = ConstColors.lightBlue,
-                              modifier = Modifier.size(20.dp)
-                          )
-                          Text(
-                              text = stringResource(id = R.string.view_all),
-                              color = ConstColors.lightBlue,
-                              fontSize = 16.sp,
-                              fontWeight = FontWeight.W600,
-                              modifier = Modifier
-                                  .padding(horizontal = 3.dp)
-                                  .padding(end = 16.dp),
-                          )
-                      }*/
+                    scope.sendEvent(Event.Transition.Management(UserType.RETAILER))
+                }
+                Space(16.dp)
+                QuickActionItem(
+                    title = stringResource(id = R.string.online_collections),
+                    icon = R.drawable.ic_menu_invoice
+                ) {
+                    scope.sendEvent(Event.Transition.IOCSeller)
                 }
                 Space(dp = 16.dp)
-
-                LazyRow(
-                    contentPadding = PaddingValues(3.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                QuickActionItem(
+                    title = stringResource(id = R.string.hospitals),
+                    icon = R.drawable.ic_menu_hospitals
                 ) {
-                    dashboard.value?.let {
-                        itemsIndexed(
-                            items = it,
-                            key = { index, _ -> index },
-                            itemContent = { _, item ->
-                                ManufacturersItem(item) {
-                                    scope.moveToInventoryScreen(manufacturerCode = item.code)
-                                }
-                            },
-                        )
-                    }
+                    scope.sendEvent(Event.Transition.Management(UserType.HOSPITAL))
+                }
+                Space(dp = 16.dp)
+                QuickActionItem(
+                    title = stringResource(id = R.string.stockists),
+                    icon = R.drawable.ic_menu_stockist
+                ) {
+                    scope.sendEvent(Event.Transition.Management(UserType.STOCKIST))
+                }
+                Space(dp = 16.dp)
+                QuickActionItem(
+                    title = stringResource(id = R.string.stores),
+                    icon = R.drawable.ic_menu_stores
+                ) {
+                    scope.sendEvent(Event.Transition.Stores)
+                }
+                Space(dp = 16.dp)
+                QuickActionItem(
+                    title = stringResource(id = R.string.inventory),
+                    icon = R.drawable.ic_menu_inventory
+                ) {
+                    scope.sendEvent(Event.Transition.Inventory(InventoryScope.InventoryType.ALL))
+                }
+                Space(dp = 16.dp)
+                QuickActionItem(
+                    title = stringResource(id = R.string.deal_offer),
+                    icon = R.drawable.ic_offer
+                ) {
+                    scope.sendEvent(Event.Transition.Offers(OfferStatus.ALL))
+                }
+                Space(dp = 16.dp)
+                QuickActionItem(
+                    title = stringResource(id = R.string.my_account),
+                    icon = R.drawable.ic_personal
+                ) {
+                    scope.sendEvent(Event.Transition.Settings(true))
+                }
+                Space(dp = 16.dp)
+                QuickActionItem(
+                    title = stringResource(id = R.string.share_medico),
+                    icon = R.drawable.ic_share
+                ) {
+                    activity.shareTextContent(shareText)
+                }
+                Space(dp = 16.dp)
+                QuickActionItem(
+                    title = stringResource(id = R.string.employees),
+                    icon = R.drawable.ic_customer_care_acc
+                ) {
+                    scope.sendEvent(Event.Transition.AddEmployee)
+                }
+                Space(dp = 16.dp)
+                QuickActionItem(
+                    title = stringResource(id = R.string.delivery_qr_code),
+                    icon = R.drawable.ic_qr_code
+                ) {
+                    scope.sendEvent(Event.Transition.QrCode)
                 }
             }
-            Space(16.dp)
-
-            Column(
-                modifier = Modifier
-                    .background(Color.White)
-                    .fillMaxWidth()
-                    .padding(16.dp)
+        }
+        Space(dp = 16.dp)
+        Column(
+            modifier = Modifier
+                .background(Color.White)
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = stringResource(id = R.string.inventory),
+                    text = stringResource(id = R.string.manufacturers),
                     color = ConstColors.lightBlue,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                 )
-                Space(dp = 8.dp)
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    val shape1 = MaterialTheme.shapes.large.copy(
-                        topEnd = CornerSize(0.dp),
-                        bottomEnd = CornerSize(0.dp)
-                    )
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable {
-                                scope.moveToInventoryScreen(InventoryScope.InventoryType.IN_STOCK)
-                            }
-                            .background(Color.White/*ConstColors.green.copy(alpha = .2f)*/, shape1)
-                            .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape1)
-                            .padding(20.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = CenterHorizontally,
-                    ) {
+                //todo uncomment for view more on manufacturers
 
-                        Row {
-                            Icon(
-                                contentDescription = null,
-                                tint = ConstColors.lightGreen,
-                                painter = painterResource(id = R.drawable.ic_menu_inventory)
-                            )
-                            Space(dp = 8.dp)
-//                            dash?.stockStatusData?.inStock?.let {
-//                                Text(
-//                                    text = it.toString(),
-//                                    color = MaterialTheme.colors.background,
-//                                    fontSize = 24.sp,
-//                                    fontWeight = FontWeight.W700,
-//                                )
-//                            } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 8.dp))
-                        }
-                        Text(
-                            text = stringResource(id = R.string.in_stock),
-                            color = MaterialTheme.colors.background,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.W600,
-                        )
-                    }
-                    val shape2 = MaterialTheme.shapes.large.copy(
-                        topStart = CornerSize(0.dp),
-                        bottomStart = CornerSize(0.dp)
-                    )
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable {
-                                scope.moveToInventoryScreen(InventoryScope.InventoryType.OUT_OF_STOCK)
+                /*  Row(
+                      verticalAlignment = Alignment.CenterVertically,
+                      horizontalArrangement = Arrangement.End,
+                      modifier = Modifier.clickable {
+                          scope.sendEvent(Event.Transition.Manufacturers)
+                      }
+                  ) {
+                      Icon(
+                          painter = painterResource(id = R.drawable.ic_eye),
+                          contentDescription = null,
+                          tint = ConstColors.lightBlue,
+                          modifier = Modifier.size(20.dp)
+                      )
+                      Text(
+                          text = stringResource(id = R.string.view_all),
+                          color = ConstColors.lightBlue,
+                          fontSize = 16.sp,
+                          fontWeight = FontWeight.W600,
+                          modifier = Modifier
+                              .padding(horizontal = 3.dp)
+                              .padding(end = 16.dp),
+                      )
+                  }*/
+            }
+            Space(dp = 16.dp)
+
+            LazyRow(
+                contentPadding = PaddingValues(3.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                manufacturer.value?.let {
+                    itemsIndexed(
+                        items = it,
+                        key = { index, _ -> index },
+                        itemContent = { _, item ->
+                            ManufacturersItem(item) {
+                                scope.moveToInventoryScreen(manufacturerCode = item.code)
                             }
-                            .background(Color.White/*ConstColors.red.copy(alpha = .2f)*/, shape2)
-                            .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape2)
-                            .padding(20.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = CenterHorizontally,
-                    ) {
-                        Row {
-                            Icon(
-                                contentDescription = null,
-                                tint = ConstColors.orange,
-                                painter = painterResource(id = R.drawable.ic_menu_inventory)
-                            )
-                            Space(dp = 8.dp)
-//                            dash?.stockStatusData?.outOfStock?.let {
-//                                Text(
-//                                    text = it.toString(),
-//                                    color = MaterialTheme.colors.background,
-//                                    fontSize = 24.sp,
-//                                    fontWeight = FontWeight.W700,
-//                                )
-//                            } ?: ShimmerItem(padding = PaddingValues(start = 12.dp, top = 8.dp))
-                        }
-                        Text(
-                            text = stringResource(id = R.string.out_stock),
-                            color = MaterialTheme.colors.background,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.W600,
-                        )
-                    }
+                        },
+                    )
                 }
             }
-            Space(16.dp)
-            Column(
-                modifier = Modifier
-                    .background(Color.White)
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = stringResource(id = R.string.offers),
-                    color = ConstColors.lightBlue,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold,
-                )
-                Space(dp = 8.dp)
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    val shape1 = MaterialTheme.shapes.large.copy(
-                        topEnd = CornerSize(0.dp),
-                        bottomEnd = CornerSize(0.dp)
-                    )
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .background(Color.White, shape1)
-                            .clickable {
-                                scope.moveToOffersScreen(OfferStatus.RUNNING)
-                            }
-                            .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape1)
-                            .padding(20.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = CenterHorizontally,
-                    ) {
+        }
+        Space(16.dp)
 
-                        Row {
-                            Icon(
-                                contentDescription = null,
-                                tint = ConstColors.lightGreen,
-                                painter = painterResource(id = R.drawable.ic_offer)
-                            )
-                            Space(dp = 8.dp)
+        Column(
+            modifier = Modifier
+                .background(Color.White)
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = stringResource(id = R.string.inventory),
+                color = ConstColors.lightBlue,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+            )
+            Space(dp = 8.dp)
+            Row(modifier = Modifier.fillMaxWidth()) {
+                val shape1 = MaterialTheme.shapes.large.copy(
+                    topEnd = CornerSize(0.dp),
+                    bottomEnd = CornerSize(0.dp)
+                )
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable {
+                            scope.moveToInventoryScreen(InventoryScope.InventoryType.IN_STOCK)
+                        }
+                        .background(Color.White/*ConstColors.green.copy(alpha = .2f)*/, shape1)
+                        .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape1)
+                        .padding(20.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = CenterHorizontally,
+                ) {
+
+                    Row {
+                        Icon(
+                            contentDescription = null,
+                            tint = ConstColors.lightGreen,
+                            painter = painterResource(id = R.drawable.ic_menu_inventory)
+                        )
+                        Space(dp = 8.dp)
+                            stockStatus.value?.inStock?.let {
+                                Text(
+                                    text = it.toString(),
+                                    color = MaterialTheme.colors.background,
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.W700,
+                                )
+                            } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 8.dp))
+                    }
+                    Text(
+                        text = stringResource(id = R.string.in_stock),
+                        color = MaterialTheme.colors.background,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.W600,
+                    )
+                }
+                val shape2 = MaterialTheme.shapes.large.copy(
+                    topStart = CornerSize(0.dp),
+                    bottomStart = CornerSize(0.dp)
+                )
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable {
+                            scope.moveToInventoryScreen(InventoryScope.InventoryType.OUT_OF_STOCK)
+                        }
+                        .background(Color.White/*ConstColors.red.copy(alpha = .2f)*/, shape2)
+                        .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape2)
+                        .padding(20.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = CenterHorizontally,
+                ) {
+                    Row {
+                        Icon(
+                            contentDescription = null,
+                            tint = ConstColors.orange,
+                            painter = painterResource(id = R.drawable.ic_menu_inventory)
+                        )
+                        Space(dp = 8.dp)
+                        stockStatus.value?.outOfStock?.let {
+                                Text(
+                                    text = it.toString(),
+                                    color = MaterialTheme.colors.background,
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.W700,
+                                )
+                            } ?: ShimmerItem(padding = PaddingValues(start = 12.dp, top = 8.dp))
+                    }
+                    Text(
+                        text = stringResource(id = R.string.out_stock),
+                        color = MaterialTheme.colors.background,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.W600,
+                    )
+                }
+            }
+        }
+        Space(16.dp)
+        Column(
+            modifier = Modifier
+                .background(Color.White)
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = stringResource(id = R.string.offers),
+                color = ConstColors.lightBlue,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+            )
+            Space(dp = 8.dp)
+            Row(modifier = Modifier.fillMaxWidth()) {
+                val shape1 = MaterialTheme.shapes.large.copy(
+                    topEnd = CornerSize(0.dp),
+                    bottomEnd = CornerSize(0.dp)
+                )
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .background(Color.White, shape1)
+                        .clickable {
+                            scope.moveToOffersScreen(OfferStatus.RUNNING)
+                        }
+                        .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape1)
+                        .padding(20.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = CenterHorizontally,
+                ) {
+
+                    Row {
+                        Icon(
+                            contentDescription = null,
+                            tint = ConstColors.lightGreen,
+                            painter = painterResource(id = R.drawable.ic_offer)
+                        )
+                        Space(dp = 8.dp)
 //                            dash?.offers?.let { it ->
 //                                val total: String =
 //                                    it.find { data -> data.status == OfferStatus.RUNNING }?.total.toString()
@@ -1008,37 +1006,37 @@ private fun ShowStockistDashBoard(
 //                                    fontWeight = FontWeight.W700,
 //                                )
 //                            } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 8.dp))
-                        }
-                        Text(
-                            text = stringResource(id = R.string.running),
-                            color = MaterialTheme.colors.background,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.W600,
-                        )
                     }
-                    val shape2 = MaterialTheme.shapes.large.copy(
-                        topStart = CornerSize(0.dp),
-                        bottomStart = CornerSize(0.dp)
+                    Text(
+                        text = stringResource(id = R.string.running),
+                        color = MaterialTheme.colors.background,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.W600,
                     )
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .background(Color.White, shape2)
-                            .clickable {
-                                scope.moveToOffersScreen(OfferStatus.ENDED)
-                            }
-                            .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape2)
-                            .padding(20.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = CenterHorizontally,
-                    ) {
-                        Row {
-                            Icon(
-                                contentDescription = null,
-                                tint = ConstColors.orange,
-                                painter = painterResource(id = R.drawable.ic_offer)
-                            )
-                            Space(dp = 8.dp)
+                }
+                val shape2 = MaterialTheme.shapes.large.copy(
+                    topStart = CornerSize(0.dp),
+                    bottomStart = CornerSize(0.dp)
+                )
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .background(Color.White, shape2)
+                        .clickable {
+                            scope.moveToOffersScreen(OfferStatus.ENDED)
+                        }
+                        .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape2)
+                        .padding(20.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = CenterHorizontally,
+                ) {
+                    Row {
+                        Icon(
+                            contentDescription = null,
+                            tint = ConstColors.orange,
+                            painter = painterResource(id = R.drawable.ic_offer)
+                        )
+                        Space(dp = 8.dp)
 //                            dash?.offers?.let {
 //                                val total: String =
 //                                    it.find { data -> data.status == OfferStatus.ENDED }?.total.toString()
@@ -1049,18 +1047,18 @@ private fun ShowStockistDashBoard(
 //                                    fontWeight = FontWeight.W700,
 //                                )
 //                            } ?: ShimmerItem(padding = PaddingValues(start = 12.dp, top = 8.dp))
-                        }
-                        Text(
-                            text = stringResource(id = R.string.ended),
-                            color = MaterialTheme.colors.background,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.W600,
-                        )
                     }
+                    Text(
+                        text = stringResource(id = R.string.ended),
+                        color = MaterialTheme.colors.background,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.W600,
+                    )
                 }
             }
+        }
 
-            Space(16.dp)
+        Space(16.dp)
 
 //            if (dash?.productInfo != null && dash.productInfo?.mostSold?.isNotEmpty()!!) {
 //                Column(
@@ -1093,7 +1091,7 @@ private fun ShowStockistDashBoard(
 //                }
 //            }
 
-            Space(8.dp)
+        Space(8.dp)
 
 //            if (dash?.productInfo != null && dash.productInfo?.mostSearched?.isNotEmpty()!!) {
 //                Column(
@@ -1125,9 +1123,8 @@ private fun ShowStockistDashBoard(
 //                    } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 12.dp))
 //                }
 //            }
-        }
-        Space(dp = 16.dp)
     }
+    Space(dp = 16.dp)
 }
 
 

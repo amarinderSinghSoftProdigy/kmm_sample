@@ -111,12 +111,6 @@ data class CountData(
 )
 
 @Serializable
-data class DashBoardStockData(
-    val body: StockStatusData,
-    val type: String
-)
-
-@Serializable
 data class StockStatusData(
     val inStock: Int,
     val limitedStock: Int,

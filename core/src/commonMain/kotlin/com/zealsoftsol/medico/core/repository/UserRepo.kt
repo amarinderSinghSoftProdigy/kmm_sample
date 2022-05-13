@@ -179,17 +179,17 @@ class UserRepo(
     }
 
     suspend fun loadDashboard() {
-        networkCustomerScope.getDashboardManufacturers(requireUser().type).onSuccess {
-            manufacturerFlow.value = it.results
-        }
+//        networkCustomerScope.getDashboardManufacturers(requireUser().type).onSuccess {
+//            manufacturerFlow.value = it.results
+//        }
 
         networkCustomerScope.getStockStatusData(requireUser().type).onSuccess {
-            stockDataFlow.value = it.body
+            stockDataFlow.value = it
         }
 
-        networkCustomerScope.getRecentProducts(requireUser().type).onSuccess {
-            recentProductFlow.value = it.body
-        }
+//        networkCustomerScope.getRecentProducts(requireUser().type).onSuccess {
+//            recentProductFlow.value = it.body
+//        }
     }
 
     suspend fun logout(): AnyResponse {
