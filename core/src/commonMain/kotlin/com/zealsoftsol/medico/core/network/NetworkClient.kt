@@ -36,7 +36,6 @@ import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
 import com.zealsoftsol.medico.data.DashboardManufacturer
-import com.zealsoftsol.medico.data.DashboardRecentProducts
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EditOfferRequest
 import com.zealsoftsol.medico.data.EmployeeRegistration1
@@ -92,6 +91,7 @@ import com.zealsoftsol.medico.data.ProfileResponseData
 import com.zealsoftsol.medico.data.PromotionTypeData
 import com.zealsoftsol.medico.data.PromotionUpdateRequest
 import com.zealsoftsol.medico.data.QrCodeData
+import com.zealsoftsol.medico.data.RecentProductInfo
 import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchDataItem
@@ -381,7 +381,7 @@ class NetworkClient(
     }
 
     override suspend fun getRecentProducts(type: UserType) = simpleRequest {
-        client.get<BodyResponse<DashboardRecentProducts>>("${baseUrl.url}/dashboard/${type.serverValueSimple}/recent-products-info") {
+        client.get<BodyResponse<RecentProductInfo>>("${baseUrl.url}/dashboard/${type.serverValueSimple}/recent-products-info") {
             withMainToken()
         }
     }

@@ -8,7 +8,7 @@ import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
 import com.zealsoftsol.medico.data.CustomerMetaData
 import com.zealsoftsol.medico.data.DashboardManufacturer
-import com.zealsoftsol.medico.data.DashboardRecentProducts
+import com.zealsoftsol.medico.data.RecentProductInfo
 import com.zealsoftsol.medico.data.StockStatusData
 import com.zealsoftsol.medico.data.UserType
 
@@ -30,7 +30,7 @@ class MockCustomerScope : NetworkScope.Customer {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getRecentProducts(type: UserType): BodyResponse<DashboardRecentProducts> {
+    override suspend fun getRecentProducts(type: UserType): BodyResponse<RecentProductInfo> {
         TODO("Not yet implemented")
     }
 

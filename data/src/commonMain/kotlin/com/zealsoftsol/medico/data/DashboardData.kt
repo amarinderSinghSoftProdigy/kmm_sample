@@ -118,12 +118,6 @@ data class StockStatusData(
 )
 
 @Serializable
-data class DashboardRecentProducts(
-    val body: RecentProductInfo,
-    val type: String
-)
-
-@Serializable
 data class RecentProductInfo(
     @SerialName("mostPurchasedProducts")
     val mostPurchased: List<ProductSold>,

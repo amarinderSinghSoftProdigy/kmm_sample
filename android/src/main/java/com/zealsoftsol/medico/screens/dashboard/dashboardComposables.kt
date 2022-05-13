@@ -692,6 +692,7 @@ private fun ShowStockistDashBoard(
 ) {
     val manufacturer = scope.manufacturerList.flow.collectAsState()
     val stockStatus  = scope.stockStatusData.flow.collectAsState()
+    val recentProducts = scope.recentProductInfo.flow.collectAsState()
     val activity = LocalContext.current as MainActivity
     val shareText = stringResource(id = R.string.share_content)
 
@@ -1060,69 +1061,69 @@ private fun ShowStockistDashBoard(
 
         Space(16.dp)
 
-//            if (dash?.productInfo != null && dash.productInfo?.mostSold?.isNotEmpty()!!) {
-//                Column(
-//                    modifier = Modifier
-//                        .background(Color.White)
-//                        .fillMaxWidth()
-//                        .padding(16.dp)
-//                ) {
-//                    Text(
-//                        text = stringResource(id = R.string.today_sold),
-//                        color = ConstColors.lightBlue,
-//                        fontSize = 12.sp,
-//                        fontWeight = FontWeight.Bold,
-//                    )
-//                    Space(8.dp)
-//
-//                    dash.productInfo?.mostSold?.let {
-//                        LazyRow(
-//                            contentPadding = PaddingValues(3.dp),
-//                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-//                        ) {
-//                            itemsIndexed(
-//                                items = it,
-//                                itemContent = { _, item ->
-//                                    BrandsImageItem(item, scope)
-//                                },
-//                            )
-//                        }
-//                    } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 12.dp))
-//                }
-//            }
+            if (recentProducts.value != null && recentProducts.value!!.mostSold.isNotEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .background(Color.White)
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.today_sold),
+                        color = ConstColors.lightBlue,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Space(8.dp)
+
+                    recentProducts.value!!.mostSold.let {
+                        LazyRow(
+                            contentPadding = PaddingValues(3.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            itemsIndexed(
+                                items = it,
+                                itemContent = { _, item ->
+                                    BrandsImageItem(item, scope)
+                                },
+                            )
+                        }
+                    } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 12.dp))
+                }
+            }
 
         Space(8.dp)
 
-//            if (dash?.productInfo != null && dash.productInfo?.mostSearched?.isNotEmpty()!!) {
-//                Column(
-//                    modifier = Modifier
-//                        .background(Color.White)
-//                        .fillMaxWidth()
-//                        .padding(16.dp)
-//                ) {
-//                    Text(
-//                        text = stringResource(id = R.string.most_searched),
-//                        color = ConstColors.lightBlue,
-//                        fontSize = 12.sp,
-//                        fontWeight = FontWeight.Bold,
-//                    )
-//                    Space(8.dp)
-//
-//                    dash.productInfo?.mostSearched?.let {
-//                        LazyRow(
-//                            contentPadding = PaddingValues(3.dp),
-//                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-//                        ) {
-//                            itemsIndexed(
-//                                items = it,
-//                                itemContent = { _, item ->
-//                                    BrandsImageItem(item, scope)
-//                                },
-//                            )
-//                        }
-//                    } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 12.dp))
-//                }
-//            }
+            if (recentProducts.value != null && recentProducts.value!!.mostSearched.isNotEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .background(Color.White)
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.most_searched),
+                        color = ConstColors.lightBlue,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Space(8.dp)
+
+                    recentProducts.value!!.mostSearched.let {
+                        LazyRow(
+                            contentPadding = PaddingValues(3.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            itemsIndexed(
+                                items = it,
+                                itemContent = { _, item ->
+                                    BrandsImageItem(item, scope)
+                                },
+                            )
+                        }
+                    } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 12.dp))
+                }
+            }
     }
     Space(dp = 16.dp)
 }

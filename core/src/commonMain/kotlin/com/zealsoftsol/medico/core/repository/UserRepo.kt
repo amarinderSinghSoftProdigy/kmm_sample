@@ -187,9 +187,9 @@ class UserRepo(
             stockDataFlow.value = it
         }
 
-//        networkCustomerScope.getRecentProducts(requireUser().type).onSuccess {
-//            recentProductFlow.value = it.body
-//        }
+        networkCustomerScope.getRecentProducts(requireUser().type).onSuccess {
+            recentProductFlow.value = it
+        }
     }
 
     suspend fun logout(): AnyResponse {
