@@ -10,8 +10,10 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.data.AutoComplete
-import com.zealsoftsol.medico.data.DashboardData
+import com.zealsoftsol.medico.data.ManufacturerData
 import com.zealsoftsol.medico.data.OfferStatus
+import com.zealsoftsol.medico.data.RecentProductInfo
+import com.zealsoftsol.medico.data.StockStatusData
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserV2
 
@@ -22,7 +24,9 @@ class DashboardScope private constructor(
     val userType: UserType,
     val unreadNotifications: ReadOnlyDataSource<Int>,
     val cartItemsCount: ReadOnlyDataSource<Int>,
-    val dashboard: ReadOnlyDataSource<DashboardData?>,
+    val manufacturerList: ReadOnlyDataSource<List<ManufacturerData>?>,
+    val stockStatusData: ReadOnlyDataSource<StockStatusData?>,
+    val recentProductInfo: ReadOnlyDataSource<RecentProductInfo?>
 ) : Scope.Child.TabBar() {
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
@@ -51,7 +55,7 @@ class DashboardScope private constructor(
             Section.STOCKIST_ADD,
             Section.STOCKIST_COUNT,
         )
-        else ->  listOf(
+        else -> listOf(
 //            Section.NOTIFICATIONS,
 //            Section.ORDERS,
             Section.RETAILER_ADD,
@@ -77,7 +81,10 @@ class DashboardScope private constructor(
     /**
      * Move to Inventory screens
      */
-    fun moveToInventoryScreen(type: InventoryScope.InventoryType = InventoryScope.InventoryType.ALL, manufacturerCode: String = "") {
+    fun moveToInventoryScreen(
+        type: InventoryScope.InventoryType = InventoryScope.InventoryType.ALL,
+        manufacturerCode: String = ""
+    ) {
         EventCollector.sendEvent(Event.Transition.Inventory(type, manufacturerCode))
     }
 
@@ -124,15 +131,19 @@ class DashboardScope private constructor(
         fun get(
             user: UserV2,
             userDataSource: ReadOnlyDataSource<UserV2>,
-            dashboardData: ReadOnlyDataSource<DashboardData?>,
+            manufacturerData: ReadOnlyDataSource<List<ManufacturerData>?>,
             unreadNotifications: ReadOnlyDataSource<Int>,
             cartItemsCount: ReadOnlyDataSource<Int>,
+            stockStatusData: ReadOnlyDataSource<StockStatusData?>,
+            recentProductInfo: ReadOnlyDataSource<RecentProductInfo?>
         ) = TabBarScope(
             childScope = DashboardScope(
                 user.type,
                 unreadNotifications = unreadNotifications,
                 cartItemsCount = cartItemsCount,
-                dashboard = dashboardData
+                manufacturerList = manufacturerData,
+                stockStatusData = stockStatusData,
+                recentProductInfo = recentProductInfo
             ),
             initialTabBarInfo = TabBarInfo.Search(
                 notificationItemsCount = unreadNotifications,

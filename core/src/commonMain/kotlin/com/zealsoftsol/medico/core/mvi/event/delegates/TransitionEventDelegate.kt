@@ -37,8 +37,10 @@ import com.zealsoftsol.medico.core.mvi.scope.regular.WhatsappPreferenceScope
 import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.NotificationRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
-import com.zealsoftsol.medico.core.repository.getDashboardDataSource
 import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
+import com.zealsoftsol.medico.core.repository.getManufacturerDataSource
+import com.zealsoftsol.medico.core.repository.getRecentProductsDataSource
+import com.zealsoftsol.medico.core.repository.getStockDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSourceV2
 import com.zealsoftsol.medico.core.repository.requireUser
@@ -75,9 +77,11 @@ internal class TransitionEventDelegate(
                         DashboardScope.get(
                             userRepo.requireUser(),
                             userRepo.getUserDataSourceV2(),
-                            dashboardData = userRepo.getDashboardDataSource(),
+                            manufacturerData = userRepo.getManufacturerDataSource(),
                             unreadNotifications = notificationRepo.getUnreadMessagesDataSource(),
                             cartItemsCount = cartRepo.getEntriesCountDataSource(),
+                            stockStatusData = userRepo.getStockDataSource(),
+                            recentProductInfo = userRepo.getRecentProductsDataSource()
                         )
                     )
                 }

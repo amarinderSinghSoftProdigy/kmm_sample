@@ -43,7 +43,6 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.TopEnd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -71,6 +70,7 @@ import com.zealsoftsol.medico.data.BannerData
 import com.zealsoftsol.medico.data.BrandsData
 import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.DealsData
+import com.zealsoftsol.medico.data.ManufacturerData
 import com.zealsoftsol.medico.data.OfferStatus
 import com.zealsoftsol.medico.data.ProductSold
 import com.zealsoftsol.medico.data.UserType
@@ -79,16 +79,16 @@ import com.zealsoftsol.medico.screens.common.CoilImageBrands
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.ShimmerItem
 import com.zealsoftsol.medico.screens.common.Space
-import com.zealsoftsol.medico.screens.inventory.ManufacturersItem
+import com.zealsoftsol.medico.screens.inventory.CommonRoundedView
 import kotlinx.coroutines.delay
 
 @Composable
 fun DashboardScreen(scope: DashboardScope) {
-    val dashboard = scope.dashboard.flow.collectAsState()
+    val dashboard = scope.manufacturerList.flow.collectAsState()
     if (scope.userType == UserType.STOCKIST) {
         ShowStockistDashBoard(dashboard, scope)
     } else if (scope.userType == UserType.RETAILER || scope.userType == UserType.HOSPITAL) {
-        ShowRetailerAndHospitalDashboard(dashboard, scope)
+//        ShowRetailerAndHospitalDashboard(dashboard, scope)
     }
 }
 
@@ -231,29 +231,29 @@ private fun ShowRetailerAndHospitalDashboard(
                         modifier = Modifier.padding(horizontal = 16.dp),
                     )
                     //todo uncomment for view more on brands
-                 /*   Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.End,
-                        modifier = Modifier.clickable {
-                            scope.sendEvent(Event.Transition.Manufacturers)
-                        }
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_eye),
-                            contentDescription = null,
-                            tint = ConstColors.lightBlue,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Text(
-                            text = stringResource(id = R.string.view_all),
-                            color = ConstColors.lightBlue,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.W600,
-                            modifier = Modifier
-                                .padding(horizontal = 3.dp)
-                                .padding(end = 16.dp),
-                        )
-                    }*/
+                    /*   Row(
+                           verticalAlignment = Alignment.CenterVertically,
+                           horizontalArrangement = Arrangement.End,
+                           modifier = Modifier.clickable {
+                               scope.sendEvent(Event.Transition.Manufacturers)
+                           }
+                       ) {
+                           Icon(
+                               painter = painterResource(id = R.drawable.ic_eye),
+                               contentDescription = null,
+                               tint = ConstColors.lightBlue,
+                               modifier = Modifier.size(20.dp)
+                           )
+                           Text(
+                               text = stringResource(id = R.string.view_all),
+                               color = ConstColors.lightBlue,
+                               fontSize = 16.sp,
+                               fontWeight = FontWeight.W600,
+                               modifier = Modifier
+                                   .padding(horizontal = 3.dp)
+                                   .padding(end = 16.dp),
+                           )
+                       }*/
                 }
                 Space(dp = 16.dp)
 
@@ -689,7 +689,7 @@ private fun CategoriesItem(item: BrandsData, scope: DashboardScope, modifier: Mo
  */
 @Composable
 private fun ShowStockistDashBoard(
-    dashboard: State<DashboardData?>,
+    dashboard: State<List<ManufacturerData>?>,
     scope: DashboardScope
 ) {
     val activity = LocalContext.current as MainActivity
@@ -849,7 +849,7 @@ private fun ShowStockistDashBoard(
                     contentPadding = PaddingValues(3.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    dashboard.value?.manufacturers?.let {
+                    dashboard.value?.let {
                         itemsIndexed(
                             items = it,
                             key = { index, _ -> index },
@@ -902,14 +902,14 @@ private fun ShowStockistDashBoard(
                                 painter = painterResource(id = R.drawable.ic_menu_inventory)
                             )
                             Space(dp = 8.dp)
-                            dash?.stockStatusData?.inStock?.let {
-                                Text(
-                                    text = it.toString(),
-                                    color = MaterialTheme.colors.background,
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.W700,
-                                )
-                            } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 8.dp))
+//                            dash?.stockStatusData?.inStock?.let {
+//                                Text(
+//                                    text = it.toString(),
+//                                    color = MaterialTheme.colors.background,
+//                                    fontSize = 24.sp,
+//                                    fontWeight = FontWeight.W700,
+//                                )
+//                            } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 8.dp))
                         }
                         Text(
                             text = stringResource(id = R.string.in_stock),
@@ -941,14 +941,14 @@ private fun ShowStockistDashBoard(
                                 painter = painterResource(id = R.drawable.ic_menu_inventory)
                             )
                             Space(dp = 8.dp)
-                            dash?.stockStatusData?.outOfStock?.let {
-                                Text(
-                                    text = it.toString(),
-                                    color = MaterialTheme.colors.background,
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.W700,
-                                )
-                            } ?: ShimmerItem(padding = PaddingValues(start = 12.dp, top = 8.dp))
+//                            dash?.stockStatusData?.outOfStock?.let {
+//                                Text(
+//                                    text = it.toString(),
+//                                    color = MaterialTheme.colors.background,
+//                                    fontSize = 24.sp,
+//                                    fontWeight = FontWeight.W700,
+//                                )
+//                            } ?: ShimmerItem(padding = PaddingValues(start = 12.dp, top = 8.dp))
                         }
                         Text(
                             text = stringResource(id = R.string.out_stock),
@@ -998,16 +998,16 @@ private fun ShowStockistDashBoard(
                                 painter = painterResource(id = R.drawable.ic_offer)
                             )
                             Space(dp = 8.dp)
-                            dash?.offers?.let { it ->
-                                val total: String =
-                                    it.find { data -> data.status == OfferStatus.RUNNING }?.total.toString()
-                                Text(
-                                    text = if (total == "null") "0" else total,
-                                    color = MaterialTheme.colors.background,
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.W700,
-                                )
-                            } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 8.dp))
+//                            dash?.offers?.let { it ->
+//                                val total: String =
+//                                    it.find { data -> data.status == OfferStatus.RUNNING }?.total.toString()
+//                                Text(
+//                                    text = if (total == "null") "0" else total,
+//                                    color = MaterialTheme.colors.background,
+//                                    fontSize = 24.sp,
+//                                    fontWeight = FontWeight.W700,
+//                                )
+//                            } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 8.dp))
                         }
                         Text(
                             text = stringResource(id = R.string.running),
@@ -1039,16 +1039,16 @@ private fun ShowStockistDashBoard(
                                 painter = painterResource(id = R.drawable.ic_offer)
                             )
                             Space(dp = 8.dp)
-                            dash?.offers?.let {
-                                val total: String =
-                                    it.find { data -> data.status == OfferStatus.ENDED }?.total.toString()
-                                Text(
-                                    text = if (total == "null") "0" else total,
-                                    color = MaterialTheme.colors.background,
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.W700,
-                                )
-                            } ?: ShimmerItem(padding = PaddingValues(start = 12.dp, top = 8.dp))
+//                            dash?.offers?.let {
+//                                val total: String =
+//                                    it.find { data -> data.status == OfferStatus.ENDED }?.total.toString()
+//                                Text(
+//                                    text = if (total == "null") "0" else total,
+//                                    color = MaterialTheme.colors.background,
+//                                    fontSize = 24.sp,
+//                                    fontWeight = FontWeight.W700,
+//                                )
+//                            } ?: ShimmerItem(padding = PaddingValues(start = 12.dp, top = 8.dp))
                         }
                         Text(
                             text = stringResource(id = R.string.ended),
@@ -1062,69 +1062,69 @@ private fun ShowStockistDashBoard(
 
             Space(16.dp)
 
-            if (dash?.productInfo != null && dash.productInfo?.mostSold?.isNotEmpty()!!) {
-                Column(
-                    modifier = Modifier
-                        .background(Color.White)
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.today_sold),
-                        color = ConstColors.lightBlue,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    Space(8.dp)
-
-                    dash.productInfo?.mostSold?.let {
-                        LazyRow(
-                            contentPadding = PaddingValues(3.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            itemsIndexed(
-                                items = it,
-                                itemContent = { _, item ->
-                                    BrandsImageItem(item, scope)
-                                },
-                            )
-                        }
-                    } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 12.dp))
-                }
-            }
+//            if (dash?.productInfo != null && dash.productInfo?.mostSold?.isNotEmpty()!!) {
+//                Column(
+//                    modifier = Modifier
+//                        .background(Color.White)
+//                        .fillMaxWidth()
+//                        .padding(16.dp)
+//                ) {
+//                    Text(
+//                        text = stringResource(id = R.string.today_sold),
+//                        color = ConstColors.lightBlue,
+//                        fontSize = 12.sp,
+//                        fontWeight = FontWeight.Bold,
+//                    )
+//                    Space(8.dp)
+//
+//                    dash.productInfo?.mostSold?.let {
+//                        LazyRow(
+//                            contentPadding = PaddingValues(3.dp),
+//                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+//                        ) {
+//                            itemsIndexed(
+//                                items = it,
+//                                itemContent = { _, item ->
+//                                    BrandsImageItem(item, scope)
+//                                },
+//                            )
+//                        }
+//                    } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 12.dp))
+//                }
+//            }
 
             Space(8.dp)
 
-            if (dash?.productInfo != null && dash.productInfo?.mostSearched?.isNotEmpty()!!) {
-                Column(
-                    modifier = Modifier
-                        .background(Color.White)
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.most_searched),
-                        color = ConstColors.lightBlue,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    Space(8.dp)
-
-                    dash.productInfo?.mostSearched?.let {
-                        LazyRow(
-                            contentPadding = PaddingValues(3.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            itemsIndexed(
-                                items = it,
-                                itemContent = { _, item ->
-                                    BrandsImageItem(item, scope)
-                                },
-                            )
-                        }
-                    } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 12.dp))
-                }
-            }
+//            if (dash?.productInfo != null && dash.productInfo?.mostSearched?.isNotEmpty()!!) {
+//                Column(
+//                    modifier = Modifier
+//                        .background(Color.White)
+//                        .fillMaxWidth()
+//                        .padding(16.dp)
+//                ) {
+//                    Text(
+//                        text = stringResource(id = R.string.most_searched),
+//                        color = ConstColors.lightBlue,
+//                        fontSize = 12.sp,
+//                        fontWeight = FontWeight.Bold,
+//                    )
+//                    Space(8.dp)
+//
+//                    dash.productInfo?.mostSearched?.let {
+//                        LazyRow(
+//                            contentPadding = PaddingValues(3.dp),
+//                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+//                        ) {
+//                            itemsIndexed(
+//                                items = it,
+//                                itemContent = { _, item ->
+//                                    BrandsImageItem(item, scope)
+//                                },
+//                            )
+//                        }
+//                    } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 12.dp))
+//                }
+//            }
         }
         Space(dp = 16.dp)
     }
@@ -1151,34 +1151,60 @@ private fun RedCounter(
     }
 }
 
+/**
+ * ui item for manufacturer listing
+ */
 @Composable
-private inline fun DashboardScope.Section.getIcon(): Painter = when (this) {
-    DashboardScope.Section.STOCKIST_COUNT -> painterResource(id = R.drawable.ic_stockist)
-    DashboardScope.Section.STOCKIST_ADD -> painterResource(id = R.drawable.ic_stockist)
-    DashboardScope.Section.STOCKIST_CONNECT -> painterResource(id = R.drawable.ic_stockist_connect)
-    DashboardScope.Section.RETAILER_COUNT -> painterResource(id = R.drawable.ic_retailer)
-    DashboardScope.Section.RETAILER_ADD -> painterResource(id = R.drawable.ic_retailer)
-    DashboardScope.Section.HOSPITAL_COUNT -> painterResource(id = R.drawable.ic_hospital)
-//    DashboardScope.Section.SEASON_BOY_COUNT -> painterResource(id = R.drawable.ic_season_boy)
+private fun ManufacturersItem(
+    item: ManufacturerData,
+    onClick: () -> Unit
+) {
+    Column {
+        Card(
+            modifier = Modifier
+                .height(90.dp)
+                .width(150.dp)
+                .selectable(
+                    selected = true,
+                    onClick = onClick
+                ),
+            elevation = 3.dp,
+            shape = RoundedCornerShape(5.dp),
+            backgroundColor = Color.White,
+        ) {
+            Box {
+                CoilImageBrands(
+                    src = CdnUrlProvider.urlForM(item.code),
+                    contentScale = ContentScale.Crop,
+                    onError = { ItemPlaceholder() },
+                    onLoading = { ItemPlaceholder() },
+                    height = 90.dp,
+                    width = 150.dp,
+                )
+                Box(
+                    modifier = Modifier
+                        .padding(3.dp)
+                        .align(Alignment.TopEnd)
+                ) {
+                    CommonRoundedView(
+                        text = item.count.toString(), modifier = Modifier
+                            .align(TopEnd), color = ConstColors.darkGreen, radius = 2
+                    )
+                }
+            }
+        }
+        Space(5.dp)
+        Text(
+            modifier = Modifier
+                .width(150.dp),
+            text = item.name,
+            color = Color.Black,
+            fontSize = 12.sp,
+            textAlign = TextAlign.Center,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
 }
 
-@Composable
-private inline fun DashboardScope.Section.getCount(dashboard: DashboardData?): Int? = when (this) {
-    DashboardScope.Section.STOCKIST_COUNT -> dashboard?.userData?.stockist?.totalSubscribed
-    DashboardScope.Section.STOCKIST_ADD -> null
-    DashboardScope.Section.STOCKIST_CONNECT -> null
-    DashboardScope.Section.RETAILER_COUNT -> dashboard?.userData?.retailer?.totalSubscribed
-    DashboardScope.Section.RETAILER_ADD -> null
-    DashboardScope.Section.HOSPITAL_COUNT -> dashboard?.userData?.hospital?.totalSubscribed
-//    DashboardScope.Section.SEASON_BOY_COUNT -> dashboard.userData.seasonBoy?.totalSubscribed
-}
 
-private inline fun DashboardScope.Section.countSupported(): Boolean = when (this) {
-    DashboardScope.Section.STOCKIST_COUNT -> true
-    DashboardScope.Section.STOCKIST_ADD -> false
-    DashboardScope.Section.STOCKIST_CONNECT -> false
-    DashboardScope.Section.RETAILER_COUNT -> true
-    DashboardScope.Section.RETAILER_ADD -> false
-    DashboardScope.Section.HOSPITAL_COUNT -> true
-//    DashboardScope.Section.SEASON_BOY_COUNT -> true
-}

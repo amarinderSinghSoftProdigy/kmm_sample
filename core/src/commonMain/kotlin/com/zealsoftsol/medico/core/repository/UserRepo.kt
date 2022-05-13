@@ -16,17 +16,19 @@ import com.zealsoftsol.medico.data.ConfigData
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
-import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.HeaderData
 import com.zealsoftsol.medico.data.LicenseDocumentData
 import com.zealsoftsol.medico.data.LocationData
+import com.zealsoftsol.medico.data.ManufacturerData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.ProfileImageData
 import com.zealsoftsol.medico.data.ProfileImageUpload
 import com.zealsoftsol.medico.data.ProfileResponseData
+import com.zealsoftsol.medico.data.RecentProductInfo
 import com.zealsoftsol.medico.data.Response
+import com.zealsoftsol.medico.data.StockStatusData
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.TokenInfo
@@ -44,7 +46,6 @@ import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
 import com.zealsoftsol.medico.data.ValidationResponse
 import com.zealsoftsol.medico.data.WhatsappData
-import com.zealsoftsol.medico.data.dashboard.DashBoardManufacturersData
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -82,7 +83,9 @@ class UserRepo(
         }.getOrNull()
     )
     val configFlow: MutableStateFlow<ConfigData> = MutableStateFlow(ConfigData())
-    val manufacturerFlow: MutableStateFlow<DashBoardManufacturersData?> = MutableStateFlow(null)
+    val manufacturerFlow: MutableStateFlow<List<ManufacturerData>> = MutableStateFlow(emptyList())
+    val stockDataFlow: MutableStateFlow<StockStatusData?> = MutableStateFlow(null)
+    val recentProductFlow: MutableStateFlow<RecentProductInfo?> = MutableStateFlow(null)
 
     fun getUserAccess(): UserAccess {
         return userV2Flow.value?.let {
@@ -176,8 +179,16 @@ class UserRepo(
     }
 
     suspend fun loadDashboard() {
-        networkCustomerScope.getManufacturers(requireUser().type).onSuccess {
-            manufacturerFlow.value = it
+        networkCustomerScope.getDashboardManufacturers(requireUser().type).onSuccess {
+            manufacturerFlow.value = it.results
+        }
+
+        networkCustomerScope.getStockStatusData(requireUser().type).onSuccess {
+            stockDataFlow.value = it.body
+        }
+
+        networkCustomerScope.getRecentProducts(requireUser().type).onSuccess {
+            recentProductFlow.value = it.body
         }
     }
 
@@ -190,7 +201,7 @@ class UserRepo(
     fun clear() {
         clearUserData()
         userFlow.value = null
-        manufacturerFlow.value = null
+        manufacturerFlow.value = emptyList()
     }
 
     fun getAuthCredentials(): AuthCredentials {
@@ -450,9 +461,19 @@ internal inline fun UserRepo.getUserDataSourceV2(): ReadOnlyDataSource<UserV2> =
     userV2Flow.filterNotNull().stateIn(GlobalScope, SharingStarted.Eagerly, requireUser())
 )
 
-internal inline fun UserRepo.getDashboardDataSource(): ReadOnlyDataSource<DashboardData?> =
+internal inline fun UserRepo.getManufacturerDataSource(): ReadOnlyDataSource<List<ManufacturerData>?> =
     ReadOnlyDataSource(
-        dashboardFlow.stateIn(GlobalScope, SharingStarted.Eagerly, null)
+        manufacturerFlow.stateIn(GlobalScope, SharingStarted.Eagerly, null)
+    )
+
+internal inline fun UserRepo.getStockDataSource(): ReadOnlyDataSource<StockStatusData?> =
+    ReadOnlyDataSource(
+        stockDataFlow.stateIn(GlobalScope, SharingStarted.Eagerly, null)
+    )
+
+internal inline fun UserRepo.getRecentProductsDataSource(): ReadOnlyDataSource<RecentProductInfo?> =
+    ReadOnlyDataSource(
+        recentProductFlow.stateIn(GlobalScope, SharingStarted.Eagerly, null)
     )
 
 private inline fun String.formatIndia() = "91$this"

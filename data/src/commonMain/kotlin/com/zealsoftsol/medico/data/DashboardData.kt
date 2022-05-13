@@ -22,6 +22,12 @@ data class DashboardData(
 )
 
 @Serializable
+data class DashboardManufacturer(
+    val results: List<ManufacturerData> = emptyList(),
+    val type: String
+)
+
+@Serializable
 data class AllDeals(
     val pageableData: PageableData,
     val stockists: List<SellerInfoData>,
@@ -105,10 +111,22 @@ data class CountData(
 )
 
 @Serializable
+data class DashBoardStockData(
+    val body: StockStatusData,
+    val type: String
+)
+
+@Serializable
 data class StockStatusData(
     val inStock: Int,
     val limitedStock: Int,
     val outOfStock: Int
+)
+
+@Serializable
+data class DashboardRecentProducts(
+    val body: RecentProductInfo,
+    val type: String
 )
 
 @Serializable
