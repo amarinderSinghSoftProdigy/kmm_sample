@@ -33,7 +33,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,7 +67,6 @@ import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.BannerData
 import com.zealsoftsol.medico.data.BrandsData
-import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.DealsData
 import com.zealsoftsol.medico.data.ManufacturerData
 import com.zealsoftsol.medico.data.OfferStatus
@@ -87,7 +85,7 @@ fun DashboardScreen(scope: DashboardScope) {
     if (scope.userType == UserType.STOCKIST) {
         ShowStockistDashBoard(scope)
     } else if (scope.userType == UserType.RETAILER || scope.userType == UserType.HOSPITAL) {
-//        ShowRetailerAndHospitalDashboard(dashboard, scope)
+        ShowRetailerAndHospitalDashboard(scope)
     }
 }
 
@@ -97,11 +95,14 @@ fun DashboardScreen(scope: DashboardScope) {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ShowRetailerAndHospitalDashboard(
-    dashboard: State<DashboardData?>,
     scope: DashboardScope
 ) {
     val lazyListState = rememberLazyListState()
     val activity = LocalContext.current as MainActivity
+    val brands = scope.brandsData.flow.collectAsState()
+    val categories = scope.categoriesData.flow.collectAsState()
+    val banners = scope.bannerData.flow.collectAsState()
+    val deals = scope.dealsData.flow.collectAsState()
 
     Box(
         modifier = Modifier
@@ -119,7 +120,8 @@ private fun ShowRetailerAndHospitalDashboard(
                     .fillMaxWidth()
                     .padding(vertical = 16.dp)
             ) {
-                dashboard.value?.banners?.let {
+
+                banners.value?.let {
                     LazyRow(state = lazyListState) {
                         itemsIndexed(
                             items = it,
@@ -150,6 +152,7 @@ private fun ShowRetailerAndHospitalDashboard(
                         }
                     }
                 }
+
             }
 
             Space(dp = 16.dp)
@@ -259,7 +262,7 @@ private fun ShowRetailerAndHospitalDashboard(
                 LazyRow(
                     modifier = Modifier.padding(horizontal = 14.dp)
                 ) {
-                    dashboard.value?.brands?.let {
+                    brands.value?.let {
                         itemsIndexed(
                             items = it,
                             key = { index, _ -> index },
@@ -324,7 +327,7 @@ private fun ShowRetailerAndHospitalDashboard(
                     mainAxisSize = SizeMode.Expand,
                     mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
                 ) {
-                    dashboard.value?.dealsOfDay?.let {
+                    deals.value?.let {
                         it.forEachIndexed { index, _ ->
                             DealsItem(
                                 it[index],
@@ -357,7 +360,7 @@ private fun ShowRetailerAndHospitalDashboard(
                     mainAxisSize = SizeMode.Expand,
                     mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
                 ) {
-                    dashboard.value?.categories?.let {
+                    categories.value?.let {
                         it.forEachIndexed { index, _ ->
                             CategoriesItem(it[index], scope, modifier = Modifier.width(itemSize))
                         }
@@ -691,7 +694,7 @@ private fun ShowStockistDashBoard(
     scope: DashboardScope
 ) {
     val manufacturer = scope.manufacturerList.flow.collectAsState()
-    val stockStatus  = scope.stockStatusData.flow.collectAsState()
+    val stockStatus = scope.stockStatusData.flow.collectAsState()
     val recentProducts = scope.recentProductInfo.flow.collectAsState()
     val promotionData = scope.promotionData.flow.collectAsState()
     val activity = LocalContext.current as MainActivity
@@ -902,14 +905,14 @@ private fun ShowStockistDashBoard(
                             painter = painterResource(id = R.drawable.ic_menu_inventory)
                         )
                         Space(dp = 8.dp)
-                            stockStatus.value?.inStock?.let {
-                                Text(
-                                    text = it.toString(),
-                                    color = MaterialTheme.colors.background,
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.W700,
-                                )
-                            } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 8.dp))
+                        stockStatus.value?.inStock?.let {
+                            Text(
+                                text = it.toString(),
+                                color = MaterialTheme.colors.background,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.W700,
+                            )
+                        } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 8.dp))
                     }
                     Text(
                         text = stringResource(id = R.string.in_stock),
@@ -942,13 +945,13 @@ private fun ShowStockistDashBoard(
                         )
                         Space(dp = 8.dp)
                         stockStatus.value?.outOfStock?.let {
-                                Text(
-                                    text = it.toString(),
-                                    color = MaterialTheme.colors.background,
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.W700,
-                                )
-                            } ?: ShimmerItem(padding = PaddingValues(start = 12.dp, top = 8.dp))
+                            Text(
+                                text = it.toString(),
+                                color = MaterialTheme.colors.background,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.W700,
+                            )
+                        } ?: ShimmerItem(padding = PaddingValues(start = 12.dp, top = 8.dp))
                     }
                     Text(
                         text = stringResource(id = R.string.out_stock),
@@ -998,16 +1001,16 @@ private fun ShowStockistDashBoard(
                             painter = painterResource(id = R.drawable.ic_offer)
                         )
                         Space(dp = 8.dp)
-                            promotionData.value?.let { it ->
-                                val total: String =
-                                    it.find { data -> data.status == OfferStatus.RUNNING }?.total.toString()
-                                Text(
-                                    text = if (total == "null") "0" else total,
-                                    color = MaterialTheme.colors.background,
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.W700,
-                                )
-                            } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 8.dp))
+                        promotionData.value?.let { it ->
+                            val total: String =
+                                it.find { data -> data.status == OfferStatus.RUNNING }?.total.toString()
+                            Text(
+                                text = if (total == "null") "0" else total,
+                                color = MaterialTheme.colors.background,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.W700,
+                            )
+                        } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 8.dp))
                     }
                     Text(
                         text = stringResource(id = R.string.running),
@@ -1040,15 +1043,15 @@ private fun ShowStockistDashBoard(
                         )
                         Space(dp = 8.dp)
                         promotionData.value?.let {
-                                val total: String =
-                                    it.find { data -> data.status == OfferStatus.ENDED }?.total.toString()
-                                Text(
-                                    text = if (total == "null") "0" else total,
-                                    color = MaterialTheme.colors.background,
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.W700,
-                                )
-                            } ?: ShimmerItem(padding = PaddingValues(start = 12.dp, top = 8.dp))
+                            val total: String =
+                                it.find { data -> data.status == OfferStatus.ENDED }?.total.toString()
+                            Text(
+                                text = if (total == "null") "0" else total,
+                                color = MaterialTheme.colors.background,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.W700,
+                            )
+                        } ?: ShimmerItem(padding = PaddingValues(start = 12.dp, top = 8.dp))
                     }
                     Text(
                         text = stringResource(id = R.string.ended),
@@ -1062,69 +1065,69 @@ private fun ShowStockistDashBoard(
 
         Space(16.dp)
 
-            if (recentProducts.value != null && recentProducts.value!!.mostSold.isNotEmpty()) {
-                Column(
-                    modifier = Modifier
-                        .background(Color.White)
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.today_sold),
-                        color = ConstColors.lightBlue,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    Space(8.dp)
+        if (recentProducts.value != null && recentProducts.value!!.mostSold.isNotEmpty()) {
+            Column(
+                modifier = Modifier
+                    .background(Color.White)
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = stringResource(id = R.string.today_sold),
+                    color = ConstColors.lightBlue,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+                Space(8.dp)
 
-                    recentProducts.value!!.mostSold.let {
-                        LazyRow(
-                            contentPadding = PaddingValues(3.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            itemsIndexed(
-                                items = it,
-                                itemContent = { _, item ->
-                                    BrandsImageItem(item, scope)
-                                },
-                            )
-                        }
-                    } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 12.dp))
-                }
+                recentProducts.value!!.mostSold.let {
+                    LazyRow(
+                        contentPadding = PaddingValues(3.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        itemsIndexed(
+                            items = it,
+                            itemContent = { _, item ->
+                                BrandsImageItem(item, scope)
+                            },
+                        )
+                    }
+                } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 12.dp))
             }
+        }
 
         Space(8.dp)
 
-            if (recentProducts.value != null && recentProducts.value!!.mostSearched.isNotEmpty()) {
-                Column(
-                    modifier = Modifier
-                        .background(Color.White)
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.most_searched),
-                        color = ConstColors.lightBlue,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    Space(8.dp)
+        if (recentProducts.value != null && recentProducts.value!!.mostSearched.isNotEmpty()) {
+            Column(
+                modifier = Modifier
+                    .background(Color.White)
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = stringResource(id = R.string.most_searched),
+                    color = ConstColors.lightBlue,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+                Space(8.dp)
 
-                    recentProducts.value!!.mostSearched.let {
-                        LazyRow(
-                            contentPadding = PaddingValues(3.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            itemsIndexed(
-                                items = it,
-                                itemContent = { _, item ->
-                                    BrandsImageItem(item, scope)
-                                },
-                            )
-                        }
-                    } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 12.dp))
-                }
+                recentProducts.value!!.mostSearched.let {
+                    LazyRow(
+                        contentPadding = PaddingValues(3.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        itemsIndexed(
+                            items = it,
+                            itemContent = { _, item ->
+                                BrandsImageItem(item, scope)
+                            },
+                        )
+                    }
+                } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 12.dp))
             }
+        }
     }
     Space(dp = 16.dp)
 }

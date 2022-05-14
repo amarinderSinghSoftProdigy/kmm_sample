@@ -37,6 +37,10 @@ import com.zealsoftsol.medico.core.mvi.scope.regular.WhatsappPreferenceScope
 import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.NotificationRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.core.repository.getBannerDataSource
+import com.zealsoftsol.medico.core.repository.getBrandsDataSource
+import com.zealsoftsol.medico.core.repository.getCategoriesDataSource
+import com.zealsoftsol.medico.core.repository.getDealsDataSource
 import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.getManufacturerDataSource
 import com.zealsoftsol.medico.core.repository.getPromotionsDataSource
@@ -83,7 +87,11 @@ internal class TransitionEventDelegate(
                             cartItemsCount = cartRepo.getEntriesCountDataSource(),
                             stockStatusData = userRepo.getStockDataSource(),
                             recentProductInfo = userRepo.getRecentProductsDataSource(),
-                            promotionData = userRepo.getPromotionsDataSource()
+                            promotionData = userRepo.getPromotionsDataSource(),
+                            dealsData = userRepo.getDealsDataSource(),
+                            categoriesData = userRepo.getCategoriesDataSource(),
+                            brandsData = userRepo.getBrandsDataSource(),
+                            bannerData = userRepo.getBannerDataSource()
                         )
                     )
                 }

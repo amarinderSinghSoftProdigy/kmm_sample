@@ -10,6 +10,9 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.BannerData
+import com.zealsoftsol.medico.data.BrandsData
+import com.zealsoftsol.medico.data.DealsData
 import com.zealsoftsol.medico.data.ManufacturerData
 import com.zealsoftsol.medico.data.OfferStatus
 import com.zealsoftsol.medico.data.OffersData
@@ -28,7 +31,11 @@ class DashboardScope private constructor(
     val manufacturerList: ReadOnlyDataSource<List<ManufacturerData>?>,
     val stockStatusData: ReadOnlyDataSource<StockStatusData?>,
     val recentProductInfo: ReadOnlyDataSource<RecentProductInfo?>,
-    val promotionData: ReadOnlyDataSource<List<OffersData>?>
+    val promotionData: ReadOnlyDataSource<List<OffersData>?>,
+    val dealsData: ReadOnlyDataSource<List<DealsData>?>,
+    val categoriesData: ReadOnlyDataSource<List<BrandsData>?>,
+    val brandsData: ReadOnlyDataSource<List<BrandsData>?>,
+    val bannerData: ReadOnlyDataSource<List<BannerData>?>
 ) : Scope.Child.TabBar() {
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
@@ -138,7 +145,11 @@ class DashboardScope private constructor(
             cartItemsCount: ReadOnlyDataSource<Int>,
             stockStatusData: ReadOnlyDataSource<StockStatusData?>,
             recentProductInfo: ReadOnlyDataSource<RecentProductInfo?>,
-            promotionData: ReadOnlyDataSource<List<OffersData>?>
+            promotionData: ReadOnlyDataSource<List<OffersData>?>,
+            dealsData: ReadOnlyDataSource<List<DealsData>?>,
+            categoriesData: ReadOnlyDataSource<List<BrandsData>?>,
+            brandsData: ReadOnlyDataSource<List<BrandsData>?>,
+            bannerData: ReadOnlyDataSource<List<BannerData>?>
         ) = TabBarScope(
             childScope = DashboardScope(
                 user.type,
@@ -147,7 +158,11 @@ class DashboardScope private constructor(
                 manufacturerList = manufacturerData,
                 stockStatusData = stockStatusData,
                 recentProductInfo = recentProductInfo,
-                promotionData = promotionData
+                promotionData = promotionData,
+                dealsData = dealsData,
+                categoriesData = categoriesData,
+                brandsData = brandsData,
+                bannerData = bannerData
             ),
             initialTabBarInfo = TabBarInfo.Search(
                 notificationItemsCount = unreadNotifications,

@@ -7,6 +7,9 @@ import com.zealsoftsol.medico.data.BodyResponse
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
 import com.zealsoftsol.medico.data.CustomerMetaData
+import com.zealsoftsol.medico.data.DashboardBanner
+import com.zealsoftsol.medico.data.DashboardBrands
+import com.zealsoftsol.medico.data.DashboardDeals
 import com.zealsoftsol.medico.data.DashboardManufacturer
 import com.zealsoftsol.medico.data.DashboardPromotion
 import com.zealsoftsol.medico.data.RecentProductInfo
@@ -36,6 +39,22 @@ class MockCustomerScope : NetworkScope.Customer {
     }
 
     override suspend fun getPromotionData(type: UserType): BodyResponse<DashboardPromotion> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getBannerData(type: UserType): BodyResponse<DashboardBanner> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getBrandsData(type: UserType): BodyResponse<DashboardBrands> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getCategoriesData(type: UserType): BodyResponse<DashboardBrands> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getDealsOfTheDay(type: UserType): BodyResponse<DashboardDeals> {
         TODO("Not yet implemented")
     }
 

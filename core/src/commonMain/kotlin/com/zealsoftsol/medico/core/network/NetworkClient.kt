@@ -35,6 +35,9 @@ import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
+import com.zealsoftsol.medico.data.DashboardBanner
+import com.zealsoftsol.medico.data.DashboardBrands
+import com.zealsoftsol.medico.data.DashboardDeals
 import com.zealsoftsol.medico.data.DashboardManufacturer
 import com.zealsoftsol.medico.data.DashboardPromotion
 import com.zealsoftsol.medico.data.DrugLicenseUpload
@@ -380,6 +383,34 @@ class NetworkClient(
             withMainToken()
         }
     }
+
+    override suspend fun getBannerData(type: UserType): BodyResponse<DashboardBanner> =
+        simpleRequest {
+            client.get("${baseUrl.url}/dashboard/${type.serverValueSimple}/banners") {
+                withMainToken()
+            }
+        }
+
+    override suspend fun getBrandsData(type: UserType): BodyResponse<DashboardBrands> =
+        simpleRequest {
+            client.get("${baseUrl.url}/dashboard/${type.serverValueSimple}/brands") {
+                withMainToken()
+            }
+        }
+
+    override suspend fun getCategoriesData(type: UserType): BodyResponse<DashboardBrands> =
+        simpleRequest {
+            client.get("${baseUrl.url}/dashboard/${type.serverValueSimple}/categories") {
+                withMainToken()
+            }
+        }
+
+    override suspend fun getDealsOfTheDay(type: UserType): BodyResponse<DashboardDeals> =
+        simpleRequest {
+            client.get("${baseUrl.url}/dashboard/${type.serverValueSimple}/deal-of-day") {
+                withMainToken()
+            }
+        }
 
     override suspend fun getStockStatusData(type: UserType) = simpleRequest {
         client.get<BodyResponse<StockStatusData>>("${baseUrl.url}/dashboard/${type.serverValueSimple}/inventory") {
