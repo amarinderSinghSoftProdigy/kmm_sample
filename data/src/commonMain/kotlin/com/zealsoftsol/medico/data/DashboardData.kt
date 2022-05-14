@@ -4,21 +4,8 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class DashboardData(
-    @SerialName("connectedUserData")
-    val userData: ConnectedUserData,
-    @SerialName("notificationCount")
-    val notificationsCount: Int,
-    val ordersCount: Int,
-    @SerialName("recentProductInfo")
-    val productInfo: RecentProductInfo? = null,
-    val stockStatusData: StockStatusData? = null,
-    val brands: List<BrandsData> = emptyList(),
-    val categories: List<BrandsData> = emptyList(),
-    val banners: List<BannerData> = emptyList(),
-    val offers: List<OffersData> = emptyList(),
-    val manufacturers: List<ManufacturerData> = emptyList(),
-    val dealsOfDay: List<DealsData>
+data class DashboardManufacturer(
+    val results: List<ManufacturerData> = emptyList(),
 )
 
 @Serializable
@@ -40,6 +27,10 @@ data class PageableData(
     val totalResults: Int,
 )
 
+@Serializable
+data class DashboardDeals(
+    val results: List<DealsData> = emptyList(),
+)
 
 @Serializable
 data class DealsData(
@@ -70,6 +61,11 @@ data class PromotionInfoData(
 )
 
 @Serializable
+data class DashboardPromotion(
+    val results: List<OffersData>
+)
+
+@Serializable
 data class OffersData(
     val total: Int, val status: OfferStatus
 )
@@ -80,8 +76,18 @@ enum class OfferStatus(val value: String) {
 }
 
 @Serializable
+data class DashboardBanner(
+    val results: List<BannerData>
+)
+
+@Serializable
 data class BannerData(
     val cdnUrl: String, val name: String? = null
+)
+
+@Serializable
+data class DashboardBrands(
+    val results: List<BrandsData>
 )
 
 @Serializable

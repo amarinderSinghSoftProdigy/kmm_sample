@@ -26,7 +26,11 @@ import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
-import com.zealsoftsol.medico.data.DashboardData
+import com.zealsoftsol.medico.data.DashboardBanner
+import com.zealsoftsol.medico.data.DashboardBrands
+import com.zealsoftsol.medico.data.DashboardDeals
+import com.zealsoftsol.medico.data.DashboardManufacturer
+import com.zealsoftsol.medico.data.DashboardPromotion
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EmployeeRegistration1
 import com.zealsoftsol.medico.data.EmployeeRegistration2
@@ -76,10 +80,12 @@ import com.zealsoftsol.medico.data.ProfileResponseData
 import com.zealsoftsol.medico.data.PromotionTypeData
 import com.zealsoftsol.medico.data.PromotionUpdateRequest
 import com.zealsoftsol.medico.data.QrCodeData
+import com.zealsoftsol.medico.data.RecentProductInfo
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.SellerUsersData
+import com.zealsoftsol.medico.data.StockStatusData
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.SubmitEmployeeRegistration
@@ -141,7 +147,14 @@ interface NetworkScope {
     }
 
     interface Customer : NetworkScope {
-        suspend fun getDashboard(unitCode: String): BodyResponse<DashboardData>
+        suspend fun getDashboardManufacturers(type: UserType): BodyResponse<DashboardManufacturer>
+        suspend fun getStockStatusData(type: UserType): BodyResponse<StockStatusData>
+        suspend fun getRecentProducts(type: UserType): BodyResponse<RecentProductInfo>
+        suspend fun getPromotionData(type: UserType): BodyResponse<DashboardPromotion>
+        suspend fun getBannerData(type: UserType): BodyResponse<DashboardBanner>
+        suspend fun getBrandsData(type: UserType): BodyResponse<DashboardBrands>
+        suspend fun getCategoriesData(type: UserType): BodyResponse<DashboardBrands>
+        suspend fun getDealsOfTheDay(type: UserType): BodyResponse<DashboardDeals>
         suspend fun getCustomerDataV2(): BodyResponse<CustomerDataV2>
         suspend fun getCustomerData(): BodyResponse<CustomerData>
     }

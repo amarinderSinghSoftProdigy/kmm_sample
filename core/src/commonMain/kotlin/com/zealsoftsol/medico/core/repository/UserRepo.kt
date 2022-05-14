@@ -11,22 +11,28 @@ import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.BannerData
 import com.zealsoftsol.medico.data.BodyResponse
+import com.zealsoftsol.medico.data.BrandsData
 import com.zealsoftsol.medico.data.ConfigData
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
-import com.zealsoftsol.medico.data.DashboardData
+import com.zealsoftsol.medico.data.DealsData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.HeaderData
 import com.zealsoftsol.medico.data.LicenseDocumentData
 import com.zealsoftsol.medico.data.LocationData
+import com.zealsoftsol.medico.data.ManufacturerData
+import com.zealsoftsol.medico.data.OffersData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.ProfileImageData
 import com.zealsoftsol.medico.data.ProfileImageUpload
 import com.zealsoftsol.medico.data.ProfileResponseData
+import com.zealsoftsol.medico.data.RecentProductInfo
 import com.zealsoftsol.medico.data.Response
+import com.zealsoftsol.medico.data.StockStatusData
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.TokenInfo
@@ -81,7 +87,14 @@ class UserRepo(
         }.getOrNull()
     )
     val configFlow: MutableStateFlow<ConfigData> = MutableStateFlow(ConfigData())
-    val dashboardFlow: MutableStateFlow<DashboardData?> = MutableStateFlow(null)
+    val manufacturerFlow: MutableStateFlow<List<ManufacturerData>> = MutableStateFlow(emptyList())
+    val stockDataFlow: MutableStateFlow<StockStatusData?> = MutableStateFlow(null)
+    val recentProductFlow: MutableStateFlow<RecentProductInfo?> = MutableStateFlow(null)
+    val promotionDataFlow: MutableStateFlow<List<OffersData>> = MutableStateFlow(emptyList())
+    val bannerFlow: MutableStateFlow<List<BannerData>> = MutableStateFlow(emptyList())
+    val brandsFlow: MutableStateFlow<List<BrandsData>> = MutableStateFlow(emptyList())
+    val dealsFlow: MutableStateFlow<List<DealsData>> = MutableStateFlow(emptyList())
+    val categoriesFlow: MutableStateFlow<List<BrandsData>> = MutableStateFlow(emptyList())
 
     fun getUserAccess(): UserAccess {
         return userV2Flow.value?.let {
@@ -174,9 +187,40 @@ class UserRepo(
         }
     }
 
+    /**
+     * load dashboard data based on User Type
+     */
     suspend fun loadDashboard() {
-        networkCustomerScope.getDashboard(requireUser().unitCode).onSuccess {
-            dashboardFlow.value = it
+
+        val userType = requireUser().type
+
+        if (userType == UserType.STOCKIST) {
+            networkCustomerScope.getDashboardManufacturers(userType).onSuccess {
+                manufacturerFlow.value = it.results
+            }
+
+            networkCustomerScope.getStockStatusData(userType).onSuccess {
+                stockDataFlow.value = it
+            }
+            networkCustomerScope.getRecentProducts(userType).onSuccess {
+                recentProductFlow.value = it
+            }
+            networkCustomerScope.getPromotionData(userType).onSuccess {
+                promotionDataFlow.value = it.results
+            }
+        } else if (userType == UserType.RETAILER || userType == UserType.HOSPITAL) {
+            networkCustomerScope.getBannerData(userType).onSuccess {
+                bannerFlow.value = it.results
+            }
+            networkCustomerScope.getBrandsData(userType).onSuccess {
+                brandsFlow.value = it.results
+            }
+            networkCustomerScope.getCategoriesData(userType).onSuccess {
+                categoriesFlow.value = it.results
+            }
+            networkCustomerScope.getDealsOfTheDay(userType).onSuccess {
+                dealsFlow.value = it.results
+            }
         }
     }
 
@@ -189,7 +233,7 @@ class UserRepo(
     fun clear() {
         clearUserData()
         userFlow.value = null
-        dashboardFlow.value = null
+        manufacturerFlow.value = emptyList()
     }
 
     fun getAuthCredentials(): AuthCredentials {
@@ -449,9 +493,44 @@ internal inline fun UserRepo.getUserDataSourceV2(): ReadOnlyDataSource<UserV2> =
     userV2Flow.filterNotNull().stateIn(GlobalScope, SharingStarted.Eagerly, requireUser())
 )
 
-internal inline fun UserRepo.getDashboardDataSource(): ReadOnlyDataSource<DashboardData?> =
+internal inline fun UserRepo.getManufacturerDataSource(): ReadOnlyDataSource<List<ManufacturerData>?> =
     ReadOnlyDataSource(
-        dashboardFlow.stateIn(GlobalScope, SharingStarted.Eagerly, null)
+        manufacturerFlow.stateIn(GlobalScope, SharingStarted.Eagerly, null)
+    )
+
+internal inline fun UserRepo.getStockDataSource(): ReadOnlyDataSource<StockStatusData?> =
+    ReadOnlyDataSource(
+        stockDataFlow.stateIn(GlobalScope, SharingStarted.Eagerly, null)
+    )
+
+internal inline fun UserRepo.getRecentProductsDataSource(): ReadOnlyDataSource<RecentProductInfo?> =
+    ReadOnlyDataSource(
+        recentProductFlow.stateIn(GlobalScope, SharingStarted.Eagerly, null)
+    )
+
+internal inline fun UserRepo.getPromotionsDataSource(): ReadOnlyDataSource<List<OffersData>?> =
+    ReadOnlyDataSource(
+        promotionDataFlow.stateIn(GlobalScope, SharingStarted.Eagerly, null)
+    )
+
+internal inline fun UserRepo.getDealsDataSource(): ReadOnlyDataSource<List<DealsData>?> =
+    ReadOnlyDataSource(
+        dealsFlow.stateIn(GlobalScope, SharingStarted.Eagerly, null)
+    )
+
+internal inline fun UserRepo.getBannerDataSource(): ReadOnlyDataSource<List<BannerData>?> =
+    ReadOnlyDataSource(
+        bannerFlow.stateIn(GlobalScope, SharingStarted.Eagerly, null)
+    )
+
+internal inline fun UserRepo.getBrandsDataSource(): ReadOnlyDataSource<List<BrandsData>?> =
+    ReadOnlyDataSource(
+        brandsFlow.stateIn(GlobalScope, SharingStarted.Eagerly, null)
+    )
+
+internal inline fun UserRepo.getCategoriesDataSource(): ReadOnlyDataSource<List<BrandsData>?> =
+    ReadOnlyDataSource(
+        categoriesFlow.stateIn(GlobalScope, SharingStarted.Eagerly, null)
     )
 
 private inline fun String.formatIndia() = "91$this"

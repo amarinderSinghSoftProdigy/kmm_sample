@@ -35,7 +35,11 @@ import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
-import com.zealsoftsol.medico.data.DashboardData
+import com.zealsoftsol.medico.data.DashboardBanner
+import com.zealsoftsol.medico.data.DashboardBrands
+import com.zealsoftsol.medico.data.DashboardDeals
+import com.zealsoftsol.medico.data.DashboardManufacturer
+import com.zealsoftsol.medico.data.DashboardPromotion
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EditOfferRequest
 import com.zealsoftsol.medico.data.EmployeeRegistration1
@@ -91,11 +95,13 @@ import com.zealsoftsol.medico.data.ProfileResponseData
 import com.zealsoftsol.medico.data.PromotionTypeData
 import com.zealsoftsol.medico.data.PromotionUpdateRequest
 import com.zealsoftsol.medico.data.QrCodeData
+import com.zealsoftsol.medico.data.RecentProductInfo
 import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.SellerUsersData
+import com.zealsoftsol.medico.data.StockStatusData
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.SubmitEmployeeRegistration
@@ -366,12 +372,55 @@ class NetworkClient(
         }
     }
 
-    override suspend fun getDashboard(unitCode: String) = simpleRequest {
-        client.get<BodyResponse<DashboardData>>("${baseUrl.url}/dashboard") {
+    override suspend fun getDashboardManufacturers(type: UserType) = simpleRequest {
+        client.get<BodyResponse<DashboardManufacturer>>("${baseUrl.url}/dashboard/${type.serverValueSimple}/manufacturers") {
             withMainToken()
-            url {
-                parameters.append("b2bUnitCode", unitCode)
+        }
+    }
+
+    override suspend fun getPromotionData(type: UserType) = simpleRequest {
+        client.get<BodyResponse<DashboardPromotion>>("${baseUrl.url}/dashboard/${type.serverValueSimple}/promotions") {
+            withMainToken()
+        }
+    }
+
+    override suspend fun getBannerData(type: UserType): BodyResponse<DashboardBanner> =
+        simpleRequest {
+            client.get("${baseUrl.url}/dashboard/${type.serverValueSimple}/banners") {
+                withMainToken()
             }
+        }
+
+    override suspend fun getBrandsData(type: UserType): BodyResponse<DashboardBrands> =
+        simpleRequest {
+            client.get("${baseUrl.url}/dashboard/${type.serverValueSimple}/brands") {
+                withMainToken()
+            }
+        }
+
+    override suspend fun getCategoriesData(type: UserType): BodyResponse<DashboardBrands> =
+        simpleRequest {
+            client.get("${baseUrl.url}/dashboard/${type.serverValueSimple}/categories") {
+                withMainToken()
+            }
+        }
+
+    override suspend fun getDealsOfTheDay(type: UserType): BodyResponse<DashboardDeals> =
+        simpleRequest {
+            client.get("${baseUrl.url}/dashboard/${type.serverValueSimple}/deal-of-day") {
+                withMainToken()
+            }
+        }
+
+    override suspend fun getStockStatusData(type: UserType) = simpleRequest {
+        client.get<BodyResponse<StockStatusData>>("${baseUrl.url}/dashboard/${type.serverValueSimple}/inventory") {
+            withMainToken()
+        }
+    }
+
+    override suspend fun getRecentProducts(type: UserType) = simpleRequest {
+        client.get<BodyResponse<RecentProductInfo>>("${baseUrl.url}/dashboard/${type.serverValueSimple}/recent-products-info") {
+            withMainToken()
         }
     }
 
