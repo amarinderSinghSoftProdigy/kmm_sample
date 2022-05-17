@@ -15,7 +15,6 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.WelcomeScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
-import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.LicenseDocumentData
@@ -289,7 +288,7 @@ internal class RegistrationEventDelegate(
                 null -> return
             }
         }.onSuccess {
-            userRepo.sendFirebaseToken()
+//            userRepo.sendFirebaseToken()
             navigator.dropScope(Navigator.DropStrategy.ToRoot, updateDataSource = false)
             navigator.setScope(
                 WelcomeScope(documents!!.registrationStep1.run { "$firstName $lastName" })
