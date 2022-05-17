@@ -55,9 +55,6 @@ internal class ProfileEventDelegate(
 
             }
             result.onSuccess { body ->
-                navigator.withScope<SettingsScope.GstinDetails> {
-                    it.showSuccessMsg.value = true
-                }
                 when (body.documentType) {
                     "USER_PROFILE_PIC" -> {
                         navigator.withScope<SettingsScope> {
@@ -73,11 +70,13 @@ internal class ProfileEventDelegate(
                     }
                     "DRUG_LICENSE" -> {//The case to handle the response for drug license upload
                         navigator.withScope<SettingsScope.GstinDetails> {
+                            it.showSuccessMsg.value = true
                             it.details.dlExpiryDate?.licenseUrl = body.cdnUrl
                         }
                     }
                     "FOOD_LICENSE" -> {//The case to handle the response for food license upload
                         navigator.withScope<SettingsScope.GstinDetails> {
+                            it.showSuccessMsg.value = true
                             it.details.flExpiryDate?.licenseUrl = body.cdnUrl
                         }
                     }
