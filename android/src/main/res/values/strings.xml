@@ -498,6 +498,7 @@
     <string name="no_deals_found">No Deals Found</string>
     <string name="ocr">OCR</string>
     <string name="no_manufacturers">No Manufacturers found</string>
+    <string name="ptr_mrp_error">PTR and MRP cannot be 0</string>
 
     <!-- Termrs and Cond -->
 

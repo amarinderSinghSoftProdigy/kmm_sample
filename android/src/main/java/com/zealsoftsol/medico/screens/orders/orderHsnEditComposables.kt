@@ -124,6 +124,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
     val batchData = scope.batchData.flow.collectAsState()
     val selectedBatchData = scope.selectedBatchData.flow.collectAsState()
     val displayPtrError = remember { mutableStateOf(false) }
+    val displaySaveButtonError = remember { mutableStateOf(false) }
 
     /**
      * update editable data is user has selected a batch from ViewBatchComposable
@@ -1081,14 +1082,17 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                             .height(40.dp),
                                         text = stringResource(id = R.string.save),
                                         onClick = {
-                                            if (price.toDouble() > mrp.toDouble()) {
-                                                displayPtrError.value = true
+                                            if (mrp.toDouble() != 0.0 && price.toDouble() != 0.0) { // only allow submit if mrp and price is entered
+                                                if (price.toDouble() > mrp.toDouble()) {
+                                                    displayPtrError.value = true
+                                                } else {
+                                                    scope.saveEntry()
+                                                }
                                             } else {
-                                                scope.saveEntry()
+                                                displaySaveButtonError.value = true
                                             }
                                         },
-                                        isEnabled =
-                                        mrp.toDouble() != 0.0 && price.toDouble() != 0.0 // only allow submit if mrp and proce is entered
+                                        isEnabled = true
                                     )
                                 }
                             }
@@ -1108,6 +1112,11 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
         if (displayPtrError.value) {
             ShowAlert(stringResource(id = R.string.ptr_more_warning)) {
                 displayPtrError.value = false
+            }
+        }
+        if (displaySaveButtonError.value) {
+            ShowAlert(stringResource(id = R.string.ptr_mrp_error)) {
+                displaySaveButtonError.value = false
             }
         }
     }
