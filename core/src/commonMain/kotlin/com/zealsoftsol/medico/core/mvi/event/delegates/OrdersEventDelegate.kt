@@ -8,6 +8,7 @@ import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
+import com.zealsoftsol.medico.core.mvi.scope.nested.BuyProductScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ConfirmOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrderPlacedScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
@@ -20,22 +21,25 @@ import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.utils.LoadHelper
+import com.zealsoftsol.medico.core.utils.TapModeHelper
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.DeclineReason
-import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderNewQtyRequest
 import com.zealsoftsol.medico.data.OrderTaxInfo
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.TaxType
+import com.zealsoftsol.medico.data.UserType
 
 internal class OrdersEventDelegate(
     navigator: Navigator,
     private val userRepo: UserRepo,
     private val networkOrdersScope: NetworkScope.Orders,
+    private val networkProductScope: NetworkScope.Product,
     private val loadHelper: LoadHelper,
+    private val tapModeHelper: TapModeHelper,
 ) : EventDelegate<Event.Action.Orders>(navigator), CommonScope.CanGoBack {
 
     override suspend fun handleEvent(event: Event.Action.Orders) = when (event) {
@@ -82,6 +86,41 @@ internal class OrdersEventDelegate(
         //is Event.Action.Orders.ShowDetailsOfRetailer -> showDetails(event.item, event.scope)
         is Event.Action.Orders.EditDiscount -> editDiscount(event.orderId, event.discount)
         is Event.Action.Orders.ChangePaymentMethod -> changePaymentMethod(event.orderId, event.type)
+        is Event.Action.Orders.BuyProduct -> buyProduct(event.orderEntry, event.buyingOption)
+    }
+
+    private suspend fun buyProduct(orderEntry: OrderEntry, buyingOption: BuyingOption) {
+
+        navigator.withProgress {
+            val address = userRepo.requireUser()//userRepo.requireUser().addressData
+            when (buyingOption) {
+                BuyingOption.BUY -> networkProductScope.buyProductInfo(
+                    orderEntry.productCode,
+                    address.latitude,
+                    address.longitude
+                )
+                BuyingOption.QUOTE -> networkProductScope.getQuotedProductData(orderEntry.productCode)
+            }
+        }.onSuccess { body ->
+            val isSeasonBoy = userRepo.requireUser().type == UserType.SEASON_BOY
+            val nextScope = when (buyingOption) {
+                BuyingOption.BUY -> {
+                    BuyProductScope.ChooseStockist(
+                        isSeasonBoy = isSeasonBoy,
+                        product = body.product,
+                        sellersInfo = DataSource(body.sellerInfo),
+                        tapModeHelper = tapModeHelper,
+                    )
+                }
+                BuyingOption.QUOTE -> BuyProductScope.ChooseQuote(
+                    isSeasonBoy = isSeasonBoy,
+                    product = body.product,
+                    sellersInfo = DataSource(body.sellerInfo),
+                    tapModeHelper = tapModeHelper,
+                )
+            }
+            navigator.setScope(nextScope)
+        }.onError(navigator)
     }
 
     private suspend fun editDiscount(orderId: String, discount: Double) {
@@ -185,7 +224,8 @@ internal class OrdersEventDelegate(
                         order = DataSource(body.order),
                         b2bData = DataSource(body.unitData.data),
                         entries = DataSource(body.entries),
-                        declineReason = DataSource(body.declineReasons)
+                        declineReason = DataSource(body.declineReasons),
+                        userType = userRepo.requireUser().type
                     )
                 )
             }.onError(navigator)
@@ -328,7 +368,8 @@ internal class OrdersEventDelegate(
                     orderID = orderId,
                     declineReason = declineReason,
                     orderEntries = orderEntry as MutableList<OrderEntry>,
-                    index = index
+                    index = index,
+                    userType = userRepo.requireUser().type
                 )
             )
         }

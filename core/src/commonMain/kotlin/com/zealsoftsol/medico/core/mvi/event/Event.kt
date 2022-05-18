@@ -366,6 +366,7 @@ sealed class Event {
 
             data class ChangePaymentMethod(val orderId: String, val type: String) : Orders()
 
+            data class BuyProduct(val orderEntry: OrderEntry, val buyingOption: BuyingOption) : Orders()
         }
 
         sealed class Invoices : Action() {

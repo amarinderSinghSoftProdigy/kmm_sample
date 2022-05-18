@@ -29,6 +29,8 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Divider
@@ -75,6 +77,7 @@ import com.zealsoftsol.medico.data.Batches
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.TaxType
+import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.common.EditText
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
@@ -1096,9 +1099,32 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     )
                                 }
                             }
+                            if (orderEntry.status == OrderEntry.Status.REJECTED && !canEditOrderEntry &&
+                                    scope.userType == UserType.RETAILER) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.End
+                                ) {
+
+                                    Button(
+                                        onClick = { scope.buy(orderEntry = orderEntry) },
+                                        colors = ButtonDefaults.buttonColors(backgroundColor = ConstColors.yellow),
+                                        modifier = Modifier.padding(end = 10.dp, bottom = 10.dp)
+                                    ) {
+                                        Text(
+                                            stringResource(id = R.string.buy),
+                                            modifier = Modifier.padding(
+                                                start = 10.dp,
+                                                end = 10.dp,
+                                                top = 3.dp,
+                                                bottom = 3.dp
+                                            )
+                                        )
+                                    }
+                                }
+                            }
                             Space(10.dp)
                         }
-
                     }
                 }
             }

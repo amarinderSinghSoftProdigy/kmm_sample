@@ -25,6 +25,7 @@ import com.zealsoftsol.medico.data.OrderTaxInvoice
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.TaxType
+import com.zealsoftsol.medico.data.UserType
 
 class OrdersScope(
     val tabs: List<Tab>, val unreadNotifications: ReadOnlyDataSource<Int>,
@@ -116,6 +117,7 @@ class ViewOrderScope(
     var b2bData: DataSource<B2BData?>,
     var entries: DataSource<List<OrderEntry>>,
     var declineReason: DataSource<List<DeclineReason>>,
+    val userType: UserType
 ) : Scope.Child.TabBar(), SelectableOrderEntry, CommonScope.WithNotifications {
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
@@ -307,6 +309,15 @@ class ViewOrderScope(
 
         fun `continue`() =
             EventCollector.sendEvent(Event.Action.Orders.ViewOrderAction(continueAction, true))
+    }
+
+    fun buy(orderEntry: OrderEntry) = orderEntry.buyingOption.let {
+        EventCollector.sendEvent(
+            Event.Action.Orders.BuyProduct(
+                orderEntry,
+                it,
+            )
+        )
     }
 }
 
