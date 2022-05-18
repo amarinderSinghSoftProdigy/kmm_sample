@@ -13,6 +13,7 @@ import com.zealsoftsol.medico.data.DeclineReason
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.TaxType
+import com.zealsoftsol.medico.data.UserType
 
 class OrderHsnEditScope(
     val taxType: TaxType,
@@ -22,7 +23,8 @@ class OrderHsnEditScope(
     val declineReason: List<DeclineReason>,
     var orderEntries: MutableList<OrderEntry>,
     val index: Int,
-    val showAlert: DataSource<Boolean> = DataSource(false)
+    val showAlert: DataSource<Boolean> = DataSource(false),
+    val userType: UserType
 ) : Scope.Child.TabBar(), CommonScope.CanGoBack, Loadable<SearchDataItem> {
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.OnlyBackHeader("")
@@ -271,5 +273,14 @@ class OrderHsnEditScope(
     ) {
         this.orderEntries = orderEntries as MutableList<OrderEntry>
         updateSelectedIndex(this.selectedIndex.value)
+    }
+
+    fun buy(orderEntry: OrderEntry) = orderEntry.buyingOption.let {
+        EventCollector.sendEvent(
+            Event.Action.Orders.BuyProduct(
+                orderEntry,
+                it,
+            )
+        )
     }
 }

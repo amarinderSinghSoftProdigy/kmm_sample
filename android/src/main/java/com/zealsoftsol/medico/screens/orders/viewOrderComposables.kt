@@ -20,6 +20,8 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Divider
@@ -55,6 +57,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.PaymentMethod
+import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.cart.OrderTotal
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.ShowAlert
@@ -273,6 +276,8 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                             index = index
                                         )
                                     },
+                                    onBuyClick = { scope.buy(orderEntry = it)},
+                                    userType = scope.userType
                                 )
                                 Space(8.dp)
                             }
@@ -489,6 +494,8 @@ fun OrderEntryItem(
     onClick: () -> Unit,
     showDetails: Boolean = false,
     isConfirmOrderScope: Boolean = false,
+    onBuyClick: () -> Unit,
+    userType: UserType ?= null
 ) {
     Surface(
         elevation = 5.dp,
@@ -704,6 +711,21 @@ fun OrderEntryItem(
                             color = Color.Black,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.W500,
+                        )
+                    }
+                }
+            }
+            if (entry.status == OrderEntry.Status.REJECTED && !canEdit && userType == UserType.RETAILER) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+
+                    Button(
+                        onClick = onBuyClick,
+                        colors = ButtonDefaults.buttonColors(backgroundColor = ConstColors.yellow),
+                        modifier = Modifier.padding(end = 10.dp, bottom = 10.dp)
+                    ) {
+                        Text(
+                            stringResource(id = R.string.buy),
+                            modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 3.dp, bottom = 3.dp)
                         )
                     }
                 }

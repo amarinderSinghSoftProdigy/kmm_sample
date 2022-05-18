@@ -205,6 +205,7 @@ fun ConfirmOrderScreen(scope: ConfirmOrderScope) {
                                 onChecked = { _ -> scope.toggleCheck(it) },
                                 onClick = { },
                                 isConfirmOrderScope = true,
+                                onBuyClick = {}
                             )
                         }
                         Space(8.dp)
