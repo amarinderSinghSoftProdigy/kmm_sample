@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.inventory
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.BorderStroke
@@ -81,11 +82,18 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@SuppressLint("RememberReturnType")
 @OptIn(ExperimentalAnimationApi::class)
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @Composable
 fun InventoryMainComposable(scope: InventoryScope) {
+
+    remember {
+        scope.clearList()
+        scope.getInventory(true)
+    }
+
     val manufacturersList = scope.manufacturersList.flow.collectAsState().value
     val productsList = scope.productsList.flow.collectAsState().value
     val totalResults = scope.totalProducts

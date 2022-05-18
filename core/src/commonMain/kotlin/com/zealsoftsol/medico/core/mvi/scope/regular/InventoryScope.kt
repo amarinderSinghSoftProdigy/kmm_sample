@@ -41,10 +41,6 @@ class InventoryScope(
     }
 
 
-    init {
-        getInventory(true)
-    }
-
     fun hideBatchesDialog() {
         showNoBatchesDialog.value = false
     }
@@ -128,6 +124,11 @@ class InventoryScope(
         productsList.value.clear()
         mManufacturerCode = manufacturerCode
         getInventory(true)
+    }
+
+    fun clearList() {
+        if (productsList.value.isNotEmpty())
+            productsList.value.clear()
     }
 
     /**

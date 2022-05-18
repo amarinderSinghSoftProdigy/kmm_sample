@@ -1044,29 +1044,53 @@ fun ShowAlertDialog(message: String, stockist: String, onDismiss: () -> Unit, on
             }
         }
 
-
     MaterialTheme {
 
         AlertDialog(
             backgroundColor = White,
             onDismissRequest =
             onDismiss,
-            text = { Text(text = annotation, color = Color.Black) },
-            dismissButton = {
-                Button(
-                    onClick = onDismiss,
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray)
-                ) {
-                    Text(stringResource(id = R.string.cancel))
+            text = {
+                Column {
+                    Text(text = annotation, color = Color.Black)
+                    Space(dp = 5.dp)
+                    Text(
+                        text = stringResource(id = R.string.qty_warning_dialog),
+                        color = Color.Red
+                    )
                 }
             },
-            confirmButton = {
-                Button(
-                    onClick = onClick,
-                    colors = ButtonDefaults.buttonColors(backgroundColor = ConstColors.yellow)
+
+            buttons = {
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp, vertical = 10.dp)
                 ) {
-                    Text(stringResource(id = R.string.okay))
+
+                    Button(
+                        onClick = onDismiss,
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 10.dp)
+                    ) {
+                        Text(stringResource(id = R.string.cancel))
+                    }
+
+                    Button(
+                        onClick = onClick,
+                        colors = ButtonDefaults.buttonColors(backgroundColor = ConstColors.yellow),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 10.dp)
+                    ) {
+                        Text(stringResource(id = R.string.continue_))
+                    }
+
                 }
+
             }
         )
     }
