@@ -262,26 +262,34 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                     if (showNoProduct.value)
                         NoProduct(productName = search.value)
                 } else {
-                    LazyColumn(
-                        state = rememberLazyListState(),
+                    Surface(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .background(color = Color.White)
+                            .padding(all = 10.dp)
+                            .fillMaxSize(),
+                        elevation = 10.dp,
+                        shape = MaterialTheme.shapes.medium
                     ) {
-                        itemsIndexed(
-                            items = autoComplete.value,
-                            key = { index, _ -> index },
-                            itemContent = { index, item ->
-                                AutoCompleteItem(
-                                    item,
-                                    autoComplete.value,
-                                    index,
-                                    search.value
-                                ) {
-                                    scope.selectAutoComplete(item)
-                                }
-                            },
-                        )
+                        LazyColumn(
+                            state = rememberLazyListState(),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(color = Color.White)
+                        ) {
+                            itemsIndexed(
+                                items = autoComplete.value,
+                                key = { index, _ -> index },
+                                itemContent = { index, item ->
+                                    AutoCompleteItem(
+                                        item,
+                                        autoComplete.value,
+                                        index,
+                                        search.value
+                                    ) {
+                                        scope.selectAutoComplete(item)
+                                    }
+                                },
+                            )
+                        }
                     }
                 }
             }
