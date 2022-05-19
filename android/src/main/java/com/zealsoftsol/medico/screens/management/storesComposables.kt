@@ -355,14 +355,18 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                                     .padding(horizontal = 16.dp)
                                     .background(color = Color.White)
                             ) {
-                                items(
+                                itemsIndexed(
                                     items = autoComplete.value,
-                                    key = { item -> item.suggestion },
-                                    itemContent = { item ->
+                                    key = { index, _ -> index },
+                                    itemContent = { index, item ->
                                         AutoCompleteItem(
                                             item,
+                                            autoComplete.value,
+                                            index,
                                             search.value
-                                        ) { scope.selectAutoComplete(item) }
+                                        ) {
+                                            scope.selectAutoComplete(item)
+                                        }
                                     },
                                 )
                             }

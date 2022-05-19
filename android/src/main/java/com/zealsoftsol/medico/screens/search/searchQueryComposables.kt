@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.screens.search
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.IndicationInstance
 import androidx.compose.foundation.background
@@ -270,9 +271,11 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                         itemsIndexed(
                             items = autoComplete.value,
                             key = { index, _ -> index },
-                            itemContent = { _, item ->
+                            itemContent = { index, item ->
                                 AutoCompleteItem(
                                     item,
+                                    autoComplete.value,
+                                    index,
                                     search.value
                                 ) {
                                     scope.selectAutoComplete(item)
@@ -295,17 +298,107 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
 
 @Composable
 private fun NoProduct(productName: String) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        Text(
-            modifier = Modifier.align(Alignment.Center),
-            text = "$productName ${stringResource(id = R.string.prod_not_found)}"
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(start = 30.dp, end = 30.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Space(dp = 40.dp)
+
+        Image(
+            painter = painterResource(id = R.drawable.ic_group_not_found),
+            contentDescription = null,
+            modifier = Modifier.size(150.dp)
         )
+        Space(dp = 20.dp)
+
+        Text(
+            text = stringResource(R.string.no_result_found),
+            color = Color.Black,
+            fontWeight = FontWeight.Bold,
+            fontSize = 16.sp,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
+
+        Space(dp = 20.dp)
+
+        Text(
+            text = stringResource(R.string.product_not_found_1),
+            color = Color.Black,
+            fontSize = 16.sp,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+
+        )
+
+        Text(
+            text = stringResource(R.string.product_not_found_2),
+            color = Color.Black,
+            fontSize = 16.sp,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+
+        )
+
     }
 }
 
 
 @Composable
-fun AutoCompleteItem(autoComplete: AutoComplete, input: String, onClick: () -> Unit) {
+fun AutoCompleteItem(
+    autoComplete: AutoComplete,
+    autoCompleteList: List<AutoComplete>,
+    index: Int,
+    input: String,
+    onClick: () -> Unit
+) {
+
+    if (index == firstProductPosition(autoCompleteList)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 10.dp, top = 10.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.products),
+                color = Color.Black,
+                fontWeight = FontWeight.W700,
+                fontSize = 18.sp
+            )
+        }
+    }
+
+    if (index == firstCompositionPosition(autoCompleteList)) {
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 10.dp, top = 10.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.compositions),
+                color = Color.Black,
+                fontWeight = FontWeight.W800,
+                fontSize = 18.sp
+            )
+        }
+    }
+
+    if (index == firstManufacturerPosition(autoCompleteList)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 10.dp, top = 10.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.manufacturers),
+                color = Color.Black,
+                fontWeight = FontWeight.W800,
+                fontSize = 18.sp
+            )
+        }
+    }
+
     val regex = "(?i)$input".toRegex()
     Box(
         modifier = Modifier
@@ -321,12 +414,19 @@ fun AutoCompleteItem(autoComplete: AutoComplete, input: String, onClick: () -> U
 
             Row(
                 modifier = Modifier
-                    .fillMaxSize(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
+                    .fillMaxSize()
             ) {
                 BoxWithConstraints {
-                    Column(modifier = Modifier.widthIn(max = maxWidth - 24.dp)) {
+                    Row(modifier = Modifier.widthIn(max = maxWidth - 24.dp)) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            tint = ConstColors.gray,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .padding(end = 5.dp),
+                        )
+
                         Text(
                             text = buildAnnotatedString {
                                 append(autoComplete.suggestion)
@@ -342,32 +442,29 @@ fun AutoCompleteItem(autoComplete: AutoComplete, input: String, onClick: () -> U
                             fontSize = 15.sp,
                             fontWeight = FontWeight.W400,
                         )
-                        if (autoComplete.details.isNotEmpty()) {
-                            Text(
-                                text = autoComplete.details,
-                                fontSize = 12.sp,
-                                color = MaterialTheme.colors.background,
-                                fontWeight = FontWeight.W400,
-                            )
-                        }
                     }
                 }
-                Icon(
-                    imageVector = Icons.Default.ArrowForward,
-                    tint = ConstColors.lightBlue,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp),
-                )
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
 
+                    if (autoComplete.stockists.isNotEmpty()) {
+                        Text(
+                            text = autoComplete.stockists,
+                            fontSize = 12.sp,
+                            color = ConstColors.lightBlue,
+                            fontWeight = FontWeight.W400,
+                            modifier = Modifier.padding(end = 5.dp)
+                        )
+                    }
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        tint = ConstColors.lightBlue,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                    )
+                }
 
             }
-            if (autoComplete.stockists.isNotEmpty())
-                Text(
-                    text = autoComplete.stockists,
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colors.background,
-                    fontWeight = FontWeight.W400,
-                )
+
         }
         Divider(
             modifier = Modifier.align(Alignment.BottomCenter),
@@ -375,6 +472,34 @@ fun AutoCompleteItem(autoComplete: AutoComplete, input: String, onClick: () -> U
         )
     }
 }
+
+fun firstProductPosition(autoComplete: List<AutoComplete>): Int {
+
+    val index = autoComplete.indexOfFirst {
+        it.query == "search"
+    }
+    return index
+
+}
+
+fun firstCompositionPosition(autoComplete: List<AutoComplete>): Int {
+
+    val index = autoComplete.indexOfFirst {
+        it.query == "compositions"
+    }
+    return index
+
+}
+
+fun firstManufacturerPosition(autoComplete: List<AutoComplete>): Int {
+
+    val index = autoComplete.indexOfFirst {
+        it.query == "manufacturers"
+    }
+    return index
+
+}
+
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -1101,7 +1226,7 @@ fun BasicSearchBar(
     start: Dp = 24.dp,
     backgroundColor: Color = Color.White,
     showSearchIcon: Boolean = false,
-    onSearchKeyPress:(() -> Unit)? = null
+    onSearchKeyPress: (() -> Unit)? = null
 ) {
     SearchBarBox(
         elevation = elevation,
