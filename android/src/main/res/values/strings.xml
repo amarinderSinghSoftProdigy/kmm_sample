@@ -504,6 +504,8 @@
     <string name="product_not_found_1">What you searched was unfortunately</string>
     <string name="product_not_found_2">not found or doesn\'t exist</string>
     <string name="products">Products</string>
+    <string name="manu_not_found">Manufacturers Not Found</string>
+    <string name="compo_not_found">Compositions Not Found</string>
 
     <!-- Termrs and Cond -->
 
