@@ -900,7 +900,7 @@ private fun NoIconHeader(
                             },
                         )
                 )
-            } else{
+            } else {
                 Image(
                     modifier = Modifier
                         .weight(0.15f)
@@ -1065,6 +1065,16 @@ private fun StoreHeader(
                         modifier = Modifier.size(16.dp),
                     )
                 }
+            }
+            Surface(modifier = Modifier
+                .padding(end = 12.dp)
+                .align(Alignment.CenterEnd)) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_pointer1),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(16.dp),
+                )
             }
         }
 
