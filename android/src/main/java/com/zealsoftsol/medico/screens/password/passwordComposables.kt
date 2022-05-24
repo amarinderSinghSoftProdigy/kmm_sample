@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
 import com.zealsoftsol.medico.screens.common.BasicScreen
 import com.zealsoftsol.medico.screens.common.InputWithError
 import com.zealsoftsol.medico.screens.common.PasswordFormatInputField
+import com.zealsoftsol.medico.screens.common.stringResourceByName
 
 @Composable
 fun VerifyCurrentPasswordScreen(scope: PasswordScope.VerifyCurrent) {
@@ -20,7 +21,7 @@ fun VerifyCurrentPasswordScreen(scope: PasswordScope.VerifyCurrent) {
     BasicScreen(
         subtitle = stringResource(id = R.string.change_password_hint),
         body = {
-            InputWithError(validation.value?.password) {
+            InputWithError(stringResourceByName(name = validation.value?.password ?: "")) {
                 PasswordFormatInputField(
                     hint = stringResource(id = R.string.current_password),
                     text = password.value,

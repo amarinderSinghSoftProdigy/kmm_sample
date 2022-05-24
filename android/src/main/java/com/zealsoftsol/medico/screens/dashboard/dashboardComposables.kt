@@ -375,7 +375,7 @@ private fun ShowRetailerAndHospitalDashboard(
  * items for quick action
  */
 @Composable
-private fun QuickActionItem(title: String, icon: Int, onClick: () -> Unit) {
+private fun QuickActionItem(title: String, icon: Int, count: Int = 0, onClick: () -> Unit) {
     Column(horizontalAlignment = CenterHorizontally) {
         Box(modifier = Modifier.clickable { onClick() }) {
             Surface(
@@ -386,6 +386,12 @@ private fun QuickActionItem(title: String, icon: Int, onClick: () -> Unit) {
                 elevation = 5.dp
             ) {
             }
+            if (count != 0)
+                RedCounter(
+                    modifier = Modifier
+                        .align(TopEnd),
+                    count = count,
+                )
             Image(
                 modifier = Modifier
                     .size(30.dp)

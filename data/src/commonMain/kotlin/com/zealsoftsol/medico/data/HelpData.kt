@@ -24,5 +24,7 @@ data class ContactUs(
     val customerCarePhoneNumber: String,
     val email: String,
     @SerialName("sales")
-    val salesPhoneNumber: String
+    val salesPhoneNumber: String,
+    @SerialName("whatsappNo")
+    val whatsAppPhoneNumber: String
 )
