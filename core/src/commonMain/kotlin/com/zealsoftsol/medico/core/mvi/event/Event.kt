@@ -713,6 +713,12 @@ sealed class Event {
                 val search: String,
             ) : Manufacturers()
         }
+
+        sealed class Demo : Action() {
+            override val typeClazz: KClass<*> = Demo::class
+
+            object MyDemo : Demo()
+        }
     }
 
 
@@ -781,5 +787,6 @@ sealed class Event {
         object Deals : Transition()
         object Ocr : Transition()
         object Manufacturers : Transition()
+        object Demo : Transition()
     }
 }

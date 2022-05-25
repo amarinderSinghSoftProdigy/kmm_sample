@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.ExperimentalMaterialApi
@@ -30,6 +31,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.rememberScaffoldState
@@ -46,6 +48,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -100,17 +103,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.BannersScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.BatchesScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.DealsScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.ManufacturerScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.OcrScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.PreferenceScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.QrCodeScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.WhatsappPreferenceScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.*
 import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
@@ -138,6 +131,7 @@ import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.dashboard.BannersScreen
 import com.zealsoftsol.medico.screens.dashboard.DashboardScreen
 import com.zealsoftsol.medico.screens.deals.DealsScreen
+import com.zealsoftsol.medico.screens.demo.DemoScreen
 import com.zealsoftsol.medico.screens.employee.AddEmployeeAadharInfoScreen
 import com.zealsoftsol.medico.screens.employee.AddEmployeeAddressDetailsScreen
 import com.zealsoftsol.medico.screens.employee.AddEmployeeScreen
@@ -471,6 +465,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     is DealsScope -> DealsScreen(it)
                     is OcrScope -> OcrScreen(it, scaffoldState)
                     is ManufacturerScope -> ManufacturerScreen(it)
+                    is DemoScope -> DemoScreen(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }
@@ -1066,14 +1061,17 @@ private fun StoreHeader(
                     )
                 }
             }
-            Surface(modifier = Modifier
-                .padding(end = 12.dp)
-                .align(Alignment.CenterEnd)) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_pointer1),
+            Surface(
+                modifier = Modifier
+                    .padding(end = 12.dp)
+                    .align(Alignment.CenterEnd),
+                shape = CircleShape,
+                color = ConstColors.gray
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
                     contentDescription = null,
-                    modifier = Modifier
-                        .size(16.dp),
+                    tint = ConstColors.lightGrey,
                 )
             }
         }

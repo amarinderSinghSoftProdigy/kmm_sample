@@ -106,6 +106,8 @@ import com.zealsoftsol.medico.screens.search.SearchOption
 import com.zealsoftsol.medico.screens.search.SortSection
 import com.zealsoftsol.medico.screens.search.YellowOutlineIndication
 import kotlinx.coroutines.launch
+import java.util.*
+import kotlin.collections.ArrayList
 
 // TODO reuse with management
 @ExperimentalComposeUiApi
@@ -185,7 +187,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                         }
                     },
                     isSearchCross = true,
-                    onSearchKeyPress = {scope.startSearch(true, searchedProduct)}
+                    onSearchKeyPress = { scope.startSearch(true, searchedProduct) }
                 )
                 scope.storage.save("focus", false)
                 if (showFilter.value) {
@@ -602,46 +604,82 @@ private fun StoreItem(
     BaseManagementItem(onClick) {
         Column(
             modifier = Modifier
-                .width(maxWidth * 0.65f)
+                .fillMaxWidth()
                 .align(Alignment.CenterStart),
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text(
-                    text = store.tradeName,
-                    fontSize = 16.sp,
+                    text = store.tradeName.uppercase(Locale.getDefault()),
+                    fontSize = 15.sp,
                     fontWeight = FontWeight.W600,
                     color = MaterialTheme.colors.background,
                 )
+                Space(dp = 2.dp)
+                Image(
+                    painter = painterResource(id = R.drawable.ic_verified),
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                )
             }
-            Space(8.dp)
-            GeoLocation(store.fullAddress())
-        }
-        Column(
-            modifier = Modifier
-                .width(maxWidth * 0.35f)
-                .align(Alignment.CenterEnd),
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.SpaceEvenly,
-        ) {
+            Space(2.dp)
+
             Text(
-                text = store.status.serverValue,
-                color = when (store.status) {
-                    SubscriptionStatus.SUBSCRIBED -> ConstColors.green
-                    SubscriptionStatus.PENDING -> ConstColors.lightBlue
-                    SubscriptionStatus.REJECTED -> ConstColors.red
-                },
+                text = store.fullAddress(),
+                fontSize = 14.sp,
                 fontWeight = FontWeight.W500,
-                fontSize = 15.sp,
-            )
-            Space(8.dp)
-            Text(
-                text = store.formattedDistance,
-                fontSize = 12.sp,
                 color = ConstColors.gray,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1,
             )
+
+            Space(5.dp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_connected),
+                        tint = when (store.status) {
+                            SubscriptionStatus.SUBSCRIBED -> ConstColors.darkGreen
+                            SubscriptionStatus.PENDING -> ConstColors.lightBlue
+                            SubscriptionStatus.REJECTED -> ConstColors.red
+                        },
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                    )
+                    Space(dp = 3.dp)
+                    Text(
+                        text = store.status.serverValue,
+                        color = when (store.status) {
+                            SubscriptionStatus.SUBSCRIBED -> ConstColors.darkGreen
+                            SubscriptionStatus.PENDING -> ConstColors.lightBlue
+                            SubscriptionStatus.REJECTED -> ConstColors.red
+                        },
+                        fontWeight = FontWeight.W500,
+                        fontSize = 15.sp,
+                    )
+                }
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_location),
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                    )
+                    Space(dp = 3.dp)
+                    Text(
+                        text = store.formattedDistance,
+                        fontSize = 12.sp,
+                        color = ConstColors.gray,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
+                    )
+                }
+            }
         }
     }
 }
