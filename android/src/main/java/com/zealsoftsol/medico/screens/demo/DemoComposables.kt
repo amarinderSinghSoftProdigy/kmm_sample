@@ -1,8 +1,10 @@
 package com.zealsoftsol.medico.screens.demo
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.PlayerView
@@ -45,6 +48,7 @@ import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.deals.DealsItem
 import java.io.File
 
+@SuppressLint("RememberReturnType")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DemoScreen(scope: DemoScope) {
@@ -52,30 +56,33 @@ fun DemoScreen(scope: DemoScope) {
     val exoPlayer = remember {
         SimpleExoPlayer.Builder(context).build()
     }
-    exoPlayer.playWhenReady = false
-    if (scope is DemoScope.DemoListing) {
-        val demoData = scope.demoData.flow.collectAsState()
-        Log.e("list", " " + demoData.value.size)
-        Column(
-            modifier = Modifier
-                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 8.dp)
-                .fillMaxSize()
-        ) {
-            LazyColumn {
-                itemsIndexed(
-                    items = demoData.value,
-                    itemContent = { _, item ->
-                        MyDemoScreen(item = item) {
-                            scope.openVideo(item.url)
-                        }
-                    },
-                )
+    when (scope) {
+        is DemoScope.DemoListing -> {
+            exoPlayer.release()
+            val demoData = scope.demoData.flow.collectAsState()
+            Log.e("list", " " + demoData.value.size)
+            Column(
+                modifier = Modifier
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 8.dp)
+                    .fillMaxSize()
+            ) {
+                LazyColumn {
+                    itemsIndexed(
+                        items = demoData.value,
+                        itemContent = { _, item ->
+                            MyDemoScreen(item = item) {
+                                scope.openVideo(item.url)
+                            }
+                        },
+                    )
+                }
             }
         }
-    } else if (scope is DemoScope.DemoPlayer) {
-        val url = scope.demoUrl.flow.collectAsState()
-        Column(verticalArrangement = Arrangement.Center, modifier = Modifier.fillMaxSize()) {
-            VideoPlayer(url = url.value, context, exoPlayer)
+        is DemoScope.DemoPlayer -> {
+            val url = scope.demoUrl.flow.collectAsState()
+            Column(verticalArrangement = Arrangement.Center, modifier = Modifier.fillMaxSize()) {
+                VideoPlayer(url = url.value, context, exoPlayer)
+            }
         }
     }
 }
@@ -90,6 +97,7 @@ fun VideoPlayer(url: String, context: Context, exoPlayer: SimpleExoPlayer) {
         .createMediaSource(Uri.parse(url))
     exoPlayer.apply {
         exoPlayer.prepare(source)
+        exoPlayer.repeatMode = ExoPlayer.REPEAT_MODE_OFF
     }
     PlayVideo(exoPlayer = exoPlayer)
     exoPlayer.playWhenReady = true
