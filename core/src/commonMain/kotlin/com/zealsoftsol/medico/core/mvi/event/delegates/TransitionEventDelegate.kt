@@ -262,7 +262,7 @@ internal class TransitionEventDelegate(
                 is Event.Transition.Deals -> setScope(DealsScope(cartRepo.getEntriesCountDataSource()))
                 is Event.Transition.Ocr -> setScope(OcrScope())
                 is Event.Transition.Manufacturers -> setScope(ManufacturerScope())
-                is Event.Transition.Demo -> setScope(DemoScope())
+                is Event.Transition.Demo -> setScope(DemoScope.DemoListing())
             }
         }
     }

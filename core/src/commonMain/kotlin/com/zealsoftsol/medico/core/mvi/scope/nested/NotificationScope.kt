@@ -49,6 +49,8 @@ sealed class NotificationScope : Scope.Child.TabBar() {
 
         fun loadItems() =
             EventCollector.sendEvent(Event.Action.Notification.Load(isFirstLoad = false))
+
+        fun clearAll() = EventCollector.sendEvent(Event.Action.Notification.ClearAll)
     }
 
     sealed class Preview<T : NotificationDetails.TypeSafe, O : NotificationOption>(

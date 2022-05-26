@@ -139,6 +139,7 @@ interface NetworkScope {
         ): AnyResponse
 
         suspend fun getNotificationDetails(id: String): BodyResponse<NotificationDetails>
+        suspend fun clearAllNotifications(): BodyResponse<ClearAllNotification>
     }
 
     interface Stores : NetworkScope {
@@ -495,4 +496,5 @@ interface NetworkScope {
     interface DemoData : NetworkScope {
         suspend fun getDemoData(): BodyResponse<List<DemoResponse>>
     }
+
 }

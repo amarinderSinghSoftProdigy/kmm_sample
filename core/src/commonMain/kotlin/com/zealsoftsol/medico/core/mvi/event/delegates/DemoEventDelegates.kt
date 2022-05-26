@@ -12,18 +12,25 @@ import com.zealsoftsol.medico.core.repository.UserRepo
 internal class DemoEventDelegates(
     navigator: Navigator,
     private val networkDemoScope: NetworkScope.DemoData
-) : EventDelegate<Event.Action>(navigator) {
-    override suspend fun handleEvent(event: Event.Action) {
+) : EventDelegate<Event.Action.Demo>(navigator) {
+    override suspend fun handleEvent(event: Event.Action.Demo) {
         when (event) {
             is Event.Action.Demo.MyDemo -> demoData()
+            is Event.Action.Demo.OpenVideo -> openVideoScope(event.url)
+        }
+    }
+
+    private fun openVideoScope(url: String) {
+        navigator.withScope<DemoScope.DemoListing> {
+            navigator.setScope(DemoScope.DemoPlayer(url))
         }
     }
 
     private suspend fun demoData() {
-        navigator.withScope<DemoScope> {
+        navigator.withScope<DemoScope.DemoListing> {
             withProgress {
                 networkDemoScope.getDemoData().onSuccess { body ->
-                    it.demoData?.value = body
+                    it.demoData.value = body
                 }
             }.onError(navigator)
         }

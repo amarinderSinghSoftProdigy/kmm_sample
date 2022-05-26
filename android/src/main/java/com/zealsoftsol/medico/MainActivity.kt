@@ -275,6 +275,13 @@ class MainActivity : ComponentActivity(), DIAware {
         }
     }
 
+    fun playVideo(url: String) {
+        val file = File(url)
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.setDataAndType(Uri.fromFile(file), "video/*")
+        startActivity(intent)
+    }
+
     fun sendMail(email: String) {
         val intent = Intent(Intent.ACTION_SENDTO)
         intent.data = Uri.parse("mailto:$email")

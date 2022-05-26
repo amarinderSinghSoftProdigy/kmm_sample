@@ -1428,6 +1428,14 @@ class NetworkClient(
         }
     }
 
+    override suspend fun clearAllNotifications(): BodyResponse<ClearAllNotification> =
+        simpleRequest {
+            client.post("${baseUrl.url}/notifications/clearall") {
+                withMainToken()
+            }
+        }
+
+
     // Utils
     private inline fun HttpRequestBuilder.withB2bCodeToken(finalToken: String) {
         applyHeader(finalToken)

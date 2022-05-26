@@ -4,18 +4,7 @@ import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.interop.Time
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.network.NetworkScope
-import com.zealsoftsol.medico.data.NotificationAction
-import com.zealsoftsol.medico.data.NotificationActionRequest
-import com.zealsoftsol.medico.data.NotificationData
-import com.zealsoftsol.medico.data.NotificationDetails
-import com.zealsoftsol.medico.data.NotificationFilter
-import com.zealsoftsol.medico.data.NotificationOption
-import com.zealsoftsol.medico.data.NotificationStatus
-import com.zealsoftsol.medico.data.NotificationType
-import com.zealsoftsol.medico.data.PaginatedData
-import com.zealsoftsol.medico.data.PaymentMethod
-import com.zealsoftsol.medico.data.UnreadNotifications
-import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.data.*
 import kotlin.random.Random
 
 class MockNotificationScope : NetworkScope.Notification {
@@ -25,6 +14,11 @@ class MockNotificationScope : NetworkScope.Notification {
     init {
         "USING MOCK NOTIFICATION SCOPE".logIt()
     }
+
+    override suspend fun clearAllNotifications(): BodyResponse<ClearAllNotification> =
+        mockResponse {
+            ClearAllNotification(Body(listOf(), 0), "success")
+        }
 
     override suspend fun sendFirebaseToken(token: String) = mockResponse { mockEmptyMapBody() }
 

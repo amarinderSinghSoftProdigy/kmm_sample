@@ -65,6 +65,8 @@ import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.Dropdown
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.NoRecords
+import com.zealsoftsol.medico.screens.common.NotifyAlertDialog
+import com.zealsoftsol.medico.screens.common.ShowAlertDialog
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.UserLogoPlaceholder
 import com.zealsoftsol.medico.screens.common.clickable
@@ -100,6 +102,9 @@ private fun AllNotifications(scope: NotificationScope.All, listState: LazyListSt
     val search = scope.searchText.flow.collectAsState()
     val showSearchOverlay = remember { mutableStateOf(true) }
     val filter = scope.filter.flow.collectAsState()
+    val showErrorAlert = remember { mutableStateOf(false) }
+    val items = scope.items.flow.collectAsState()
+
     if (showSearchOverlay.value) {
         SearchBarBox(
             modifier = Modifier.clickable(indication = null) {
@@ -155,8 +160,36 @@ private fun AllNotifications(scope: NotificationScope.All, listState: LazyListSt
             )
         }
     }
+    Space(dp = 12.dp)
+
+    if(!(items.value.isEmpty() && scope.items.updateCount > 0)){
+        Row(
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+
+        ) {
+            Row(modifier = Modifier
+                .clickable { showErrorAlert.value = true }) {
+                Text(
+                    text = "Clear All",
+                    color = Color.Gray,
+                    fontWeight = FontWeight.W500,
+                    fontSize = 16.sp
+                )
+                Space(dp = 5.dp)
+                Image(
+                    painter = painterResource(id = R.drawable.ic_delete),
+                    contentDescription = null,
+                    modifier = Modifier.size(25.dp)
+                )
+            }
+
+        }
+    }
     Space(12.dp)
-    val items = scope.items.flow.collectAsState()
+
     if (items.value.isEmpty() && scope.items.updateCount > 0) {
         NoRecords(
             icon = R.drawable.ic_missing_notification,
@@ -180,6 +213,12 @@ private fun AllNotifications(scope: NotificationScope.All, listState: LazyListSt
             )
         }
     }
+
+    if (showErrorAlert.value)
+        NotifyAlertDialog(onDismiss = { showErrorAlert.value = false }) {
+            scope.clearAll()
+            showErrorAlert.value = false
+        }
 }
 
 @ExperimentalMaterialApi
@@ -358,7 +397,7 @@ private fun SubscriptionDeatails(
             CoilImage(
                 src = "",
                 size = 100.dp,
-                onError = { UserLogoPlaceholder(details.customerData.run { "$firstName $lastName"}) },
+                onError = { UserLogoPlaceholder(details.customerData.run { "$firstName $lastName" }) },
                 onLoading = { UserLogoPlaceholder(details.customerData.run { "$firstName $lastName" }) },
             )
             Space(24.dp)

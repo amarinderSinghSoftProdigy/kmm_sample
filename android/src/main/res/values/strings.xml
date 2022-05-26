@@ -506,6 +506,8 @@
     <string name="products">Products</string>
     <string name="manu_not_found">Manufacturers Not Found</string>
     <string name="compo_not_found">Compositions Not Found</string>
+    <string name="alert_notify">Are you sure you want to clear all the Notifications?</string>
+    <string name="alert_notify_1">Clearing will delete all the notifications permanently</string>
 
     <!-- Termrs and Cond -->
 

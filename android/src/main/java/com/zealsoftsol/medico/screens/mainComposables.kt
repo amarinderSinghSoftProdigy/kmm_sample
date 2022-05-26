@@ -1065,13 +1065,11 @@ private fun StoreHeader(
                 modifier = Modifier
                     .padding(end = 12.dp)
                     .align(Alignment.CenterEnd),
-                shape = CircleShape,
-                color = ConstColors.gray
             ) {
                 Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
+                    modifier = Modifier.size(16.dp),
+                    painter = painterResource(id = R.drawable.ic_down_arrow),
                     contentDescription = null,
-                    tint = ConstColors.lightGrey,
                 )
             }
         }

@@ -1095,3 +1095,76 @@ fun ShowAlertDialog(message: String, stockist: String, onDismiss: () -> Unit, on
         )
     }
 }
+
+@Composable
+fun NotifyAlertDialog(onDismiss: () -> Unit, onClick: () -> Unit) {
+
+    MaterialTheme {
+
+        AlertDialog(
+            backgroundColor = White,
+            onDismissRequest =
+            onDismiss,
+            text = {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = stringResource(R.string.alert_notify),
+                        color = Color.Black,
+                        fontWeight = FontWeight.W500
+                    )
+                    Space(dp = 13.dp)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_info),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Space(dp = 5.dp)
+                        Text(
+                            text = stringResource(R.string.alert_notify_1),
+                            color = Color.Gray
+                        )
+                    }
+
+                }
+            },
+
+            buttons = {
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp, vertical = 10.dp)
+                ) {
+
+                    Button(
+                        onClick = onDismiss,
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 10.dp)
+                    ) {
+                        Text(stringResource(id = R.string.cancel))
+                    }
+
+                    Button(
+                        onClick = onClick,
+                        colors = ButtonDefaults.buttonColors(backgroundColor = ConstColors.yellow),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 10.dp)
+                    ) {
+                        Text(stringResource(id = R.string.continue_))
+                    }
+
+                }
+
+            }
+        )
+    }
+
+}
