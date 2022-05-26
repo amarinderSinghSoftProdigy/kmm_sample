@@ -1236,21 +1236,22 @@ fun ContactUsScreen(scope: HelpScope) {
                                 onClick = { activity.onClickWhatsApp(scope.helpData.contactUs.whatsAppPhoneNumber) },
                                 colors = ButtonDefaults.outlinedButtonColors(
                                     backgroundColor = ConstColors.lightBlue.copy(alpha = 0.0f),
-                                    contentColor = MaterialTheme.colors.background,
                                 ),
                                 //border = BorderStroke(1.dp, ConstColors.lightBlue),
                                 elevation = null,
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Phone,
+                                    painter = painterResource(id = R.drawable.ic_whatsapp),
                                     contentDescription = null,
                                     modifier = Modifier.size(15.dp),
+                                    tint=ConstColors.lightGreen
                                 )
                                 Space(12.dp)
                                 Text(
                                     text = scope.helpData.contactUs.salesPhoneNumber,
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.W500,
+                                    color = MaterialTheme.colors.background
                                 )
                             }
                         }

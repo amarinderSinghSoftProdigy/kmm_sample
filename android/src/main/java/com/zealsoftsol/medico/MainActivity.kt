@@ -266,7 +266,7 @@ class MainActivity : ComponentActivity(), DIAware {
             sendIntent.action = Intent.ACTION_VIEW
             sendIntent.setPackage("com.whatsapp")
             val url =
-                "https://api.whatsapp.com/send?phone=$phone&text=Hello Medico"
+                "https://api.whatsapp.com/send?phone=$phone&text="
             sendIntent.data = Uri.parse(url)
             startActivity(sendIntent)
         } catch (e: PackageManager.NameNotFoundException) {
