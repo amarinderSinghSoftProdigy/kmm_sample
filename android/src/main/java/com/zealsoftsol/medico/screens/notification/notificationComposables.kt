@@ -66,7 +66,6 @@ import com.zealsoftsol.medico.screens.common.Dropdown
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.NotifyAlertDialog
-import com.zealsoftsol.medico.screens.common.ShowAlertDialog
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.UserLogoPlaceholder
 import com.zealsoftsol.medico.screens.common.clickable
@@ -198,7 +197,7 @@ private fun AllNotifications(scope: NotificationScope.All, listState: LazyListSt
     }
     Space(dp = 12.dp)
 
-    if(!(items.value.isEmpty() && scope.items.updateCount > 0)){
+  /*  if(!(items.value.isEmpty() && scope.items.updateCount > 0)){
         Row(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically,
@@ -224,7 +223,7 @@ private fun AllNotifications(scope: NotificationScope.All, listState: LazyListSt
 
         }
     }
-    Space(12.dp)
+  */  Space(12.dp)
 
     if (items.value.isEmpty() && scope.items.updateCount > 0) {
         NoRecords(
