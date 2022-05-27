@@ -4,7 +4,21 @@ import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.interop.Time
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.network.NetworkScope
-import com.zealsoftsol.medico.data.*
+import com.zealsoftsol.medico.data.Body
+import com.zealsoftsol.medico.data.BodyResponse
+import com.zealsoftsol.medico.data.ClearAllNotification
+import com.zealsoftsol.medico.data.NotificationAction
+import com.zealsoftsol.medico.data.NotificationActionRequest
+import com.zealsoftsol.medico.data.NotificationData
+import com.zealsoftsol.medico.data.NotificationDetails
+import com.zealsoftsol.medico.data.NotificationFilter
+import com.zealsoftsol.medico.data.NotificationOption
+import com.zealsoftsol.medico.data.NotificationStatus
+import com.zealsoftsol.medico.data.NotificationType
+import com.zealsoftsol.medico.data.PaginatedData
+import com.zealsoftsol.medico.data.PaymentMethod
+import com.zealsoftsol.medico.data.UnreadNotifications
+import com.zealsoftsol.medico.data.UserType
 import kotlin.random.Random
 
 class MockNotificationScope : NetworkScope.Notification {
