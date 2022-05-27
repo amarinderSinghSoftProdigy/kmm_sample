@@ -131,6 +131,13 @@ fun RetailerAndHospitalMenu(scope: MenuScope) {
     )
     Separator(thickness = 0.5f)
     AccountContentItem(
+        route = Event.Transition.Demo,
+        drawableResourceId = R.drawable.ic_demo,
+        stringResourceId = R.string.demo,
+        scope = scope
+    )
+    Separator(thickness = 0.5f)
+    AccountContentItem(
         route = Event.Transition.Search(),
         drawableResourceId = R.drawable.ic_menu_search,
         stringResourceId = R.string.search,

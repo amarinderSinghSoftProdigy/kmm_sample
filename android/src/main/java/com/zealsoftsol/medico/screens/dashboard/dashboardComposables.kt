@@ -205,6 +205,13 @@ private fun ShowRetailerAndHospitalDashboard(
                     }
                     Space(16.dp)
                     QuickActionItem(
+                        title = stringResource(id = R.string.demo),
+                        icon = R.drawable.ic_demo
+                    ) {
+                        scope.sendEvent(Event.Transition.Demo)
+                    }
+                    Space(16.dp)
+                    QuickActionItem(
                         title = stringResource(id = R.string.share_medico),
                         icon = R.drawable.ic_share
                     ) {
@@ -763,6 +770,13 @@ private fun ShowStockistDashBoard(
                     icon = R.drawable.ic_menu_stores
                 ) {
                     scope.sendEvent(Event.Transition.Stores)
+                }
+                Space(16.dp)
+                QuickActionItem(
+                    title = stringResource(id = R.string.demo),
+                    icon = R.drawable.ic_demo
+                ) {
+                    scope.sendEvent(Event.Transition.Demo)
                 }
                 Space(dp = 16.dp)
                 QuickActionItem(
