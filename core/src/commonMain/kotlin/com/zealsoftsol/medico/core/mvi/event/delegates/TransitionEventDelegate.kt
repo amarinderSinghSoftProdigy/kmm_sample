@@ -25,15 +25,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.BannersScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.BatchesScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.DealsScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.ManufacturerScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.OcrScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.PreferenceScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.QrCodeScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.WhatsappPreferenceScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.*
 import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.NotificationRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
@@ -270,6 +262,7 @@ internal class TransitionEventDelegate(
                 is Event.Transition.Deals -> setScope(DealsScope(cartRepo.getEntriesCountDataSource()))
                 is Event.Transition.Ocr -> setScope(OcrScope())
                 is Event.Transition.Manufacturers -> setScope(ManufacturerScope())
+                is Event.Transition.Demo -> setScope(DemoScope.DemoListing())
             }
         }
     }

@@ -4,6 +4,9 @@ import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.interop.Time
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.network.NetworkScope
+import com.zealsoftsol.medico.data.Body
+import com.zealsoftsol.medico.data.BodyResponse
+import com.zealsoftsol.medico.data.ClearAllNotification
 import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
@@ -25,6 +28,11 @@ class MockNotificationScope : NetworkScope.Notification {
     init {
         "USING MOCK NOTIFICATION SCOPE".logIt()
     }
+
+    override suspend fun clearAllNotifications(): BodyResponse<ClearAllNotification> =
+        mockResponse {
+            ClearAllNotification(Body(listOf(), 0), "success")
+        }
 
     override suspend fun sendFirebaseToken(token: String) = mockResponse { mockEmptyMapBody() }
 

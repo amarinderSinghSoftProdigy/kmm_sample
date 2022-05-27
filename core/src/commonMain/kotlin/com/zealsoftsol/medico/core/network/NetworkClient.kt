@@ -16,19 +16,21 @@ import com.zealsoftsol.medico.data.AddEmployee
 import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.AllBanners
 import com.zealsoftsol.medico.data.AllDeals
+import com.zealsoftsol.medico.data.BodyResponse
+import com.zealsoftsol.medico.data.UserRequest
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoApprove
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
 import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.BatchesData
-import com.zealsoftsol.medico.data.BodyResponse
 import com.zealsoftsol.medico.data.BuyerUsersData
 import com.zealsoftsol.medico.data.CartConfirmData
 import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartOrderRequest
 import com.zealsoftsol.medico.data.CartRequest
 import com.zealsoftsol.medico.data.CartSubmitResponse
+import com.zealsoftsol.medico.data.ClearAllNotification
 import com.zealsoftsol.medico.data.ConfigData
 import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.ConnectedStockist
@@ -40,6 +42,7 @@ import com.zealsoftsol.medico.data.DashboardBrands
 import com.zealsoftsol.medico.data.DashboardDeals
 import com.zealsoftsol.medico.data.DashboardManufacturer
 import com.zealsoftsol.medico.data.DashboardPromotion
+import com.zealsoftsol.medico.data.DemoResponse
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EditOfferRequest
 import com.zealsoftsol.medico.data.EmployeeRegistration1
@@ -65,6 +68,8 @@ import com.zealsoftsol.medico.data.InvoiceResponse
 import com.zealsoftsol.medico.data.LicenseDocumentData
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
+import com.zealsoftsol.medico.data.TokenInfo
+import com.zealsoftsol.medico.data.Manufacturer
 import com.zealsoftsol.medico.data.ManufacturersListData
 import com.zealsoftsol.medico.data.MapBody
 import com.zealsoftsol.medico.data.NotificationActionRequest
@@ -108,14 +113,12 @@ import com.zealsoftsol.medico.data.SubmitEmployeeRegistration
 import com.zealsoftsol.medico.data.SubmitPaymentRequest
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.SubscribeRequest
-import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.UnreadNotifications
 import com.zealsoftsol.medico.data.UpdateInvoiceRequest
 import com.zealsoftsol.medico.data.UploadResponseData
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
-import com.zealsoftsol.medico.data.UserRequest
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
@@ -179,6 +182,7 @@ class NetworkClient(
     NetworkScope.EmployeeStore,
     NetworkScope.BannersStore,
     NetworkScope.DealsStore,
+    NetworkScope.DemoData,
     NetworkScope.ManufacturerStore {
 
     init {
@@ -1092,6 +1096,13 @@ class NetworkClient(
         }
     }
 
+    override suspend fun getDemoData(): BodyResponse<List<DemoResponse>> =
+        simpleRequest {
+            client.get("${baseUrl.url}/dashboard/demo") {
+                withMainToken()
+            }
+        }
+
     // Utils
 
     override suspend fun saveProfileImageData(
@@ -1531,6 +1542,14 @@ class NetworkClient(
             }
         }
     }
+
+    override suspend fun clearAllNotifications(): BodyResponse<ClearAllNotification> =
+        simpleRequest {
+            client.post("${baseUrl.url}/notifications/clearall") {
+                withMainToken()
+            }
+        }
+
 
     // Utils
     private inline fun HttpRequestBuilder.withB2bCodeToken(finalToken: String) {

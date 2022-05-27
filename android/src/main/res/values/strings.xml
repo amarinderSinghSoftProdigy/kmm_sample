@@ -506,6 +506,8 @@
     <string name="products">Products</string>
     <string name="manu_not_found">Manufacturers Not Found</string>
     <string name="compo_not_found">Compositions Not Found</string>
+    <string name="alert_notify">Are you sure you want to clear all the Notifications?</string>
+    <string name="alert_notify_1">Clearing will delete all the notifications permanently</string>
 
     <!-- Termrs and Cond -->
 
@@ -658,5 +660,6 @@
     <string name="E0056">Document/Image Not found</string>
     <string name="E0057">Please enter a valid Food License</string>
     <string name="E0058">Food License already registered. Please try again.</string>
+    <string name="demo">Demos</string>
 
 </resources>

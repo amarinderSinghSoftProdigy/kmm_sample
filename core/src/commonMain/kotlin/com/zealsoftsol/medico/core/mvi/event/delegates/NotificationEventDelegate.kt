@@ -32,7 +32,20 @@ internal class NotificationEventDelegate(
         is Event.Action.Notification.ChangeOptions -> changeOption(event.option)
         is Event.Action.Notification.SelectFilter -> selectFilter(event.filter)
         is Event.Action.Notification.DeleteNotification -> deleteNotification(event.notificationId)
+        is Event.Action.Notification.ClearAll -> clearAllNotifications()
 //        is Event.Action.Notification.UpdateUnreadMessages -> updateUnreadMessages()
+    }
+
+    private suspend fun clearAllNotifications() {
+
+        navigator.withScope<NotificationScope> {
+            withProgress {
+                notificationRepo.clearAllNotifications()
+            }.onSuccess {
+                load(isFirstLoad = true)
+            }.onError(navigator)
+        }
+
     }
 
     private suspend fun load(isFirstLoad: Boolean) {

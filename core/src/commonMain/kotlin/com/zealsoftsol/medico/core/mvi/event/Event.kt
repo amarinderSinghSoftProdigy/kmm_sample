@@ -229,6 +229,7 @@ sealed class Event {
         sealed class Notification : Action() {
             override val typeClazz: KClass<*> = Notification::class
 
+            object ClearAll : Notification()
             data class Load(val isFirstLoad: Boolean) : Notification()
             data class Search(val value: String) : Notification()
             data class Select(val notification: NotificationData) : Notification()
@@ -366,7 +367,8 @@ sealed class Event {
 
             data class ChangePaymentMethod(val orderId: String, val type: String) : Orders()
 
-            data class BuyProduct(val orderEntry: OrderEntry, val buyingOption: BuyingOption) : Orders()
+            data class BuyProduct(val orderEntry: OrderEntry, val buyingOption: BuyingOption) :
+                Orders()
         }
 
         sealed class Invoices : Action() {
@@ -713,6 +715,14 @@ sealed class Event {
                 val search: String,
             ) : Manufacturers()
         }
+
+        sealed class Demo : Action() {
+            override val typeClazz: KClass<*> = Demo::class
+
+            object MyDemo : Demo()
+            data class OpenVideo(val url: String = "") : Demo()
+            object ReleasePlayer : Demo()
+        }
     }
 
 
@@ -781,5 +791,6 @@ sealed class Event {
         object Deals : Transition()
         object Ocr : Transition()
         object Manufacturers : Transition()
+        object Demo : Transition()
     }
 }

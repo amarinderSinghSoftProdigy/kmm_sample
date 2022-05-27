@@ -91,6 +91,7 @@ fun MenuScreen(scope: MenuScope) {
                 RetailerAndHospitalMenu(scope)
             }
             //Separator(thickness = 1f)
+
         }
     }
 }
@@ -126,6 +127,13 @@ fun RetailerAndHospitalMenu(scope: MenuScope) {
         route = Event.Transition.Stores,
         drawableResourceId = R.drawable.ic_menu_stores,
         stringResourceId = R.string.stores,
+        scope = scope
+    )
+    Separator(thickness = 0.5f)
+    AccountContentItem(
+        route = Event.Transition.Demo,
+        drawableResourceId = R.drawable.ic_demo,
+        stringResourceId = R.string.demo,
         scope = scope
     )
     Separator(thickness = 0.5f)
@@ -204,6 +212,13 @@ fun StockistMenu(scope: MenuScope) {
         stringResourceId = R.string.po_invoices,
         scope = scope,
         paddingStart = 50
+    )
+    Separator(thickness = 0.5f)
+    AccountContentItem(
+        route = Event.Transition.Demo,
+        drawableResourceId = R.drawable.ic_demo,
+        stringResourceId = R.string.demo,
+        scope = scope
     )
     Separator(thickness = 0.5f)
     AccountContentItem(

@@ -4,12 +4,14 @@ import com.zealsoftsol.medico.core.compatDispatcher
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.interop.Time
 import com.zealsoftsol.medico.core.mvi.Navigator
+import com.zealsoftsol.medico.core.mvi.event.delegates.*
 import com.zealsoftsol.medico.core.mvi.event.delegates.AddEmployeeEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.AuthEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.BannersEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.BatchesEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.CartEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.DealsEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.DemoEventDelegates
 import com.zealsoftsol.medico.core.mvi.event.delegates.EventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.HelpEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.IOCBuyerEventDelegate
@@ -93,6 +95,7 @@ class EventCollector(
     bannersNetworkScope: NetworkScope.BannersStore,
     dealsNetworkScope: NetworkScope.DealsStore,
     manufacturerScope: NetworkScope.ManufacturerStore,
+    demo: NetworkScope.DemoData,
     private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
     private val cartRepo: CartRepo,
@@ -235,6 +238,10 @@ class EventCollector(
             navigator,
             userRepo,
             manufacturerScope
+        ),
+        Event.Action.Demo::class to DemoEventDelegates(
+            navigator,
+            demo
         ),
     )
 

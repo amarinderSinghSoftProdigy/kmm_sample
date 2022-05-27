@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens
 
+import android.content.pm.ActivityInfo
 import android.view.WindowManager
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.ExperimentalMaterialApi
@@ -30,6 +32,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.rememberScaffoldState
@@ -46,6 +49,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -100,17 +104,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.BannersScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.BatchesScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.DealsScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.ManufacturerScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.OcrScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.PreferenceScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.QrCodeScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.WhatsappPreferenceScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.*
 import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
@@ -138,6 +132,7 @@ import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.dashboard.BannersScreen
 import com.zealsoftsol.medico.screens.dashboard.DashboardScreen
 import com.zealsoftsol.medico.screens.deals.DealsScreen
+import com.zealsoftsol.medico.screens.demo.DemoScreen
 import com.zealsoftsol.medico.screens.employee.AddEmployeeAadharInfoScreen
 import com.zealsoftsol.medico.screens.employee.AddEmployeeAddressDetailsScreen
 import com.zealsoftsol.medico.screens.employee.AddEmployeeScreen
@@ -214,6 +209,11 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
         activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     }
 
+    /*if (childScope.value is DemoScope.DemoPlayer) {
+        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+    } else {
+        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    }*/
     Scaffold(
         backgroundColor = if (childScope.value is SignUpScope || childScope.value is CartScope || childScope.value is IocSellerScope) Color.White else MaterialTheme.colors.primary,
         scaffoldState = scaffoldState,
@@ -292,6 +292,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                             is TabBarInfo.NoIconTitle -> NoIconHeader(scope, info)
                             is TabBarInfo.StoreTitle -> StoreHeader(scope, info)
                             is TabBarInfo.OnlyBackHeader -> OnlyBackHeader(scope, info)
+                            is TabBarInfo.PlayerBackHeader -> PlayerBackHeader(scope, info)
                             is TabBarInfo.OfferHeader -> OffersHeader(
                                 scope,
                                 info,
@@ -471,6 +472,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     is DealsScope -> DealsScreen(it)
                     is OcrScope -> OcrScreen(it, scaffoldState)
                     is ManufacturerScope -> ManufacturerScreen(it)
+                    is DemoScope -> DemoScreen(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }
@@ -1066,14 +1068,15 @@ private fun StoreHeader(
                     )
                 }
             }
-            Surface(modifier = Modifier
-                .padding(end = 12.dp)
-                .align(Alignment.CenterEnd)) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_pointer1),
+            Surface(
+                modifier = Modifier
+                    .padding(end = 12.dp)
+                    .align(Alignment.CenterEnd),
+            ) {
+                Icon(
+                    modifier = Modifier.size(16.dp),
+                    painter = painterResource(id = R.drawable.ic_down_arrow),
                     contentDescription = null,
-                    modifier = Modifier
-                        .size(16.dp),
                 )
             }
         }
@@ -1148,6 +1151,57 @@ private fun OnlyBackHeader(
                 .clickable(
                     indication = null,
                     onClick = {
+                        scope.goBack()
+                    },
+                )
+        )
+        if (info.title.isNotEmpty())
+            Text(
+                text = if (info.title.contains("_")) stringResourceByName(info.title) else info.title,
+                color = MaterialTheme.colors.background,
+                fontWeight = FontWeight.W700,
+                fontSize = 14.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+    }
+
+    val cartCount = info.cartItemsCount?.flow?.collectAsState()
+    if (cartCount != null) {
+        if (cartCount.value > 0) {
+            val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
+            cart?.cartCount?.value = cartCount.value
+        } else {
+            val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
+            cart?.cartCount?.value = 0
+        }
+    }
+}
+
+/**
+ * use this as header when only back icon is required on header and nothing else
+ */
+@ExperimentalMaterialApi
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun PlayerBackHeader(
+    scope: TabBarScope,
+    info: TabBarInfo.PlayerBackHeader,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = info.icon.toLocalIcon(),
+            contentDescription = null,
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .fillMaxHeight()
+                .padding(16.dp)
+                .clickable(
+                    indication = null,
+                    onClick = {
+                        info.releasePlayer()
                         scope.goBack()
                     },
                 )

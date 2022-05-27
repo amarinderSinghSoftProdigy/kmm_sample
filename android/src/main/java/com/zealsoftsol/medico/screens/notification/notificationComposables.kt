@@ -65,6 +65,7 @@ import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.Dropdown
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.NoRecords
+import com.zealsoftsol.medico.screens.common.NotifyAlertDialog
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.UserLogoPlaceholder
 import com.zealsoftsol.medico.screens.common.clickable
@@ -77,6 +78,7 @@ import org.joda.time.Period
 import org.joda.time.PeriodType
 import org.joda.time.format.PeriodFormatter
 import org.joda.time.format.PeriodFormatterBuilder
+
 
 @ExperimentalMaterialApi
 @Composable
@@ -100,6 +102,9 @@ private fun AllNotifications(scope: NotificationScope.All, listState: LazyListSt
     val search = scope.searchText.flow.collectAsState()
     val showSearchOverlay = remember { mutableStateOf(true) }
     val filter = scope.filter.flow.collectAsState()
+    val showErrorAlert = remember { mutableStateOf(false) }
+    val items = scope.items.flow.collectAsState()
+
     if (showSearchOverlay.value) {
         SearchBarBox(
             modifier = Modifier.clickable(indication = null) {
@@ -146,7 +151,7 @@ private fun AllNotifications(scope: NotificationScope.All, listState: LazyListSt
         )
     }
     Space(12.dp)
-    Row {
+    /*Row {
         scope.allFilters.forEach {
             Chip(
                 text = stringResourceByName(it.stringId),
@@ -154,9 +159,73 @@ private fun AllNotifications(scope: NotificationScope.All, listState: LazyListSt
                 onClick = { scope.selectFilter(it) }
             )
         }
+    }*/
+
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        scope.allFilters.forEach {
+            Chip(
+                text = stringResourceByName(it.stringId),
+                isSelected = filter.value == it,
+                onClick = { scope.selectFilter(it) }
+            )
+        }
+
+        if (!(items.value.isEmpty() && scope.items.updateCount > 0)) {
+            Row(
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+
+            ) {
+                Row(modifier = Modifier
+                    .clickable { showErrorAlert.value = true }) {
+                    Text(
+                        text = stringResource(id = R.string.clear_all),
+                        color = Color.Gray,
+                        fontWeight = FontWeight.W500,
+                        fontSize = 16.sp
+                    )
+                    Space(dp = 5.dp)
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_delete),
+                        contentDescription = null,
+                        modifier = Modifier.size(25.dp)
+                    )
+                }
+            }
+        }
     }
-    Space(12.dp)
-    val items = scope.items.flow.collectAsState()
+    Space(dp = 12.dp)
+
+  /*  if(!(items.value.isEmpty() && scope.items.updateCount > 0)){
+        Row(
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+
+        ) {
+            Row(modifier = Modifier
+                .clickable { showErrorAlert.value = true }) {
+                Text(
+                    text = "Clear All",
+                    color = Color.Gray,
+                    fontWeight = FontWeight.W500,
+                    fontSize = 16.sp
+                )
+                Space(dp = 5.dp)
+                Image(
+                    painter = painterResource(id = R.drawable.ic_delete),
+                    contentDescription = null,
+                    modifier = Modifier.size(25.dp)
+                )
+            }
+
+        }
+    }
+  */  Space(12.dp)
+
     if (items.value.isEmpty() && scope.items.updateCount > 0) {
         NoRecords(
             icon = R.drawable.ic_missing_notification,
@@ -180,6 +249,12 @@ private fun AllNotifications(scope: NotificationScope.All, listState: LazyListSt
             )
         }
     }
+
+    if (showErrorAlert.value)
+        NotifyAlertDialog(onDismiss = { showErrorAlert.value = false }) {
+            scope.clearAll()
+            showErrorAlert.value = false
+        }
 }
 
 @ExperimentalMaterialApi
@@ -358,7 +433,7 @@ private fun SubscriptionDeatails(
             CoilImage(
                 src = "",
                 size = 100.dp,
-                onError = { UserLogoPlaceholder(details.customerData.run { "$firstName $lastName"}) },
+                onError = { UserLogoPlaceholder(details.customerData.run { "$firstName $lastName" }) },
                 onLoading = { UserLogoPlaceholder(details.customerData.run { "$firstName $lastName" }) },
             )
             Space(24.dp)

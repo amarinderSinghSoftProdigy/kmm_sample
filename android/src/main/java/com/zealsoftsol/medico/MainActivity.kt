@@ -266,13 +266,20 @@ class MainActivity : ComponentActivity(), DIAware {
             sendIntent.action = Intent.ACTION_VIEW
             sendIntent.setPackage("com.whatsapp")
             val url =
-                "https://api.whatsapp.com/send?phone=$phone&text=Hello Medico"
+                "https://api.whatsapp.com/send?phone=$phone&text="
             sendIntent.data = Uri.parse(url)
             startActivity(sendIntent)
         } catch (e: PackageManager.NameNotFoundException) {
             Toast.makeText(this, "WhatsApp not Installed", Toast.LENGTH_SHORT)
                 .show()
         }
+    }
+
+    fun playVideo(url: String) {
+        val file = File(url)
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.setDataAndType(Uri.fromFile(file), "video/*")
+        startActivity(intent)
     }
 
     fun sendMail(email: String) {

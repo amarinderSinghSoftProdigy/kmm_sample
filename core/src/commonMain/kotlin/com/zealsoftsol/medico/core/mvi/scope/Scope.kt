@@ -152,6 +152,17 @@ sealed class TabBarInfo {
         override val icon: ScopeIcon = ScopeIcon.BACK
     }
 
+    data class PlayerBackHeader(
+        val title: String, //pass the string resource id
+        val event: Event,
+        val cartItemsCount: ReadOnlyDataSource<Int>? = null
+    ) : TabBarInfo() {
+        fun releasePlayer(){
+            EventCollector.sendEvent(event)
+        }
+        override val icon: ScopeIcon = ScopeIcon.BACK
+    }
+
     data class OfferHeader(
         val title: String //pass the string resource id
     ) : TabBarInfo() {
