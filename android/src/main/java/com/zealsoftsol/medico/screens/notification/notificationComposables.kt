@@ -151,13 +151,49 @@ private fun AllNotifications(scope: NotificationScope.All, listState: LazyListSt
         )
     }
     Space(12.dp)
-    Row {
+    /*Row {
         scope.allFilters.forEach {
             Chip(
                 text = stringResourceByName(it.stringId),
                 isSelected = filter.value == it,
                 onClick = { scope.selectFilter(it) }
             )
+        }
+    }*/
+
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        scope.allFilters.forEach {
+            Chip(
+                text = stringResourceByName(it.stringId),
+                isSelected = filter.value == it,
+                onClick = { scope.selectFilter(it) }
+            )
+        }
+
+        if (!(items.value.isEmpty() && scope.items.updateCount > 0)) {
+            Row(
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+
+            ) {
+                Row(modifier = Modifier
+                    .clickable { showErrorAlert.value = true }) {
+                    Text(
+                        text = "Clear All",
+                        color = Color.Gray,
+                        fontWeight = FontWeight.W500,
+                        fontSize = 16.sp
+                    )
+                    Space(dp = 5.dp)
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_delete),
+                        contentDescription = null,
+                        modifier = Modifier.size(25.dp)
+                    )
+                }
+            }
         }
     }
     Space(dp = 12.dp)

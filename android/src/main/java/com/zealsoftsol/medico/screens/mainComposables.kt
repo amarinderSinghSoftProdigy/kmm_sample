@@ -286,6 +286,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                             is TabBarInfo.NoIconTitle -> NoIconHeader(scope, info)
                             is TabBarInfo.StoreTitle -> StoreHeader(scope, info)
                             is TabBarInfo.OnlyBackHeader -> OnlyBackHeader(scope, info)
+                            is TabBarInfo.PlayerBackHeader -> PlayerBackHeader(scope, info)
                             is TabBarInfo.OfferHeader -> OffersHeader(
                                 scope,
                                 info,
@@ -1144,6 +1145,57 @@ private fun OnlyBackHeader(
                 .clickable(
                     indication = null,
                     onClick = {
+                        scope.goBack()
+                    },
+                )
+        )
+        if (info.title.isNotEmpty())
+            Text(
+                text = if (info.title.contains("_")) stringResourceByName(info.title) else info.title,
+                color = MaterialTheme.colors.background,
+                fontWeight = FontWeight.W700,
+                fontSize = 14.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+    }
+
+    val cartCount = info.cartItemsCount?.flow?.collectAsState()
+    if (cartCount != null) {
+        if (cartCount.value > 0) {
+            val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
+            cart?.cartCount?.value = cartCount.value
+        } else {
+            val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
+            cart?.cartCount?.value = 0
+        }
+    }
+}
+
+/**
+ * use this as header when only back icon is required on header and nothing else
+ */
+@ExperimentalMaterialApi
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun PlayerBackHeader(
+    scope: TabBarScope,
+    info: TabBarInfo.PlayerBackHeader,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = info.icon.toLocalIcon(),
+            contentDescription = null,
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .fillMaxHeight()
+                .padding(16.dp)
+                .clickable(
+                    indication = null,
+                    onClick = {
+                        info.releasePlayer()
                         scope.goBack()
                     },
                 )

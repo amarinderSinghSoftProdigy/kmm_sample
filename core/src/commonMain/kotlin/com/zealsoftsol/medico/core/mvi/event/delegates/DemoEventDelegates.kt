@@ -17,6 +17,13 @@ internal class DemoEventDelegates(
         when (event) {
             is Event.Action.Demo.MyDemo -> demoData()
             is Event.Action.Demo.OpenVideo -> openVideoScope(event.url)
+            is Event.Action.Demo.ReleasePlayer -> releasePlayer()
+        }
+    }
+
+    private fun releasePlayer() {
+        navigator.withScope<DemoScope.DemoPlayer> {
+            it.releasePlayer.value = true
         }
     }
 

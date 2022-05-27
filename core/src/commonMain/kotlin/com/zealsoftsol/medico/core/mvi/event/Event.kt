@@ -721,6 +721,7 @@ sealed class Event {
 
             object MyDemo : Demo()
             data class OpenVideo(val url: String = "") : Demo()
+            object ReleasePlayer : Demo()
         }
     }
 

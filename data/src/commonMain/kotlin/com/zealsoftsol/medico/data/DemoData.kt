@@ -12,6 +12,7 @@ data class DemoClass(
 data class DemoResponse(
     val description: String,
     val id: String,
+    val imageUrl: String,
     val name: String,
     val url: String
 )

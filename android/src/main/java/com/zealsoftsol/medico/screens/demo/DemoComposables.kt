@@ -53,12 +53,9 @@ import java.io.File
 @Composable
 fun DemoScreen(scope: DemoScope) {
     val context = LocalContext.current
-    val exoPlayer = remember {
-        SimpleExoPlayer.Builder(context).build()
-    }
+
     when (scope) {
         is DemoScope.DemoListing -> {
-            exoPlayer.release()
             val demoData = scope.demoData.flow.collectAsState()
             Log.e("list", " " + demoData.value.size)
             Column(
@@ -79,9 +76,21 @@ fun DemoScreen(scope: DemoScope) {
             }
         }
         is DemoScope.DemoPlayer -> {
-            val url = scope.demoUrl.flow.collectAsState()
-            Column(verticalArrangement = Arrangement.Center, modifier = Modifier.fillMaxSize()) {
-                VideoPlayer(url = url.value, context, exoPlayer)
+            val release = scope.releasePlayer.flow.collectAsState()
+            val exoPlayer = remember {
+                SimpleExoPlayer.Builder(context).build()
+            }
+            if (!release.value) {
+                val url = scope.demoUrl.flow.collectAsState()
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    VideoPlayer(url = url.value, context, exoPlayer)
+                }
+            } else {
+                exoPlayer.playWhenReady = false
+                exoPlayer.release()
             }
         }
     }
@@ -143,7 +152,7 @@ fun MyDemoScreen(item: DemoResponse, onClick: () -> Unit) {
                         .size(80.dp),
                 ) {
                     CoilImage(
-                        src = item.url,
+                        src = item.imageUrl,
                         modifier = Modifier
                             .align(Alignment.Center)
                             .width(60.dp)

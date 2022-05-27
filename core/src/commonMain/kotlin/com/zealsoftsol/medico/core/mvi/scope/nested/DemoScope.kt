@@ -11,7 +11,7 @@ import com.zealsoftsol.medico.data.DemoClass
 import com.zealsoftsol.medico.data.DemoResponse
 import com.zealsoftsol.medico.data.EmployeeData
 
-open class DemoScope : Scope.Child.TabBar() {
+open class DemoScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
 
     class DemoListing : DemoScope() {
         var demoData: DataSource<List<DemoResponse>> = DataSource(emptyList())
@@ -30,9 +30,9 @@ open class DemoScope : Scope.Child.TabBar() {
 
     class DemoPlayer(url: String) : DemoScope() {
         var demoUrl: DataSource<String> = DataSource(url)
-
+        var releasePlayer: DataSource<Boolean> = DataSource(false)
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
-            TabBarInfo.OnlyBackHeader("Video")
+            TabBarInfo.PlayerBackHeader("Video", Event.Action.Demo.ReleasePlayer)
     }
 
 }
