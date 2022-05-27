@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens
 
+import android.content.pm.ActivityInfo
 import android.view.WindowManager
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
@@ -208,6 +209,11 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
         activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     }
 
+    /*if (childScope.value is DemoScope.DemoPlayer) {
+        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+    } else {
+        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    }*/
     Scaffold(
         backgroundColor = if (childScope.value is SignUpScope || childScope.value is CartScope || childScope.value is IocSellerScope) Color.White else MaterialTheme.colors.primary,
         scaffoldState = scaffoldState,

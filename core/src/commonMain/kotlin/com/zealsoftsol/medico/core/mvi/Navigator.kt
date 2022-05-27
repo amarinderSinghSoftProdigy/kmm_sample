@@ -48,7 +48,9 @@ class Navigator(private val safeCastEnabled: Boolean) : UiNavigator {
         }
         val queue = getQueue(activeQueue)
         if (queue.first() is DemoScope.DemoPlayer) {
-            (queue.first() as DemoScope.DemoPlayer).releasePlayer.value = true
+            if (!(queue.first() as DemoScope.DemoPlayer).releasePlayer.value) {
+                (queue.first() as DemoScope.DemoPlayer).releasePlayer.value = true
+            }
         }
         return when (strategy) {
             is DropStrategy.First -> {
