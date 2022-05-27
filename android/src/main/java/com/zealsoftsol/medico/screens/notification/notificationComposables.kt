@@ -180,7 +180,7 @@ private fun AllNotifications(scope: NotificationScope.All, listState: LazyListSt
                 Row(modifier = Modifier
                     .clickable { showErrorAlert.value = true }) {
                     Text(
-                        text = "Clear All",
+                        text = stringResource(id = R.string.clear_all),
                         color = Color.Gray,
                         fontWeight = FontWeight.W500,
                         fontSize = 16.sp
