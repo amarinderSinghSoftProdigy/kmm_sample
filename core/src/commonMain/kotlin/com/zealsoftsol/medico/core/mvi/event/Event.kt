@@ -723,6 +723,11 @@ sealed class Event {
             data class OpenVideo(val url: String = "") : Demo()
             object ReleasePlayer : Demo()
         }
+
+        sealed class Rewards : Action(){
+            override val typeClazz: KClass<*> = Rewards::class
+
+        }
     }
 
 
@@ -792,5 +797,6 @@ sealed class Event {
         object Ocr : Transition()
         object Manufacturers : Transition()
         object Demo : Transition()
+        object Rewards : Transition()
     }
 }

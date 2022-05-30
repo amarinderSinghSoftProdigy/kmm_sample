@@ -283,70 +283,72 @@ private fun ShowRetailerAndHospitalDashboard(
                 }
             }
             Space(dp = 16.dp)
-            Column(
-                modifier = Modifier
-                    .background(Color.White)
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+            if (!deals.value.isNullOrEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .background(Color.White)
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp)
                 ) {
-                    Text(
-                        text = stringResource(id = R.string.deals_of_the_day),
-                        color = ConstColors.lightBlue,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.W600,
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                    )
-
                     Row(
+                        modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.End,
-                        modifier = Modifier.clickable {
-                            scope.sendEvent(Event.Transition.Deals)
-                        }
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_eye),
-                            contentDescription = null,
-                            tint = ConstColors.lightBlue,
-                            modifier = Modifier.size(20.dp)
-                        )
                         Text(
-                            text = stringResource(id = R.string.view_all),
+                            text = stringResource(id = R.string.deals_of_the_day),
                             color = ConstColors.lightBlue,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.W600,
-                            modifier = Modifier
-                                .padding(horizontal = 3.dp)
-                                .padding(end = 16.dp),
+                            modifier = Modifier.padding(horizontal = 16.dp),
                         )
-                    }
-                }
 
-                Space(dp = 16.dp)
-                val itemSize: Dp = (LocalConfiguration.current.screenWidthDp.dp / 2) - 8.dp
-
-                FlowRow(
-                    mainAxisSize = SizeMode.Expand,
-                    mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
-                ) {
-                    deals.value?.let {
-                        it.forEachIndexed { index, _ ->
-                            DealsItem(
-                                it[index],
-                                scope,
-                                modifier = Modifier.width(itemSize),
-                                itemSize
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.End,
+                            modifier = Modifier.clickable {
+                                scope.sendEvent(Event.Transition.Deals)
+                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_eye),
+                                contentDescription = null,
+                                tint = ConstColors.lightBlue,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Text(
+                                text = stringResource(id = R.string.view_all),
+                                color = ConstColors.lightBlue,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.W600,
+                                modifier = Modifier
+                                    .padding(horizontal = 3.dp)
+                                    .padding(end = 16.dp),
                             )
                         }
                     }
+
+                    Space(dp = 16.dp)
+                    val itemSize: Dp = (LocalConfiguration.current.screenWidthDp.dp / 2) - 8.dp
+
+                    FlowRow(
+                        mainAxisSize = SizeMode.Expand,
+                        mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
+                    ) {
+                        deals.value?.let {
+                            it.forEachIndexed { index, _ ->
+                                DealsItem(
+                                    it[index],
+                                    scope,
+                                    modifier = Modifier.width(itemSize),
+                                    itemSize
+                                )
+                            }
+                        }
+                    }
                 }
+                Space(dp = 16.dp)
             }
-            Space(dp = 16.dp)
             Column(
                 modifier = Modifier
                     .background(Color.White)

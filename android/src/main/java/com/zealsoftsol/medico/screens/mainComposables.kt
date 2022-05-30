@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.screens
 
-import android.content.pm.ActivityInfo
 import android.view.WindowManager
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.ExperimentalMaterialApi
@@ -32,7 +30,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.rememberScaffoldState
@@ -49,7 +46,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -104,7 +100,19 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.*
+import com.zealsoftsol.medico.core.mvi.scope.regular.BannersScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.BatchesScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.DealsScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.DemoScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.ManufacturerScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.OcrScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.PreferenceScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.QrCodeScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.RewardsScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.WhatsappPreferenceScope
 import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
@@ -173,6 +181,7 @@ import com.zealsoftsol.medico.screens.password.VerifyCurrentPasswordScreen
 import com.zealsoftsol.medico.screens.product.BuyProductScreen
 import com.zealsoftsol.medico.screens.product.ProductScreen
 import com.zealsoftsol.medico.screens.qrcode.QrCodeScreen
+import com.zealsoftsol.medico.screens.rewards.RewardsAndCashbackScreen
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
 import com.zealsoftsol.medico.screens.search.SearchScreen
@@ -473,6 +482,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     is OcrScope -> OcrScreen(it, scaffoldState)
                     is ManufacturerScope -> ManufacturerScreen(it)
                     is DemoScope -> DemoScreen(it)
+                    is RewardsScope -> RewardsAndCashbackScreen(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }
