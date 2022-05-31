@@ -276,7 +276,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                             index = index
                                         )
                                     },
-                                    onBuyClick = { scope.buy(orderEntry = it)},
+                                    onBuyClick = { scope.buy(orderEntry = it) },
                                     userType = scope.userType
                                 )
                                 Space(8.dp)
@@ -495,7 +495,7 @@ fun OrderEntryItem(
     showDetails: Boolean = false,
     isConfirmOrderScope: Boolean = false,
     onBuyClick: () -> Unit,
-    userType: UserType ?= null
+    userType: UserType? = null
 ) {
     Surface(
         elevation = 5.dp,
@@ -725,7 +725,12 @@ fun OrderEntryItem(
                     ) {
                         Text(
                             stringResource(id = R.string.buy),
-                            modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 3.dp, bottom = 3.dp)
+                            modifier = Modifier.padding(
+                                start = 10.dp,
+                                end = 10.dp,
+                                top = 3.dp,
+                                bottom = 3.dp
+                            )
                         )
                     }
                 }
@@ -740,5 +745,6 @@ fun OrderEntryItem(
  */
 
 fun checkOrderEntryValidation(entry: OrderEntry): Boolean {
-    return (entry.hsnCode.isEmpty() || entry.price.value == 0.0 || entry.servedQty.value == 0.0)
+    return false//Returning false so as to remove all the checks for order fulfillment.
+    //(entry.hsnCode.isEmpty() || entry.price.value == 0.0 || entry.servedQty.value == 0.0)
 }
