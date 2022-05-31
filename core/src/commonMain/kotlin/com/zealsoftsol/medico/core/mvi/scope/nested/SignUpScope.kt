@@ -18,6 +18,7 @@ import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PincodeValidation
+import com.zealsoftsol.medico.data.RegisterGlobal
 import com.zealsoftsol.medico.data.UploadResponseData
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -31,6 +32,10 @@ import com.zealsoftsol.medico.data.UserValidation3
 
 sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
     CommonScope.CanGoBack {
+
+    companion object {
+        val registerGlobal: DataSource<RegisterGlobal> = DataSource(RegisterGlobal())
+    }
 
     val inputProgress: List<Int> = listOfNotNull(1, 2, 3, 4, 5)
 
@@ -76,6 +81,7 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
         val isTermsAccepted: DataSource<Boolean> = DataSource(false),
         val registration: DataSource<UserRegistration1>,
         val validation: DataSource<UserValidation1?> = DataSource(null),
+        val storedRegistration: DataSource<RegisterGlobal> = DataSource(RegisterGlobal())
     ) : SignUpScope("personal_data") {
         //private var isPhoneValid = false
 
@@ -188,6 +194,7 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
         override val registration: DataSource<UserRegistration2>,
         val userValidation: DataSource<UserValidation2?> = DataSource(null),
         override val pincodeValidation: DataSource<PincodeValidation?> = DataSource(null),
+        val storedRegistration: DataSource<RegisterGlobal> = DataSource(RegisterGlobal())
     ) : SignUpScope("address"), AddressComponent {
 
         val landmarkLimit = 30
@@ -221,6 +228,7 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
             registrationStep2: UserRegistration2,
             override val registration: DataSource<UserRegistration3> = DataSource(UserRegistration3()),
             override val validation: DataSource<UserValidation3?> = DataSource(null),
+            val storedRegistration: DataSource<RegisterGlobal> = DataSource(RegisterGlobal())
         ) : Details("trader_details", registrationStep1, registrationStep2),
             TraderDetailsComponent {
             val gstinLimit = 15
@@ -260,6 +268,7 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
             registrationStep1: UserRegistration1,
             registrationStep2: UserRegistration2,
             override val aadhaarData: DataSource<AadhaarData> = DataSource(AadhaarData("", "")),
+            val storedRegistration: DataSource<RegisterGlobal> = DataSource(RegisterGlobal())
         ) : Details("details", registrationStep1, registrationStep2),
             AadhaarDataComponent {
 
@@ -305,6 +314,7 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
             registrationStep2: UserRegistration2,
             registrationStep3: UserRegistration3,
             internal var storageKey: String? = null,
+            val storedRegistration: DataSource<RegisterGlobal> = DataSource(RegisterGlobal())
         ) : LegalDocuments(registrationStep1, registrationStep2, registrationStep3) {
 
             val tradeProfile: DataSource<UploadResponseData?> = DataSource(null)

@@ -160,7 +160,19 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
     val validPhone = scope.validPhone(registration.value.phoneNumber)
     val password = scope.isValidPassword(registration.value.password)
     val keyboardController = LocalSoftwareKeyboardController.current
+    val context = LocalContext.current
+    val isTermsAccepted = scope.isTermsAccepted.flow.collectAsState()
 
+    val registrationGlobal = scope.storedRegistration.flow.collectAsState().value.userReg1
+    if (registration.value.firstName.isEmpty() && !registrationGlobal?.firstName.isNullOrEmpty()) {
+        registration.value.firstName = registrationGlobal?.firstName ?: ""
+        registration.value.lastName = registrationGlobal?.lastName ?: ""
+        registration.value.email = registrationGlobal?.email ?: ""
+        registration.value.phoneNumber = registrationGlobal?.phoneNumber ?: ""
+        registration.value.password = registrationGlobal?.password ?: ""
+        registration.value.verifyPassword = registrationGlobal?.verifyPassword ?: ""
+        scope.changeTerms(true)
+    }
     BasicAuthSignUpScreenWithButton(
         userType = registration.value.userType,
         progress = 2.0,//0.4,
@@ -339,8 +351,6 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                 )
             }
             Space(dp = 12.dp)
-            val context = LocalContext.current
-            val isTermsAccepted = scope.isTermsAccepted.flow.collectAsState()
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -391,7 +401,17 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
     val lengthValid =
         if (registration.value.landmark.isNotEmpty()) registration.value.landmark.length == 30 else false
     val keyboardController = LocalSoftwareKeyboardController.current
-
+    val registrationGlobal = scope.storedRegistration.flow.collectAsState().value.userReg2
+    if (registration.value.pincode.isEmpty() && registrationGlobal != null) {
+        registration.value.pincode = registrationGlobal.pincode
+        registration.value.state = registrationGlobal.state
+        registration.value.city = registrationGlobal.city
+        registration.value.district = registrationGlobal.district
+        registration.value.location = registrationGlobal.location
+        registration.value.addressLine1 = registrationGlobal.addressLine1
+        registration.value.landmark = registrationGlobal.landmark
+        scope.checkData()
+    }
     BasicAuthSignUpScreenWithButton(
         userType = scope.registrationStep1.userType,
         progress = 3.0,//0.6,
@@ -502,6 +522,17 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
+    val registrationGlobal = scope.storedRegistration.flow.value.userReg3
+    if (registration.value.tradeName.isEmpty() && registrationGlobal != null) {
+        registration.value.tradeName = registrationGlobal.tradeName
+        registration.value.panNumber = registrationGlobal.panNumber
+        registration.value.hasFoodLicense = registrationGlobal.hasFoodLicense
+        registration.value.gstin = registrationGlobal.gstin
+        registration.value.foodLicenseNo = registrationGlobal.foodLicenseNo
+        registration.value.drugLicenseNo1 = registrationGlobal.drugLicenseNo1
+        registration.value.drugLicenseNo2 = registrationGlobal.drugLicenseNo2
+        scope.checkData()
+    }
     BasicAuthSignUpScreenWithButton(
         userType = scope.registrationStep1.userType,
         progress = 4.0,//0.8,
@@ -755,11 +786,23 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments, scaffoldState: Scaffol
                 is SignUpScope.LegalDocuments.Aadhaar -> R.string.provide_aadhaar_hint
             }
 
-            val tradeCheck = registration.value.tradeProfile != null
-            val drugCheck = registration.value.drugLicense != null
-            val foodCheck = registration.value.foodLicense != null
+            var tradeCheck = registration.value.tradeProfile != null
+            var drugCheck = registration.value.drugLicense != null
+            var foodCheck = registration.value.foodLicense != null
 
-
+            if (scope is SignUpScope.LegalDocuments.DrugLicense) {
+                val registrationGlobal =
+                    scope.storedRegistration.flow.collectAsState().value.userReg4
+                if (registration.value.tradeProfile == null && registrationGlobal != null) {
+                    tradeCheck = registrationGlobal.tradeProfile != null
+                    drugCheck = registrationGlobal.drugLicense != null
+                    foodCheck = registrationGlobal.foodLicense != null
+                    registration.value.tradeProfile = registrationGlobal.tradeProfile
+                    registration.value.drugLicense = registrationGlobal.drugLicense
+                    registration.value.foodLicense = registrationGlobal.foodLicense
+                    scope.checkData()
+                }
+            }
             Column {
                 Surface(
                     onClick = {
@@ -989,7 +1032,7 @@ fun AadhaarInputFields(
                 onValueChange = onCardChange,
             )
         }
-        if(showShareCode) {
+        if (showShareCode) {
             Space(dp = 12.dp)
             InputField(
                 hint = stringResource(id = R.string.share_code),
@@ -1156,9 +1199,11 @@ private fun BasicAuthSignUpScreenWithButton(
 }
 
 @Composable
-fun ProgressItem(count: Int, progress: Double,
-                 limit: Int = 5,
-                 width: Double = 0.2) {
+fun ProgressItem(
+    count: Int, progress: Double,
+    limit: Int = 5,
+    width: Double = 0.2
+) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(
             modifier = Modifier
