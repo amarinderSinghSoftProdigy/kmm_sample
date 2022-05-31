@@ -321,6 +321,12 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
             val drugLicense: DataSource<UploadResponseData?> = DataSource(null)
             val foodLicense: DataSource<UploadResponseData?> = DataSource(null)
 
+            fun storeData(userRegistration4: UserRegistration4) {
+                tradeProfile.value = userRegistration4.tradeProfile
+                drugLicense.value = userRegistration4.drugLicense
+                foodLicense.value = userRegistration4.foodLicense
+            }
+
             fun checkData() {
                 val isValid =
                     drugLicense.value != null && tradeProfile.value != null && if (registrationStep3.hasFoodLicense) foodLicense.value != null else true

@@ -766,6 +766,24 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments, scaffoldState: Scaffol
     val registration = scope.registrationStep4.flow.collectAsState()
     val permissionViewModel = PermissionViewModel()
     PermissionCheckUIForSignUp(scaffoldState, permissionViewModel, scope.registrationStep1)
+    var tradeCheck = registration.value.tradeProfile != null
+    var drugCheck = registration.value.drugLicense != null
+    var foodCheck = registration.value.foodLicense != null
+
+    if (scope is SignUpScope.LegalDocuments.DrugLicense) {
+        val registrationGlobal =
+            scope.storedRegistration.flow.collectAsState().value.userReg4
+        if (registration.value.tradeProfile == null && registrationGlobal != null) {
+            tradeCheck = registrationGlobal.tradeProfile != null
+            drugCheck = registrationGlobal.drugLicense != null
+            foodCheck = registrationGlobal.foodLicense != null
+            registration.value.tradeProfile = registrationGlobal.tradeProfile
+            registration.value.drugLicense = registrationGlobal.drugLicense
+            registration.value.foodLicense = registrationGlobal.foodLicense
+            scope.storeData(registrationGlobal)
+            scope.checkData()
+        }
+    }
     BasicAuthSignUpScreenWithButton(
         userType = scope.registrationStep1.userType,
         progress = 5.0,//1.0,
@@ -784,24 +802,6 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments, scaffoldState: Scaffol
             val stringId = when (scope) {
                 is SignUpScope.LegalDocuments.DrugLicense -> R.string.provide_drug_license_validation
                 is SignUpScope.LegalDocuments.Aadhaar -> R.string.provide_aadhaar_hint
-            }
-
-            var tradeCheck = registration.value.tradeProfile != null
-            var drugCheck = registration.value.drugLicense != null
-            var foodCheck = registration.value.foodLicense != null
-
-            if (scope is SignUpScope.LegalDocuments.DrugLicense) {
-                val registrationGlobal =
-                    scope.storedRegistration.flow.collectAsState().value.userReg4
-                if (registration.value.tradeProfile == null && registrationGlobal != null) {
-                    tradeCheck = registrationGlobal.tradeProfile != null
-                    drugCheck = registrationGlobal.drugLicense != null
-                    foodCheck = registrationGlobal.foodLicense != null
-                    registration.value.tradeProfile = registrationGlobal.tradeProfile
-                    registration.value.drugLicense = registrationGlobal.drugLicense
-                    registration.value.foodLicense = registrationGlobal.foodLicense
-                    scope.checkData()
-                }
             }
             Column {
                 Surface(
