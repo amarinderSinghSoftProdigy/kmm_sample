@@ -32,6 +32,7 @@ class OrderHsnEditScope(
     init {
         if (canEditOrderEntry) {
             getBatchesData()
+
         }
     }
 

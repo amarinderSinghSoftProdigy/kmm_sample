@@ -7,6 +7,7 @@ enum class OrderType(val path: String) {
     PURCHASE_ORDER("/po/"),
     ORDER("/"),
     HISTORY("/po/history/"),
+    TAX_ORDER("/tax/po/"),
 }
 
 @Serializable
