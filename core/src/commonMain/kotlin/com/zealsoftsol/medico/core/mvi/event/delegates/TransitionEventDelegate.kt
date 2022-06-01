@@ -265,7 +265,7 @@ internal class TransitionEventDelegate(
                 is Event.Transition.Demo -> setScope(DemoScope.DemoListing())
                 is Event.Transition.OnlineOrders -> setScope(
                     OrdersScope(
-                        listOf(OrdersScope.Tab.PO_ORDERS),
+                        listOf(OrdersScope.Tab.ONLINE_ORDERS),
                         notificationRepo.getUnreadMessagesDataSource(),
                         cartRepo.getEntriesCountDataSource()
                     )

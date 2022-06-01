@@ -135,6 +135,7 @@ fun OrdersScreen(scope: OrdersScope, isInProgress: DataSource<Boolean>) {
                     OrderType.ORDER -> R.drawable.ic_missing_orders to R.string.missing_orders
                     OrderType.PURCHASE_ORDER -> R.drawable.ic_missing_orders to R.string.missing_po_orders
                     OrderType.HISTORY -> R.drawable.ic_missing_po_orders to R.string.missing_history_orders
+                    OrderType.TAX_ORDER -> R.drawable.ic_missing_orders to R.string.missing_orders
                 }
                 NoRecords(
                     icon = icon,
@@ -231,9 +232,11 @@ private fun OrderItem(order: Order, onClick: () -> Unit) {
         Column(
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Row(modifier = Modifier
-                .padding(horizontal = 8.dp)
-                .padding(top = 6.dp)) {
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .padding(top = 6.dp)
+            ) {
                 Text(
                     text = order.tradeName,
                     color = MaterialTheme.colors.background,

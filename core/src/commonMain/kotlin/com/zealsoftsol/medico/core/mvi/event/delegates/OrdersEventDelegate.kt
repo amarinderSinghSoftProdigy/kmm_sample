@@ -214,13 +214,13 @@ internal class OrdersEventDelegate(
     private suspend fun selectOrder(orderId: String, type: OrderType) {
         navigator.withScope<Scopable> {
             withProgress {
-                networkOrdersScope.getOrder(type, userRepo.requireUser().unitCode, orderId)
+                networkOrdersScope.getOrder(if (type == OrderType.TAX_ORDER) OrderType.PURCHASE_ORDER else type, userRepo.requireUser().unitCode, orderId)
             }.onSuccess { body ->
                 setScope(
                     ViewOrderScope(
                         canEdit = type == OrderType.PURCHASE_ORDER,
                         orderId = orderId,
-                        typeInfo = type,
+                        typeInfo = if (type == OrderType.TAX_ORDER) OrderType.PURCHASE_ORDER else type,
                         order = DataSource(body.order),
                         b2bData = DataSource(body.unitData.data),
                         entries = DataSource(body.entries),
@@ -291,7 +291,7 @@ internal class OrdersEventDelegate(
         scope: Scope
     ) {
         navigator.scope.value.bottomSheet.value =
-            BottomSheet.InvoiceViewItemProduct(orderEntry,scope)
+            BottomSheet.InvoiceViewItemProduct(orderEntry, scope)
     }
 
     private fun viewOrderAction(action: ViewOrderScope.Action, fromNotification: Boolean) {
