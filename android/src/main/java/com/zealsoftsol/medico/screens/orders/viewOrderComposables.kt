@@ -287,8 +287,8 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                 }
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     OrderTotal(orderTaxValue.info.total.formattedPrice)
-                    Space(16.dp)
                     if (scope.canEdit) {
+                        Space(16.dp)
                         val actions = scope.actions.flow.collectAsState()
                         Row(modifier = Modifier.fillMaxWidth()) {
                             actions.value.forEachIndexed { index, action ->
@@ -331,6 +331,17 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                     Space(16.dp)
                                 }
                             }
+                        }
+                    } else {
+                        if (scope.userType == UserType.RETAILER) {
+                            Space(8.dp)
+                            Text(
+                                text = stringResource(id = R.string.note_net_payable),
+                                color = ConstColors.red,
+                                fontWeight = FontWeight.W600,
+                                fontSize = 10.sp,
+                                modifier = Modifier.align(Alignment.Start),
+                            )
                         }
                     }
                     Space(10.dp)
