@@ -604,8 +604,8 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                         }
                                     }
                                     Space(10.dp)
-                                    if (selectedHsnCode.isEmpty())
-                                        HsnErrorText()
+                                    /*if (selectedHsnCode.isEmpty())
+                                        HsnErrorText()*/
                                     Space(10.dp)
                                 }
                                 Space(20.dp)

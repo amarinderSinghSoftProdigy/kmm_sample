@@ -67,6 +67,7 @@ internal class RegistrationEventDelegate(
                         )
                     ),
                     validation = DataSource(null),
+                    storedRegistration = SignUpScope.registerGlobal
                 )
             )
         }
@@ -75,6 +76,7 @@ internal class RegistrationEventDelegate(
     private suspend fun validate(userRegistration: UserRegistration) {
         when (userRegistration) {
             is UserRegistration1 -> navigator.withScope<SignUpScope.PersonalData> {
+                SignUpScope.registerGlobal.value.userReg1 = userRegistration
                 val result = withProgress {
                     userRepo.signUpValidation1(userRegistration)
                 }
@@ -85,6 +87,7 @@ internal class RegistrationEventDelegate(
                             registrationStep1 = it.registration.value,
                             locationData = DataSource(null),
                             registration = DataSource(UserRegistration2()),
+                            storedRegistration = SignUpScope.registerGlobal
                         )
                     )
                 }.onError(navigator)
@@ -93,6 +96,7 @@ internal class RegistrationEventDelegate(
                 val result = withProgress {
                     userRepo.signUpValidation2(userRegistration)
                 }
+                SignUpScope.registerGlobal.value.userReg2 = userRegistration
                 it.userValidation.value = result.validations
                 result.onSuccess { _ ->
                     val nextScope =
@@ -100,11 +104,13 @@ internal class RegistrationEventDelegate(
                             SignUpScope.Details.Aadhaar(
                                 registrationStep1 = it.registrationStep1,
                                 registrationStep2 = it.registration.value,
+                                storedRegistration = SignUpScope.registerGlobal
                             )
                         } else {
                             SignUpScope.Details.TraderData(
                                 registrationStep1 = it.registrationStep1,
                                 registrationStep2 = it.registration.value,
+                                storedRegistration = SignUpScope.registerGlobal
                             )
                         }
                     setScope(nextScope)
@@ -114,6 +120,7 @@ internal class RegistrationEventDelegate(
                 val result = withProgress {
                     userRepo.signUpValidation3(userRegistration)
                 }
+                SignUpScope.registerGlobal.value.userReg3 = userRegistration
                 it.validation.value = result.validations
                 result.onSuccess { _ ->
                     setScope(
@@ -121,12 +128,14 @@ internal class RegistrationEventDelegate(
                             registrationStep1 = it.registrationStep1,
                             registrationStep2 = it.registrationStep2,
                             registrationStep3 = it.registration.value,
+                            storedRegistration = SignUpScope.registerGlobal
                         )
                     )
                 }.onError(navigator)
             }
             is UserRegistration4 -> {
                 navigator.withScope<SignUpScope.LegalDocuments.DrugLicense> {
+                    SignUpScope.registerGlobal.value.userReg4 = userRegistration
                     setScope(
                         SignUpScope.PreviewDetails(
                             registrationStep1 = it.registrationStep1,
@@ -222,8 +231,8 @@ internal class RegistrationEventDelegate(
                         userRepo.uploadDrugLicense(
                             fileString = event.licenseAsBase64,
                             phoneNumber = userReg?.phoneNumber
-                                ?: ""/*userRepo.requireUser().phoneNumber*/,
-                            email = userReg?.email ?: ""/*userRepo.requireUser().email*/,
+                                ?: "",/*userRepo.requireUser().phoneNumber*/
+                            email = userReg?.email ?: "",/*userRepo.requireUser().email*/
                             mimeType = event.fileType.mimeType,
                         ).onSuccess { body ->
                             storageKey = body.key
@@ -231,13 +240,14 @@ internal class RegistrationEventDelegate(
                             .isSuccess
                     }
                     is Event.Action.Registration.UploadAadhaar -> {
-                        val userReg = (it as? SignUpScope.LegalDocuments.Aadhaar)?.registrationStep1
+                        val userReg =
+                            (it as? SignUpScope.LegalDocuments.Aadhaar)?.registrationStep1
                         userRepo.uploadAadhaar(
                             aadhaar = requireNotNull(searchQueuesFor<AadhaarDataComponent>()).aadhaarData.value,
                             fileString = event.aadhaarAsBase64,
                             phoneNumber = userReg?.phoneNumber
-                                ?: ""/*userRepo.requireUser().phoneNumber*/,
-                            email = userReg?.email ?: ""/*userRepo.requireUser().email*/,
+                                ?: "",/*userRepo.requireUser().phoneNumber*/
+                            email = userReg?.email ?: "",/*userRepo.requireUser().email*/
                         ).onError(navigator)
                             .isSuccess
                     }
@@ -305,7 +315,8 @@ internal class RegistrationEventDelegate(
                     Navigator.DropStrategy.To(ManagementScope.User.Retailer::class),
                     updateDataSource = false,
                 )
-                it.notifications.value = ManagementScope.Congratulations(it.registration3.tradeName)
+                it.notifications.value =
+                    ManagementScope.Congratulations(it.registration3.tradeName)
             }.onError(navigator)
         }
     }

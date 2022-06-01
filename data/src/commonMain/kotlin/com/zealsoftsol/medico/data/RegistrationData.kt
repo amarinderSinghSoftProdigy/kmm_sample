@@ -21,18 +21,18 @@ data class UserRegistration1(
     @Required
     val userType: String = "",
     @Required
-    val firstName: String = "",
+    var firstName: String = "",
     @Required
-    val lastName: String = "",
+    var lastName: String = "",
     @Required
-    val email: String = "",
+    var email: String = "",
     @SerialName("mobileNumber")
     @Required
-    val phoneNumber: String = "",
+    var phoneNumber: String = "",
     @Required
-    val password: String = "",
+    var password: String = "",
     @Required
-    val verifyPassword: String = "",
+    var verifyPassword: String = "",
 ) : UserRegistration()
 
 @Serializable
@@ -47,20 +47,20 @@ data class UserValidation1(
 @Serializable
 data class UserRegistration2(
     @Required
-    val pincode: String = "",
+    var pincode: String = "",
     @Required
-    val addressLine1: String = "",
+    var addressLine1: String = "",
     @Required
-    val landmark: String = "",
+    var landmark: String = "",
     @Required
-    val location: String = "",
+    var location: String = "",
     @SerialName("cityTown")
     @Required
-    val city: String = "",
+    var city: String = "",
     @Required
-    val district: String = "",
+    var district: String = "",
     @Required
-    val state: String = "",
+    var state: String = "",
 ) : UserRegistration()
 
 @Serializable
@@ -77,24 +77,24 @@ data class UserValidation2(
 @Serializable
 data class UserRegistration3(
     @Required
-    val tradeName: String = "",
+    var tradeName: String = "",
     @Required
-    val gstin: String = "",
+    var gstin: String = "",
     @Required
-    val panNumber: String = "",
+    var panNumber: String = "",
     @Required
-    val drugLicenseNo1: String = "",
+    var drugLicenseNo1: String = "",
     @Required
-    val drugLicenseNo2: String = "",
+    var drugLicenseNo2: String = "",
 
     @Required
-    val foodLicenseNo: String = "",
+    var foodLicenseNo: String = "",
 
     @Required
-    val hasFoodLicense: Boolean = false,
+    var hasFoodLicense: Boolean = false,
 
     @Required
-    val state: String = "",
+    var state: String = "",
 ) : UserRegistration() {
 
     companion object {
@@ -302,4 +302,11 @@ data class CreateRetailer(
             state = userRegistration2.state,
         )
     }
+}
+
+class RegisterGlobal {
+    var userReg1: UserRegistration1? = null
+    var userReg2: UserRegistration2? = null
+    var userReg3: UserRegistration3? = null
+    var userReg4: UserRegistration4? = null
 }

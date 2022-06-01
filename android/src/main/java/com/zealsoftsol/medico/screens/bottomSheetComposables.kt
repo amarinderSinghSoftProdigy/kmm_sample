@@ -3788,7 +3788,14 @@ private fun ViewInvoiceBottomSheet(
                     fontWeight = FontWeight.W600,
                 )
             }
-
+            Space(dp = 8.dp)
+            Text(
+                text = stringResource(id = R.string.note_net_payable),
+                color = ConstColors.red,
+                fontWeight = FontWeight.W600,
+                fontSize = 10.sp,
+                modifier = Modifier.align(Alignment.Start),
+            )
             //Space(16.dp)
             /*MedicoButton(
                 modifier = Modifier.fillMaxWidth(),

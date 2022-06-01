@@ -258,6 +258,13 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
                             fontSize = 10.sp,
                             modifier = Modifier.align(Alignment.End),
                         )
+                        Text(
+                            text = stringResource(id = R.string.note_net_payable),
+                            color = ConstColors.red,
+                            fontWeight = FontWeight.W600,
+                            fontSize = 10.sp,
+                            modifier = Modifier.align(Alignment.Start),
+                        )
                     }
                     //OrderTotal(orderTaxValue.info.total.formattedPrice)
                     Space(16.dp)

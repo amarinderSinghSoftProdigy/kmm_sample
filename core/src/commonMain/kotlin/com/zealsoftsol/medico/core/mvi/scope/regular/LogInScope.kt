@@ -4,7 +4,9 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.data.AuthCredentials
+import com.zealsoftsol.medico.data.RegisterGlobal
 
 class LogInScope(
     val credentials: DataSource<AuthCredentials>,
@@ -29,5 +31,8 @@ class LogInScope(
     /**
      * Transition to [SignUpScope.SelectUserType]
      */
-    fun goToSignUp() = EventCollector.sendEvent(Event.Transition.SignUp)
+    fun goToSignUp() {
+        SignUpScope.registerGlobal.value = RegisterGlobal()
+        EventCollector.sendEvent(Event.Transition.SignUp)
+    }
 }
