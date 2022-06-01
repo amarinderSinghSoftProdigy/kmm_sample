@@ -272,6 +272,7 @@ interface NetworkScope {
 
         suspend fun confirmCart(request: CartOrderRequest): BodyResponse<CartConfirmData>
         suspend fun submitCart(request: CartOrderRequest): BodyResponse<CartSubmitResponse>
+        suspend fun submitReward(rewardId: String): AnyResponse
     }
 
     interface Orders : NetworkScope {
@@ -604,6 +605,7 @@ interface NetworkScope {
     }
 
     interface RewardsStore : NetworkScope {
+        suspend fun getRewards(): AnyResponse
     }
 
 }

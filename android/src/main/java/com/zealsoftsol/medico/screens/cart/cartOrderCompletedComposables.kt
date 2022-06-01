@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +23,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.consumeAllChanges
@@ -31,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -59,8 +62,10 @@ fun CartOrderCompletedScreen(scope: CartOrderCompletedScope) {
     ) {
         Column {
             OrderPlacedTile(scope.order)
-            Space(10.dp)
-            OffersView(scope, isOfferSwiped)
+            if (scope.order.isRewardsRequired) { //show rewards when it is true from API
+                Space(10.dp)
+                OffersView(scope, isOfferSwiped)
+            }
             Space(20.dp)
             scope.order.sellersOrder.forEach {
                 OrderItem(it)
@@ -106,12 +111,12 @@ private fun OffersView(scope: CartOrderCompletedScope, isOfferSwiped: MutableSta
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = CenterHorizontally
             ) {
                 Text(
                     text = stringResource(id = R.string.hurray),
@@ -127,14 +132,46 @@ private fun OffersView(scope: CartOrderCompletedScope, isOfferSwiped: MutableSta
                     fontSize = 14.sp,
                 )
             }
-            Space(10.dp)
-            Image(
-                modifier = Modifier.size(100.dp),
-                painter = if (isOfferSwiped.value) painterResource(id = R.drawable.ic_offer_opened) else painterResource(
-                    id = R.drawable.ic_unopeded_scratch_card
-                ),
-                contentDescription = null
-            )
+
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp),
+                color = Color.White,
+            ) {
+                Image(
+                    modifier = Modifier
+                        .size(100.dp)
+                        .align(CenterHorizontally),
+                    painter = if (isOfferSwiped.value) painterResource(id = R.drawable.ic_offer_opened) else painterResource(
+                        id = R.drawable.ic_unopeded_scratch_card
+                    ),
+                    contentDescription = null
+                )
+                if (isOfferSwiped.value) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            text = scope.order.rewards.amount.formatted,
+                            color = Color.White,
+                            fontWeight = FontWeight.W800,
+                            fontSize = 14.sp,
+                        )
+                    }
+                }
+            }
+
+            if (isOfferSwiped.value) { //show rewards won when offer is swiped
+                Space(dp = 5.dp)
+                Text(
+                    text = scope.order.rewards.message,
+                    color = Color.Black,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 14.sp,
+                )
+            }
             Space(10.dp)
             if (isOfferSwiped.value) {
                 Image(
@@ -157,6 +194,7 @@ private fun OffersView(scope: CartOrderCompletedScope, isOfferSwiped: MutableSta
                                     x > 0 -> {
                                         if (x > 30) { //swipe direction is right, enable offer
                                             isOfferSwiped.value = true
+//                                            scope.submitReward()
                                         }
                                     }
                                 }
@@ -181,7 +219,7 @@ private fun OrderPlacedTile(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = CenterHorizontally
     ) {
         Image(
             painter = painterResource(id = R.drawable.ic_order_placed),

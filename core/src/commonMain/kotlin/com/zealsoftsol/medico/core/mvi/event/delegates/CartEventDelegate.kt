@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
+import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
@@ -79,6 +80,19 @@ internal class CartEventDelegate(
             event.cartScope
         )
         Event.Action.Cart.HideBackButton -> hideBackButton()
+        is Event.Action.Cart.SubmitReward -> submitReward(event.rewardId)
+    }
+
+    /**
+     * submit scratched reward to server
+     */
+    private suspend fun submitReward(rewardId: String) {
+        navigator.withScope<CartOrderCompletedScope> {
+            withProgress { cartRepo.submitReward(rewardId) }
+                .onSuccess {
+                    "success".log("suceess")
+                }.onError(navigator)
+        }
     }
 
     /**

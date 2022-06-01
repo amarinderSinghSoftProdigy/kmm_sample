@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.core.network.mock
 
 import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.network.NetworkScope
+import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.CartConfirmData
 import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartOrderRequest
@@ -55,4 +56,8 @@ class MockCartScope : NetworkScope.Cart {
         mockResponse<CartSubmitResponse> {
             null
         }
+
+    override suspend fun submitReward(rewardId: String): AnyResponse = mockResponse {
+        mockEmptyMapBody()
+    }
 }

@@ -293,6 +293,7 @@ sealed class Event {
             data class ConfirmCartOrder(val cartScope: Scope) : Cart()
             data class PlaceCartOrder(val checkForQuotedItems: Boolean) : Cart()
             object HideBackButton : Cart()
+            data class SubmitReward(val rewardId: String) : Cart()
         }
 
         sealed class Help : Action() {
@@ -724,7 +725,7 @@ sealed class Event {
             object ReleasePlayer : Demo()
         }
 
-        sealed class Rewards : Action(){
+        sealed class Rewards : Action() {
             override val typeClazz: KClass<*> = Rewards::class
 
         }

@@ -721,7 +721,7 @@ class NetworkClient(
 
     override suspend fun submitCart(request: CartOrderRequest) =
         simpleRequest {
-            client.post<BodyResponse<CartSubmitResponse>>("${baseUrl.url}/cart/submit") {
+            client.post<BodyResponse<CartSubmitResponse>>("${baseUrl.url}/cart/submit/reward") {
                 withMainToken()
                 jsonBody(request)
             }
@@ -1537,6 +1537,17 @@ class NetworkClient(
     override suspend fun clearAllNotifications(): BodyResponse<ClearAllNotification> =
         simpleRequest {
             client.post("${baseUrl.url}/notifications/clearall") {
+                withMainToken()
+            }
+        }
+
+    override suspend fun getRewards(): AnyResponse {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun submitReward(rewardId: String): AnyResponse =
+        simpleRequest {
+            client.post<AnyResponse>("${baseUrl.url}/rewards/swipe/$rewardId") {
                 withMainToken()
             }
         }

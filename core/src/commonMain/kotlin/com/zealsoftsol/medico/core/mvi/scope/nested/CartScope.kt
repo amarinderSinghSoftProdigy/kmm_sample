@@ -137,4 +137,6 @@ class CartOrderCompletedScope(
     override val isRoot: Boolean = true
 
     fun goToOrders(): Boolean = EventCollector.sendEvent(Event.Transition.Orders)
+
+    fun submitReward() = EventCollector.sendEvent(Event.Action.Cart.SubmitReward(order.cartId))
 }
