@@ -792,5 +792,6 @@ sealed class Event {
         object Ocr : Transition()
         object Manufacturers : Transition()
         object Demo : Transition()
+        object OnlineOrders : Transition()
     }
 }
