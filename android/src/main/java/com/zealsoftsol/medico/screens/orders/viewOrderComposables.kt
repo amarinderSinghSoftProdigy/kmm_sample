@@ -333,14 +333,16 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                             }
                         }
                     } else {
-                        Space(8.dp)
-                        Text(
-                            text = stringResource(id = R.string.note_net_payable),
-                            color = ConstColors.red,
-                            fontWeight = FontWeight.W600,
-                            fontSize = 10.sp,
-                            modifier = Modifier.align(Alignment.Start),
-                        )
+                        if (scope.userType == UserType.RETAILER) {
+                            Space(8.dp)
+                            Text(
+                                text = stringResource(id = R.string.note_net_payable),
+                                color = ConstColors.red,
+                                fontWeight = FontWeight.W600,
+                                fontSize = 10.sp,
+                                modifier = Modifier.align(Alignment.Start),
+                            )
+                        }
                     }
                     Space(10.dp)
                 }
