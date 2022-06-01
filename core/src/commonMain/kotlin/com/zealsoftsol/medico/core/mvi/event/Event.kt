@@ -728,6 +728,7 @@ sealed class Event {
         sealed class Rewards : Action() {
             override val typeClazz: KClass<*> = Rewards::class
 
+            object GetRewards : Rewards()
         }
     }
 

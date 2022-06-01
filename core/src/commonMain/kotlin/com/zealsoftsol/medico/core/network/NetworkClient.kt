@@ -1541,14 +1541,23 @@ class NetworkClient(
             }
         }
 
-    override suspend fun getRewards(): AnyResponse {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getRewards(): AnyResponse =
+        simpleRequest {
+            client.get("${baseUrl.url}/rewards") {
+                withMainToken()
+                url {
+                    parameters.append("page", "0")
+                    parameters.append("pageSize", Pagination.DEFAULT_ITEMS_PER_PAGE.toString())
+                }
+            }
+        }
+
 
     override suspend fun submitReward(rewardId: String): AnyResponse =
         simpleRequest {
-            client.post<AnyResponse>("${baseUrl.url}/rewards/swipe/$rewardId") {
+            client.post("${baseUrl.url}/rewards/swipe") {
                 withMainToken()
+                jsonBody(mapOf("rewardId" to rewardId))
             }
         }
 

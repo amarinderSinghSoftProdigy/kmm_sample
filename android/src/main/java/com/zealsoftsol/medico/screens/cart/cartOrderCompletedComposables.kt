@@ -194,7 +194,7 @@ private fun OffersView(scope: CartOrderCompletedScope, isOfferSwiped: MutableSta
                                     x > 0 -> {
                                         if (x > 30) { //swipe direction is right, enable offer
                                             isOfferSwiped.value = true
-//                                            scope.submitReward()
+                                            scope.submitReward()
                                         }
                                     }
                                 }
