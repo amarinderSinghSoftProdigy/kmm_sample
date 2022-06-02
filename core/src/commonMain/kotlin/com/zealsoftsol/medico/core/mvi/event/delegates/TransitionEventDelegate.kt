@@ -38,6 +38,7 @@ import com.zealsoftsol.medico.core.repository.getManufacturerDataSource
 import com.zealsoftsol.medico.core.repository.getPromotionsDataSource
 import com.zealsoftsol.medico.core.repository.getRecentProductsDataSource
 import com.zealsoftsol.medico.core.repository.getStockDataSource
+import com.zealsoftsol.medico.core.repository.getStockistEmpBannerDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSourceV2
 import com.zealsoftsol.medico.core.repository.requireUser
@@ -83,7 +84,8 @@ internal class TransitionEventDelegate(
                             dealsData = userRepo.getDealsDataSource(),
                             categoriesData = userRepo.getCategoriesDataSource(),
                             brandsData = userRepo.getBrandsDataSource(),
-                            bannerData = userRepo.getBannerDataSource()
+                            bannerData = userRepo.getBannerDataSource(),
+                            stockistEmpBannerData = userRepo.getStockistEmpBannerDataSource()
                         )
                     )
                 }

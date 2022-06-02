@@ -221,7 +221,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
         topBar = {
 
             if (childScope.value !is OrderHsnEditScope && childScope.value !is InventoryScope && childScope.value !is IocSellerScope.InvUserListing
-                && childScope.value !is IocBuyerScope.InvUserListing && childScope.value !is ManagementScope.User && mUserType != UserType.STOCKIST_EMPLOYEE
+                && childScope.value !is IocBuyerScope.InvUserListing && childScope.value !is ManagementScope.User
                 && childScope.value !is InStoreUsersScope && childScope.value !is BannersScope && childScope.value !is DealsScope && childScope.value !is ManufacturerScope
             ) //don't show top bar for OrderEditHsnScreen and Inventory and IOC listing & deals & banners
             {

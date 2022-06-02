@@ -22,6 +22,7 @@ import com.zealsoftsol.medico.core.repository.getManufacturerDataSource
 import com.zealsoftsol.medico.core.repository.getPromotionsDataSource
 import com.zealsoftsol.medico.core.repository.getRecentProductsDataSource
 import com.zealsoftsol.medico.core.repository.getStockDataSource
+import com.zealsoftsol.medico.core.repository.getStockistEmpBannerDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSourceV2
@@ -71,35 +72,36 @@ internal class AuthEventDelegate(
                         dropScope(Navigator.DropStrategy.All, updateDataSource = false)
                         val user = userRepo.requireUser()
                         setScope(
-                            if (user.type == UserType.STOCKIST_EMPLOYEE) {
+                            /*if (user.type == UserType.STOCKIST_EMPLOYEE) {
                                 InStoreSellerScope.get(
                                     user,
                                     userRepo.getUserDataSourceV2(),
                                     null
                                 )
-                            } else {
-                                if (user.isActivated)
-                                    DashboardScope.get(
-                                        user = user,
-                                        userDataSource = userRepo.getUserDataSourceV2(),
-                                        manufacturerData = userRepo.getManufacturerDataSource(),
-                                        unreadNotifications = notificationRepo.getUnreadMessagesDataSource(),
-                                        cartItemsCount = cartRepo.getEntriesCountDataSource(),
-                                        stockStatusData = userRepo.getStockDataSource(),
-                                        recentProductInfo = userRepo.getRecentProductsDataSource(),
-                                        promotionData = userRepo.getPromotionsDataSource(),
-                                        dealsData = userRepo.getDealsDataSource(),
-                                        categoriesData = userRepo.getCategoriesDataSource(),
-                                        brandsData = userRepo.getBrandsDataSource(),
-                                        bannerData = userRepo.getBannerDataSource()
-                                    )
-                                else
-                                    LimitedAccessScope.get(
-                                        userRepo.requireUserOld(),
-                                        userRepo.getUserDataSource(),
-                                        userRepo.getUserDataSourceV2()
-                                    )
-                            }
+                            } else {*/
+                            if (user.isActivated)
+                                DashboardScope.get(
+                                    user = user,
+                                    userDataSource = userRepo.getUserDataSourceV2(),
+                                    manufacturerData = userRepo.getManufacturerDataSource(),
+                                    unreadNotifications = notificationRepo.getUnreadMessagesDataSource(),
+                                    cartItemsCount = cartRepo.getEntriesCountDataSource(),
+                                    stockStatusData = userRepo.getStockDataSource(),
+                                    recentProductInfo = userRepo.getRecentProductsDataSource(),
+                                    promotionData = userRepo.getPromotionsDataSource(),
+                                    dealsData = userRepo.getDealsDataSource(),
+                                    categoriesData = userRepo.getCategoriesDataSource(),
+                                    brandsData = userRepo.getBrandsDataSource(),
+                                    bannerData = userRepo.getBannerDataSource(),
+                                    stockistEmpBannerData = userRepo.getStockistEmpBannerDataSource()
+                                )
+                            else
+                                LimitedAccessScope.get(
+                                    userRepo.requireUserOld(),
+                                    userRepo.getUserDataSource(),
+                                    userRepo.getUserDataSourceV2()
+                                )
+                            //}
                         )
                     }.onError(navigator)
             }.onError(navigator)
