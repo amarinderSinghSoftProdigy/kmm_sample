@@ -219,13 +219,12 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
         scaffoldState = scaffoldState,
         drawerGesturesEnabled = navigation.value != null,
         topBar = {
-
+            val tabBarInfo = scope.tabBar.flow.collectAsState()
             if (childScope.value !is OrderHsnEditScope && childScope.value !is InventoryScope && childScope.value !is IocSellerScope.InvUserListing
-                && childScope.value !is IocBuyerScope.InvUserListing && childScope.value !is ManagementScope.User
+                && childScope.value !is IocBuyerScope.InvUserListing && childScope.value !is ManagementScope.User && mUserType != UserType.STOCKIST_EMPLOYEE
                 && childScope.value !is InStoreUsersScope && childScope.value !is BannersScope && childScope.value !is DealsScope && childScope.value !is ManufacturerScope
             ) //don't show top bar for OrderEditHsnScreen and Inventory and IOC listing & deals & banners
             {
-                val tabBarInfo = scope.tabBar.flow.collectAsState()
                 TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         when (val info = tabBarInfo.value) {
@@ -315,6 +314,13 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                         }
                     }
                 }
+            } else if (mUserType == UserType.STOCKIST_EMPLOYEE && childScope.value is ViewOrderScope && tabBarInfo.value is TabBarInfo.StoreTitle) {
+                TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        StoreHeader(scope, tabBarInfo.value as TabBarInfo.StoreTitle)
+                    }
+                }
+
             }
         },
         content = {
