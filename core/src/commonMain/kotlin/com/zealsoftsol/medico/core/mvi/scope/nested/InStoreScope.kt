@@ -28,7 +28,10 @@ import com.zealsoftsol.medico.data.Total
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserV2
 
-class InStoreSellerScope(val unreadNotifications: ReadOnlyDataSource<Int>?, val userType: UserType) :
+class InStoreSellerScope(
+    val unreadNotifications: ReadOnlyDataSource<Int>?,
+    val userType: UserType
+) :
     Scope.Child.TabBar(),
     Loadable<InStoreSeller> {
 
@@ -356,11 +359,16 @@ class InStoreCartScope(
     fun continueWithCart() = EventCollector.sendEvent(Event.Action.InStore.ConfirmCartOrder)
 }
 
-class InStoreOrderPlacedScope(val tradeName: String,val order: StoreSubmitResponse) : Scope.Child.TabBar() {
+class InStoreOrderPlacedScope(val tradeName: String, val order: StoreSubmitResponse) :
+    Scope.Child.TabBar() {
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
         return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(""))
     }
 
+    val isOfferSwiped = DataSource(false)
+
     fun goToOrders() = EventCollector.sendEvent(Event.Transition.InStore)
+
+    fun submitReward() = EventCollector.sendEvent(Event.Action.InStore.SubmitReward(order.storeId))
 }

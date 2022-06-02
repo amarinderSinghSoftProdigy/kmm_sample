@@ -181,6 +181,7 @@ class EventCollector(
             userRepo,
             inStoreNetworkScope,
             LoadHelper(navigator, loadHelperScope),
+            cartRepo
         ),
         Event.Action.WhatsAppPreference::class to WhatsappEventDelegate(navigator, userRepo),
         Event.Action.Inventory::class to InventoryEventDelegate(

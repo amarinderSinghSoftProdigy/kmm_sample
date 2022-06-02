@@ -438,6 +438,9 @@ sealed class Event {
             ) : InStore()
 
             object ConfirmCartOrder : InStore()
+
+            data class SubmitReward(val storeId: String) : InStore()
+
         }
 
         sealed class WhatsAppPreference : Action() {

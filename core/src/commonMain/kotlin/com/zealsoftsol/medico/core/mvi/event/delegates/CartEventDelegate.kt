@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
-import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
@@ -79,7 +78,7 @@ internal class CartEventDelegate(
             event.item,
             event.cartScope
         )
-        Event.Action.Cart.HideBackButton -> hideBackButton()
+        is Event.Action.Cart.HideBackButton -> hideBackButton()
         is Event.Action.Cart.SubmitReward -> submitReward(event.rewardId)
     }
 
@@ -89,8 +88,8 @@ internal class CartEventDelegate(
     private suspend fun submitReward(rewardId: String) {
         navigator.withScope<CartOrderCompletedScope> {
             withProgress { cartRepo.submitReward(rewardId) }
-                .onSuccess {
-                    "success".log("suceess")
+                .onSuccess { _ ->
+                    it.isOfferSwiped.value = true
                 }.onError(navigator)
         }
     }

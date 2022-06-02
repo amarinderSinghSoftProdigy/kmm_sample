@@ -136,6 +136,8 @@ class CartOrderCompletedScope(
 
     override val isRoot: Boolean = true
 
+    val isOfferSwiped = DataSource(false)
+
     fun goToOrders(): Boolean = EventCollector.sendEvent(Event.Transition.Orders)
 
     fun submitReward() = EventCollector.sendEvent(Event.Action.Cart.SubmitReward(order.cartId))

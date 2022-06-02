@@ -19,7 +19,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -50,7 +51,7 @@ import com.zealsoftsol.medico.screens.common.Space
 @Composable
 fun CartOrderCompletedScreen(scope: CartOrderCompletedScope) {
 
-    val isOfferSwiped = remember { mutableStateOf(false) }
+    val isOfferSwiped = scope.isOfferSwiped.flow.collectAsState()
     val showOfferAlert = remember { mutableStateOf(false) }
 
     Column(
@@ -98,7 +99,7 @@ fun CartOrderCompletedScreen(scope: CartOrderCompletedScope) {
 }
 
 @Composable
-private fun OffersView(scope: CartOrderCompletedScope, isOfferSwiped: MutableState<Boolean>) {
+private fun OffersView(scope: CartOrderCompletedScope, isOfferSwiped: State<Boolean>) {
 
     Surface(
         modifier = Modifier
@@ -193,7 +194,6 @@ private fun OffersView(scope: CartOrderCompletedScope, isOfferSwiped: MutableSta
                                 when {
                                     x > 0 -> {
                                         if (x > 30) { //swipe direction is right, enable offer
-                                            isOfferSwiped.value = true
                                             scope.submitReward()
                                         }
                                     }
