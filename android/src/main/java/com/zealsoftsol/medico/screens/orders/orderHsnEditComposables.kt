@@ -133,6 +133,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
      * update editable data is user has selected a batch from ViewBatchComposable
      */
     remember {
+
         selectedBatchData.value?.let {
             if (it.batch.isNotEmpty())
                 scope.updateBatch(it.batch)
@@ -604,8 +605,8 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                         }
                                     }
                                     Space(10.dp)
-                                    if (selectedHsnCode.isEmpty())
-                                        HsnErrorText()
+                                    /*if (selectedHsnCode.isEmpty())
+                                        HsnErrorText()*/
                                     Space(10.dp)
                                 }
                                 Space(20.dp)

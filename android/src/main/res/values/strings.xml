@@ -356,6 +356,7 @@
     <string name="warning_order_entry_validation">Please enter all required details for selected orders (i.e HSN code, PTR and Qty)</string>
     <string name="edit_discount">Edit Discount</string>
     <string name="inr_symbol">₹</string>
+    <string name="note_net_payable">NOTE: Net payable subject to change with Original Invoice provided by Stockist/Sub-Stockist.</string>
 
     <string name="deal_offer">Deal/Offers</string>
     <string name="manufacturers">Manufacturers</string>

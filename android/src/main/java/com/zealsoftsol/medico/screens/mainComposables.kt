@@ -501,7 +501,9 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     }
                     UserType.STOCKIST_EMPLOYEE -> {
                         mBottomNavItems = listOf(
+                            BottomNavigationItem.Dashboard,
                             BottomNavigationItem.InStores,
+                            BottomNavigationItem.OnlineOrders,
                             BottomNavigationItem.DebtCollection,
                             BottomNavigationItem.Logout
                         )
@@ -1509,6 +1511,15 @@ sealed class BottomNavigationItem(
             mutableStateOf(false),
             key = BottomNavKey.LOGOUT,
             action = Event.Action.Auth.LogOut(true),
+        )
+
+    object OnlineOrders :
+        BottomNavigationItem(
+            Event.Transition.OnlineOrders,
+            R.drawable.ic_po,
+            R.drawable.ic_po_selected,
+            mutableStateOf(false),
+            key = BottomNavKey.PO,
         )
 }
 

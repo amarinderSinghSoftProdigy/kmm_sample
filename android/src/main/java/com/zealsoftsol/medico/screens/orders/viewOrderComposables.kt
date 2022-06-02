@@ -276,7 +276,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                             index = index
                                         )
                                     },
-                                    onBuyClick = { scope.buy(orderEntry = it)},
+                                    onBuyClick = { scope.buy(orderEntry = it) },
                                     userType = scope.userType
                                 )
                                 Space(8.dp)
@@ -287,8 +287,8 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                 }
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     OrderTotal(orderTaxValue.info.total.formattedPrice)
-                    Space(16.dp)
                     if (scope.canEdit) {
+                        Space(16.dp)
                         val actions = scope.actions.flow.collectAsState()
                         Row(modifier = Modifier.fillMaxWidth()) {
                             actions.value.forEachIndexed { index, action ->
@@ -331,6 +331,17 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                     Space(16.dp)
                                 }
                             }
+                        }
+                    } else {
+                        if (scope.userType == UserType.RETAILER) {
+                            Space(8.dp)
+                            Text(
+                                text = stringResource(id = R.string.note_net_payable),
+                                color = ConstColors.red,
+                                fontWeight = FontWeight.W600,
+                                fontSize = 10.sp,
+                                modifier = Modifier.align(Alignment.Start),
+                            )
                         }
                     }
                     Space(10.dp)
@@ -495,7 +506,7 @@ fun OrderEntryItem(
     showDetails: Boolean = false,
     isConfirmOrderScope: Boolean = false,
     onBuyClick: () -> Unit,
-    userType: UserType ?= null
+    userType: UserType? = null
 ) {
     Surface(
         elevation = 5.dp,
@@ -725,7 +736,12 @@ fun OrderEntryItem(
                     ) {
                         Text(
                             stringResource(id = R.string.buy),
-                            modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 3.dp, bottom = 3.dp)
+                            modifier = Modifier.padding(
+                                start = 10.dp,
+                                end = 10.dp,
+                                top = 3.dp,
+                                bottom = 3.dp
+                            )
                         )
                     }
                 }
@@ -740,5 +756,6 @@ fun OrderEntryItem(
  */
 
 fun checkOrderEntryValidation(entry: OrderEntry): Boolean {
-    return (entry.hsnCode.isEmpty() || entry.price.value == 0.0 || entry.servedQty.value == 0.0)
+    return false//Returning false so as to remove all the checks for order fulfillment.
+    //(entry.hsnCode.isEmpty() || entry.price.value == 0.0 || entry.servedQty.value == 0.0)
 }

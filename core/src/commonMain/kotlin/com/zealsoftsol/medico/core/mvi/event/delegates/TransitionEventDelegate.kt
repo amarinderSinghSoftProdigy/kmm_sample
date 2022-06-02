@@ -274,6 +274,13 @@ internal class TransitionEventDelegate(
                 is Event.Transition.Manufacturers -> setScope(ManufacturerScope())
                 is Event.Transition.Demo -> setScope(DemoScope.DemoListing())
                 is Event.Transition.Rewards -> setScope(RewardsScope())
+                is Event.Transition.OnlineOrders -> setScope(
+                    OrdersScope(
+                        listOf(OrdersScope.Tab.ONLINE_ORDERS),
+                        notificationRepo.getUnreadMessagesDataSource(),
+                        cartRepo.getEntriesCountDataSource()
+                    )
+                )
             }
         }
     }

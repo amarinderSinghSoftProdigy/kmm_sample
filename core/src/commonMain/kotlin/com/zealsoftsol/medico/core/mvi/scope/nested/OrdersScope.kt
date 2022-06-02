@@ -106,6 +106,7 @@ class OrdersScope(
         ORDERS("orders", OrderType.ORDER),
         PO_ORDERS("purchase_orders", OrderType.PURCHASE_ORDER),
         HISTORY_ORDERS("orders_history", OrderType.HISTORY),
+        ONLINE_ORDERS("orders", OrderType.TAX_ORDER),
     }
 }
 
