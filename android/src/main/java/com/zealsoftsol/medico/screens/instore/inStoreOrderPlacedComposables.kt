@@ -28,6 +28,9 @@ import com.zealsoftsol.medico.screens.common.Space
 
 @Composable
 fun InStoreOrderPlacedScreen(scope: InStoreOrderPlacedScope) {
+
+    val order = scope.order
+
     Box(
         modifier = Modifier
             .fillMaxSize()

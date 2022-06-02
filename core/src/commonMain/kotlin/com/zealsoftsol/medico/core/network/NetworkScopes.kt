@@ -90,6 +90,7 @@ import com.zealsoftsol.medico.data.SellerUsersData
 import com.zealsoftsol.medico.data.StockStatusData
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.Store
+import com.zealsoftsol.medico.data.StoreSubmitResponse
 import com.zealsoftsol.medico.data.SubmitEmployeeRegistration
 import com.zealsoftsol.medico.data.SubmitPaymentRequest
 import com.zealsoftsol.medico.data.SubmitRegistration
@@ -371,7 +372,7 @@ interface NetworkScope {
             entryId: String
         ): BodyResponse<InStoreCart>
 
-        suspend fun confirmInStoreCart(unitCode: String, id: String): AnyResponse
+        suspend fun confirmInStoreCart(unitCode: String, id: String): BodyResponse<StoreSubmitResponse>
 
         suspend fun deleteInStoreOrder(unitCode: String, id: String): AnyResponse
     }

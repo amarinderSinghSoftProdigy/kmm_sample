@@ -131,6 +131,20 @@ data class CartSubmitResponse(
 )
 
 @Serializable
+data class StoreSubmitResponse(
+    @SerialName("buyerEmail")
+    val email: String,
+    val orderDate: String,
+    val orderTime: String,
+    val sellersOrder: List<SellerOrder>,
+    val total: Total,
+    val isRewardsRequired: Boolean,
+    val rewardType: String,
+    val rewards: RewardsData,
+    val storeId: String
+)
+
+@Serializable
 data class RewardsData(
     val percent: String,
     val message: String,

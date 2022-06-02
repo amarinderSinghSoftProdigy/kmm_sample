@@ -306,9 +306,9 @@ internal class InStoreEventDelegate(
         navigator.withScope<InStoreCartScope> {
             withProgress {
                 networkInStoreScope.confirmInStoreCart(it.unitCode, cartId)
-            }.onSuccess { _ ->
+            }.onSuccess { body ->
                 navigator.dropScope(Navigator.DropStrategy.ToRoot, false)
-                navigator.setScope(InStoreOrderPlacedScope(it.name))
+                navigator.setScope(InStoreOrderPlacedScope(it.name, body))
             }.onError(navigator)
         }
     }

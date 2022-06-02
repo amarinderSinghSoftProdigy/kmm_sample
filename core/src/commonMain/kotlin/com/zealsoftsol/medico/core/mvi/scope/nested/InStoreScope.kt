@@ -23,6 +23,7 @@ import com.zealsoftsol.medico.data.InStoreUser
 import com.zealsoftsol.medico.data.InStoreUserRegistration
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PaymentMethod
+import com.zealsoftsol.medico.data.StoreSubmitResponse
 import com.zealsoftsol.medico.data.Total
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserV2
@@ -355,7 +356,7 @@ class InStoreCartScope(
     fun continueWithCart() = EventCollector.sendEvent(Event.Action.InStore.ConfirmCartOrder)
 }
 
-class InStoreOrderPlacedScope(val tradeName: String) : Scope.Child.TabBar() {
+class InStoreOrderPlacedScope(val tradeName: String,val order: StoreSubmitResponse) : Scope.Child.TabBar() {
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
         return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(""))
