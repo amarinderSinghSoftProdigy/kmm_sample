@@ -293,6 +293,7 @@ sealed class Event {
             data class ConfirmCartOrder(val cartScope: Scope) : Cart()
             data class PlaceCartOrder(val checkForQuotedItems: Boolean) : Cart()
             object HideBackButton : Cart()
+            data class SubmitReward(val rewardId: String) : Cart()
         }
 
         sealed class Help : Action() {
@@ -437,6 +438,9 @@ sealed class Event {
             ) : InStore()
 
             object ConfirmCartOrder : InStore()
+
+            data class SubmitReward(val storeId: String) : InStore()
+
         }
 
         sealed class WhatsAppPreference : Action() {
@@ -723,6 +727,12 @@ sealed class Event {
             data class OpenVideo(val url: String = "") : Demo()
             object ReleasePlayer : Demo()
         }
+
+        sealed class Rewards : Action() {
+            override val typeClazz: KClass<*> = Rewards::class
+
+            data class GetRewards(val page: Int) : Rewards()
+        }
     }
 
 
@@ -792,6 +802,7 @@ sealed class Event {
         object Ocr : Transition()
         object Manufacturers : Transition()
         object Demo : Transition()
+        object Rewards : Transition()
         object OnlineOrders : Transition()
     }
 }

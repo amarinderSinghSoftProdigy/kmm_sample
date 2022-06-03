@@ -14,6 +14,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreSellerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreUsersScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
+import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.utils.LoadHelper
@@ -28,6 +29,7 @@ internal class InStoreEventDelegate(
     private val userRepo: UserRepo,
     private val networkInStoreScope: NetworkScope.InStore,
     private val loadHelper: LoadHelper,
+    private val cartRepo: CartRepo,
 ) : EventDelegate<Event.Action.InStore>(navigator), CommonScope.CanGoBack {
 
     override suspend fun handleEvent(event: Event.Action.InStore) = when (event) {
@@ -70,7 +72,17 @@ internal class InStoreEventDelegate(
             removeItem(entryId)
         }
         is Event.Action.InStore.DeleteOrder -> removeOrder(event.unitcode, event.id)
+        is Event.Action.InStore.SubmitReward -> submitReward(event.storeId)
 
+    }
+
+    private suspend fun submitReward(storeId: String) {
+        navigator.withScope<InStoreOrderPlacedScope> {
+            withProgress { cartRepo.submitReward(storeId) }
+                .onSuccess { _ ->
+                   it.isOfferSwiped.value = true
+                }.onError(navigator)
+        }
     }
 
     private suspend fun removeOrder(unitCode: String, id: String) {
@@ -306,9 +318,9 @@ internal class InStoreEventDelegate(
         navigator.withScope<InStoreCartScope> {
             withProgress {
                 networkInStoreScope.confirmInStoreCart(it.unitCode, cartId)
-            }.onSuccess { _ ->
+            }.onSuccess { body ->
                 navigator.dropScope(Navigator.DropStrategy.ToRoot, false)
-                navigator.setScope(InStoreOrderPlacedScope(it.name))
+                navigator.setScope(InStoreOrderPlacedScope(it.name, body))
             }.onError(navigator)
         }
     }
