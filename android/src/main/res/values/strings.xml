@@ -509,6 +509,13 @@
     <string name="compo_not_found">Compositions Not Found</string>
     <string name="alert_notify">Are you sure you want to clear all the Notifications?</string>
     <string name="alert_notify_1">Clearing will delete all the notifications permanently</string>
+    <string name="hurray">Hurray!</string>
+    <string name="won_scratch">You won a scratch card</string>
+    <string name="cashback_earned">Cashback Earned</string>
+    <string name="offer_claim_warning">Please swipe and claim you offer first!</string>
+    <string name="rewards_cashback">Rewards &amp; Cashback</string>
+    <string name="cashback_details">Win Exciting Cashback On Your Purchases</string>
+    <string name="expires_on">Expires on</string>
 
     <!-- Termrs and Cond -->
 

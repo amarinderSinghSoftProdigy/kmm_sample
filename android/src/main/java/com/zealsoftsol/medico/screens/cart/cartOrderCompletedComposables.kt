@@ -2,13 +2,16 @@ package com.zealsoftsol.medico.screens.cart
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -16,13 +19,22 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.consumeAllChanges
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,10 +44,16 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.CartOrderCompletedScope
 import com.zealsoftsol.medico.data.CartSubmitResponse
 import com.zealsoftsol.medico.data.SellerOrder
 import com.zealsoftsol.medico.screens.common.MedicoButton
+import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.Space
+
 
 @Composable
 fun CartOrderCompletedScreen(scope: CartOrderCompletedScope) {
+
+    val isOfferSwiped = scope.isOfferSwiped.flow.collectAsState()
+    val showOfferAlert = remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -44,14 +62,16 @@ fun CartOrderCompletedScreen(scope: CartOrderCompletedScope) {
         verticalArrangement = Arrangement.SpaceBetween,
     ) {
         Column {
-            Space(24.dp)
             OrderPlacedTile(scope.order)
-            Space(14.dp)
+            if (scope.order.isRewardsRequired) { //show rewards when it is true from API
+                Space(10.dp)
+                OffersView(scope, isOfferSwiped)
+            }
+            Space(20.dp)
             scope.order.sellersOrder.forEach {
                 OrderItem(it)
                 Space(12.dp)
             }
-
         }
 
         Column {
@@ -60,9 +80,128 @@ fun CartOrderCompletedScreen(scope: CartOrderCompletedScope) {
             MedicoButton(
                 text = stringResource(id = R.string.orders),
                 isEnabled = true,
-                onClick = { scope.goToOrders() },
+                onClick = {
+                    if (isOfferSwiped.value)
+                        scope.goToOrders()
+                    else
+                        showOfferAlert.value = true
+                },
             )
             Space(16.dp)
+        }
+    }
+
+    if (showOfferAlert.value)
+        ShowAlert(
+            onClick = { showOfferAlert.value = false },
+            message = stringResource(id = R.string.offer_claim_warning)
+        )
+}
+
+@Composable
+private fun OffersView(scope: CartOrderCompletedScope, isOfferSwiped: State<Boolean>) {
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(250.dp)
+            .padding(horizontal = 10.dp),
+        shape = MaterialTheme.shapes.medium,
+        color = Color.White,
+        elevation = 5.dp,
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = CenterHorizontally
+            ) {
+                Text(
+                    text = stringResource(id = R.string.hurray),
+                    color = ConstColors.lightGreen,
+                    fontWeight = FontWeight.W800,
+                    fontSize = 16.sp,
+                )
+                Space(5.dp)
+                Text(
+                    text = stringResource(id = R.string.won_scratch),
+                    color = Color.Black,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 14.sp,
+                )
+            }
+
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp),
+                color = Color.White,
+            ) {
+                Image(
+                    modifier = Modifier
+                        .size(100.dp)
+                        .align(CenterHorizontally),
+                    painter = if (isOfferSwiped.value) painterResource(id = R.drawable.ic_offer_opened) else painterResource(
+                        id = R.drawable.ic_unopeded_scratch_card
+                    ),
+                    contentDescription = null
+                )
+                if (isOfferSwiped.value) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            text = scope.order.rewards.amount.formatted,
+                            color = Color.White,
+                            fontWeight = FontWeight.W800,
+                            fontSize = 14.sp,
+                        )
+                    }
+                }
+            }
+
+            if (isOfferSwiped.value) { //show rewards won when offer is swiped
+                Space(dp = 5.dp)
+                Text(
+                    text = scope.order.rewards.message,
+                    color = Color.Black,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 14.sp,
+                )
+            }
+            Space(10.dp)
+            if (isOfferSwiped.value) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_swiped),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+            } else {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_unswiped),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .pointerInput(Unit) {
+                            detectDragGestures { change, dragAmount ->
+                                change.consumeAllChanges()
+                                val (x, _) = dragAmount
+                                when {
+                                    x > 0 -> {
+                                        if (x > 30) { //swipe direction is right, enable offer
+                                            scope.submitReward()
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                )
+            }
         }
     }
 }
@@ -80,14 +219,12 @@ private fun OrderPlacedTile(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = CenterHorizontally
     ) {
         Image(
             painter = painterResource(id = R.drawable.ic_order_placed),
             contentDescription = null,
         )
-        Space(16.dp)
-
         Text(
             text = stringResource(id = R.string.order_success_old),
             color = ConstColors.lightGreen,
@@ -109,76 +246,7 @@ private fun OrderPlacedTile(
             fontWeight = FontWeight.W500,
             fontSize = 12.sp,
         )
-
-        /*Row {
-            Text(
-                text = buildAnnotatedString {
-                    append(stringResource(id = R.string.date))
-                    append(": ")
-                    val startIndex = length
-                    append(orderDate)
-                    addStyle(
-                        SpanStyle(color = ConstColors.lightBlue),
-                        startIndex,
-                        length,
-                    )
-                },
-                color = ConstColors.gray,
-                fontWeight = FontWeight.W500,
-                fontSize = 12.sp,
-            )
-            Space(8.dp)
-            Text(
-                text = buildAnnotatedString {
-                    append(stringResource(id = R.string.time))
-                    append(": ")
-                    val startIndex = length
-                    append(orderTime)
-                    addStyle(
-                        SpanStyle(color = ConstColors.lightBlue),
-                        startIndex,
-                        length,
-                    )
-                },
-                color = ConstColors.gray,
-                fontWeight = FontWeight.W500,
-                fontSize = 12.sp,
-            )
-        }*/
-        //Divider(color = ConstColors.green)
-        /*Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White)
-                .padding(horizontal = 14.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                imageVector = Icons.Default.Info,
-                tint = ConstColors.lightBlue,
-                contentDescription = null,
-                modifier = Modifier.size(15.dp),
-            )
-            Space(14.dp)
-            Text(
-                text = buildAnnotatedString {
-                    append(stringResource(id = R.string.order_email_confirmation))
-                    append(" ")
-                    val startIndex = length
-                    append(email)
-                    addStyle(
-                        SpanStyle(color = ConstColors.lightBlue),
-                        startIndex,
-                        length,
-                    )
-                },
-                color = ConstColors.gray,
-                fontWeight = FontWeight.W500,
-                fontSize = 12.sp,
-            )
-        }*/
     }
-    //}
 }
 
 @Composable
@@ -187,6 +255,7 @@ private fun OrderItem(seller: SellerOrder) {
         shape = RoundedCornerShape(25.dp),
         color = ConstColors.lightBackground,
         border = BorderStroke(1.dp, ConstColors.lightBackground),
+        elevation = 3.dp
     ) {
         Column(
             modifier = Modifier
@@ -203,17 +272,17 @@ private fun OrderItem(seller: SellerOrder) {
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-           /* seller.seasonBoyRetailerName?.let {
-                Space(2.dp)
-                Text(
-                    text = it,
-                    color = ConstColors.gray,
-                    fontWeight = FontWeight.W500,
-                    fontSize = 11.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }*/
+            /* seller.seasonBoyRetailerName?.let {
+                 Space(2.dp)
+                 Text(
+                     text = it,
+                     color = ConstColors.gray,
+                     fontWeight = FontWeight.W500,
+                     fontSize = 11.sp,
+                     maxLines = 1,
+                     overflow = TextOverflow.Ellipsis,
+                 )
+             }*/
             Space(2.dp)
             Row(
                 modifier = Modifier.fillMaxWidth(),

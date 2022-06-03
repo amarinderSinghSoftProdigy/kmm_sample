@@ -4,7 +4,6 @@ import com.zealsoftsol.medico.core.compatDispatcher
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.interop.Time
 import com.zealsoftsol.medico.core.mvi.Navigator
-import com.zealsoftsol.medico.core.mvi.event.delegates.*
 import com.zealsoftsol.medico.core.mvi.event.delegates.AddEmployeeEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.AuthEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.BannersEventDelegate
@@ -33,6 +32,7 @@ import com.zealsoftsol.medico.core.mvi.event.delegates.ProductEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ProfileEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.QrCodeEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.RegistrationEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.RewardsEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.SearchEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.StoresEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.TransitionEventDelegate
@@ -96,6 +96,7 @@ class EventCollector(
     dealsNetworkScope: NetworkScope.DealsStore,
     manufacturerScope: NetworkScope.ManufacturerStore,
     demo: NetworkScope.DemoData,
+    rewardsNetworkScope: NetworkScope.RewardsStore,
     private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
     private val cartRepo: CartRepo,
@@ -180,6 +181,7 @@ class EventCollector(
             userRepo,
             inStoreNetworkScope,
             LoadHelper(navigator, loadHelperScope),
+            cartRepo
         ),
         Event.Action.WhatsAppPreference::class to WhatsappEventDelegate(navigator, userRepo),
         Event.Action.Inventory::class to InventoryEventDelegate(
@@ -243,6 +245,11 @@ class EventCollector(
             navigator,
             demo
         ),
+        Event.Action.Rewards::class to RewardsEventDelegate(
+            navigator,
+            userRepo,
+            rewardsNetworkScope
+        )
     )
 
     init {
