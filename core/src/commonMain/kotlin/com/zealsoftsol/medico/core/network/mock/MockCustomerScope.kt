@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.data.DashboardBrands
 import com.zealsoftsol.medico.data.DashboardDeals
 import com.zealsoftsol.medico.data.DashboardManufacturer
 import com.zealsoftsol.medico.data.DashboardPromotion
+import com.zealsoftsol.medico.data.EmployeeBannerData
 import com.zealsoftsol.medico.data.RecentProductInfo
 import com.zealsoftsol.medico.data.StockStatusData
 import com.zealsoftsol.medico.data.UserType
@@ -62,6 +63,9 @@ class MockCustomerScope : NetworkScope.Customer {
         getMockCustomerDataV2()
     }
 
+    override suspend fun getStockistEmployeeBannerData(type: UserType): BodyResponse<List<EmployeeBannerData>> {
+        TODO("Not yet implemented")
+    }
 
 
     companion object {

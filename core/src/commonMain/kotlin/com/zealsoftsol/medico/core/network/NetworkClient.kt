@@ -44,6 +44,7 @@ import com.zealsoftsol.medico.data.DashboardPromotion
 import com.zealsoftsol.medico.data.DemoResponse
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EditOfferRequest
+import com.zealsoftsol.medico.data.EmployeeBannerData
 import com.zealsoftsol.medico.data.EmployeeRegistration1
 import com.zealsoftsol.medico.data.EmployeeRegistration2
 import com.zealsoftsol.medico.data.EntityInfo
@@ -1546,6 +1547,13 @@ class NetworkClient(
             }
         }
 
+
+    override suspend fun getStockistEmployeeBannerData(type: UserType): BodyResponse<List<EmployeeBannerData>> =
+        simpleRequest {
+            client.get("${baseUrl.url}/dashboard/employee/banners") {
+                withMainToken()
+            }
+        }
     override suspend fun getRewards(page: Int): BodyResponse<RewardsList> =
         simpleRequest {
             client.get("${baseUrl.url}/rewards") {

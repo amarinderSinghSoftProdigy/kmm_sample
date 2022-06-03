@@ -20,6 +20,7 @@ import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
 import com.zealsoftsol.medico.data.DealsData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
+import com.zealsoftsol.medico.data.EmployeeBannerData
 import com.zealsoftsol.medico.data.HeaderData
 import com.zealsoftsol.medico.data.LicenseDocumentData
 import com.zealsoftsol.medico.data.LocationData
@@ -95,6 +96,7 @@ class UserRepo(
     val brandsFlow: MutableStateFlow<List<BrandsData>> = MutableStateFlow(emptyList())
     val dealsFlow: MutableStateFlow<List<DealsData>> = MutableStateFlow(emptyList())
     val categoriesFlow: MutableStateFlow<List<BrandsData>> = MutableStateFlow(emptyList())
+    val stockistEmployeeBannerFlow: MutableStateFlow<List<EmployeeBannerData>> = MutableStateFlow(emptyList())
 
     fun getUserAccess(): UserAccess {
         return userV2Flow.value?.let {
@@ -220,6 +222,10 @@ class UserRepo(
             }
             networkCustomerScope.getDealsOfTheDay(userType).onSuccess {
                 dealsFlow.value = it.results
+            }
+        } else if (userType == UserType.STOCKIST_EMPLOYEE) {
+            networkCustomerScope.getStockistEmployeeBannerData(userType).onSuccess {
+                stockistEmployeeBannerFlow.value = it
             }
         }
     }
@@ -533,4 +539,8 @@ internal inline fun UserRepo.getCategoriesDataSource(): ReadOnlyDataSource<List<
         categoriesFlow.stateIn(GlobalScope, SharingStarted.Eagerly, null)
     )
 
+internal inline fun UserRepo.getStockistEmpBannerDataSource(): ReadOnlyDataSource<List<EmployeeBannerData>?> =
+    ReadOnlyDataSource(
+        stockistEmployeeBannerFlow.stateIn(GlobalScope, SharingStarted.Eagerly, null)
+    )
 private inline fun String.formatIndia() = "91$this"

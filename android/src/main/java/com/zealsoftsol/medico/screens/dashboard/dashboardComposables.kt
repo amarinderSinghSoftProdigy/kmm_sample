@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -68,6 +69,7 @@ import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.BannerData
 import com.zealsoftsol.medico.data.BrandsData
 import com.zealsoftsol.medico.data.DealsData
+import com.zealsoftsol.medico.data.EmployeeBannerData
 import com.zealsoftsol.medico.data.ManufacturerData
 import com.zealsoftsol.medico.data.OfferStatus
 import com.zealsoftsol.medico.data.ProductSold
@@ -86,6 +88,8 @@ fun DashboardScreen(scope: DashboardScope) {
         ShowStockistDashBoard(scope)
     } else if (scope.userType == UserType.RETAILER || scope.userType == UserType.HOSPITAL) {
         ShowRetailerAndHospitalDashboard(scope)
+    } else if (scope.userType == UserType.STOCKIST_EMPLOYEE) {
+        ShowStockistEmployeeDashboard(scope)
     }
 }
 
@@ -1229,6 +1233,147 @@ private fun ManufacturersItem(
             overflow = TextOverflow.Ellipsis,
         )
     }
+}
+
+@Composable
+fun ShowStockistEmployeeDashboard(scope: DashboardScope) {
+    val activity = LocalContext.current as MainActivity
+    val lazyListState = rememberLazyListState()
+    val banners = scope.stockistEmployeeBannerData.flow.collectAsState()
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(ConstColors.newDesignGray)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(ConstColors.newDesignGray)
+        ) {
+            Box(
+                modifier = Modifier
+                    .background(Color.White)
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp)
+                    .horizontalScroll(rememberScrollState())
+            ) {
+                val shareText = stringResource(id = R.string.share_content)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                ) {
+
+                    QuickActionItem(
+                        title = stringResource(id = R.string.orders),
+                        icon = R.drawable.ic_menu_orders
+                    ) {
+                        scope.goToEmployeeOrders()
+                    }
+                    Space(16.dp)
+                    QuickActionItem(
+                        title = stringResource(id = R.string.instore),
+                        icon = R.drawable.ic_menu_stores
+                    ) {
+                        scope.sendEvent(Event.Transition.InStore)
+                    }
+                    Space(16.dp)
+                    QuickActionItem(
+                        title = stringResource(id = R.string.digital_invoice_payments),
+                        icon = R.drawable.ic_menu_invoice
+                    ) {
+                        scope.sendEvent(Event.Transition.IOCSeller)
+                    }
+                    Space(16.dp)
+
+                    QuickActionItem(
+                        title = stringResource(id = R.string.share_medico),
+                        icon = R.drawable.ic_share
+                    ) {
+                        activity.shareTextContent(shareText)
+                    }
+                    Space(16.dp)
+                    QuickActionItem(
+                        title = stringResource(id = R.string.demo),
+                        icon = R.drawable.ic_demo
+                    ) {
+                        scope.sendEvent(Event.Transition.Demo)
+                    }
+                }
+            }
+
+            Space(dp = 16.dp)
+
+            Column(
+                modifier = Modifier
+                    .background(Color.White)
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp)
+            ) {
+
+                banners.value?.let {
+                    LazyColumn(state = lazyListState) {
+                        itemsIndexed(
+                            items = it,
+                            key = { pos, _ -> pos },
+                            itemContent = { _, item ->
+                                StockistEmpBannerItem(
+                                    item, scope, modifier = Modifier
+                                        .fillParentMaxWidth()
+                                        .height(150.dp)
+                                        .padding(horizontal = 16.dp)
+                                )
+                            },
+                        )
+                    }
+
+                    val newPosition = remember { mutableStateOf(0) }
+                    //auto rotate banner after every 3 seconds
+                    LaunchedEffect(lazyListState.firstVisibleItemIndex) {
+                        delay(3000) // wait for 3 seconds.
+                        // increasing the position and check the limit
+                        newPosition.value = lazyListState.firstVisibleItemIndex + 1
+                        if (newPosition.value > it.size - 1) newPosition.value = 0
+                        // scrolling to the new position.
+                        if (newPosition.value == 0) {
+                            lazyListState.scrollToItem(newPosition.value)
+                        } else {
+                            lazyListState.animateScrollToItem(newPosition.value)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun StockistEmpBannerItem(
+    item: EmployeeBannerData,
+    scope: DashboardScope,
+    modifier: Modifier
+) {
+    Card(
+        modifier = modifier
+            .selectable(
+                selected = true,
+                onClick = {
+                    // scope.sendEvent(Event.Transition.Banners)
+                }),
+        elevation = 3.dp,
+        shape = RoundedCornerShape(5.dp),
+        backgroundColor = Color.White,
+    ) {
+        CoilImageBrands(
+            src = item.url,
+            contentScale = ContentScale.FillBounds,
+            onError = { ItemPlaceholder() },
+            onLoading = { ItemPlaceholder() },
+            height = 150.dp,
+        )
+    }
+    Space(12.dp)
 }
 
 

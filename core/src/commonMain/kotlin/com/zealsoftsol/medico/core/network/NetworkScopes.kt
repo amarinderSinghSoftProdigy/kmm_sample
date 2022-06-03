@@ -34,6 +34,46 @@ import com.zealsoftsol.medico.data.DashboardManufacturer
 import com.zealsoftsol.medico.data.DashboardPromotion
 import com.zealsoftsol.medico.data.DemoResponse
 import com.zealsoftsol.medico.data.DrugLicenseUpload
+import com.zealsoftsol.medico.data.LicenseDocumentData
+import com.zealsoftsol.medico.data.LocationData
+import com.zealsoftsol.medico.data.ManufacturersListData
+import com.zealsoftsol.medico.data.PasswordValidation
+import com.zealsoftsol.medico.data.PincodeValidation
+import com.zealsoftsol.medico.data.ProductResponse
+import com.zealsoftsol.medico.data.RecentProductInfo
+import com.zealsoftsol.medico.data.Response
+import com.zealsoftsol.medico.data.SellerUsersData
+import com.zealsoftsol.medico.data.StockStatusData
+import com.zealsoftsol.medico.data.StorageKeyResponse
+import com.zealsoftsol.medico.data.SubmitRegistration
+import com.zealsoftsol.medico.data.TokenInfo
+import com.zealsoftsol.medico.data.UploadResponseData
+import com.zealsoftsol.medico.data.UserRegistration1
+import com.zealsoftsol.medico.data.UserRegistration2
+import com.zealsoftsol.medico.data.UserRegistration3
+import com.zealsoftsol.medico.data.UserRequest
+import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.data.UserValidation1
+import com.zealsoftsol.medico.data.UserValidation2
+import com.zealsoftsol.medico.data.UserValidation3
+import com.zealsoftsol.medico.data.ValidationResponse
+import com.zealsoftsol.medico.data.WhatsappData
+import com.zealsoftsol.medico.data.ViewEmployee
+import com.zealsoftsol.medico.data.AddEmployee
+import com.zealsoftsol.medico.data.AddInvoice
+import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
+import com.zealsoftsol.medico.data.BatchUpdateRequest
+import com.zealsoftsol.medico.data.BatchesData
+import com.zealsoftsol.medico.data.BuyerUsersData
+import com.zealsoftsol.medico.data.CartConfirmData
+import com.zealsoftsol.medico.data.CartOrderRequest
+import com.zealsoftsol.medico.data.CartSubmitResponse
+import com.zealsoftsol.medico.data.ClearAllNotification
+import com.zealsoftsol.medico.data.ConfigData
+import com.zealsoftsol.medico.data.ConfirmOrderRequest
+import com.zealsoftsol.medico.data.ConnectedStockist
+import com.zealsoftsol.medico.data.EmployeeBannerData
 import com.zealsoftsol.medico.data.EmployeeRegistration1
 import com.zealsoftsol.medico.data.EmployeeRegistration2
 import com.zealsoftsol.medico.data.EntityInfo
@@ -161,6 +201,7 @@ interface NetworkScope {
         suspend fun getDealsOfTheDay(type: UserType): BodyResponse<DashboardDeals>
         suspend fun getCustomerDataV2(): BodyResponse<CustomerDataV2>
         suspend fun getCustomerData(): BodyResponse<CustomerData>
+        suspend fun getStockistEmployeeBannerData(type: UserType) : BodyResponse<List<EmployeeBannerData>>
     }
 
     interface Product : NetworkScope {

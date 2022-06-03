@@ -55,6 +55,7 @@ import com.zealsoftsol.medico.core.repository.getManufacturerDataSource
 import com.zealsoftsol.medico.core.repository.getPromotionsDataSource
 import com.zealsoftsol.medico.core.repository.getRecentProductsDataSource
 import com.zealsoftsol.medico.core.repository.getStockDataSource
+import com.zealsoftsol.medico.core.repository.getStockistEmpBannerDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSourceV2
@@ -271,13 +272,13 @@ class EventCollector(
 
     fun getStartingScope(): Scope {
         return when (userRepo.getUserAccess()) {
-            UserRepo.UserAccess.FULL_ACCESS -> if (userRepo.userV2Flow.value!!.type == UserType.STOCKIST_EMPLOYEE)
+            UserRepo.UserAccess.FULL_ACCESS -> /*if (userRepo.userV2Flow.value!!.type == UserType.STOCKIST_EMPLOYEE)
                 InStoreSellerScope.get(
                     userRepo.userV2Flow.value!!,
                     userRepo.getUserDataSourceV2(),
                     null
                 )
-            else
+            else*/
                 DashboardScope.get(
                     user = userRepo.requireUser(),
                     userDataSource = userRepo.getUserDataSourceV2(),
@@ -290,7 +291,8 @@ class EventCollector(
                     dealsData = userRepo.getDealsDataSource(),
                     categoriesData = userRepo.getCategoriesDataSource(),
                     brandsData = userRepo.getBrandsDataSource(),
-                    bannerData = userRepo.getBannerDataSource()
+                    bannerData = userRepo.getBannerDataSource(),
+                    stockistEmpBannerData = userRepo.getStockistEmpBannerDataSource()
                 )
 
             UserRepo.UserAccess.LIMITED_ACCESS -> LimitedAccessScope.get(

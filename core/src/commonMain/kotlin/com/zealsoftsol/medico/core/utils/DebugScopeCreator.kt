@@ -232,6 +232,7 @@ object DebugScopeCreator {
                 ReadOnlyDataSource(MutableStateFlow(null)),
                 ReadOnlyDataSource(MutableStateFlow(null)),
                 ReadOnlyDataSource(MutableStateFlow(null)),
+                ReadOnlyDataSource(MutableStateFlow(null)),
             )
         )
     }
