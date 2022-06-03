@@ -3,13 +3,27 @@ package com.zealsoftsol.medico.core.network
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.data.AadhaarUpload
+import com.zealsoftsol.medico.data.AddEmployee
+import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.AllBanners
 import com.zealsoftsol.medico.data.AllDeals
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoApprove
+import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
+import com.zealsoftsol.medico.data.BatchUpdateRequest
+import com.zealsoftsol.medico.data.BatchesData
 import com.zealsoftsol.medico.data.BodyResponse
+import com.zealsoftsol.medico.data.BuyerUsersData
+import com.zealsoftsol.medico.data.CartConfirmData
 import com.zealsoftsol.medico.data.CartData
+import com.zealsoftsol.medico.data.CartOrderRequest
 import com.zealsoftsol.medico.data.CartRequest
+import com.zealsoftsol.medico.data.CartSubmitResponse
+import com.zealsoftsol.medico.data.ClearAllNotification
+import com.zealsoftsol.medico.data.ConfigData
+import com.zealsoftsol.medico.data.ConfirmOrderRequest
+import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
@@ -79,7 +93,10 @@ import com.zealsoftsol.medico.data.InventoryData
 import com.zealsoftsol.medico.data.Invoice
 import com.zealsoftsol.medico.data.InvoiceDetails
 import com.zealsoftsol.medico.data.InvoiceResponse
+import com.zealsoftsol.medico.data.LicenseDocumentData
+import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
+import com.zealsoftsol.medico.data.ManufacturersListData
 import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
@@ -94,7 +111,10 @@ import com.zealsoftsol.medico.data.OrderResponse
 import com.zealsoftsol.medico.data.OrderResponseInvoice
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.PaginatedData
+import com.zealsoftsol.medico.data.PasswordValidation
+import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.ProductBuyResponse
+import com.zealsoftsol.medico.data.ProductResponse
 import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
 import com.zealsoftsol.medico.data.ProfileImageData
 import com.zealsoftsol.medico.data.ProfileImageUpload
@@ -102,14 +122,35 @@ import com.zealsoftsol.medico.data.ProfileResponseData
 import com.zealsoftsol.medico.data.PromotionTypeData
 import com.zealsoftsol.medico.data.PromotionUpdateRequest
 import com.zealsoftsol.medico.data.QrCodeData
+import com.zealsoftsol.medico.data.RecentProductInfo
+import com.zealsoftsol.medico.data.Response
+import com.zealsoftsol.medico.data.RewardsList
 import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.SearchResponse
+import com.zealsoftsol.medico.data.SellerUsersData
+import com.zealsoftsol.medico.data.StockStatusData
+import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.Store
+import com.zealsoftsol.medico.data.StoreSubmitResponse
 import com.zealsoftsol.medico.data.SubmitEmployeeRegistration
 import com.zealsoftsol.medico.data.SubmitPaymentRequest
+import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.SubscribeRequest
+import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.UnreadNotifications
 import com.zealsoftsol.medico.data.UpdateInvoiceRequest
+import com.zealsoftsol.medico.data.UploadResponseData
+import com.zealsoftsol.medico.data.UserRegistration1
+import com.zealsoftsol.medico.data.UserRegistration2
+import com.zealsoftsol.medico.data.UserRegistration3
+import com.zealsoftsol.medico.data.UserRequest
+import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.data.UserValidation1
+import com.zealsoftsol.medico.data.UserValidation2
+import com.zealsoftsol.medico.data.UserValidation3
+import com.zealsoftsol.medico.data.ValidationResponse
+import com.zealsoftsol.medico.data.ViewEmployee
+import com.zealsoftsol.medico.data.WhatsappData
 
 
 interface NetworkScope {
@@ -274,6 +315,7 @@ interface NetworkScope {
 
         suspend fun confirmCart(request: CartOrderRequest): BodyResponse<CartConfirmData>
         suspend fun submitCart(request: CartOrderRequest): BodyResponse<CartSubmitResponse>
+        suspend fun submitReward(rewardId: String): AnyResponse
     }
 
     interface Orders : NetworkScope {
@@ -372,7 +414,10 @@ interface NetworkScope {
             entryId: String
         ): BodyResponse<InStoreCart>
 
-        suspend fun confirmInStoreCart(unitCode: String, id: String): AnyResponse
+        suspend fun confirmInStoreCart(
+            unitCode: String,
+            id: String
+        ): BodyResponse<StoreSubmitResponse>
 
         suspend fun deleteInStoreOrder(unitCode: String, id: String): AnyResponse
     }
@@ -603,6 +648,10 @@ interface NetworkScope {
 
     interface DemoData : NetworkScope {
         suspend fun getDemoData(): BodyResponse<List<DemoResponse>>
+    }
+
+    interface RewardsStore : NetworkScope {
+        suspend fun getRewards(page: Int): BodyResponse<RewardsList>
     }
 
 }

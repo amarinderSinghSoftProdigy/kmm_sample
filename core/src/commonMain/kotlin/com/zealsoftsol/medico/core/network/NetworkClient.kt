@@ -16,14 +16,13 @@ import com.zealsoftsol.medico.data.AddEmployee
 import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.AllBanners
 import com.zealsoftsol.medico.data.AllDeals
-import com.zealsoftsol.medico.data.BodyResponse
-import com.zealsoftsol.medico.data.UserRequest
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoApprove
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
 import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.BatchesData
+import com.zealsoftsol.medico.data.BodyResponse
 import com.zealsoftsol.medico.data.BuyerUsersData
 import com.zealsoftsol.medico.data.CartConfirmData
 import com.zealsoftsol.medico.data.CartData
@@ -69,8 +68,6 @@ import com.zealsoftsol.medico.data.InvoiceResponse
 import com.zealsoftsol.medico.data.LicenseDocumentData
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
-import com.zealsoftsol.medico.data.TokenInfo
-import com.zealsoftsol.medico.data.Manufacturer
 import com.zealsoftsol.medico.data.ManufacturersListData
 import com.zealsoftsol.medico.data.MapBody
 import com.zealsoftsol.medico.data.NotificationActionRequest
@@ -104,22 +101,26 @@ import com.zealsoftsol.medico.data.QrCodeData
 import com.zealsoftsol.medico.data.RecentProductInfo
 import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
+import com.zealsoftsol.medico.data.RewardsList
 import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.SellerUsersData
 import com.zealsoftsol.medico.data.StockStatusData
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.Store
+import com.zealsoftsol.medico.data.StoreSubmitResponse
 import com.zealsoftsol.medico.data.SubmitEmployeeRegistration
 import com.zealsoftsol.medico.data.SubmitPaymentRequest
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.SubscribeRequest
+import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.UnreadNotifications
 import com.zealsoftsol.medico.data.UpdateInvoiceRequest
 import com.zealsoftsol.medico.data.UploadResponseData
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
+import com.zealsoftsol.medico.data.UserRequest
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
@@ -128,23 +129,14 @@ import com.zealsoftsol.medico.data.ValidationResponse
 import com.zealsoftsol.medico.data.VerifyOtpRequest
 import com.zealsoftsol.medico.data.ViewEmployee
 import com.zealsoftsol.medico.data.WhatsappData
-import io.ktor.client.HttpClient
-import io.ktor.client.HttpClientConfig
-import io.ktor.client.engine.HttpClientEngineConfig
-import io.ktor.client.engine.HttpClientEngineFactory
-import io.ktor.client.features.HttpTimeout
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
-import io.ktor.client.features.logging.DEFAULT
-import io.ktor.client.features.logging.LogLevel
-import io.ktor.client.features.logging.Logger
-import io.ktor.client.features.logging.Logging
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.request.post
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
+import io.ktor.client.*
+import io.ktor.client.engine.*
+import io.ktor.client.features.*
+import io.ktor.client.features.json.*
+import io.ktor.client.features.json.serializer.*
+import io.ktor.client.features.logging.*
+import io.ktor.client.request.*
+import io.ktor.http.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.invoke
 import kotlinx.serialization.json.Json
@@ -184,7 +176,8 @@ class NetworkClient(
     NetworkScope.BannersStore,
     NetworkScope.DealsStore,
     NetworkScope.DemoData,
-    NetworkScope.ManufacturerStore {
+    NetworkScope.ManufacturerStore,
+    NetworkScope.RewardsStore {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -731,7 +724,7 @@ class NetworkClient(
 
     override suspend fun submitCart(request: CartOrderRequest) =
         simpleRequest {
-            client.post<BodyResponse<CartSubmitResponse>>("${baseUrl.url}/cart/submit") {
+            client.post<BodyResponse<CartSubmitResponse>>("${baseUrl.url}/cart/submit/reward") {
                 withMainToken()
                 jsonBody(request)
             }
@@ -965,9 +958,12 @@ class NetworkClient(
             }
         }
 
-    override suspend fun confirmInStoreCart(unitCode: String, id: String): AnyResponse {
+    override suspend fun confirmInStoreCart(
+        unitCode: String,
+        id: String
+    ): BodyResponse<StoreSubmitResponse> {
         return simpleRequest {
-            client.post("${baseUrl.url}/instore/order/confirm") {
+            client.post("${baseUrl.url}/instore/order/confirm/reward") {
                 withMainToken()
                 jsonBody(mapOf("id" to id, "buyerUnitCode" to unitCode))
             }
@@ -1551,12 +1547,33 @@ class NetworkClient(
             }
         }
 
+
     override suspend fun getStockistEmployeeBannerData(type: UserType): BodyResponse<List<EmployeeBannerData>> =
         simpleRequest {
             client.get("${baseUrl.url}/dashboard/employee/banners") {
                 withMainToken()
             }
         }
+    override suspend fun getRewards(page: Int): BodyResponse<RewardsList> =
+        simpleRequest {
+            client.get("${baseUrl.url}/rewards") {
+                withMainToken()
+                url {
+                    parameters.append("page", page.toString())
+                    parameters.append("pageSize", Pagination.DEFAULT_ITEMS_PER_PAGE.toString())
+                }
+            }
+        }
+
+
+    override suspend fun submitReward(rewardId: String): AnyResponse =
+        simpleRequest {
+            client.post("${baseUrl.url}/rewards/swipe") {
+                withMainToken()
+                jsonBody(mapOf("rewardId" to rewardId))
+            }
+        }
+
 
     // Utils
     private inline fun HttpRequestBuilder.withB2bCodeToken(finalToken: String) {

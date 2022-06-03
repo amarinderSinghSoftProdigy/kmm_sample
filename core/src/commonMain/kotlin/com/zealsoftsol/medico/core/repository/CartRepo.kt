@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.core.repository
 
 import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.network.NetworkScope
+import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.BodyResponse
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartConfirmData
@@ -108,6 +109,10 @@ class CartRepo(
         val result = cartStoresScope.confirmCart(CartOrderRequest(cartId, unitCode))
         BodyResponse(body = result.getBodyOrNull()?.cartData, type = "").handleResponse()
         return result
+    }
+
+    suspend fun submitReward(rewardId: String): AnyResponse {
+        return cartStoresScope.submitReward(rewardId)
     }
 
     suspend fun submitCart(unitCode: String): BodyResponse<CartSubmitResponse> {

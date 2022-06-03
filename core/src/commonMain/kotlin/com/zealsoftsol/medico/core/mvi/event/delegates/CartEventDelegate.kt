@@ -78,7 +78,20 @@ internal class CartEventDelegate(
             event.item,
             event.cartScope
         )
-        Event.Action.Cart.HideBackButton -> hideBackButton()
+        is Event.Action.Cart.HideBackButton -> hideBackButton()
+        is Event.Action.Cart.SubmitReward -> submitReward(event.rewardId)
+    }
+
+    /**
+     * submit scratched reward to server
+     */
+    private suspend fun submitReward(rewardId: String) {
+        navigator.withScope<CartOrderCompletedScope> {
+            withProgress { cartRepo.submitReward(rewardId) }
+                .onSuccess { _ ->
+                    it.isOfferSwiped.value = true
+                }.onError(navigator)
+        }
     }
 
     /**
