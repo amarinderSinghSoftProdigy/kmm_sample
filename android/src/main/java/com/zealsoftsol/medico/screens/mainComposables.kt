@@ -1421,7 +1421,7 @@ fun BottomNavigationBar(items: List<BottomNavigationItem>?, height: Int = 56) {
                                 text = item.cartCount.value.toString(),
                                 color = Color.Red,
                                 fontSize = 12.sp,
-                                modifier = Modifier.padding(bottom = 5.dp, start = 12.dp),
+                                modifier = Modifier.padding(bottom = 35.dp, start = 15.dp),
                                 fontWeight = FontWeight.W800,
                             )
                         }
