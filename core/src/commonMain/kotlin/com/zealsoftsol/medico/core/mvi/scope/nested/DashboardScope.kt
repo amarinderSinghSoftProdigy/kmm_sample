@@ -119,6 +119,9 @@ class DashboardScope private constructor(
     fun goToOrders() =
         EventCollector.sendEvent(if (userType == UserType.STOCKIST) Event.Transition.PoOrdersAndHistory else Event.Transition.Orders)
 
+    fun goToEmployeeOrders() =
+        EventCollector.sendEvent(Event.Transition.OnlineOrders)
+
     fun selectSection(section: Section) = section.event?.let(EventCollector::sendEvent) ?: false
 
     enum class Section(val stringId: String, val event: Event?) {

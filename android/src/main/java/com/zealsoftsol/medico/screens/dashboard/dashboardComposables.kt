@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -1242,7 +1243,6 @@ fun ShowStockistEmployeeDashboard(scope: DashboardScope) {
         modifier = Modifier
             .fillMaxSize()
             .background(ConstColors.newDesignGray)
-            .verticalScroll(rememberScrollState())
     ) {
         Column(
             modifier = Modifier
@@ -1267,7 +1267,7 @@ fun ShowStockistEmployeeDashboard(scope: DashboardScope) {
                         title = stringResource(id = R.string.orders),
                         icon = R.drawable.ic_menu_orders
                     ) {
-                        scope.goToOrders()
+                        scope.goToEmployeeOrders()
                     }
                     Space(16.dp)
                     QuickActionItem(
@@ -1311,7 +1311,7 @@ fun ShowStockistEmployeeDashboard(scope: DashboardScope) {
             ) {
 
                 banners.value?.let {
-                    LazyRow(state = lazyListState) {
+                    LazyColumn(state = lazyListState) {
                         itemsIndexed(
                             items = it,
                             key = { pos, _ -> pos },
