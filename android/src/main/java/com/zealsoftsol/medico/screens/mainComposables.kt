@@ -1398,20 +1398,20 @@ fun BottomNavigationBar(items: List<BottomNavigationItem>?, height: Int = 56) {
                     ) {
 
                         Column {
-                            Text(
-                                modifier = Modifier.fillMaxWidth().align(CenterHorizontally),
-                                textAlign = TextAlign.Center,
-                                text = item.key.title,
-                                fontSize = 12.sp,
-                                color = if (item.selected.value) ConstColors.lightBlue else ConstColors.txtGrey
-                            )
-                            Space(5.dp)
                             Image(
                                 modifier = Modifier.align(CenterHorizontally),
                                 painter = if (item.selected.value) painterResource(id = item.selectedIcon) else painterResource(
                                     id = item.unSelectedIcon
                                 ),
                                 contentDescription = null,
+                            )
+                            Space(5.dp)
+                            Text(
+                                modifier = Modifier.fillMaxWidth().align(CenterHorizontally),
+                                textAlign = TextAlign.Center,
+                                text = item.key.title,
+                                fontSize = 12.sp,
+                                color = if (item.selected.value) ConstColors.lightBlue else ConstColors.txtGrey
                             )
                         }
 
