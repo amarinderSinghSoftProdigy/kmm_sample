@@ -115,18 +115,6 @@ import com.zealsoftsol.medico.core.mvi.scope.regular.QrCodeScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.RewardsScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.WhatsappPreferenceScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.BannersScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.BatchesScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.DealsScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.DemoScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.ManufacturerScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.OcrScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.PreferenceScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.QrCodeScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.WhatsappPreferenceScope
 import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
@@ -1433,7 +1421,7 @@ fun BottomNavigationBar(items: List<BottomNavigationItem>?, height: Int = 56) {
                                 text = item.cartCount.value.toString(),
                                 color = Color.Red,
                                 fontSize = 12.sp,
-                                modifier = Modifier.padding(bottom = 20.dp, start = 20.dp),
+                                modifier = Modifier.padding(bottom = 5.dp, start = 12.dp),
                                 fontWeight = FontWeight.W800,
                             )
                         }
