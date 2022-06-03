@@ -84,6 +84,7 @@ import com.zealsoftsol.medico.data.PromotionUpdateRequest
 import com.zealsoftsol.medico.data.QrCodeData
 import com.zealsoftsol.medico.data.RecentProductInfo
 import com.zealsoftsol.medico.data.Response
+import com.zealsoftsol.medico.data.RewardsList
 import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.SellerUsersData
@@ -372,7 +373,10 @@ interface NetworkScope {
             entryId: String
         ): BodyResponse<InStoreCart>
 
-        suspend fun confirmInStoreCart(unitCode: String, id: String): BodyResponse<StoreSubmitResponse>
+        suspend fun confirmInStoreCart(
+            unitCode: String,
+            id: String
+        ): BodyResponse<StoreSubmitResponse>
 
         suspend fun deleteInStoreOrder(unitCode: String, id: String): AnyResponse
     }
@@ -606,7 +610,7 @@ interface NetworkScope {
     }
 
     interface RewardsStore : NetworkScope {
-        suspend fun getRewards(): AnyResponse
+        suspend fun getRewards(page: Int): BodyResponse<RewardsList>
     }
 
 }

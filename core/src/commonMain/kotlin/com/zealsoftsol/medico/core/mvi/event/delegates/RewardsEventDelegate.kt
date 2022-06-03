@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
-import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
@@ -13,19 +12,21 @@ internal class RewardsEventDelegate(
     navigator: Navigator,
     private val userRepo: UserRepo,
     private val rewardsStoreScope: NetworkScope.RewardsStore,
-    ) : EventDelegate<Event.Action.Rewards>(navigator) {
+) : EventDelegate<Event.Action.Rewards>(navigator) {
 
     override suspend fun handleEvent(event: Event.Action.Rewards) = when (event) {
-        is Event.Action.Rewards.GetRewards -> getRewards()
+        is Event.Action.Rewards.GetRewards -> getRewards(event.page)
     }
 
-    private suspend fun getRewards() {
+    private suspend fun getRewards(page: Int) {
         navigator.withScope<RewardsScope> {
             val result = withProgress {
-                rewardsStoreScope.getRewards()
+                rewardsStoreScope.getRewards(page)
             }
-            result.onSuccess {body ->
-                body.log(body.toString())
+            result.onSuccess { body ->
+                it.updateRewards(body.pageableData.results)
+                it.totalItems = body.pageableData.totalResults
+                it.showNoCashback.value = body.pageableData.results.isEmpty()
             }.onError(navigator)
         }
     }

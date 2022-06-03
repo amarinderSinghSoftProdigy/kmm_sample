@@ -100,6 +100,7 @@ import com.zealsoftsol.medico.data.QrCodeData
 import com.zealsoftsol.medico.data.RecentProductInfo
 import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
+import com.zealsoftsol.medico.data.RewardsList
 import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.SellerUsersData
@@ -956,7 +957,10 @@ class NetworkClient(
             }
         }
 
-    override suspend fun confirmInStoreCart(unitCode: String, id: String): BodyResponse<StoreSubmitResponse> {
+    override suspend fun confirmInStoreCart(
+        unitCode: String,
+        id: String
+    ): BodyResponse<StoreSubmitResponse> {
         return simpleRequest {
             client.post("${baseUrl.url}/instore/order/confirm/reward") {
                 withMainToken()
@@ -1542,12 +1546,12 @@ class NetworkClient(
             }
         }
 
-    override suspend fun getRewards(): AnyResponse =
+    override suspend fun getRewards(page: Int): BodyResponse<RewardsList> =
         simpleRequest {
             client.get("${baseUrl.url}/rewards") {
                 withMainToken()
                 url {
-                    parameters.append("page", "0")
+                    parameters.append("page", page.toString())
                     parameters.append("pageSize", Pagination.DEFAULT_ITEMS_PER_PAGE.toString())
                 }
             }
