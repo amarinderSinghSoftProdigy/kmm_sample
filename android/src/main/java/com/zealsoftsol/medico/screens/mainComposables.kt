@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.screens
 
-import android.content.pm.ActivityInfo
 import android.view.WindowManager
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
@@ -11,6 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.ExperimentalMaterialApi
@@ -32,7 +31,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.rememberScaffoldState
@@ -42,6 +40,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,7 +48,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -104,7 +102,18 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.*
+import com.zealsoftsol.medico.core.mvi.scope.regular.BannersScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.BatchesScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.DealsScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.DemoScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.ManufacturerScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.OcrScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.PreferenceScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.QrCodeScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.WhatsappPreferenceScope
 import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
@@ -1356,7 +1365,10 @@ private fun OffersHeader(
 fun BottomNavigationBar(items: List<BottomNavigationItem>?, height: Int = 56) {
     if (mUserType != null) {
         Surface(
-            elevation = 5.dp, color = Color.White
+            elevation = 15.dp,
+            color = Color.White,
+            shape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp),
+            border = BorderStroke(1.dp, ConstColors.newDesignGray)
         ) {
             Row(
                 modifier = Modifier
@@ -1381,12 +1393,24 @@ fun BottomNavigationBar(items: List<BottomNavigationItem>?, height: Int = 56) {
                         contentAlignment = Alignment.Center
                     ) {
 
-                        Image(
-                            painter = if (item.selected.value) painterResource(id = item.selectedIcon) else painterResource(
-                                id = item.unSelectedIcon
-                            ),
-                            contentDescription = null,
-                        )
+                        Column {
+                            Text(
+                                modifier = Modifier.fillMaxWidth().align(CenterHorizontally),
+                                textAlign = TextAlign.Center,
+                                text = item.key.title,
+                                fontSize = 12.sp,
+                                color = if (item.selected.value) ConstColors.lightBlue else ConstColors.txtGrey
+                            )
+                            Space(5.dp)
+                            Image(
+                                modifier = Modifier.align(CenterHorizontally),
+                                painter = if (item.selected.value) painterResource(id = item.selectedIcon) else painterResource(
+                                    id = item.unSelectedIcon
+                                ),
+                                contentDescription = null,
+                            )
+                        }
+
 
                         if (item.cartCount.value > 0) {
                             Text(
@@ -1469,7 +1493,7 @@ sealed class BottomNavigationItem(
         BottomNavigationItem(
             Event.Transition.Stores,
             R.drawable.ic_stores,
-            R.drawable.ic_strores_selected,
+            R.drawable.ic_stores_selected,
             mutableStateOf(false),
             mutableStateOf(0),
             key = BottomNavKey.STORES
@@ -1497,7 +1521,7 @@ sealed class BottomNavigationItem(
         BottomNavigationItem(
             null,
             R.drawable.ic_logout_grey,
-            R.drawable.ic_logout_yellow,
+            R.drawable.ic_logout_selected,
             mutableStateOf(false),
             key = BottomNavKey.LOGOUT,
             action = Event.Action.Auth.LogOut(true),
@@ -1513,8 +1537,9 @@ sealed class BottomNavigationItem(
         )
 }
 
-enum class BottomNavKey {
-    DASHBOARD, SETTINGS, PO, CART, MENU, STORES, INSTORES, LOGOUT, DEBT_COLLECTION
+enum class BottomNavKey(val title: String) {
+    DASHBOARD("Home"), SETTINGS("Profile"), PO("Orders"), CART("Basket"), MENU("Menu"),
+    STORES("Stores"), INSTORES("In-Stores"), LOGOUT("Logout"), DEBT_COLLECTION("IOC")
 }
 
 /**
