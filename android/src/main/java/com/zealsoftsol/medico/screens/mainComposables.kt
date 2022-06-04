@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -491,7 +492,12 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     is OcrScope -> OcrScreen(it, scaffoldState)
                     is ManufacturerScope -> ManufacturerScreen(it)
                     is DemoScope -> DemoScreen(it)
-                    is RewardsScope -> RewardsAndCashbackScreen(it)
+                    is RewardsScope -> {
+                        if (mUserType == UserType.STOCKIST_EMPLOYEE) {
+                            manageBottomNavState(BottomNavKey.REWARDS)
+                        }
+                        RewardsAndCashbackScreen(it)
+                    }
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }
@@ -514,6 +520,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                             BottomNavigationItem.InStores,
                             BottomNavigationItem.OnlineOrders,
                             BottomNavigationItem.DebtCollection,
+                            BottomNavigationItem.Rewards,
                             BottomNavigationItem.Logout
                         )
                     }
@@ -1389,36 +1396,57 @@ fun BottomNavigationBar(items: List<BottomNavigationItem>?, height: Int = 56) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
 
+
                 items?.forEach { item ->
-                    Box(
+                    Column(
                         modifier = Modifier
                             .weight(1f)
-                            .height(48.dp)
-                            .clickable {
-                                if (item.route != null)
-                                    EventCollector.sendEvent(item.route!!)
-                                else
-                                    EventCollector.sendEvent(item.action!!)
-                            },
-                        contentAlignment = Alignment.Center
+                            .height(height.dp)
                     ) {
+                        Surface(
+                            modifier = Modifier
+                                .height(5.dp)
+                                .padding(horizontal = 8.dp),
+                            color = if (item.selected.value) ConstColors.lightBlue else Color.White,
+                            shape = RoundedCornerShape(bottomStart = 15.dp, bottomEnd = 15.dp),
+                        ) {
+                            Divider(
+                                thickness = 5.dp,
+                                color = if (item.selected.value) ConstColors.lightBlue else Color.White
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(height.dp)
+                                .clickable {
+                                    if (item.route != null)
+                                        EventCollector.sendEvent(item.route!!)
+                                    else
+                                        EventCollector.sendEvent(item.action!!)
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
 
-                        Column {
-                            Image(
-                                modifier = Modifier.align(CenterHorizontally),
-                                painter = if (item.selected.value) painterResource(id = item.selectedIcon) else painterResource(
-                                    id = item.unSelectedIcon
-                                ),
-                                contentDescription = null,
-                            )
-                            Space(5.dp)
-                            Text(
-                                modifier = Modifier.fillMaxWidth().align(CenterHorizontally),
-                                textAlign = TextAlign.Center,
-                                text = item.key.title,
-                                fontSize = 12.sp,
-                                color = if (item.selected.value) ConstColors.lightBlue else ConstColors.txtGrey
-                            )
+                            Column {
+                                Image(
+                                    modifier = Modifier.align(CenterHorizontally),
+                                    painter = if (item.selected.value) painterResource(id = item.selectedIcon) else painterResource(
+                                        id = item.unSelectedIcon
+                                    ),
+                                    contentDescription = null,
+                                )
+                                Space(5.dp)
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .align(CenterHorizontally),
+                                    textAlign = TextAlign.Center,
+                                    text = item.key.title,
+                                    fontSize = 12.sp,
+                                    color = if (item.selected.value) ConstColors.lightBlue else ConstColors.txtGrey
+                                )
+                            }
                         }
 
 
@@ -1527,6 +1555,15 @@ sealed class BottomNavigationItem(
             key = BottomNavKey.DEBT_COLLECTION
         )
 
+    object Rewards :
+        BottomNavigationItem(
+            Event.Transition.Rewards,
+            R.drawable.ic_rewards_unselected,
+            R.drawable.ic_rewards_selected,
+            mutableStateOf(false),
+            key = BottomNavKey.REWARDS
+        )
+
     object Logout :
         BottomNavigationItem(
             null,
@@ -1549,7 +1586,8 @@ sealed class BottomNavigationItem(
 
 enum class BottomNavKey(val title: String) {
     DASHBOARD("Home"), SETTINGS("Profile"), PO("Orders"), CART("Basket"), MENU("Menu"),
-    STORES("Stores"), INSTORES("In-Stores"), LOGOUT("Logout"), DEBT_COLLECTION("IOC")
+    STORES("Stores"), INSTORES("In-Stores"), LOGOUT("Logout"), DEBT_COLLECTION("IOC"),
+    REWARDS("Rewards")
 }
 
 /**
