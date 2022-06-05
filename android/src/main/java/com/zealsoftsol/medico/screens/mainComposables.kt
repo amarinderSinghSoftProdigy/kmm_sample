@@ -1405,13 +1405,13 @@ fun BottomNavigationBar(items: List<BottomNavigationItem>?, height: Int = 56) {
                     ) {
                         Surface(
                             modifier = Modifier
-                                .height(5.dp)
+                                .height(4.dp)
                                 .padding(horizontal = 8.dp),
                             color = if (item.selected.value) ConstColors.lightBlue else Color.White,
                             shape = RoundedCornerShape(bottomStart = 15.dp, bottomEnd = 15.dp),
                         ) {
                             Divider(
-                                thickness = 5.dp,
+                                thickness = 4.dp,
                                 color = if (item.selected.value) ConstColors.lightBlue else Color.White
                             )
                         }
@@ -1447,17 +1447,16 @@ fun BottomNavigationBar(items: List<BottomNavigationItem>?, height: Int = 56) {
                                     color = if (item.selected.value) ConstColors.lightBlue else ConstColors.txtGrey
                                 )
                             }
-                        }
 
-
-                        if (item.cartCount.value > 0) {
-                            Text(
-                                text = item.cartCount.value.toString(),
-                                color = Color.Red,
-                                fontSize = 12.sp,
-                                modifier = Modifier.padding(bottom = 35.dp, start = 15.dp),
-                                fontWeight = FontWeight.W800,
-                            )
+                            if (item.cartCount.value > 0) {
+                                Text(
+                                    text = item.cartCount.value.toString(),
+                                    color = Color.Red,
+                                    fontSize = 12.sp,
+                                    modifier = Modifier.padding(bottom = 35.dp, start = 20.dp),
+                                    fontWeight = FontWeight.W800,
+                                )
+                            }
                         }
                     }
                 }
