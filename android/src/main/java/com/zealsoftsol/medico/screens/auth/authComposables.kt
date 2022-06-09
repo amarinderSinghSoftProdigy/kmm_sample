@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -36,9 +37,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Start
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
@@ -168,11 +171,13 @@ private fun PreAuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) 
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
     val credentialsState = scope.credentials.flow.collectAsState()
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(
         modifier = Modifier
@@ -211,9 +216,10 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
                             )
                         }
                     },
+                    keyboardActions = KeyboardActions(onDone = {keyboardController?.hide()}),
                     keyboardOptions = KeyboardOptions.Default.copy(
                         imeAction = ImeAction.Done,
-                        keyboardType = KeyboardType.Number
+                        keyboardType = KeyboardType.Number,
                     ),
                 )
                 Space(12.dp)
@@ -234,6 +240,11 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
                                 it
                             )
                         },
+                        keyboardActions = KeyboardActions(onDone = {keyboardController?.hide()}),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Done,
+                            keyboardType = KeyboardType.Number,
+                        ),
                     )
                     Icon(
                         imageVector = Icons.Default.RemoveRedEye,
