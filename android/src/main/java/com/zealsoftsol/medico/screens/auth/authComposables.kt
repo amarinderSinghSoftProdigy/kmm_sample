@@ -40,10 +40,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Start
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -192,6 +194,8 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
     val isValidPassword = scope.isValidPassword(credentialsState.value.password)
     val showCredentialError = scope.showCredentialError.flow.collectAsState()
     val focusRequester = FocusRequester()
+    val focusManager = LocalFocusManager.current
+
     LaunchedEffect(true) {
         focusRequester.requestFocus()
     }
@@ -252,9 +256,13 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
                             )
                         }
                     },
-                    keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
+                    keyboardActions = KeyboardActions(onNext = {
+                        focusManager.moveFocus(
+                            focusDirection = FocusDirection.Down,
+                        )
+                    }),
                     keyboardOptions = KeyboardOptions.Default.copy(
-                        imeAction = ImeAction.Done,
+                        imeAction = ImeAction.Next,
                         keyboardType = KeyboardType.Number,
                     ),
                 )
@@ -286,6 +294,7 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
                                 it
                             )
                         },
+                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                         keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
                     )
                     Icon(
