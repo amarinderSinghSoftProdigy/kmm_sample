@@ -5,7 +5,7 @@
     <string name="phone_number_or_email">Email / Phone No.</string>
     <string name="phone_number">Mobile Number</string>
     <string name="password">Password</string>
-    <string name="forgot_password">Forgot password</string>
+    <string name="forgot_password">Forgot password?</string>
     <string name="sign_up_to_medico">Sign up to Medico Stores</string>
     <string name="sign_up">Sign up</string>
     <string name="register">Register</string>
@@ -516,6 +516,8 @@
     <string name="rewards_cashback">Rewards &amp; Cashback</string>
     <string name="cashback_details">Win Exciting Cashback On Your Purchases</string>
     <string name="expires_on">Expires on</string>
+    <string name="about_medico1">Your trusted digital ecosystem partner</string>
+    <string name="about_medico2">medictostores.com is a transparent, trustworthy and secure digital ecosystem for buyers and sellers in the pharma ecosystem</string>
 
     <!-- Termrs and Cond -->
 
