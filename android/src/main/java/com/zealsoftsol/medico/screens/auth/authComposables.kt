@@ -178,6 +178,9 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
+    val isValidPhone = scope.isValidPhone(credentialsState.value.phoneNumberOrEmail)
+    val isValidPassword = scope.isValidPassword(credentialsState.value.password)
+    val showCredentialError = scope.showCredentialError.flow.collectAsState()
 
     Column(
         modifier = Modifier
@@ -206,7 +209,7 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
                     modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                     hint = stringResource(id = R.string.phone_number),
                     text = if (formatted.isDigitsOnly()) formatted else "",
-                    isValid = true,
+                    isValid = isValidPhone && !showCredentialError.value,
                     maxLines = 1,
                     onValueChange = {
                         if (it.isDigitsOnly()) {
@@ -216,7 +219,7 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
                             )
                         }
                     },
-                    keyboardActions = KeyboardActions(onDone = {keyboardController?.hide()}),
+                    keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
                     keyboardOptions = KeyboardOptions.Default.copy(
                         imeAction = ImeAction.Done,
                         keyboardType = KeyboardType.Number,
@@ -231,7 +234,7 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
                         modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                         hint = stringResource(id = R.string.password),
                         text = credentialsState.value.password,
-                        isValid = true,
+                        isValid = isValidPassword && !showCredentialError.value,
                         visualTransformation = if (isPasswordHidden.value) PasswordVisualTransformation() else VisualTransformation.None,
                         maxLines = 1,
                         onValueChange = {
@@ -240,11 +243,7 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
                                 it
                             )
                         },
-                        keyboardActions = KeyboardActions(onDone = {keyboardController?.hide()}),
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            imeAction = ImeAction.Done,
-                            keyboardType = KeyboardType.Number,
-                        ),
+                        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
                     )
                     Icon(
                         imageVector = Icons.Default.RemoveRedEye,
@@ -288,7 +287,8 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
                     MedicoButton(
                         modifier = Modifier.weight(1f),
                         text = stringResource(id = R.string.log_in),
-                        isEnabled = true,
+                        isEnabled = isValidPhone && isValidPassword && credentialsState.value.phoneNumberOrEmail.isNotEmpty() &&
+                                credentialsState.value.password.isNotEmpty(),
                         elevation = null,
                         onClick = { scope.tryLogIn() },
                         txtColor = MaterialTheme.colors.background,

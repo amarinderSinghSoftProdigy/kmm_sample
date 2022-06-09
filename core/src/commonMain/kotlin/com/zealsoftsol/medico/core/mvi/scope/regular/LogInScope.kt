@@ -12,11 +12,15 @@ class LogInScope(
     val credentials: DataSource<AuthCredentials>,
 ) : Scope.Host() {
 
+    val showCredentialError = DataSource(false)
+
     /**
      * Updates current scope, result posted to [credentials]
      */
-    fun updateAuthCredentials(emailOrPhone: String, password: String) =
+    fun updateAuthCredentials(emailOrPhone: String, password: String) {
+        showCredentialError.value = false
         EventCollector.sendEvent(Event.Action.Auth.UpdateAuthCredentials(emailOrPhone, password))
+    }
 
     /**
      * Transition to [MainScope] if successful
@@ -35,4 +39,23 @@ class LogInScope(
         SignUpScope.registerGlobal.value = RegisterGlobal()
         EventCollector.sendEvent(Event.Transition.SignUp)
     }
+
+    fun isValidPhone(phone: String): Boolean {
+        if (phone.isEmpty()) {
+            return true
+        }
+        return phone.length == 10
+    }
+
+    fun isValidPassword(str: String): Boolean {
+        if (str.isEmpty()) {
+            return true
+        }
+        val regex = ("^(?=.*[a-z])(?=."
+                + "*[A-Z])(?=.*\\d)"
+                + "(?=.*[-+_!@#$%^&*., ?]).+$")
+        val p = regex.toRegex()
+        return p.matches(str) && str.length >= 8
+    }
+
 }
