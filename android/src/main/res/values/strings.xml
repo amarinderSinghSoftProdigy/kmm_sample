@@ -651,7 +651,7 @@
     <string name="E0033">Uploaded document doesn\'t match with registered user</string>
     <string name="E0034">Auth0 gRPC server down, check whether its running</string>
     <string name="E0035">Unable to get geolocation data, check the geolocation server is running</string>
-    <string name="E0036">You have entered an invalid email/mobile or password</string>
+    <string name="E0036">You have entered an invalid mobile number or password</string>
     <string name="E0037">Mobile number provided is not registered, please provide registered contact number</string>
     <string name="E0038">Failed to update password, try after some time.</string>
     <string name="E0039">Logout token, please login again</string>

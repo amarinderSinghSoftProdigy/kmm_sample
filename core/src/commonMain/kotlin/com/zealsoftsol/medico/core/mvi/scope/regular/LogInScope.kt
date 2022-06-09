@@ -13,6 +13,12 @@ class LogInScope(
 ) : Scope.Host() {
 
     val showCredentialError = DataSource(false)
+    val errorCode = DataSource("E0036")
+    val showToast = DataSource(false)
+
+    fun hideErrorToast(){
+        showToast.value = false
+    }
 
     /**
      * Updates current scope, result posted to [credentials]

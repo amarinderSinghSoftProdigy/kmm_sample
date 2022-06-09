@@ -59,15 +59,18 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.OutlinedInputField
+import com.zealsoftsol.medico.screens.common.ShowToastGlobal
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.scrollOnFocus
+import com.zealsoftsol.medico.screens.common.stringResourceByName
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AuthScreen(scope: LogInScope) {
 
     val showLoginView = remember { mutableStateOf(false) }
+    val showCredentialError = scope.showCredentialError.flow.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -106,6 +109,11 @@ fun AuthScreen(scope: LogInScope) {
             exit = ExitTransition.None
         ) {
             PreAuthTab(scope, showLoginView)
+        }
+
+        if(scope.showToast.flow.collectAsState().value) {
+            ShowToastGlobal(msg = stringResourceByName(name = scope.errorCode.flow.collectAsState().value))
+            scope.hideErrorToast()
         }
     }
 }
