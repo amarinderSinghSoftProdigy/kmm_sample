@@ -12,21 +12,30 @@ import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
+import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.core.utils.trimInput
+import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.InStoreCart
 import com.zealsoftsol.medico.data.InStoreCartEntry
+import com.zealsoftsol.medico.data.InStoreOrder
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InStoreSeller
 import com.zealsoftsol.medico.data.InStoreUser
 import com.zealsoftsol.medico.data.InStoreUserRegistration
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PaymentMethod
+import com.zealsoftsol.medico.data.PriceInfo
+import com.zealsoftsol.medico.data.ProductSearch
+import com.zealsoftsol.medico.data.PromotionData
+import com.zealsoftsol.medico.data.SellerInfo
+import com.zealsoftsol.medico.data.StockInfo
 import com.zealsoftsol.medico.data.StoreSubmitResponse
 import com.zealsoftsol.medico.data.Total
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserV2
+import kotlinx.serialization.SerialName
 
 class InStoreSellerScope(
     val unreadNotifications: ReadOnlyDataSource<Int>?,
@@ -118,11 +127,28 @@ class InStoreProductsScope(
     override val pagination: Pagination = Pagination()
     val cart: DataSource<InStoreCart?> = DataSource(null)
 
+    fun selectImage(item: String) {
+        val url = CdnUrlProvider.urlFor(
+            item, CdnUrlProvider.Size.Px320
+        )
+        EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(url))
+    }
+
+
     fun firstLoad() = EventCollector.sendEvent(Event.Action.InStore.ProductLoad(isFirstLoad = true))
 
-    //pass on the seller info to be displayed on header
+    /*//pass on the seller info to be displayed on header
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo =
-        TabBarInfo.InStoreProductTitle(sellerName, address, phoneNumber)
+        TabBarInfo.InStoreProductTitle(sellerName, address, phoneNumber)*/
+
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
+        return TabBarInfo.StoreTitle(
+            storeName = sellerName,
+            showNotifications = false,
+            event = Event.Action.Management.GetDetails(unitCode),
+            cartItemsCount = null
+        )
+    }
 
     fun loadItems() =
         EventCollector.sendEvent(Event.Action.InStore.ProductLoad(isFirstLoad = false))
@@ -146,6 +172,16 @@ class InStoreProductsScope(
             cart.value?.mobileNumber.orEmpty()
         )
     )
+
+    fun addToCart(code: String, spid: String, quantity: Double, freeQuantity: Double): Boolean =
+        EventCollector.sendEvent(
+            Event.Action.InStore.AddCartItem(
+                code,
+                spid,
+                quantity,
+                freeQuantity,
+            )
+        )
 }
 
 class InStoreUsersScope : Scope.Child.TabBar(), Loadable<InStoreUser>, CommonScope.CanGoBack {

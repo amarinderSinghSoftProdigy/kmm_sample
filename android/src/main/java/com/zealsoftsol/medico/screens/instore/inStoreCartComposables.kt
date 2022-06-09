@@ -67,7 +67,9 @@ fun InStoreCartScreen(scope: InStoreCartScope) {
 
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxSize().padding(top = 16.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 16.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth()

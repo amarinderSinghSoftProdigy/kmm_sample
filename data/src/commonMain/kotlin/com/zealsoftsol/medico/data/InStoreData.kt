@@ -35,7 +35,7 @@ data class InStoreProduct(
     @SerialName("inStoreOrder")
     val order: InStoreOrder?,
     val isPromotionActive: Boolean,
-    val promotionData: InStorePromotionData?,
+    val promotionData: PromotionData?,
 )
 
 @Serializable

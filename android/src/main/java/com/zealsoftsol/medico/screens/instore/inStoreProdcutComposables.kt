@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.instore
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -25,8 +27,12 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -36,15 +42,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -58,21 +74,25 @@ import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.screens.cart.TextItem
 import com.zealsoftsol.medico.screens.cart.TextItemString
 import com.zealsoftsol.medico.screens.common.CoilImage
-import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
+import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.management.checkOffer
 import com.zealsoftsol.medico.screens.product.BottomSectionMode
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
+import kotlinx.coroutines.launch
 
+@ExperimentalComposeUiApi
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun InStoreProductsScreen(scope: InStoreProductsScope) {
     remember { scope.firstLoad() }
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(ConstColors.newDesignGray)
+            .background(Color.White)
             .padding(top = 16.dp)
     ) {
         val cart = scope.cart.flow.collectAsState()
@@ -110,6 +130,7 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
             horizontalPadding = 16.dp,
             isSearchFocused = false,
             onSearch = { v, _ -> scope.search(v) },
+            backgroundColor = ConstColors.separator,
         )
         Space(dp = 4.dp)
         val items = scope.items.flow.collectAsState()
@@ -120,15 +141,21 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
 //                onHome = { scope.goHome() },
 //            )
         } else {
+            val state = rememberLazyListState()
             LazyColumn(
-                state = rememberLazyListState(),
+                state = state,
                 contentPadding = PaddingValues(top = 4.dp, start = 16.dp, end = 16.dp),
                 modifier = Modifier.fillMaxSize(),
             ) {
                 itemsIndexed(
                     items = items.value,
                     itemContent = { index, item ->
-                        ProductItem(item) { scope.selectItem(item) }
+                        ProductItem(
+                            item,
+                            { scope.selectItem(item) },
+                            { scope.selectImage(item.code) },
+                            scope, state = state, index
+                        )
                         if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
                             scope.loadItems()
                         }
@@ -139,37 +166,47 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
     }
 }
 
+@ExperimentalComposeUiApi
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ProductItem(
     item: InStoreProduct,
     onItemClick: () -> Unit,
+    onImageClick: () -> Unit,
+    addToCart: InStoreProductsScope,
+    state: LazyListState? = null,
+    index: Int = 0
 ) {
     BaseItem(
+        addToCart = addToCart,
+        index = index,
+        state = state,
         item = item,
         qtyInitial = item.stockInfo.availableQty.toDouble(),
         freeQtyInitial = 0.0,
         promotionData = null,//item.sellerInfo?.promotionData?.takeIf { item.sellerInfo?.isPromotionActive == true },
-        forceMode = if (item.order?.isEmpty() != false) BottomSectionMode.AddToCart else BottomSectionMode.Update,
+        //forceMode = if (item.order?.isEmpty() != false) BottomSectionMode.AddToCart else BottomSectionMode.Update,
         onItemClick = onItemClick,
-        canAddToCart = item.stockInfo.status != StockStatus.OUT_OF_STOCK,
+        //canAddToCart = item.stockInfo.status != StockStatus.OUT_OF_STOCK,
         headerContent = {
-            val labelColor = when (item.stockInfo.status) {
-                StockStatus.IN_STOCK -> ConstColors.green
-                StockStatus.LIMITED_STOCK -> ConstColors.orange
-                StockStatus.OUT_OF_STOCK -> ConstColors.red
+            Surface(
+                color = ConstColors.separator,
+                shape = RoundedCornerShape(10.dp),
+                border = BorderStroke(1.dp, ConstColors.separator),
+            ) {
+                CoilImage(
+                    src = CdnUrlProvider.urlFor(item.code, CdnUrlProvider.Size.Px320),
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(5.dp))
+                        .size(110.dp)
+                        .clickable {
+                            onImageClick()
+                        },
+                    onError = { ItemPlaceholder() },
+                    onLoading = { ItemPlaceholder() },
+                    isCrossFadeEnabled = false
+                )
             }
-            CoilImage(
-                src = CdnUrlProvider.urlFor(item.code, CdnUrlProvider.Size.Px320),
-                modifier = Modifier
-                    .clip(RoundedCornerShape(5.dp))
-                    .size(120.dp)
-                    .clickable {
-                        //  scope.zoomImage(product.imageCode)
-                    },
-                onError = { ItemPlaceholder() },
-                onLoading = { ItemPlaceholder() },
-                isCrossFadeEnabled = false
-            )
             Space(dp = 10.dp)
             Column {
                 Text(
@@ -197,7 +234,7 @@ private fun ProductItem(
                     },
                     color = ConstColors.gray,
                     fontWeight = FontWeight.W700,
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                 )
                 Space(dp = 5.dp)
                 Text(
@@ -216,7 +253,7 @@ private fun ProductItem(
                     },
                     color = ConstColors.gray,
                     fontWeight = FontWeight.W700,
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                 )
                 val labelColor = when (item.stockInfo.status) {
                     StockStatus.IN_STOCK -> ConstColors.green
@@ -246,7 +283,11 @@ private fun ProductItem(
         mainBodyContent = {
             val sliderList = ArrayList<String>()
             item.manufacturer.let { sliderList.add(it) }
+            /*if (item.drugFormName.isNotEmpty())
+                sliderList.add(item.drugFormName)*/
             item.standardUnit.let { sliderList.add(it) }
+            /*if (item.compositions.isNotEmpty())
+                sliderList.addAll(item.compositions)*/
             item.priceInfo.marginPercent.let {
                 sliderList.add(
                     "Margin: ".plus(
@@ -271,7 +312,7 @@ private fun ProductItem(
 @Composable
 fun RoundString(option: String, onClick: () -> Unit) {
     Surface(
-        color = ConstColors.ltgray,
+        color = ConstColors.paleBlue,
         shape = RoundedCornerShape(5.dp),
         onClick = onClick,
         modifier = Modifier.padding(4.dp),
@@ -295,33 +336,37 @@ fun RoundString(option: String, onClick: () -> Unit) {
     }
 }
 
+@ExperimentalComposeUiApi
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun BaseItem(
+    index: Int,
     item: InStoreProduct,
     headerContent: @Composable RowScope.() -> Unit,
     mainBodyContent: @Composable ColumnScope.() -> Unit,
     qtyInitial: Double,
     freeQtyInitial: Double,
-    canAddToCart: Boolean,
     promotionData: PromotionData? = null,
-    forceMode: BottomSectionMode? = null,
+    state: LazyListState? = null,
     onItemClick: () -> Unit,
+    addToCart: InStoreProductsScope
 ) {
     val qty = remember { mutableStateOf(qtyInitial) }
     val freeQty = remember { mutableStateOf(freeQtyInitial) }
-    val mode = remember {
-        mutableStateOf(
-            forceMode
-                ?: if (qtyInitial > 0 || freeQtyInitial > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart
-        )
-    }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val coroutineScope = rememberCoroutineScope()
 
-    Space(4.dp)
+    val showButton = remember {
+        mutableStateOf(false)
+    }
+    Space(12.dp)
     Surface(
         color = Color.White,
-        shape = MaterialTheme.shapes.medium,
+        shape = RoundedCornerShape(10.dp),
+        border = BorderStroke(1.dp, ConstColors.separator),
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        onClick = onItemClick
     ) {
         Box {
             promotionData?.let {
@@ -344,63 +389,13 @@ private fun BaseItem(
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) { headerContent() }
-                Space(13.dp)
-                when (mode.value) {
-                    BottomSectionMode.AddToCart, BottomSectionMode.Select, BottomSectionMode.Update -> mainBodyContent()
-                    BottomSectionMode.ConfirmQty -> Column(horizontalAlignment = Alignment.End) {
-                        val isError =
-                            (qty.value + freeQty.value) % 1 != 0.0 || freeQty.value > qty.value
-                        val wasError = remember { mutableStateOf(isError) }
-                        val wasErrorSaved = wasError.value
-                        val focusedError = remember(mode.value) { mutableStateOf(-1) }
-                        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                            Box(modifier = Modifier.width(maxWidth / 3)) {
-                                EditField(
-                                    label = stringResource(id = R.string.qty),
-                                    qty = qty.value.toString(),
-                                    isError = isError && focusedError.value == 0,
-                                    onChange = { qty.value = it.toDouble() },
-                                    onFocus = {
-                                        if (!wasErrorSaved && isError) focusedError.value = 0
-                                    },
-                                )
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .width(maxWidth / 3)
-                                    .align(Alignment.BottomEnd)
-                            ) {
-                                EditField(
-                                    label = stringResource(id = R.string.free),
-                                    isEnabled = qty.value > 0.0,
-                                    isError = isError && focusedError.value == 1,
-                                    qty = freeQty.value.toString(),
-                                    onChange = { freeQty.value = it.toDouble() },
-                                    onFocus = {
-                                        if (!wasErrorSaved && isError) focusedError.value = 1
-                                    },
-                                )
-                            }
-                        }
-                        if (isError) {
-                            Space(8.dp)
-                            Text(
-                                text = stringResource(id = if (freeQty.value > qty.value) R.string.free_more_qty else R.string.invalid_qty),
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.W500,
-                                color = ConstColors.red,
-                            )
-                        }
-                        wasError.value = isError
-                    }
-                }
+                mainBodyContent()
                 Space(10.dp)
                 Divider(color = ConstColors.ltgray)
                 Space(10.dp)
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 50.dp),
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -411,38 +406,259 @@ private fun BaseItem(
                             .fillMaxWidth()
                             .weight(1f)
                     ) {
-                        Image(
-                            modifier = Modifier
-                                .size(20.dp),
-                            painter = painterResource(R.drawable.ic_grey_cart),
-                            contentDescription = null,
+                        Text(
+                            text = 0.0.toString(),
+                            color = MaterialTheme.colors.background,
+                            fontSize = 14.sp
                         )
-                        Space(dp = 3.dp)
-                        Text(text = "View Stockist", color = Color.Gray, fontSize = 12.sp)
+                        Text(
+                            text = stringResource(id = R.string.quantity),
+                            color = MaterialTheme.colors.background,
+                            fontSize = 12.sp
+                        )
                     }
-                    Space(dp = 10.dp)
                     Column(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f)
-                            .clickable {
-                                onItemClick
-                            },
                     ) {
-                        Image(
-                            modifier = Modifier
-                                .size(20.dp),
-                            painter = painterResource(R.drawable.ic_cart),
-                            contentDescription = null,
+                        Text(
+                            text = 0.0.toString(),
+                            color = MaterialTheme.colors.background,
+                            fontSize = 14.sp
                         )
-                        Space(dp = 3.dp)
-                        Text(text = "Add to Cart", color = Color.Gray, fontSize = 12.sp)
+                        Text(
+                            text = stringResource(id = R.string.free),
+                            color = MaterialTheme.colors.background,
+                            fontSize = 12.sp
+                        )
+                    }
+
+
+                    val qtyValue = qty.value
+                    if (!showButton.value) {
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                                .clickable {
+                                    if (qtyValue > 0.0)
+                                        showButton.value = true
+                                },
+                        ) {
+                            Icon(
+                                modifier = Modifier
+                                    .size(20.dp),
+                                painter = painterResource(R.drawable.ic_add_to_cart_instore),
+                                contentDescription = null,
+                                tint = if (qtyValue > 0.0) {
+                                    ConstColors.lightBlue
+                                } else {
+                                    ConstColors.gray
+                                }
+                            )
+                            Space(dp = 3.dp)
+                            Text(
+                                text = stringResource(id = R.string.add_to_cart),
+                                color = if (qtyValue > 0.0) {
+                                    ConstColors.lightBlue
+                                } else {
+                                    ConstColors.gray
+                                },
+                                fontSize = 12.sp,
+                            )
+                        }
+                    }
+                }
+                if (showButton.value) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(all = 8.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            /*.focusRequester(focusRequester)*/
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.Bottom,
+                        ) {
+                            Box(modifier = Modifier.width(120.dp)) {
+                                Column {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(bottom = 4.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = stringResource(id = R.string.qty).uppercase(),
+                                            color = ConstColors.gray,
+                                            fontSize = 12.sp,
+                                        )
+
+                                        val wasQty = remember {
+                                            mutableStateOf(
+                                                if (qty.value.toString().split(".")
+                                                        .lastOrNull() == "0"
+                                                ) qty.value.toString().split(".")
+                                                    .first() else qty.value.toString()
+                                            )
+                                        }
+
+                                        BasicTextField(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .onFocusEvent {
+                                                    if (it.isFocused) coroutineScope.launch {
+                                                        state?.animateScrollToItem(index = index)
+                                                    }
+                                                },
+                                            value = TextFieldValue(
+                                                wasQty.value,
+                                                selection = TextRange(wasQty.value.length)
+                                            ),
+                                            onValueChange = {
+                                                val split =
+                                                    it.text.replace(",", ".").split(".")
+                                                val beforeDot = split[0]
+                                                val afterDot = split.getOrNull(1)
+                                                var modBefore =
+                                                    beforeDot.toIntOrNull() ?: 0
+                                                val modAfter = when (afterDot?.length) {
+                                                    0 -> "."
+                                                    in 1..Int.MAX_VALUE -> when (afterDot!!.take(
+                                                        1
+                                                    ).toIntOrNull()) {
+                                                        0 -> ".0"
+                                                        in 1..4 -> ".0"
+                                                        5 -> ".5"
+                                                        in 6..9 -> {
+                                                            modBefore++
+                                                            ".0"
+                                                        }
+                                                        null -> ""
+                                                        else -> throw UnsupportedOperationException(
+                                                            "cant be that"
+                                                        )
+                                                    }
+                                                    null -> ""
+                                                    else -> throw UnsupportedOperationException(
+                                                        "cant be that"
+                                                    )
+                                                }
+                                                wasQty.value = "$modBefore$modAfter"
+                                                qty.value = wasQty.value.toDouble()
+                                                freeQty.value = checkOffer(
+                                                    item.promotionData,
+                                                    wasQty.value.toDouble()
+                                                )
+                                            },
+                                            keyboardOptions = KeyboardOptions.Default.copy(
+                                                keyboardType = KeyboardType.Number,
+                                                imeAction = ImeAction.Done
+                                            ),
+                                            maxLines = 1,
+                                            singleLine = true,
+                                            readOnly = false,
+                                            enabled = true,
+                                            keyboardActions = KeyboardActions(onDone = {
+                                                keyboardController?.hide()
+                                            }),
+                                            textStyle = TextStyle(
+                                                color = MaterialTheme.colors.background,
+                                                fontSize = 20.sp,
+                                                fontWeight = FontWeight.W700,
+                                                textAlign = TextAlign.End,
+                                            )
+                                        )
+                                    }
+                                    Divider(
+                                        color = MaterialTheme.colors.background,
+                                        thickness = 1.5.dp
+                                    )
+                                }
+                            }
+                            Box(modifier = Modifier.width(120.dp)) {
+                                Column {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(bottom = 4.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = stringResource(id = R.string.free).uppercase(),
+                                            color = ConstColors.gray,
+                                            fontSize = 12.sp,
+                                        )
+                                        Text(
+                                            text = freeQty.value.toString(),
+                                            color = MaterialTheme.colors.background,
+                                            fontWeight = FontWeight.W700,
+                                            fontSize = 20.sp,
+                                        )
+                                    }
+
+                                    Divider(
+                                        color = MaterialTheme.colors.background,
+                                        thickness = 1.5.dp
+                                    )
+                                }
+                            }
+                        }
+                        Space(dp = 8.dp)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.Bottom,
+                        ) {
+
+                            Box(modifier = Modifier.width(120.dp)) {
+                                MedicoRoundButton(
+                                    text = stringResource(id = R.string.cancel),
+                                    isEnabled = true,
+                                    height = 32.dp,
+                                    elevation = null,
+                                    onClick = {
+                                        showButton.value = false
+                                    },
+                                    textSize = 12.sp,
+                                    color = ConstColors.ltgray,
+                                    contentColor = MaterialTheme.colors.background
+                                )
+                            }
+                            Box(modifier = Modifier.width(120.dp)) {
+                                MedicoRoundButton(
+                                    text = stringResource(id = R.string.add_to_cart),
+                                    isEnabled = true,
+                                    height = 32.dp,
+                                    elevation = null,
+                                    onClick = {
+                                        showButton.value = false
+                                        addToCart.addToCart(
+                                            item.code,
+                                            item.spid,
+                                            qty.value,
+                                            freeQty.value
+                                        )
+                                    },
+                                    textSize = 12.sp,
+                                    color = ConstColors.yellow,
+                                    contentColor = MaterialTheme.colors.background
+                                )
+                            }
+                        }
                     }
                 }
             }
+            Space(4.dp)
         }
-        Space(4.dp)
     }
 }
