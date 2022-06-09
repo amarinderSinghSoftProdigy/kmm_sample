@@ -30,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.RemoveRedEye
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +40,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Start
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -70,7 +73,6 @@ import com.zealsoftsol.medico.screens.common.stringResourceByName
 fun AuthScreen(scope: LogInScope) {
 
     val showLoginView = remember { mutableStateOf(false) }
-    val showCredentialError = scope.showCredentialError.flow.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -84,7 +86,7 @@ fun AuthScreen(scope: LogInScope) {
             enter = slideInVertically(
                 initialOffsetY = { 300 },
                 animationSpec = tween(
-                    durationMillis = 250,
+                    durationMillis = 200,
                 )
             ),
             exit = slideOutVertically(
@@ -111,7 +113,7 @@ fun AuthScreen(scope: LogInScope) {
             PreAuthTab(scope, showLoginView)
         }
 
-        if(scope.showToast.flow.collectAsState().value) {
+        if (scope.showToast.flow.collectAsState().value) {
             ShowToastGlobal(msg = stringResourceByName(name = scope.errorCode.flow.collectAsState().value))
             scope.hideErrorToast()
         }
@@ -189,6 +191,11 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
     val isValidPhone = scope.isValidPhone(credentialsState.value.phoneNumberOrEmail)
     val isValidPassword = scope.isValidPassword(credentialsState.value.password)
     val showCredentialError = scope.showCredentialError.flow.collectAsState()
+    val focusRequester = FocusRequester()
+    LaunchedEffect(true) {
+        focusRequester.requestFocus()
+    }
+
 
     Column(
         modifier = Modifier
@@ -204,17 +211,35 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
                 modifier = Modifier.padding(horizontal = 20.dp),
             ) {
                 Space(20.dp)
-                Text(
-                    modifier = Modifier.align(Start),
-                    text = stringResource(id = R.string.log_in),
-                    color = MaterialTheme.colors.background,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.W900,
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.log_in),
+                        color = MaterialTheme.colors.background,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.W900,
+                    )
+
+                    Text(
+                        text = stringResource(id = R.string.forgot_password),
+                        color = ConstColors.lightBlue,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.W700,
+                        modifier = Modifier
+                            .clickable { scope.goToForgetPassword() },
+                    )
+                }
                 Space(25.dp)
                 val formatted = credentialsState.value.phoneNumberOrEmail
                 OutlinedInputField(
-                    modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
+                    modifier = Modifier
+                        .scrollOnFocus(scrollState, coroutineScope)
+                        .focusRequester(
+                            focusRequester
+                        ),
                     hint = stringResource(id = R.string.phone_number),
                     text = if (formatted.isDigitsOnly()) formatted else "",
                     isValid = isValidPhone && !showCredentialError.value,
@@ -233,6 +258,16 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
                         keyboardType = KeyboardType.Number,
                     ),
                 )
+                if (!isValidPhone) {
+                    Space(10.dp)
+                    Text(
+                        modifier = Modifier.align(Start),
+                        text = stringResource(id = R.string.phone_validation),
+                        color = ConstColors.lightBlue,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.W500
+                    )
+                }
                 Space(12.dp)
                 Box(
                     contentAlignment = Alignment.CenterEnd,
@@ -266,16 +301,16 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
                             .padding(12.dp),
                     )
                 }
-                Space(8.dp)
-                Text(
-                    text = stringResource(id = R.string.forgot_password),
-                    color = MaterialTheme.colors.background,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.W700,
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .clickable { scope.goToForgetPassword() },
-                )
+                if (!isValidPassword) {
+                    Space(10.dp)
+                    Text(
+                        modifier = Modifier.align(Start),
+                        text = stringResource(id = R.string.password_requirement),
+                        color = ConstColors.lightBlue,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.W500
+                    )
+                }
                 Space(25.dp)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -284,12 +319,15 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
                 ) {
                     Text(
                         text = stringResource(id = R.string.cancel),
-                        color = MaterialTheme.colors.background,
+                        color = ConstColors.lightBlue,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.W700,
                         modifier = Modifier
                             .weight(1f)
-                            .clickable { showLoginView.value = false },
+                            .clickable {
+                                keyboardController?.hide()
+                                showLoginView.value = false
+                            },
                     )
                     Space(20.dp)
                     MedicoButton(
@@ -302,7 +340,7 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
                         txtColor = MaterialTheme.colors.background,
                     )
                 }
-                Space(36.dp)
+                Space(24.dp)
             }
         }
     }
