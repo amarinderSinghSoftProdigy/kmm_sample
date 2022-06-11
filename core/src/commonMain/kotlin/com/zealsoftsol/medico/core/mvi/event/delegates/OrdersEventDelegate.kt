@@ -214,7 +214,11 @@ internal class OrdersEventDelegate(
     private suspend fun selectOrder(orderId: String, type: OrderType) {
         navigator.withScope<Scopable> {
             withProgress {
-                networkOrdersScope.getOrder(if (type == OrderType.TAX_ORDER) OrderType.PURCHASE_ORDER else type, userRepo.requireUser().unitCode, orderId)
+                networkOrdersScope.getOrder(
+                    if (type == OrderType.TAX_ORDER) OrderType.PURCHASE_ORDER else type,
+                    userRepo.requireUser().unitCode,
+                    orderId
+                )
             }.onSuccess { body ->
                 setScope(
                     ViewOrderScope(
@@ -225,7 +229,8 @@ internal class OrdersEventDelegate(
                         b2bData = DataSource(body.unitData.data),
                         entries = DataSource(body.entries),
                         declineReason = DataSource(body.declineReasons),
-                        userType = userRepo.requireUser().type
+                        userType = userRepo.requireUser().type,
+                        orderTypeInfo = DataSource(body.orderTypeInfo)
                     )
                 )
             }.onError(navigator)
@@ -306,6 +311,7 @@ internal class OrdersEventDelegate(
                             acceptedEntries = emptyList(),
                             rejectedEntries = it.entries.value,
                             declineReason = it.declineReason,
+                            orderTypeInfo = it.orderTypeInfo
                         )
                     } else {
                         it.notifications.value = ViewOrderScope.RejectAll(action)
@@ -320,7 +326,8 @@ internal class OrdersEventDelegate(
                             order = it.order,
                             acceptedEntries = it.entries.value,
                             rejectedEntries = emptyList(),
-                            declineReason = it.declineReason
+                            declineReason = it.declineReason,
+                            orderTypeInfo = it.orderTypeInfo
                         )
                     } else {
                         it.notifications.value = ViewOrderScope.ServeQuotedProduct(action)
@@ -335,7 +342,8 @@ internal class OrdersEventDelegate(
                             order = it.order,
                             acceptedEntries = it.checkedEntries.value,
                             rejectedEntries = it.entries.value - it.checkedEntries.value,
-                            declineReason = it.declineReason
+                            declineReason = it.declineReason,
+                            orderTypeInfo = it.orderTypeInfo
                         )
                     } else {
                         it.notifications.value = ViewOrderScope.ServeQuotedProduct(action)
