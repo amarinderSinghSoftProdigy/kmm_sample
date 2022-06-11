@@ -286,6 +286,10 @@ private fun ShowRetailerAndHospitalDashboard(
                     }
                 }
             }
+            Space(16.dp)
+
+            RewardsAndCashback(scope)
+
             Space(dp = 16.dp)
             if (!deals.value.isNullOrEmpty()) {
                 Column(
@@ -378,6 +382,102 @@ private fun ShowRetailerAndHospitalDashboard(
                             CategoriesItem(it[index], scope, modifier = Modifier.width(itemSize))
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * rewards and cashback view
+ */
+@Composable
+fun RewardsAndCashback(scope: DashboardScope){
+    Column(
+        modifier = Modifier
+            .background(Color.White)
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = stringResource(id = R.string.rewards_cashback),
+                color = ConstColors.lightBlue,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+            )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier.clickable {
+                    scope.sendEvent(Event.Transition.Rewards)
+                }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_eye),
+                    contentDescription = null,
+                    tint = ConstColors.lightBlue,
+                    modifier = Modifier.size(20.dp)
+                )
+                Text(
+                    text = stringResource(id = R.string.view_all),
+                    color = ConstColors.lightBlue,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.W600,
+                    modifier = Modifier
+                        .padding(horizontal = 3.dp)
+                        .padding(end = 16.dp),
+                )
+            }
+        }
+        Space(dp = 16.dp)
+
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(180.dp),
+            elevation = 5.dp
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_rewards_header),
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier
+                    .height(180.dp)
+                    .fillMaxWidth()
+            )
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Image(
+                    modifier = Modifier
+                        .size(150.dp),
+                    painter = painterResource(id = R.drawable.img_offer_bg),
+                    contentDescription = null
+                )
+
+                Column(horizontalAlignment = CenterHorizontally) {
+                    Text(
+                        text = stringResource(id = R.string.rewards_cashback),
+                        color = Color.Black,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.W800
+                    )
+                    Space(8.dp)
+                    Text(
+                        textAlign = TextAlign.Center,
+                        text = stringResource(id = R.string.cashback_details),
+                        color = Color.Black,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W500
+                    )
                 }
             }
         }
@@ -705,6 +805,7 @@ private fun CategoriesItem(item: BrandsData, scope: DashboardScope, modifier: Mo
     }
 }
 
+
 /**
  * show user type specific to stockist only
  */
@@ -891,6 +992,11 @@ private fun ShowStockistDashBoard(
                 }
             }
         }
+
+        Space(16.dp)
+
+       RewardsAndCashback(scope)
+
         Space(16.dp)
 
         Column(
@@ -1344,6 +1450,12 @@ fun ShowStockistEmployeeDashboard(scope: DashboardScope) {
                     }
                 }
             }
+
+            Space(16.dp)
+
+            RewardsAndCashback(scope)
+
+            Space(dp = 16.dp)
         }
     }
 }
