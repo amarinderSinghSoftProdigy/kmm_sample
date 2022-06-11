@@ -46,6 +46,7 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.data.DateRange
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderStatus
@@ -297,6 +298,41 @@ private fun OrderItem(order: Order, onClick: () -> Unit) {
                     fontWeight = FontWeight.W500,
                     fontSize = 12.sp,
                 )
+            }
+            Space(4.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(ConstColors.gray.copy(0.05f))
+                    .padding(horizontal = 8.dp, vertical = 6.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                if(order.orderTypeInfo.type.formatted.isNotEmpty()) {
+                    Text(
+                        text = order.orderTypeInfo.type.formatted,
+                        color = when (order.orderTypeInfo.type.formatted) {
+                            InventoryScope.StockStatus.ONLINE.title -> ConstColors.green
+                            InventoryScope.StockStatus.OFFLINE.title -> ConstColors.red
+                            else -> ConstColors.orange
+                        },
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W500,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                Space(10.dp)
+                if(order.orderTypeInfo.user.isNotEmpty()) {
+                    Text(
+                        text = order.orderTypeInfo.user,
+                        color = ConstColors.lightBlue,
+                        fontWeight = FontWeight.W500,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        fontSize = 14.sp,
+                    )
+                }
             }
         }
     }

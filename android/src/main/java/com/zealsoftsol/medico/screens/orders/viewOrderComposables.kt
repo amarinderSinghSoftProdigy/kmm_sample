@@ -54,8 +54,10 @@ import androidx.core.graphics.toColorInt
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.OrderEntry
+import com.zealsoftsol.medico.data.OrderTypeInfo
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.cart.OrderTotal
@@ -81,6 +83,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
     val openPaymentView = scope.showPaymentTypeOption.flow.collectAsState()
     val openEditDiscountView = scope.showEditDiscountOption.flow.collectAsState()
     val paymentMethod = scope.paymentType.flow.collectAsState()
+    val orderTypeInfo = scope.orderTypeInfo.flow.collectAsState()
 
     Box(
         modifier = Modifier
@@ -261,6 +264,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                             Space(16.dp)
                             entries.value.forEachIndexed { index, it ->
                                 OrderEntryItem(
+                                    orderTypeInfo = orderTypeInfo.value,
                                     showDetails = true,
                                     canEdit = scope.canEdit,
                                     entry = it,
@@ -506,7 +510,8 @@ fun OrderEntryItem(
     showDetails: Boolean = false,
     isConfirmOrderScope: Boolean = false,
     onBuyClick: () -> Unit,
-    userType: UserType? = null
+    userType: UserType? = null,
+    orderTypeInfo: OrderTypeInfo? = null,
 ) {
     Surface(
         elevation = 5.dp,
@@ -547,7 +552,7 @@ fun OrderEntryItem(
                         .padding(top = 4.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Column(modifier = Modifier.weight(.55f)) {
+                    Column(modifier = Modifier.weight(.40f)) {
                         Text(
                             text = entry.productName,
                             color = MaterialTheme.colors.background,
@@ -588,10 +593,27 @@ fun OrderEntryItem(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
+                        Space(8.dp)
+                        orderTypeInfo?.let {
+                            if (it.type.formatted.isNotEmpty()) {
+                                Text(
+                                    text = it.type.formatted,
+                                    color = when (it.type.formatted) {
+                                        InventoryScope.StockStatus.ONLINE.title -> ConstColors.green
+                                        InventoryScope.StockStatus.OFFLINE.title -> ConstColors.red
+                                        else -> ConstColors.orange
+                                    },
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.W500,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            }
+                        }
                     }
                     Column(
                         modifier = Modifier
-                            .weight(.45f)
+                            .weight(.60f)
                             .padding(end = 10.dp),
                         horizontalAlignment = Alignment.End,
                     ) {
@@ -662,8 +684,21 @@ fun OrderEntryItem(
                                 )
                             }
                         }
-
+                        Space(8.dp)
+                        orderTypeInfo?.let {
+                            if (orderTypeInfo.user.isNotEmpty()) {
+                                Text(
+                                    text = orderTypeInfo.user,
+                                    color = ConstColors.lightBlue,
+                                    fontWeight = FontWeight.W500,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    fontSize = 14.sp,
+                                )
+                            }
+                        }
                     }
+
                     if (canEdit) {
                         if (showDetails) {
                             Image(
