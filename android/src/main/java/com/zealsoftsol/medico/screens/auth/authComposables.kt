@@ -193,8 +193,18 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
     val isValidPhone = scope.isValidPhone(credentialsState.value.phoneNumberOrEmail)
     val isValidPassword = scope.isValidPassword(credentialsState.value.password)
     val showCredentialError = scope.showCredentialError.flow.collectAsState()
+    val showMobileError = remember { mutableStateOf(false) }
+    val showPassError = remember { mutableStateOf(false) }
     val focusRequester = FocusRequester()
     val focusManager = LocalFocusManager.current
+
+    if(showCredentialError.value){
+        showMobileError.value = true
+        showPassError.value = true
+    }else{
+        showMobileError.value = false
+        showPassError.value = false
+    }
 
     LaunchedEffect(true) {
         focusRequester.requestFocus()
@@ -229,7 +239,7 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
 
                     Text(
                         text = stringResource(id = R.string.forgot_password),
-                        color = ConstColors.lightBlue,
+                        color = MaterialTheme.colors.background,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.W700,
                         modifier = Modifier
@@ -246,7 +256,7 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
                         ),
                     hint = stringResource(id = R.string.phone_number),
                     text = if (formatted.isDigitsOnly()) formatted else "",
-                    isValid = isValidPhone && !showCredentialError.value,
+                    isValid = !showMobileError.value,
                     maxLines = 1,
                     onValueChange = {
                         if (it.isDigitsOnly()) {
@@ -255,6 +265,7 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
                                 credentialsState.value.password
                             )
                         }
+                        showMobileError.value = false
                     },
                     keyboardActions = KeyboardActions(onNext = {
                         focusManager.moveFocus(
@@ -266,16 +277,6 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
                         keyboardType = KeyboardType.Number,
                     ),
                 )
-                if (!isValidPhone) {
-                    Space(10.dp)
-                    Text(
-                        modifier = Modifier.align(Start),
-                        text = stringResource(id = R.string.phone_validation),
-                        color = ConstColors.lightBlue,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.W500
-                    )
-                }
                 Space(12.dp)
                 Box(
                     contentAlignment = Alignment.CenterEnd,
@@ -285,7 +286,7 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
                         modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                         hint = stringResource(id = R.string.password),
                         text = credentialsState.value.password,
-                        isValid = isValidPassword && !showCredentialError.value,
+                        isValid = !showPassError.value,
                         visualTransformation = if (isPasswordHidden.value) PasswordVisualTransformation() else VisualTransformation.None,
                         maxLines = 1,
                         onValueChange = {
@@ -293,6 +294,8 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
                                 credentialsState.value.phoneNumberOrEmail,
                                 it
                             )
+                            showPassError.value = false
+
                         },
                         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                         keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
@@ -310,16 +313,14 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
                             .padding(12.dp),
                     )
                 }
-                if (!isValidPassword) {
-                    Space(10.dp)
-                    Text(
-                        modifier = Modifier.align(Start),
-                        text = stringResource(id = R.string.password_requirement),
-                        color = ConstColors.lightBlue,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.W500
-                    )
-                }
+                Space(10.dp)
+                Text(
+                    modifier = Modifier.align(Start),
+                    text = stringResource(id = R.string.password_requirement),
+                    color = if (showPassError.value && !showCredentialError.value) ConstColors.red else MaterialTheme.colors.background,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.W500
+                )
                 Space(25.dp)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -328,7 +329,7 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
                 ) {
                     Text(
                         text = stringResource(id = R.string.cancel),
-                        color = ConstColors.lightBlue,
+                        color = MaterialTheme.colors.background,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.W700,
                         modifier = Modifier
@@ -342,10 +343,22 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
                     MedicoButton(
                         modifier = Modifier.weight(1f),
                         text = stringResource(id = R.string.log_in),
-                        isEnabled = isValidPhone && isValidPassword && credentialsState.value.phoneNumberOrEmail.isNotEmpty() &&
-                                credentialsState.value.password.isNotEmpty(),
+                        isEnabled = true,
                         elevation = null,
-                        onClick = { scope.tryLogIn() },
+                        onClick = {
+                            if (isValidPhone && isValidPassword && credentialsState.value.phoneNumberOrEmail.isNotEmpty() &&
+                                credentialsState.value.password.isNotEmpty()
+                            ) {
+                                scope.tryLogIn()
+                            } else {
+                                if (!isValidPassword) {
+                                    showPassError.value = true
+                                }
+                                if (!isValidPhone) {
+                                    showMobileError.value = true
+                                }
+                            }
+                        },
                         txtColor = MaterialTheme.colors.background,
                     )
                 }

@@ -47,16 +47,10 @@ class LogInScope(
     }
 
     fun isValidPhone(phone: String): Boolean {
-        if (phone.isEmpty()) {
-            return true
-        }
         return phone.length == 10
     }
 
     fun isValidPassword(str: String): Boolean {
-        if (str.isEmpty()) {
-            return true
-        }
         val regex = ("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$")
         val p = regex.toRegex()
         return p.matches(str) && str.length >= 8
