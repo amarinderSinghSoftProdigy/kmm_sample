@@ -6,7 +6,6 @@ import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreSellerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
 import com.zealsoftsol.medico.core.mvi.withProgress
@@ -104,7 +103,11 @@ internal class AuthEventDelegate(
                             //}
                         )
                     }.onError(navigator)
-            }.onError(navigator)
+            }.onError{ error ->
+                it.errorCode.value = error.body
+                it.showCredentialError.value = true
+                it.showToast.value = true
+            }
         }
     }
 
