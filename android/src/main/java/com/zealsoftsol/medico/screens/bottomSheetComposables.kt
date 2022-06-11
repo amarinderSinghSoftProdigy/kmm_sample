@@ -2964,9 +2964,7 @@ private fun NonSeasonBoyPreviewItem(
                     Row {
                         BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                             Box(modifier = Modifier.width(maxWidth / 2)) {
-                                entityInfo.gstin?.let {
-                                    SingleTextLabel(data = it)
-                                }
+                                SingleTextLabel(data = entityInfo.gstin)
                             }
                             Box(
                                 modifier = Modifier
@@ -2975,9 +2973,7 @@ private fun NonSeasonBoyPreviewItem(
                                 contentAlignment = Alignment.BottomEnd
                             ) {
 
-                                entityInfo.panNumber?.let {
-                                    SingleTextLabel(data = it)
-                                }
+                                SingleTextLabel(data = entityInfo.panNumber)
                             }
                         }
                     }
@@ -3008,25 +3004,19 @@ private fun NonSeasonBoyPreviewItem(
                     Space(4.dp)
                     Divider(thickness = 0.3.dp)
                     Space(4.dp)
-                    entityInfo.drugLicenseNo1?.let {
-                        DataWithLabel(label = R.string.dl_one, data = it, size = 12.sp)
-                    }
+                    DataWithLabel(label = R.string.dl_one, data = entityInfo.drugLicenseNo1, size = 12.sp)
                     Space(4.dp)
                     Divider(thickness = 0.3.dp)
                     Space(4.dp)
-                    entityInfo.drugLicenseNo2?.let {
-                        DataWithLabel(label = R.string.dl_two, data = it, size = 12.sp)
-                    }
+                    DataWithLabel(label = R.string.dl_two, data = entityInfo.drugLicenseNo2, size = 12.sp)
                     Space(4.dp)
                     Row {
                         BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                             Box(modifier = Modifier.width(maxWidth / 2)) {
-                                entityInfo.dlExpiryDate?.let {
-                                    DataWithLabel(
-                                        label = R.string.expiry,
-                                        data = it.formatted, size = 12.sp
-                                    )
-                                }
+                                DataWithLabel(
+                                    label = R.string.expiry,
+                                    data = entityInfo.dlExpiryDate.formatted, size = 12.sp
+                                )
                             }
                             Box(
                                 modifier = Modifier
@@ -3035,13 +3025,11 @@ private fun NonSeasonBoyPreviewItem(
                                 contentAlignment = Alignment.BottomEnd
                             ) {
 
-                                entityInfo.dlExpiresIn?.let {
-                                    DataWithLabel(
-                                        label = R.string.expires_in,
-                                        data = it,
-                                        size = 12.sp
-                                    )
-                                }
+                                DataWithLabel(
+                                    label = R.string.expires_in,
+                                    data = entityInfo.dlExpiresIn,
+                                    size = 12.sp
+                                )
                             }
                         }
                     }
@@ -3055,12 +3043,10 @@ private fun NonSeasonBoyPreviewItem(
                     Row {
                         BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                             Box(modifier = Modifier.width(maxWidth / 2)) {
-                                entityInfo.flExpiryDate?.let {
-                                    DataWithLabel(
-                                        label = R.string.fl_expiry,
-                                        data = it.formatted, size = 12.sp
-                                    )
-                                }
+                                DataWithLabel(
+                                    label = R.string.fl_expiry,
+                                    data = entityInfo.flExpiryDate.formatted, size = 12.sp
+                                )
                             }
                             Box(
                                 modifier = Modifier
@@ -3069,13 +3055,11 @@ private fun NonSeasonBoyPreviewItem(
                                 contentAlignment = Alignment.BottomEnd
                             ) {
 
-                                entityInfo.flExpiresIn?.let {
-                                    DataWithLabel(
-                                        label = R.string.expires_in,
-                                        data = it,
-                                        size = 12.sp
-                                    )
-                                }
+                                DataWithLabel(
+                                    label = R.string.expires_in,
+                                    data = entityInfo.flExpiresIn,
+                                    size = 12.sp
+                                )
                             }
                         }
                     }
@@ -3083,20 +3067,16 @@ private fun NonSeasonBoyPreviewItem(
                 }
                 entityInfo.seasonBoyRetailerData != null -> entityInfo.seasonBoyRetailerData?.let { data ->
                     Row {
-                        entityInfo.gstin?.let {
-                            Text(
-                                text = it,
-                                fontSize = 12.sp,
-                                color = MaterialTheme.colors.background,
-                            )
-                        }
-                        entityInfo.panNumber?.let {
-                            Text(
-                                text = it,
-                                fontSize = 12.sp,
-                                color = MaterialTheme.colors.background,
-                            )
-                        }
+                        Text(
+                            text = entityInfo.gstin,
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colors.background,
+                        )
+                        Text(
+                            text = entityInfo.panNumber,
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colors.background,
+                        )
                     }
                     DataWithLabel(
                         label = R.string.orders,
@@ -3108,13 +3088,11 @@ private fun NonSeasonBoyPreviewItem(
                         Row {
                             BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                                 Box(modifier = Modifier.width(maxWidth / 2)) {
-                                    entityInfo.gstin?.let {
-                                        Text(
-                                            text = it,
-                                            fontSize = 12.sp,
-                                            color = MaterialTheme.colors.background,
-                                        )
-                                    }
+                                    Text(
+                                        text = entityInfo.gstin,
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colors.background,
+                                    )
                                 }
                                 Box(
                                     modifier = Modifier
@@ -3122,42 +3100,29 @@ private fun NonSeasonBoyPreviewItem(
                                         .align(Alignment.BottomEnd),
                                     contentAlignment = Alignment.BottomEnd
                                 ) {
-                                    entityInfo.panNumber?.let {
-                                        Text(
-                                            text = it,
-                                            fontSize = 12.sp,
-                                            color = MaterialTheme.colors.background,
-                                        )
-                                    }
+                                    Text(
+                                        text = entityInfo.panNumber,
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colors.background,
+                                    )
                                 }
                             }
                         }
-                        Row {
-                            BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                                Box(modifier = Modifier.width(maxWidth / 2)) {
-                                    entityInfo.drugLicenseNo1?.let {
-                                        Text(
-                                            text = "${stringResource(id = R.string.dl_one)}:${it}",
-                                            fontSize = 12.sp,
-                                            color = MaterialTheme.colors.background,
-                                        )
-                                    }
-                                }
-                                Box(
-                                    modifier = Modifier
-                                        .width(maxWidth / 2)
-                                        .align(Alignment.BottomEnd),
-                                    contentAlignment = Alignment.BottomEnd
-                                ) {
-                                    entityInfo.drugLicenseNo2?.let {
-                                        Text(
-                                            text = "${stringResource(id = R.string.dl_two)}:${it}",
-                                            fontSize = 12.sp,
-                                            color = MaterialTheme.colors.background,
-                                        )
-                                    }
-                                }
-                            }
+                        Column {
+                            Text(
+                                text = "${stringResource(id = R.string.dl_one)}:${entityInfo.drugLicenseNo1}",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colors.background,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(
+                                text = "${stringResource(id = R.string.dl_two)}:${entityInfo.drugLicenseNo2}",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colors.background,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
                     }
                 }
