@@ -44,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -1069,15 +1070,16 @@ private fun StoreHeader(
                     },
                 )
         )
-        Box(modifier = Modifier.weight(0.75f)) {
+        Box(modifier = Modifier.weight(0.80f)) {
             Surface(modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 12.dp)
-                .background(Color.White, RoundedCornerShape(8.dp)),
-                border = BorderStroke(1.dp, ConstColors.ltgray),
+                .padding(start = 12.dp),
+                color = Color.White,
+                shape = RoundedCornerShape(3.dp),
+                elevation = 5.dp,
                 onClick = { info.openBottomSheet() }) {
                 Row(
-                    modifier = Modifier.padding(all = 8.dp),
+                    modifier = Modifier.padding(all = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
@@ -1100,10 +1102,11 @@ private fun StoreHeader(
                 modifier = Modifier
                     .padding(end = 12.dp)
                     .align(Alignment.CenterEnd),
+                color = Color.White
             ) {
                 Icon(
-                    modifier = Modifier.size(16.dp),
-                    painter = painterResource(id = R.drawable.ic_down_arrow),
+                    modifier = Modifier.size(14.dp).rotate(90f),
+                    painter = painterResource(id = R.drawable.ic_arrow_right),
                     contentDescription = null,
                 )
             }
