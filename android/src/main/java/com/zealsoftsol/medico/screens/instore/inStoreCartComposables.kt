@@ -3,7 +3,6 @@ package com.zealsoftsol.medico.screens.instore
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -23,7 +22,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -458,8 +456,6 @@ private fun BaseCartItem(
             }
         }
         Space(10.dp)
-        Divider(color = ConstColors.ltgray)
-        Space(10.dp)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -479,9 +475,12 @@ private fun BaseCartItem(
                     )
                 }
                 BottomSectionMode.ConfirmQty -> {
-                    MedicoRoundButton(
+                    MedicoButton(
                         text = stringResource(id = R.string.cancel),
-                        color = ConstColors.ltgray,
+                        contentColor = MaterialTheme.colors.background,
+                        height = 35.dp,
+                        isEnabled = (qty.value + freeQty.value) % 1 == 0.0 && qty.value > 0.0 && qty.value >= freeQty.value,
+                        color = ConstColors.lightGrey,
                         onClick = {
                             mode.value =
                                 if (qtyInitial > 0 || freeQtyInitial > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart
@@ -495,8 +494,11 @@ private fun BaseCartItem(
                             .weight(0.4f)
                             .fillMaxWidth()
                     )
-                    MedicoRoundButton(
+                    MedicoButton(
                         text = stringResource(id = R.string.confirm),
+                        color = ConstColors.yellow,
+                        contentColor = MaterialTheme.colors.background,
+                        height = 35.dp,
                         isEnabled = (qty.value + freeQty.value) % 1 == 0.0 && qty.value > 0.0 && qty.value >= freeQty.value,
                         onClick = {
                             mode.value =
@@ -511,7 +513,7 @@ private fun BaseCartItem(
                         verticalAlignment = Alignment.Bottom,
                         modifier = Modifier.weight(2f),
                     ) {
-                        Text(
+                        /*Text(
                             text = stringResource(id = R.string.qty).uppercase(),
                             fontSize = 12.sp,
                             color = ConstColors.gray,
@@ -536,14 +538,16 @@ private fun BaseCartItem(
                                 )
                                 .border(1.dp, ConstColors.lightBlue, RoundedCornerShape(4.dp))
                                 .padding(horizontal = 4.dp, vertical = 2.dp),
-                        )
+                        )*/
                     }
-                    MedicoRoundButton(
+                    MedicoButton(
                         modifier = Modifier.weight(1.5f),
                         text = stringResource(id = R.string.update),
-                        color = ConstColors.lightBlue,
-                        contentColor = Color.White,
+                        color = ConstColors.yellow,
+                        contentColor = MaterialTheme.colors.background,
                         onClick = { mode.value = BottomSectionMode.ConfirmQty },
+                        isEnabled = true,
+                        height = 35.dp
                     )
                 }
             }
