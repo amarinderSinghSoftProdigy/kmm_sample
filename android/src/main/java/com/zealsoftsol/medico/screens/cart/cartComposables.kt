@@ -137,6 +137,7 @@ fun CartScreen(scope: CartScope) {
                     LazyColumn(
                         state = rememberLazyListState(),
                         contentPadding = PaddingValues(top = 6.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
                         modifier = Modifier.height(maxHeight - 80.dp),
                     ) {
                         items(
@@ -935,7 +936,7 @@ fun TextItemString(label: Int, count: String, txtColor: Color = MaterialTheme.co
 }
 
 @Composable
-private fun EmptyCart(onBack: () -> Unit) {
+fun EmptyCart(onBack: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier

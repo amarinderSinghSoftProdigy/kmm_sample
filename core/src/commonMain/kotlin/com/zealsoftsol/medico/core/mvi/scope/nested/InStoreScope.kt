@@ -16,26 +16,18 @@ import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.core.utils.trimInput
-import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.InStoreCart
 import com.zealsoftsol.medico.data.InStoreCartEntry
-import com.zealsoftsol.medico.data.InStoreOrder
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InStoreSeller
 import com.zealsoftsol.medico.data.InStoreUser
 import com.zealsoftsol.medico.data.InStoreUserRegistration
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PaymentMethod
-import com.zealsoftsol.medico.data.PriceInfo
-import com.zealsoftsol.medico.data.ProductSearch
-import com.zealsoftsol.medico.data.PromotionData
-import com.zealsoftsol.medico.data.SellerInfo
-import com.zealsoftsol.medico.data.StockInfo
 import com.zealsoftsol.medico.data.StoreSubmitResponse
 import com.zealsoftsol.medico.data.Total
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserV2
-import kotlinx.serialization.SerialName
 
 class InStoreSellerScope(
     val unreadNotifications: ReadOnlyDataSource<Int>?,
@@ -363,6 +355,8 @@ class InStoreCartScope(
     init {
         EventCollector.sendEvent(Event.Action.InStore.LoadCart)
     }
+
+    val isPreviewEnabled: DataSource<Boolean> = DataSource(false)
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo =
         TabBarInfo.InStoreProductTitle(name, address, phoneNumber)

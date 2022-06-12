@@ -159,7 +159,9 @@ data class InStoreCartEntry(
     val price: FormattedData<Double>,
     val totalPrice: FormattedData<Double>,
     val spid: String,
-    val standardUnit: String
+    val standardUnit: String,
+    val imageCode: String? = null,
+    val mrp: FormattedData<Double?>? = null
 )
 
 @Serializable
