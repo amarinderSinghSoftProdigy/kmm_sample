@@ -1,12 +1,10 @@
 package com.zealsoftsol.medico.screens.instore
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -75,11 +73,9 @@ import com.zealsoftsol.medico.screens.cart.TextItem
 import com.zealsoftsol.medico.screens.cart.TextItemString
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
-import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.management.checkOffer
-import com.zealsoftsol.medico.screens.product.BottomSectionMode
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
 import kotlinx.coroutines.launch
@@ -103,14 +99,26 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            TextItem(R.string.items, cart.value?.entries.orEmpty().size)
+            TextItem(
+                R.string.items,
+                cart.value?.entries.orEmpty().size,
+                txtColor = ConstColors.darkBlue
+            )
             TextItem(
                 R.string.qty,
-                cart.value?.entries.orEmpty().sumOf { it.quantity.value })
+                cart.value?.entries.orEmpty().sumOf { it.quantity.value },
+                txtColor = ConstColors.darkBlue
+            )
             TextItem(
                 R.string.free,
-                cart.value?.entries.orEmpty().sumOf { it.freeQty.value })
-            TextItemString(R.string.amount, cart.value?.total?.formattedPrice.orEmpty())
+                cart.value?.entries.orEmpty().sumOf { it.freeQty.value },
+                txtColor = ConstColors.darkBlue
+            )
+            TextItemString(
+                R.string.amount,
+                cart.value?.total?.formattedPrice.orEmpty(),
+                txtColor = ConstColors.darkBlue
+            )
             MedicoRoundButton(
                 text = stringResource(id = R.string.view_order),
                 wrapTextSize = true,
@@ -119,18 +127,20 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
                 scope.goToInStoreCart()
             }
         }
-        Space(dp = 8.dp)
+        Space(8.dp)
+        Divider(thickness = (1.5).dp)
+        Space(dp = 10.dp)
         val search = scope.searchText.flow.collectAsState()
         BasicSearchBar(
             input = search.value,
             hint = R.string.search_products,
             searchBarEnd = SearchBarEnd.Eraser,
             icon = Icons.Default.Search,
-            elevation = 0.dp,
+            elevation = 3.dp,
             horizontalPadding = 16.dp,
             isSearchFocused = false,
             onSearch = { v, _ -> scope.search(v) },
-            backgroundColor = ConstColors.separator,
+            backgroundColor = ConstColors.lightBackground,
         )
         Space(dp = 4.dp)
         val items = scope.items.flow.collectAsState()
@@ -153,7 +163,7 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
                         ProductItem(
                             item,
                             { scope.selectItem(item) },
-                            { scope.selectImage(item.code) },
+                            { scope.selectImage(item.imageCode) },
                             scope, state = state, index
                         )
                         if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
@@ -193,12 +203,13 @@ private fun ProductItem(
                 color = ConstColors.separator,
                 shape = RoundedCornerShape(10.dp),
                 border = BorderStroke(1.dp, ConstColors.separator),
+                elevation = 3.dp
             ) {
                 CoilImage(
-                    src = CdnUrlProvider.urlFor(item.code, CdnUrlProvider.Size.Px320),
+                    src = CdnUrlProvider.urlFor(item.imageCode, CdnUrlProvider.Size.Px320),
                     modifier = Modifier
                         .clip(RoundedCornerShape(5.dp))
-                        .size(110.dp)
+                        .size(100.dp)
                         .clickable {
                             onImageClick()
                         },
@@ -207,13 +218,13 @@ private fun ProductItem(
                     isCrossFadeEnabled = false
                 )
             }
-            Space(dp = 10.dp)
+            Space(dp = 20.dp)
             Column {
                 Text(
                     text = item.name,
-                    color = MaterialTheme.colors.background,
-                    fontWeight = FontWeight.W600,
-                    fontSize = 14.sp,
+                    color = Color.Black,
+                    fontWeight = FontWeight.W500,
+                    fontSize = 15.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -225,16 +236,16 @@ private fun ProductItem(
                         append(item.priceInfo.price.formattedPrice)
                         addStyle(
                             SpanStyle(
-                                color = MaterialTheme.colors.background,
+                                color = Color.Black,
                                 fontWeight = FontWeight.W800
                             ),
                             startIndex,
                             length,
                         )
                     },
-                    color = ConstColors.gray,
+                    color = ConstColors.txtGrey,
                     fontWeight = FontWeight.W700,
-                    fontSize = 14.sp,
+                    fontSize = 15.sp,
                 )
                 Space(dp = 5.dp)
                 Text(
@@ -244,16 +255,16 @@ private fun ProductItem(
                         append(item.priceInfo.mrp.formattedPrice)
                         addStyle(
                             SpanStyle(
-                                color = MaterialTheme.colors.background,
+                                color = Color.Black,
                                 fontWeight = FontWeight.W800
                             ),
                             startIndex,
                             length,
                         )
                     },
-                    color = ConstColors.gray,
+                    color = ConstColors.txtGrey,
                     fontWeight = FontWeight.W700,
-                    fontSize = 14.sp,
+                    fontSize = 15.sp,
                 )
                 val labelColor = when (item.stockInfo.status) {
                     StockStatus.IN_STOCK -> ConstColors.green
@@ -297,7 +308,7 @@ private fun ProductItem(
             }
             LazyRow(
                 state = rememberLazyListState(),
-                contentPadding = PaddingValues(top = 6.dp),
+                contentPadding = PaddingValues(top = 10.dp),
             ) {
                 items(
                     items = sliderList,
@@ -320,9 +331,9 @@ fun RoundString(option: String, onClick: () -> Unit) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = option,
-                color = MaterialTheme.colors.background,
+                color = Color.Black,
                 fontWeight = FontWeight.W500,
-                fontSize = 12.sp,
+                fontSize = 13.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(
@@ -366,13 +377,14 @@ private fun BaseItem(
         border = BorderStroke(1.dp, ConstColors.separator),
         modifier = Modifier
             .fillMaxWidth(),
-        onClick = onItemClick
+        onClick = onItemClick,
+        elevation = 3.dp
     ) {
         Box {
             promotionData?.let {
                 Text(
                     text = it.displayLabel,
-                    fontSize = 12.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.W700,
                     color = Color.White,
                     modifier = Modifier
@@ -386,13 +398,13 @@ private fun BaseItem(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .padding(horizontal = 14.dp, vertical = 10.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) { headerContent() }
                 mainBodyContent()
                 Space(10.dp)
                 Divider(color = ConstColors.ltgray)
-                Space(10.dp)
+                Space(9.dp)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -407,14 +419,15 @@ private fun BaseItem(
                             .weight(1f)
                     ) {
                         Text(
-                            text = 0.0.toString(),
-                            color = MaterialTheme.colors.background,
+                            text = item.order?.quantity?.formatted ?: "0",
+                            color = Color.Black,
+                            fontWeight = FontWeight.W700,
                             fontSize = 14.sp
                         )
                         Text(
                             text = stringResource(id = R.string.quantity),
-                            color = MaterialTheme.colors.background,
-                            fontSize = 12.sp
+                            color = ConstColors.darkBlue,
+                            fontSize = 14.sp
                         )
                     }
                     Column(
@@ -425,14 +438,15 @@ private fun BaseItem(
                             .weight(1f)
                     ) {
                         Text(
-                            text = 0.0.toString(),
-                            color = MaterialTheme.colors.background,
+                            text = item.order?.freeQty?.formatted ?: "0",
+                            fontWeight = FontWeight.W700,
+                            color = Color.Black,
                             fontSize = 14.sp
                         )
                         Text(
                             text = stringResource(id = R.string.free),
-                            color = MaterialTheme.colors.background,
-                            fontSize = 12.sp
+                            color = ConstColors.darkBlue,
+                            fontSize = 14.sp
                         )
                     }
 
@@ -461,7 +475,7 @@ private fun BaseItem(
                                     ConstColors.gray
                                 }
                             )
-                            Space(dp = 3.dp)
+                            Space(dp = 1.dp)
                             Text(
                                 text = stringResource(id = R.string.add_to_cart),
                                 color = if (qtyValue > 0.0) {
@@ -469,7 +483,7 @@ private fun BaseItem(
                                 } else {
                                     ConstColors.gray
                                 },
-                                fontSize = 12.sp,
+                                fontSize = 13.sp,
                             )
                         }
                     }
@@ -658,7 +672,7 @@ private fun BaseItem(
                     }
                 }
             }
-            Space(4.dp)
+            Space(2.dp)
         }
     }
 }

@@ -887,7 +887,7 @@ private fun BaseCartItem(
 }
 
 @Composable
-fun TextItem(label: Int, count: Number) {
+fun TextItem(label: Int, count: Number, txtColor: Color = MaterialTheme.colors.background) {
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -895,16 +895,16 @@ fun TextItem(label: Int, count: Number) {
     ) {
         Text(
             text = stringResource(id = label),
-            color = MaterialTheme.colors.background,
-            fontWeight = FontWeight.W400,
-            fontSize = 12.sp,
+            color = txtColor,
+            fontWeight = FontWeight.W500,
+            fontSize = 14.sp,
             modifier = Modifier.padding(top = 6.dp)
         )
         Text(
             text = count.toString(),
-            color = MaterialTheme.colors.background,
-            fontWeight = FontWeight.W600,
-            fontSize = 12.sp,
+            color = txtColor,
+            fontWeight = FontWeight.W800,
+            fontSize = 14.sp,
             modifier = Modifier.padding(bottom = 6.dp),
             textAlign = TextAlign.Center
         )
@@ -912,23 +912,23 @@ fun TextItem(label: Int, count: Number) {
 }
 
 @Composable
-fun TextItemString(label: Int, count: String) {
+fun TextItemString(label: Int, count: String, txtColor: Color = MaterialTheme.colors.background) {
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxHeight(),
     ) {
         Text(
             text = stringResource(id = label),
-            color = MaterialTheme.colors.background,
-            fontWeight = FontWeight.W400,
-            fontSize = 12.sp,
+            color = txtColor,
+            fontWeight = FontWeight.W500,
+            fontSize = 14.sp,
             modifier = Modifier.padding(top = 6.dp)
         )
         Text(
             text = count,
-            color = MaterialTheme.colors.background,
-            fontWeight = FontWeight.W600,
-            fontSize = 12.sp,
+            color = txtColor,
+            fontWeight = FontWeight.W800,
+            fontSize = 14.sp,
             modifier = Modifier.padding(bottom = 6.dp)
         )
     }

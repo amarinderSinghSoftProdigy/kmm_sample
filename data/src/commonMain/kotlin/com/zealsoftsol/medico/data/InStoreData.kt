@@ -36,6 +36,7 @@ data class InStoreProduct(
     val order: InStoreOrder?,
     val isPromotionActive: Boolean,
     val promotionData: PromotionData?,
+    val imageCode: String,
 )
 
 @Serializable
