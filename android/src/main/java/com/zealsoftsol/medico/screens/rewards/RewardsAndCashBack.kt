@@ -42,6 +42,7 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.regular.RewardsScope
 import com.zealsoftsol.medico.data.RewardItem
 import com.zealsoftsol.medico.screens.common.MedicoButton
+import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
 
@@ -148,6 +149,13 @@ fun RewardsAndCashbackScreen(scope: RewardsScope) {
                         }
                     }
                 }
+            }
+        }
+
+        if(rewardsList.value.isEmpty() && showNoCashback.value){
+            NoRecords(icon = R.drawable.img_offer_bg, text = R.string.no_avail_offer,
+            buttonText = stringResource(id = R.string.go_back)) {
+                scope.goBack()
             }
         }
 

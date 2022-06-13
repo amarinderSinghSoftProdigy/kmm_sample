@@ -57,6 +57,7 @@ fun ConfirmOrderScreen(scope: ConfirmOrderScope) {
     val openDeclineReasonBottomSheet =
         scope.showDeclineReasonsBottomSheet.flow.collectAsState().value
     val openDialog = scope.showAlert.flow.collectAsState()
+    val orderTypeInfo = scope.orderTypeInfo.flow.collectAsState()
 
     Box {
         order.value?.let { orderTaxValue ->
@@ -200,12 +201,13 @@ fun ConfirmOrderScreen(scope: ConfirmOrderScope) {
                             }
                             OrderEntryItem(
                                 canEdit = false,
-                                entry = it,
                                 isChecked = it in checkedEntries.value,
+                                entry = it,
                                 onChecked = { _ -> scope.toggleCheck(it) },
                                 onClick = { },
                                 isConfirmOrderScope = true,
-                                onBuyClick = {}
+                                onBuyClick = {},
+                                orderTypeInfo = orderTypeInfo.value
                             )
                         }
                         Space(8.dp)

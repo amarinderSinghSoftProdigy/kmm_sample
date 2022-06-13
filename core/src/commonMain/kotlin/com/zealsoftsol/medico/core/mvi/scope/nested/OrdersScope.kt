@@ -23,6 +23,7 @@ import com.zealsoftsol.medico.data.OrderTax
 import com.zealsoftsol.medico.data.OrderTaxInfo
 import com.zealsoftsol.medico.data.OrderTaxInvoice
 import com.zealsoftsol.medico.data.OrderType
+import com.zealsoftsol.medico.data.OrderTypeInfo
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.TaxType
 import com.zealsoftsol.medico.data.UserType
@@ -118,7 +119,8 @@ class ViewOrderScope(
     var b2bData: DataSource<B2BData?>,
     var entries: DataSource<List<OrderEntry>>,
     var declineReason: DataSource<List<DeclineReason>>,
-    val userType: UserType
+    val userType: UserType,
+    val orderTypeInfo: DataSource<OrderTypeInfo>
 ) : Scope.Child.TabBar(), SelectableOrderEntry, CommonScope.WithNotifications {
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
@@ -432,6 +434,7 @@ class ConfirmOrderScope(
     internal var rejectedEntries: List<OrderEntry>,
     override val notifications: DataSource<ScopeNotification?> = DataSource(null),
     var declineReason: DataSource<List<DeclineReason>>,
+    val orderTypeInfo: DataSource<OrderTypeInfo>
 ) : Scope.Child.TabBar(), SelectableOrderEntry, CommonScope.WithNotifications {
 
     //pass on the seller info to be displayed on header

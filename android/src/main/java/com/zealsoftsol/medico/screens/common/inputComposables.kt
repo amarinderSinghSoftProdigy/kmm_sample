@@ -261,6 +261,7 @@ fun OutlinedInputField(
     isValid: Boolean = true,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
     maxLines: Int = 1,
     onValueChange: (String) -> Unit,
 ) {
@@ -281,6 +282,7 @@ fun OutlinedInputField(
         ),
         onValueChange = onValueChange,
         visualTransformation = visualTransformation,
+        keyboardActions = keyboardActions,
         keyboardOptions = keyboardOptions,
         singleLine = maxLines == 1,
         maxLines = maxLines,

@@ -43,10 +43,7 @@ sealed class PasswordScope(
             if (str.isEmpty()) {
                 return true
             }
-            val regex = ("^(?=.*[a-z])(?=."
-                    + "*[A-Z])(?=.*\\d)"
-                    + "(?=.*[-+_!@#$%^&*., ?]).+$")
-
+            val regex = ("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$")
             val p = regex.toRegex()
             return p.matches(str) && str.length >= 8
         }

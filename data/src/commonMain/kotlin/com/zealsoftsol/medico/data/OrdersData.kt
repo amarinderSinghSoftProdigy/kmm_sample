@@ -17,6 +17,13 @@ data class Order(
     val tradeName: String,
     @SerialName("sbRetailerTradeName")
     val seasonBoyRetailerName: String? = null,
+    val orderTypeInfo: OrderTypeInfo
+)
+
+@Serializable
+data class OrderTypeInfo(
+    val type: FormattedData<String>,
+    val user: String,
 )
 
 @Serializable
@@ -84,7 +91,8 @@ data class OrderResponse(
     @SerialName("unitInfoData")
     val unitData: UnitData,
     val declineReasons: List<DeclineReason>,
-    val isDeliveryAvailable: Boolean
+    val isDeliveryAvailable: Boolean,
+    val orderTypeInfo: OrderTypeInfo
 )
 
 @Serializable
