@@ -77,6 +77,7 @@ import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.management.checkOffer
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
+import com.zealsoftsol.medico.screens.search.ChipString
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
 import kotlinx.coroutines.launch
 
@@ -88,7 +89,7 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(ConstColors.paleBlue)
             .padding(top = 16.dp)
     ) {
         val cart = scope.cart.flow.collectAsState()
@@ -162,7 +163,7 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
                     itemContent = { index, item ->
                         ProductItem(
                             item,
-                            { scope.selectItem(item) },
+                            { /*scope.selectItem(item)*/ }, //todo uncomment for bottom sheet add to cart
                             { scope.selectImage(item.imageCode) },
                             scope, state = state, index
                         )
@@ -194,7 +195,7 @@ private fun ProductItem(
         item = item,
         qtyInitial = item.stockInfo.availableQty.toDouble(),
         freeQtyInitial = 0.0,
-        promotionData = null,//item.sellerInfo?.promotionData?.takeIf { item.sellerInfo?.isPromotionActive == true },
+        promotionData = item.promotionData,
         //forceMode = if (item.order?.isEmpty() != false) BottomSectionMode.AddToCart else BottomSectionMode.Update,
         onItemClick = onItemClick,
         //canAddToCart = item.stockInfo.status != StockStatus.OUT_OF_STOCK,
@@ -312,39 +313,11 @@ private fun ProductItem(
             ) {
                 items(
                     items = sliderList,
-                    itemContent = { value -> if (value.isNotEmpty()) RoundString(value) {} }
+                    itemContent = { value -> if (value.isNotEmpty()) ChipString(value) {} }
                 )
             }
         },
     )
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun RoundString(option: String, onClick: () -> Unit) {
-    Surface(
-        color = ConstColors.paleBlue,
-        shape = RoundedCornerShape(5.dp),
-        onClick = onClick,
-        modifier = Modifier.padding(4.dp),
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = option,
-                color = Color.Black,
-                fontWeight = FontWeight.W500,
-                fontSize = 13.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(
-                    start = 12.dp,
-                    end = 12.dp,
-                    top = 4.dp,
-                    bottom = 4.dp,
-                ),
-            )
-        }
-    }
 }
 
 @ExperimentalComposeUiApi
@@ -381,24 +354,31 @@ private fun BaseItem(
         elevation = 3.dp
     ) {
         Box {
-            promotionData?.let {
-                Text(
-                    text = it.displayLabel,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.W700,
-                    color = Color.White,
-                    modifier = Modifier
-                        .height(16.dp)
-                        .background(ConstColors.red, CutCornerShape(topStart = 16.dp))
-                        .padding(horizontal = 16.dp)
-                        .padding(start = 16.dp)
-                        .align(Alignment.TopEnd)
-                )
+            if (item.isPromotionActive) {
+                promotionData?.let {
+                    Box(
+                        modifier = Modifier
+                            .height(18.dp)
+                            .background(ConstColors.red, CutCornerShape(topStart = 16.dp))
+                            .padding(horizontal = 16.dp)
+                            .padding(start = 16.dp)
+                            .align(Alignment.TopEnd),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = it.displayLabel,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W700,
+                            textAlign = TextAlign.Center,
+                            color = Color.White,
+                        )
+                    }
+                }
             }
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 14.dp, vertical = 10.dp)
+                    .padding(horizontal = 14.dp, vertical = 12.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) { headerContent() }
                 mainBodyContent()
@@ -460,8 +440,7 @@ private fun BaseItem(
                                 .fillMaxWidth()
                                 .weight(1f)
                                 .clickable {
-                                    if (qtyValue > 0.0)
-                                        showButton.value = true
+                                    showButton.value = true
                                 },
                         ) {
                             Icon(
@@ -469,20 +448,12 @@ private fun BaseItem(
                                     .size(20.dp),
                                 painter = painterResource(R.drawable.ic_add_to_cart_instore),
                                 contentDescription = null,
-                                tint = if (qtyValue > 0.0) {
-                                    ConstColors.lightBlue
-                                } else {
-                                    ConstColors.gray
-                                }
+                                tint = ConstColors.lightBlue
                             )
                             Space(dp = 1.dp)
                             Text(
                                 text = stringResource(id = R.string.add_to_cart),
-                                color = if (qtyValue > 0.0) {
-                                    ConstColors.lightBlue
-                                } else {
-                                    ConstColors.gray
-                                },
+                                color = ConstColors.lightBlue,
                                 fontSize = 13.sp,
                             )
                         }
@@ -517,12 +488,7 @@ private fun BaseItem(
                                         )
 
                                         val wasQty = remember {
-                                            mutableStateOf(
-                                                if (qty.value.toString().split(".")
-                                                        .lastOrNull() == "0"
-                                                ) qty.value.toString().split(".")
-                                                    .first() else qty.value.toString()
-                                            )
+                                            mutableStateOf("0.0")
                                         }
 
                                         BasicTextField(
