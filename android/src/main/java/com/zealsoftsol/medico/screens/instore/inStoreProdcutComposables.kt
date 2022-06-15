@@ -64,6 +64,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreProductsScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.InStoreProduct
@@ -73,6 +74,7 @@ import com.zealsoftsol.medico.screens.cart.TextItem
 import com.zealsoftsol.medico.screens.cart.TextItemString
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
+import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.management.checkOffer
@@ -85,6 +87,9 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun InStoreProductsScreen(scope: InStoreProductsScope) {
+    val coroutineScope = rememberCoroutineScope()
+    val curPage = scope.currentPage.flow.collectAsState()
+
     remember { scope.firstLoad() }
     Column(
         modifier = Modifier
@@ -167,11 +172,46 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
                             { scope.selectImage(item.imageCode) },
                             scope, state = state, index
                         )
-                        if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
-                            scope.loadItems()
-                        }
                     },
                 )
+                if (items.value.isNotEmpty() && items.value.size == Pagination.DEFAULT_ITEMS_PER_PAGE) {
+                    item {
+                        Space(dp = 12.dp)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                        ) {
+                            MedicoButton(
+                                modifier = Modifier.weight(0.5f),
+                                text = stringResource(id = R.string.previous),
+                                isEnabled = curPage.value != 0,
+                                height = 38.dp,
+                                onClick = {
+                                    coroutineScope.launch {
+                                        scope.setCurrentPage(curPage.value - 1)
+                                        state.scrollToItem(0)
+                                        scope.loadItems()
+                                    }
+                                },
+                            )
+                            Space(dp = 16.dp)
+                            MedicoButton(
+                                height = 38.dp,
+                                modifier = Modifier.weight(0.5f),
+                                text = stringResource(id = R.string.next),
+                                isEnabled = true,
+                                onClick = {
+                                    coroutineScope.launch {
+                                        scope.setCurrentPage(curPage.value + 1)
+                                        state.scrollToItem(0)
+                                        scope.loadItems()
+                                    }
+                                }
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -431,7 +471,6 @@ private fun BaseItem(
                     }
 
 
-                    val qtyValue = qty.value
                     if (!showButton.value) {
                         Column(
                             verticalArrangement = Arrangement.Center,

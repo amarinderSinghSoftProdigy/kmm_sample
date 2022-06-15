@@ -110,14 +110,17 @@ class InStoreProductsScope(
     private val sellerName: String,
     private val address: String,
     private val phoneNumber: String
-) : Scope.Child.TabBar(),
-    Loadable<InStoreProduct> {
+) : Scope.Child.TabBar() {
 
-    override val items: DataSource<List<InStoreProduct>> = DataSource(emptyList())
-    override val totalItems: DataSource<Int> = DataSource(0)
-    override val searchText: DataSource<String> = DataSource("")
-    override val pagination: Pagination = Pagination()
+    val items: DataSource<List<InStoreProduct>> = DataSource(emptyList())
+    val totalItems: DataSource<Int> = DataSource(0)
+    val searchText: DataSource<String> = DataSource("")
     val cart: DataSource<InStoreCart?> = DataSource(null)
+    val currentPage = DataSource(0)
+
+    fun setCurrentPage(page: Int) {
+        currentPage.value = page
+    }
 
     fun selectImage(item: String) {
         val url = CdnUrlProvider.urlFor(
@@ -127,7 +130,8 @@ class InStoreProductsScope(
     }
 
 
-    fun firstLoad() = EventCollector.sendEvent(Event.Action.InStore.ProductLoad(isFirstLoad = true))
+    fun firstLoad() =
+        EventCollector.sendEvent(Event.Action.InStore.ProductLoad(isFirstLoad = true, 0))
 
     /*//pass on the seller info to be displayed on header
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo =
@@ -143,11 +147,16 @@ class InStoreProductsScope(
     }
 
     fun loadItems() =
-        EventCollector.sendEvent(Event.Action.InStore.ProductLoad(isFirstLoad = false))
+        EventCollector.sendEvent(
+            Event.Action.InStore.ProductLoad(
+                isFirstLoad = false,
+                page = currentPage.value
+            )
+        )
 
     fun search(value: String): Boolean {
         return if (searchText.value != value) {
-            EventCollector.sendEvent(Event.Action.InStore.ProductSearch(value))
+            EventCollector.sendEvent(Event.Action.InStore.ProductSearch(value, currentPage.value))
         } else {
             false
         }

@@ -41,8 +41,14 @@ internal class InStoreEventDelegate(
             event.address,
             event.phoneNumber
         )
-        is Event.Action.InStore.ProductLoad -> loadProductInStore(event.isFirstLoad)
-        is Event.Action.InStore.ProductSearch -> searchProductInStore(event.value)
+        is Event.Action.InStore.ProductLoad -> loadProductInStore(
+            event.isFirstLoad,
+            page = event.page
+        )
+        is Event.Action.InStore.ProductSearch -> searchProductInStore(
+            event.value,
+            page = event.page
+        )
         is Event.Action.InStore.ProductSelect -> selectProductInStore(event.item)
         is Event.Action.InStore.UserLoad -> loadUserInStore(event.isFirstLoad)
         is Event.Action.InStore.UserSearch -> searchUserInStore(event.value)
@@ -80,7 +86,7 @@ internal class InStoreEventDelegate(
         navigator.withScope<InStoreOrderPlacedScope> {
             withProgress { cartRepo.submitReward(storeId) }
                 .onSuccess { _ ->
-                   it.isOfferSwiped.value = true
+                    it.isOfferSwiped.value = true
                 }.onError(navigator)
         }
     }
@@ -131,25 +137,40 @@ internal class InStoreEventDelegate(
         }
     }
 
-    private suspend fun loadProductInStore(isFirstLoad: Boolean, cartIfFirst: Boolean = true) {
-        loadHelper.load<InStoreProductsScope, InStoreProduct>(isFirstLoad = isFirstLoad) {
-            networkInStoreScope.searchInStoreSeller(
-                unitCode = unitCode,
-                search = searchText.value,
-                pagination = pagination,
-            ).getBodyOrNull()
+    private suspend fun loadProductInStore(
+        isFirstLoad: Boolean, cartIfFirst: Boolean = true,
+        page: Int
+    ) {
+
+        navigator.withScope<InStoreProductsScope> {
+            val result = withProgress {
+                networkInStoreScope.searchInStoreSeller(
+                    unitCode = it.unitCode,
+                    search = it.searchText.value,
+                    page = page,
+                )
+            }
+
+            result.onSuccess { _ ->
+                val data = result.getBodyOrNull()
+                if (data?.data != null) {
+                    it.items.value = data.data
+                    it.totalItems.value = data.total
+                }
+            }.onError(navigator)
         }
+
         if (isFirstLoad && cartIfFirst) loadCart()
     }
 
-    private suspend fun searchProductInStore(search: String) {
-        loadHelper.search<InStoreProductsScope, InStoreProduct>(searchValue = search) {
-            networkInStoreScope.searchInStoreSeller(
-                unitCode = unitCode,
-                search = searchText.value,
-                pagination = pagination,
-            ).getBodyOrNull()
-        }
+    private suspend fun searchProductInStore(search: String, page: Int) {
+        /*   loadHelper.search<InStoreProductsScope, InStoreProduct>(searchValue = search) {
+               networkInStoreScope.searchInStoreSeller(
+                   unitCode = unitCode,
+                   search = searchText.value,
+                   page = page
+               ).getBodyOrNull()
+           }*/
     }
 
     private fun selectProductInStore(item: InStoreProduct) {
@@ -235,7 +256,7 @@ internal class InStoreEventDelegate(
             }.onSuccess { cart ->
                 if (it is InStoreProductsScope) {
                     it.cart.value = cart
-                    loadProductInStore(true, false)
+                    loadProductInStore(true, false, 0)
                 }
             }.onError(navigator)
         }

@@ -406,8 +406,11 @@ sealed class Event {
                 val id: String
             ) : InStore()
 
-            data class ProductSearch(val value: String) : InStore()
-            data class ProductLoad(val isFirstLoad: Boolean) : InStore()
+            data class ProductSearch(val value: String, val page: Int) : InStore()
+            data class ProductLoad(
+                val isFirstLoad: Boolean, val page: Int
+            ) : InStore()
+
             data class ProductSelect(val item: InStoreProduct) : InStore()
 
             data class UserSearch(val value: String) : InStore()
