@@ -1916,10 +1916,11 @@ private fun DocumentUploadBottomSheet(
         title = stringResource(id = R.string.actions),
         cells = listOfNotNull(
             BottomSheetCell(R.string.upload, Icons.Filled.CloudUpload),
-            if (useCamera)
+            //Uncomment the code to open camera option for upload
+            /*if (useCamera)
                 BottomSheetCell(R.string.use_camera, Icons.Filled.CameraAlt)
             else
-                null
+                null*/
         ),
         onCellClick = { (stringId, _) ->
             coroutineScope.launch {
