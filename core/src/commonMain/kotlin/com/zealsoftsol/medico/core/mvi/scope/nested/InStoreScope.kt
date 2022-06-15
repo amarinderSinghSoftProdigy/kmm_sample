@@ -130,8 +130,10 @@ class InStoreProductsScope(
     }
 
 
-    fun firstLoad() =
+    fun firstLoad() {
+        currentPage.value = 0
         EventCollector.sendEvent(Event.Action.InStore.ProductLoad(isFirstLoad = true, 0))
+    }
 
     /*//pass on the seller info to be displayed on header
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo =
