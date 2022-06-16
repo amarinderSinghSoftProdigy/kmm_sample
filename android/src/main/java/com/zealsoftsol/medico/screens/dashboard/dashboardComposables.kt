@@ -75,6 +75,7 @@ import com.zealsoftsol.medico.data.ManufacturerData
 import com.zealsoftsol.medico.data.OfferStatus
 import com.zealsoftsol.medico.data.ProductSold
 import com.zealsoftsol.medico.data.StockistListItem
+import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.CoilImageBrands
@@ -195,7 +196,7 @@ private fun ShowRetailerAndHospitalDashboard(
                         title = stringResource(id = R.string.stores),
                         icon = R.drawable.ic_menu_stores
                     ) {
-                        scope.sendEvent(Event.Transition.Stores())
+                        scope.sendEvent(Event.Transition.Stores)
                     }
                     Space(16.dp)
                     QuickActionItem(
@@ -883,7 +884,7 @@ private fun ShowStockistDashBoard(
                     title = stringResource(id = R.string.stores),
                     icon = R.drawable.ic_menu_stores
                 ) {
-                    scope.sendEvent(Event.Transition.Stores())
+                    scope.sendEvent(Event.Transition.Stores)
                 }
                 Space(16.dp)
                 QuickActionItem(
@@ -1584,8 +1585,13 @@ fun ShowConnectedStockist(stockConnected: List<StockistListItem>?, scope: Dashbo
                     itemContent = { _, item ->
                         StockistConnectedData(item) {
                             scope.sendEvent(
-                                Event.Transition.Stores(
-                                    item.unitCode
+                                Event.Transition.StoreDetail(
+                                    Store(
+                                        sellerUnitCode = item.unitCode,
+                                        tradeName = item.tradeName,
+                                        distance = item.distance.value,
+                                        formattedDistance = item.distance.formatted,
+                                    )
                                 )
                             )
                         }

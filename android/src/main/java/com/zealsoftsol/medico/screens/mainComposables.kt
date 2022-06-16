@@ -1528,7 +1528,7 @@ sealed class BottomNavigationItem(
 
     object Stores :
         BottomNavigationItem(
-            Event.Transition.Stores(),
+            Event.Transition.Stores,
             R.drawable.ic_stores,
             R.drawable.ic_stores_selected,
             mutableStateOf(false),
