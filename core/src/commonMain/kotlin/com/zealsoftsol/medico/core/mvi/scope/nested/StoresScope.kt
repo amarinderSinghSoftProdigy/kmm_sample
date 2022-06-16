@@ -44,8 +44,9 @@ sealed class StoresScope : Scope.Child.TabBar() {
             EventCollector.sendEvent(Event.Action.Stores.Load(isFirstLoad = true))
         }
 
-        fun selectItem(item: Store) =
+        fun selectItem(item: Store) {
             EventCollector.sendEvent(Event.Action.Stores.Select(item))
+        }
 
         fun search(value: String) = EventCollector.sendEvent(Event.Action.Stores.Search(value))
 
@@ -95,7 +96,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
             EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(url))
         }
 
-        fun searchProduct(value:String) {
+        fun searchProduct(value: String) {
             productSearch.value = value
             searchProduct(
                 value,

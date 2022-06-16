@@ -761,6 +761,7 @@ sealed class Event {
 
         object Notifications : Transition()
         object Stores : Transition()
+        data class StoreDetail(val store: Store) : Transition()
         object Cart : Transition()
         object Orders : Transition()
         object PoOrdersAndHistory : Transition()

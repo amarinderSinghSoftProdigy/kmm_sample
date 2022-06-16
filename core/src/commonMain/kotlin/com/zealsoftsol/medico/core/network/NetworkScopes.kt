@@ -24,6 +24,7 @@ import com.zealsoftsol.medico.data.ClearAllNotification
 import com.zealsoftsol.medico.data.ConfigData
 import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.ConnectedStockist
+import com.zealsoftsol.medico.data.ConnectedStockists
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
@@ -162,6 +163,7 @@ interface NetworkScope {
         suspend fun getCustomerDataV2(): BodyResponse<CustomerDataV2>
         suspend fun getCustomerData(): BodyResponse<CustomerData>
         suspend fun getStockistEmployeeBannerData(type: UserType) : BodyResponse<List<EmployeeBannerData>>
+        suspend fun getConnectedStockist() : BodyResponse<ConnectedStockists>
     }
 
     interface Product : NetworkScope {

@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.network.NetworkScope
@@ -58,7 +59,7 @@ internal class StoresEventDelegate(
     }
 
     private fun select(item: Store) {
-        navigator.withScope<StoresScope.All> {
+        navigator.withScope<Scope> {
             setScope(
                 StoresScope.StorePreview(
                     item,

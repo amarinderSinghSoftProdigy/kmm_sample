@@ -647,17 +647,19 @@ private fun StoreItem(
                             SubscriptionStatus.SUBSCRIBED -> ConstColors.darkGreen
                             SubscriptionStatus.PENDING -> ConstColors.lightBlue
                             SubscriptionStatus.REJECTED -> ConstColors.red
+                            else -> ConstColors.gray
                         },
                         contentDescription = null,
                         modifier = Modifier.size(18.dp),
                     )
                     Space(dp = 3.dp)
                     Text(
-                        text = store.status.serverValue,
+                        text = store.status?.serverValue ?: "",
                         color = when (store.status) {
                             SubscriptionStatus.SUBSCRIBED -> ConstColors.darkGreen
                             SubscriptionStatus.PENDING -> ConstColors.lightBlue
                             SubscriptionStatus.REJECTED -> ConstColors.red
+                            else -> ConstColors.gray
                         },
                         fontWeight = FontWeight.W500,
                         fontSize = 15.sp,

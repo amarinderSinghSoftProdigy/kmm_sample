@@ -20,6 +20,7 @@ import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.getManufacturerDataSource
 import com.zealsoftsol.medico.core.repository.getPromotionsDataSource
 import com.zealsoftsol.medico.core.repository.getRecentProductsDataSource
+import com.zealsoftsol.medico.core.repository.getStockConnectedDataSource
 import com.zealsoftsol.medico.core.repository.getStockDataSource
 import com.zealsoftsol.medico.core.repository.getStockistEmpBannerDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
@@ -92,7 +93,8 @@ internal class AuthEventDelegate(
                                     categoriesData = userRepo.getCategoriesDataSource(),
                                     brandsData = userRepo.getBrandsDataSource(),
                                     bannerData = userRepo.getBannerDataSource(),
-                                    stockistEmpBannerData = userRepo.getStockistEmpBannerDataSource()
+                                    stockistEmpBannerData = userRepo.getStockistEmpBannerDataSource(),
+                                    stockConnectedData = userRepo.getStockConnectedDataSource()
                                 )
                             else
                                 LimitedAccessScope.get(
@@ -103,7 +105,7 @@ internal class AuthEventDelegate(
                             //}
                         )
                     }.onError(navigator)
-            }.onError{ error ->
+            }.onError { error ->
                 it.errorCode.value = error.body
                 it.showCredentialError.value = true
                 it.showToast.value = true
