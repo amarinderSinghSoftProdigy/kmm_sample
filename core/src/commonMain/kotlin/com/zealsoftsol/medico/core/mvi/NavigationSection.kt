@@ -27,7 +27,7 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
 //    object SeasonBoys :
 //        NavigationOption(Event.Transition.Management(UserType.SEASON_BOY), "season_boys")
 
-    object Stores : NavigationOption(Event.Transition.Stores, "stores")
+    object Stores : NavigationOption(Event.Transition.Stores(), "stores")
 
     object Inventory : NavigationOption(
         Event.Transition.Inventory(InventoryScope.InventoryType.IN_STOCK),

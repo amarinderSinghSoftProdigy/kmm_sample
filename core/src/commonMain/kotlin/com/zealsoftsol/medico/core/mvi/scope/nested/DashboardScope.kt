@@ -9,6 +9,8 @@ import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
+import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
+import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BannerData
 import com.zealsoftsol.medico.data.BrandsData
@@ -19,6 +21,8 @@ import com.zealsoftsol.medico.data.OfferStatus
 import com.zealsoftsol.medico.data.OffersData
 import com.zealsoftsol.medico.data.RecentProductInfo
 import com.zealsoftsol.medico.data.StockStatusData
+import com.zealsoftsol.medico.data.StockistListItem
+import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserV2
 
@@ -37,7 +41,8 @@ class DashboardScope private constructor(
     val categoriesData: ReadOnlyDataSource<List<BrandsData>?>,
     val brandsData: ReadOnlyDataSource<List<BrandsData>?>,
     val bannerData: ReadOnlyDataSource<List<BannerData>?>,
-    val stockistEmployeeBannerData: ReadOnlyDataSource<List<EmployeeBannerData>?>
+    val stockistEmployeeBannerData: ReadOnlyDataSource<List<EmployeeBannerData>?>,
+    val stockConnectedData: ReadOnlyDataSource<List<StockistListItem>?>
 ) : Scope.Child.TabBar() {
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
@@ -155,7 +160,8 @@ class DashboardScope private constructor(
             categoriesData: ReadOnlyDataSource<List<BrandsData>?>,
             brandsData: ReadOnlyDataSource<List<BrandsData>?>,
             bannerData: ReadOnlyDataSource<List<BannerData>?>,
-            stockistEmpBannerData: ReadOnlyDataSource<List<EmployeeBannerData>?>
+            stockistEmpBannerData: ReadOnlyDataSource<List<EmployeeBannerData>?>,
+            stockConnectedData: ReadOnlyDataSource<List<StockistListItem>?>
         ) = TabBarScope(
             childScope = DashboardScope(
                 user.type,
@@ -169,7 +175,8 @@ class DashboardScope private constructor(
                 categoriesData = categoriesData,
                 brandsData = brandsData,
                 bannerData = bannerData,
-                stockistEmployeeBannerData = stockistEmpBannerData
+                stockistEmployeeBannerData = stockistEmpBannerData,
+                stockConnectedData = stockConnectedData
             ),
             initialTabBarInfo = TabBarInfo.Search(
                 notificationItemsCount = unreadNotifications,

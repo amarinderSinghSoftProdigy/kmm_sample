@@ -21,6 +21,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
 
 
     class All(
+        val unitCode: String = "",
         private val notificationCount: ReadOnlyDataSource<Int>,
         private val cartItemsCount: ReadOnlyDataSource<Int>,
     ) : StoresScope(), Loadable<Store> {
@@ -39,13 +40,16 @@ sealed class StoresScope : Scope.Child.TabBar() {
         override val items: DataSource<List<Store>> = DataSource(emptyList())
         override val totalItems: DataSource<Int> = DataSource(0)
         override val searchText: DataSource<String> = DataSource("")
+        val isLoaded: DataSource<Boolean> = DataSource(false)
 
         init {
             EventCollector.sendEvent(Event.Action.Stores.Load(isFirstLoad = true))
         }
 
-        fun selectItem(item: Store) =
+        fun selectItem(item: Store) {
+            isLoaded.value = true
             EventCollector.sendEvent(Event.Action.Stores.Select(item))
+        }
 
         fun search(value: String) = EventCollector.sendEvent(Event.Action.Stores.Search(value))
 
@@ -95,7 +99,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
             EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(url))
         }
 
-        fun searchProduct(value:String) {
+        fun searchProduct(value: String) {
             productSearch.value = value
             searchProduct(
                 value,

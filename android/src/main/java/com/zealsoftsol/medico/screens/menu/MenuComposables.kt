@@ -124,7 +124,7 @@ fun RetailerAndHospitalMenu(scope: MenuScope) {
     )
     Separator(thickness = 0.5f)
     AccountContentItem(
-        route = Event.Transition.Stores,
+        route = Event.Transition.Stores(),
         drawableResourceId = R.drawable.ic_menu_stores,
         stringResourceId = R.string.stores,
         scope = scope
@@ -235,7 +235,7 @@ fun StockistMenu(scope: MenuScope) {
     )
     Separator(thickness = 0.5f)
     AccountContentItem(
-        route = Event.Transition.Stores,
+        route = Event.Transition.Stores(),
         drawableResourceId = R.drawable.ic_menu_stores,
         stringResourceId = R.string.stores,
         scope = scope,

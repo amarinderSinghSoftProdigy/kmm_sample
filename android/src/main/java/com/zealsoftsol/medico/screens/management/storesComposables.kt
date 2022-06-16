@@ -520,6 +520,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
 @Composable
 private fun AllStores(scope: StoresScope.All) {
     val search = scope.searchText.flow.collectAsState()
+    val isLoaded = scope.isLoaded.flow.collectAsState()
     val showSearchOverlay = remember { mutableStateOf(true) }
     Space(16.dp)
     if (showSearchOverlay.value) {
@@ -576,22 +577,31 @@ private fun AllStores(scope: StoresScope.All) {
             onHome = { scope.goHome() },
         )
     } else {
-        LazyColumn(
-            state = rememberLazyListState(),
-            contentPadding = PaddingValues(top = 16.dp),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-        ) {
-            itemsIndexed(
-                items = items.value,
-                itemContent = { index, item ->
-                    StoreItem(item) { scope.selectItem(item) }
-                    if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
-                        scope.loadItems()
-                    }
-                },
-            )
+        if (scope.unitCode.isNotEmpty() && !isLoaded.value) {
+            for (item in items.value) {
+                if (item.sellerUnitCode == scope.unitCode) {
+                    scope.selectItem(item)
+                    break
+                }
+            }
+        } else {
+            LazyColumn(
+                state = rememberLazyListState(),
+                contentPadding = PaddingValues(top = 16.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+            ) {
+                itemsIndexed(
+                    items = items.value,
+                    itemContent = { index, item ->
+                        StoreItem(item) { scope.selectItem(item) }
+                        if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
+                            scope.loadItems()
+                        }
+                    },
+                )
+            }
         }
     }
 }
