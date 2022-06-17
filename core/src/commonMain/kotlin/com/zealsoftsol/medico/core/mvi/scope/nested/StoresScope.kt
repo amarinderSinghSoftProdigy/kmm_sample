@@ -11,9 +11,11 @@ import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.CartData
+import com.zealsoftsol.medico.data.ConnectedStockists
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SortOption
+import com.zealsoftsol.medico.data.StockistListItem
 import com.zealsoftsol.medico.data.Store
 
 // TODO make part of management scope
@@ -55,7 +57,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
     }
 
     class StorePreview(
-        val store: Store,
+        var store: Store,
         private val cartItemsCount: ReadOnlyDataSource<Int>,
         private val notificationCount: ReadOnlyDataSource<Int>,
         override val productSearch: DataSource<String> = DataSource(""),
@@ -74,18 +76,19 @@ sealed class StoresScope : Scope.Child.TabBar() {
         override val enableButton: DataSource<Boolean> = DataSource(false),
         override val freeQty: DataSource<Double> = DataSource(0.0),
         override val productId: DataSource<String> = DataSource(""),
+        override val selectedStockist: DataSource<String> = DataSource(""),
+        override val selectedTradename: DataSource<String> = DataSource(""),
         override val totalResults: DataSource<Int> = DataSource(0),
-        override var showNoProducts: DataSource<Boolean> = DataSource(false)
-
+        override var showNoProducts: DataSource<Boolean> = DataSource(false),
+        override val connectedStockist: DataSource<List<StockistListItem>> = DataSource(emptyList())
     ) : StoresScope(), BaseSearchScope, ToastScope {
 
         override val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList())
         override val pagination: Pagination = Pagination(Pagination.ITEMS_PER_PAGE_10)
-        override val unitCode: String = store.sellerUnitCode
+        override var unitCode: String? = store.sellerUnitCode
         override val supportsAutoComplete: Boolean = true
 
         init {
-
             startSearch(true)
         }
 
@@ -116,12 +119,31 @@ sealed class StoresScope : Scope.Child.TabBar() {
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
-            return TabBarInfo.StoreTitle(
+            /*return TabBarInfo.StoreTitle(
                 storeName = store.tradeName,
                 showNotifications = false,
                 event = Event.Action.Management.GetDetails(store.sellerUnitCode),
                 cartItemsCount = cartItemsCount
+            )*/
+            return TabBarInfo.StoresSearch(
+                search = productSearch,
+                activeFilterIds = activeFilterIds,
+                pagination = pagination,
+                productSearch = productSearch,
+                store = store
             )
         }
+
+        fun updateView(item: StockistListItem) {
+            store = Store(
+                sellerUnitCode = item.unitCode,
+                tradeName = item.tradeName,
+                distance = item.distance.value,
+                formattedDistance = item.distance.formatted,
+            )
+            unitCode = item.unitCode
+            startSearch(true, "")
+        }
+
     }
 }

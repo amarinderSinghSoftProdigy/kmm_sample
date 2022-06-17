@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.dashboard
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,6 +29,7 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -1499,8 +1501,9 @@ private fun StockistEmpBannerItem(
 }
 
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun StockistConnectedData(item: StockistListItem, onClick: () -> Unit) {
+fun StockistConnectedData(item: StockistListItem, back: Boolean = false, onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .size(80.dp)
@@ -1509,37 +1512,51 @@ fun StockistConnectedData(item: StockistListItem, onClick: () -> Unit) {
         verticalArrangement = Arrangement.Center
     ) {
         Surface(
-            modifier = Modifier
-                .size(60.dp),
-            color = Color.White,
-            shape = CircleShape,
-            elevation = 5.dp,
+            color = if (back) ConstColors.yellow else Color.White,
+            shape = RoundedCornerShape(percent = 50),
+            onClick = onClick,
+            modifier = Modifier.padding(4.dp),
+            elevation = 8.dp,
+            border = if (back) BorderStroke(
+                1.dp,
+                ConstColors.yellow
+            ) else BorderStroke(
+                1.dp, Color.White
+            )
         ) {
-            Box {
-                if (item.url.isNotEmpty()) {
-                    CoilImage(
-                        src = item.url,
-                        modifier = Modifier
-                            .align(Center)
-                            .width(60.dp)
-                            .height(60.dp),
-                        onError = { Placeholder(R.drawable.ic_img_placeholder) },
-                        onLoading = { Placeholder(R.drawable.ic_img_placeholder) },
-                        isCrossFadeEnabled = false
-                    )
-                } else {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = CenterHorizontally
-                    ) {
-                        Text(
-                            text = item.key,
-                            color = Color.Black,
-                            fontSize = 30.sp,
-                            fontWeight = FontWeight.W700,
-                            textAlign = TextAlign.Center
+            Surface(
+                modifier = Modifier
+                    .size(60.dp),
+                color = Color.White,
+                shape = CircleShape,
+                elevation = 5.dp,
+            ) {
+                Box {
+                    if (item.url.isNotEmpty()) {
+                        CoilImage(
+                            src = item.url,
+                            modifier = Modifier
+                                .align(Center)
+                                .width(60.dp)
+                                .height(60.dp),
+                            onError = { Placeholder(R.drawable.ic_img_placeholder) },
+                            onLoading = { Placeholder(R.drawable.ic_img_placeholder) },
+                            isCrossFadeEnabled = false
                         )
+                    } else {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = CenterHorizontally
+                        ) {
+                            Text(
+                                text = item.key,
+                                color = Color.Black,
+                                fontSize = 30.sp,
+                                fontWeight = FontWeight.W700,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
             }

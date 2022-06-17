@@ -289,6 +289,7 @@
     <string name="missing_hospitals">No Hospitals connected yet</string>
     <string name="missing_retailers">No Retailers connected yet.</string>
     <string name="missing_sb">No SeasonBoy connected yet</string>
+    <string name="missing_products">No Products found.</string>
     <string name="missing_stores">No stores to view</string>
     <string name="missing_inventory_stores">No inventory found with</string>
     <string name="please_connect_stockists">Please connect to any Stockist</string>

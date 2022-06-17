@@ -432,7 +432,8 @@ class NetworkClient(
         pagination: Pagination,
         addPage: Boolean
     ) = simpleRequest {
-        client.get<BodyResponse<SearchResponse>>("${baseUrl.url}/search/${if (unitCode == null) "global" else "stores"}") {
+        client.get<BodyResponse<SearchResponse>>("${baseUrl.url}/search/${if (unitCode == null) "global" else "v2/stores"}") {
+        //client.get<BodyResponse<SearchResponse>>("${baseUrl.url}/search/${if (unitCode == null) "global" else "stores"}") {
             withMainToken()
             url {
                 parameters.apply {

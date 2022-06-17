@@ -5,10 +5,12 @@ import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
+import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.ErrorCode
+import com.zealsoftsol.medico.data.Store
 import kotlin.reflect.KClass
 
 sealed class Scope : Scopable {
@@ -187,6 +189,46 @@ sealed class TabBarInfo {
         val title: String = "" //pass the string resource id
     ) : TabBarInfo() {
         override val icon: ScopeIcon = ScopeIcon.BACK
+    }
+
+    data class StoresSearch(
+        val search: DataSource<String>,
+        val activeFilterIds: DataSource<List<String>>,
+        val pagination: Pagination,
+        val productSearch: DataSource<String>,
+        val store: Store
+    ) : TabBarInfo() {
+
+        override val icon: ScopeIcon = ScopeIcon.BACK
+
+        fun startSearch(check: Boolean, search: String? = null) {
+            productSearch.value = ""
+            EventCollector.sendEvent(
+                Event.Action.Search.SearchInput(
+                    isOneOf = check,
+                    search = search
+                )
+            )
+        }
+        fun searchProduct(input: String, withAutoComplete: Boolean, sellerUnitCode: String): Boolean {
+            return trimInput(input, productSearch.value) {
+                val event = if (withAutoComplete) {
+                    Event.Action.Search.SearchAutoComplete(it, sellerUnitCode)
+                } else {
+                    Event.Action.Search.SearchInput(isOneOf = false, search = input)
+                }
+                EventCollector.sendEvent(event)
+            }
+        }
+
+        fun searchProduct(value:String) {
+            productSearch.value = value
+            searchProduct(
+                value,
+                withAutoComplete = true,
+                store.sellerUnitCode
+            )
+        }
     }
 }
 

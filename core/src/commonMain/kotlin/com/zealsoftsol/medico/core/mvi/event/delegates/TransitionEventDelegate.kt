@@ -55,6 +55,7 @@ import com.zealsoftsol.medico.core.repository.getUserDataSourceV2
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.repository.requireUserOld
 import com.zealsoftsol.medico.data.ProductsData
+import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
@@ -176,7 +177,8 @@ internal class TransitionEventDelegate(
                     NotificationScope.All()
                 )
                 is Event.Transition.Stores -> setScope(
-                    StoresScope.All(
+                    StoresScope.StorePreview(
+                        Store(),
                         notificationRepo.getUnreadMessagesDataSource(),
                         cartRepo.getEntriesCountDataSource()
                     )
