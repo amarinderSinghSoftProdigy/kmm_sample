@@ -87,6 +87,7 @@ import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.PromotionData
 import com.zealsoftsol.medico.data.StockStatus
+import com.zealsoftsol.medico.data.StockistListItem
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.screens.common.CoilImage
@@ -157,6 +158,8 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
             val activeFilterIds = scope.activeFilterIds.flow.collectAsState()
             val autoComplete = scope.autoComplete.flow.collectAsState()
             val stockConnected = scope.connectedStockist.flow.collectAsState()
+            val selectedStockist = scope.selectedStockist.flow.collectAsState()
+            val selectedTradename = scope.selectedTradename.flow.collectAsState()
 
             Image(
                 contentDescription = "",
@@ -235,6 +238,8 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                 }
 
                 Space(dp = 16.dp)
+                Divider()
+                Space(dp = 16.dp)
 
                 Column(
                     modifier = Modifier
@@ -252,7 +257,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                                 itemContent = { _, item ->
                                     StockistConnectedData(
                                         item,
-                                        back = item.unitCode == scope.unitCode
+                                        back = item.unitCode == selectedStockist.value
                                     ) {
                                         scope.updateView(item)
                                     }
@@ -261,10 +266,11 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                         }
                     }
                 }
-
+                Space(dp = 16.dp)
+                Divider()
                 Space(dp = 16.dp)
 
-                if (scope.store.sellerUnitCode.isNotEmpty()) {
+                if (scope.store.sellerUnitCode.isNotEmpty() || selectedStockist.value.isNotEmpty()) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -275,7 +281,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
 
                         Row {
                             Text(
-                                text = scope.store.tradeName,
+                                text = selectedTradename.value.ifEmpty { scope.store.tradeName },
                                 color = Color.Black,
                                 fontWeight = FontWeight.W700,
                                 fontSize = 14.sp
@@ -286,11 +292,11 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                             painter = painterResource(id = R.drawable.ic_dots),
                             contentDescription = null,
                             modifier = Modifier
-                                .size(24.dp)
+                                .size(32.dp)
                                 .clickable {
                                     EventCollector.sendEvent(
                                         Event.Action.Management.GetDetails(
-                                            scope.store.sellerUnitCode
+                                            selectedStockist.value.ifEmpty { scope.store.sellerUnitCode }
                                         )
                                     )
                                 }

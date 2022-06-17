@@ -36,6 +36,8 @@ interface BaseSearchScope : Scopable {
     val activeFilterIds: DataSource<List<String>>
     val freeQty: DataSource<Double>
     val productId: DataSource<String>
+    val selectedStockist: DataSource<String>
+    val selectedTradename: DataSource<String>
     val totalResults: DataSource<Int>
     var showNoProducts: DataSource<Boolean>
     val connectedStockist: DataSource<List<StockistListItem>>
@@ -130,7 +132,9 @@ class SearchScope(
     override val freeQty: DataSource<Double> = DataSource(0.0),
     override val productId: DataSource<String> = DataSource(""),
     override val totalResults: DataSource<Int> = DataSource(0),
-    override val connectedStockist: DataSource<List<StockistListItem>> = DataSource(emptyList())
+    override val connectedStockist: DataSource<List<StockistListItem>> = DataSource(emptyList()),
+    override val selectedStockist: DataSource<String> = DataSource(""),
+    override val selectedTradename: DataSource<String> = DataSource("")
 ) : Scope.Child.TabBar(), BaseSearchScope {
 
     override var showNoProducts: DataSource<Boolean> = DataSource(false)
