@@ -6,8 +6,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Store(
-    val distance: Double,
-    val formattedDistance: String,
+    val distance: Double = 0.0,
+    val formattedDistance: String = "",
     val gstin: String = "",
     val location: String = "",
     val manufacturersInCatalogue: Int = 0,
@@ -16,7 +16,7 @@ data class Store(
     val paymentMethod: String = "",
     val pincode: String = "",
     val productsInCatalogue: Int = 0,
-    val sellerUnitCode: String,
+    val sellerUnitCode: String = "",
     @SerialName("subscribeStatus")
     val status: SubscriptionStatus? = null,
     @SerialName("townOrCity")

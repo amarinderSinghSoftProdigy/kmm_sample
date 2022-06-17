@@ -483,6 +483,7 @@ internal class SearchEventDelegate(
             totalResults.value = body.totalResults
             sortOptions.value = body.sortOptions
             autoComplete.value = emptyList()
+            connectedStockist.value = body.connectedStockists
             if (body.products.isEmpty()) {
                 showNoProducts.value = true
             }

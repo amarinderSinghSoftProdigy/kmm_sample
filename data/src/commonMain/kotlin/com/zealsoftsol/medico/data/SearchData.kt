@@ -9,6 +9,7 @@ data class SearchResponse(
     val products: List<ProductSearch>,
     val totalResults: Int,
     val sortOptions: List<SortOption>,
+    val connectedStockists: List<StockistListItem> = emptyList()
 )
 
 @Serializable

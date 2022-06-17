@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -47,6 +48,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -95,6 +97,7 @@ import com.zealsoftsol.medico.screens.common.PaginationButtons
 import com.zealsoftsol.medico.screens.common.ShowToastGlobal
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
+import com.zealsoftsol.medico.screens.dashboard.StockistConnectedData
 import com.zealsoftsol.medico.screens.search.AutoCompleteItem
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.ChipString
@@ -137,7 +140,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
     val coroutineScope = rememberCoroutineScope()
 
     Surface(
-        color = Color.White,
+        color = ConstColors.skyBlue,
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(),
@@ -153,6 +156,17 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
             val selectedSortOption = scope.selectedSortOption.flow.collectAsState()
             val activeFilterIds = scope.activeFilterIds.flow.collectAsState()
             val autoComplete = scope.autoComplete.flow.collectAsState()
+            val stockConnected = scope.connectedStockist.flow.collectAsState()
+
+            Image(
+                contentDescription = "",
+                painter = painterResource(id = R.drawable.ic_small_logo),
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .size(150.dp)
+                    .alpha(0.2f)
+            )
+
             val options = Option.StringValue(
                 id = "offers",
                 value = true.toString(),
@@ -165,31 +179,131 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                Space(12.dp)
-
-                BasicSearchBar(
-                    input = search.value,
-                    hint = R.string.search_products,
-                    icon = null,
-                    horizontalPadding = 16.dp,
-/*
-                    searchBarEnd = SearchBarEnd.Filter(isHighlighted = activeFilterIds.value.isNotEmpty()) { scope.toggleFilter() },
-*/
-                    onIconClick = null,
-                    isSearchFocused = false,//scope.storage.restore("focus") as? Boolean ?: true,
-                    onSearch = { value, _ ->
-                        searchedProduct = value
-                        scope.pagination.reset()
-                        if (value.isEmpty()) {
-                            scope.startSearch(false)
-                        } else {
-                            scope.searchProduct(value)
-                        }
-                    },
-                    isSearchCross = true,
-                    onSearchKeyPress = { scope.startSearch(true, searchedProduct) }
-                )
                 scope.storage.save("focus", false)
+                Space(16.dp)
+                BoxWithConstraints(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_eye),
+                                contentDescription = null,
+                                tint = ConstColors.red,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Space(8.dp)
+                            Text(
+                                text = stringResource(id = R.string.offers),
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.W700,
+                                color = ConstColors.red,
+                                textAlign = TextAlign.Center,
+                            )
+                            Space(8.dp)
+                            Switch(
+                                checked = switchEnabled.value, onCheckedChange = {
+                                    switchEnabled.value = it
+                                    if (it) {
+                                        scope.selectFilter(offersFilter, options)
+                                    } else {
+                                        scope.clearFilter(offersFilter)
+                                    }
+                                }, colors = SwitchDefaults.colors(
+                                    checkedThumbColor = ConstColors.green
+                                )
+                            )
+                        }
+
+                        /*Row {
+                            Text(
+                                text = stringResource(id = R.string.filters),
+                                color = ConstColors.lightBlue,
+                                fontWeight = FontWeight.W500,
+                                fontSize = 14.sp
+                            )
+                        }*/
+                    }
+                }
+
+                Space(dp = 16.dp)
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp, start = 16.dp)
+                )
+                {
+                    LazyRow(
+                        modifier = Modifier.padding(start = 5.dp)
+                    ) {
+                        stockConnected.value.let {
+                            itemsIndexed(
+                                items = it,
+                                key = { index, _ -> index },
+                                itemContent = { _, item ->
+                                    StockistConnectedData(
+                                        item,
+                                        back = item.unitCode == scope.unitCode
+                                    ) {
+                                        scope.updateView(item)
+                                    }
+                                },
+                            )
+                        }
+                    }
+                }
+
+                Space(dp = 16.dp)
+
+                if (scope.store.sellerUnitCode.isNotEmpty()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, end = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        Row {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_customer_care_acc),
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Space(dp = 10.dp)
+
+                            Text(
+                                text = scope.store.tradeName,
+                                color = Color.Black,
+                                fontWeight = FontWeight.W700,
+                                fontSize = 14.sp
+                            )
+                        }
+
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_dots),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clickable {
+                                    EventCollector.sendEvent(
+                                        Event.Action.Management.GetDetails(
+                                            scope.store.sellerUnitCode
+                                        )
+                                    )
+                                }
+                        )
+                    }
+                }
                 if (showFilter.value) {
                     Column(
                         modifier = Modifier
@@ -225,75 +339,32 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                         Space(8.dp)
                     }
                 } else {
-                    Space(16.dp)
-                    BoxWithConstraints(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier.width(maxWidth / 2 - 8.dp),
-                            contentAlignment = Alignment.CenterStart,
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_eye),
-                                    contentDescription = null,
-                                    tint = ConstColors.red,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Space(8.dp)
-                                Text(
-                                    text = stringResource(id = R.string.offers),
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.W700,
-                                    color = ConstColors.red,
-                                    textAlign = TextAlign.Center,
-                                )
-                                Space(8.dp)
-                                Switch(
-                                    checked = switchEnabled.value, onCheckedChange = {
-                                        switchEnabled.value = it
-                                        if (it) {
-                                            scope.selectFilter(offersFilter, options)
-                                        } else {
-                                            scope.clearFilter(offersFilter)
-                                        }
-                                    }, colors = SwitchDefaults.colors(
-                                        checkedThumbColor = ConstColors.green
-                                    )
-                                )
-                            }
-                        }
-                    }
-
-                    if (autoComplete.value.isEmpty()) {
+                    Space(dp = 16.dp)
+                    /*if (autoComplete.value.isEmpty()) {
                         filtersManufactures.value.forEach { filter ->
                             if (filter.queryId == "manufacturers") {
                                 Box(modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)) {
                                     HorizontalFilterSection(
                                         name = filter.name,
                                         options = filter.options,
-                                        /*searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
+                                        *//*searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
                                          scope.searchFilter(filter, it)
-                                     },*/
+                                     },*//*
                                         onOptionClick = { scope.selectFilter(filter, it) },
                                         onFilterClear = { scope.clearFilter(null) }
                                     )
                                 }
                             }
                         }
-                    }
+                    }*/
 
 
                     //list of products
                     if (products.value.isEmpty() && scope.products.updateCount > 0 && autoComplete.value.isEmpty()) {
                         NoRecords(
                             icon = R.drawable.ic_missing_stores,
-                            text = R.string.missing_inventory_stores,
-                            subtitle = scope.store.tradeName,
+                            text = R.string.missing_products,
+                            subtitle = "",
                             onHome = { scope.globalSearch(searchedProduct) },
                             buttonText = stringResource(id = R.string.global_search)
                         )
@@ -371,7 +442,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                                             modifier = Modifier.padding(start = 15.dp)
                                         )
 
-                                        autoComplete.value.forEachIndexed { index, autoCompleteData ->
+                                        autoComplete.value.forEachIndexed { _, autoCompleteData ->
                                             if (autoCompleteData.query == "search") {
                                                 arrayList.add(autoCompleteData)
                                             }
@@ -414,7 +485,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                                             modifier = Modifier.padding(start = 15.dp)
                                         )
 
-                                        autoComplete.value.forEachIndexed { index, autoCompleteData ->
+                                        autoComplete.value.forEachIndexed { _, autoCompleteData ->
                                             if (autoCompleteData.query == "compositions") {
                                                 arrayList.add(autoCompleteData)
                                             }
@@ -459,7 +530,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                                             modifier = Modifier.padding(start = 15.dp)
                                         )
 
-                                        autoComplete.value.forEachIndexed { index, autoCompleteData ->
+                                        autoComplete.value.forEachIndexed { _, autoCompleteData ->
                                             if (autoCompleteData.query == "manufacturers") {
                                                 arrayList.add(autoCompleteData)
                                             }
