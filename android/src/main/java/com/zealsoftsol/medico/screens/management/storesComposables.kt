@@ -274,13 +274,6 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                     ) {
 
                         Row {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_customer_care_acc),
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Space(dp = 10.dp)
-
                             Text(
                                 text = scope.store.tradeName,
                                 color = Color.Black,
