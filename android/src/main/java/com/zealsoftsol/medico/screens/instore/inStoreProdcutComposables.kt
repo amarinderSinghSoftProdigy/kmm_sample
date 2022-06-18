@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.instore
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -44,7 +45,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -83,6 +83,7 @@ import com.zealsoftsol.medico.screens.search.ChipString
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
 import kotlinx.coroutines.launch
 
+@SuppressLint("RememberReturnType")
 @ExperimentalComposeUiApi
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -240,16 +241,10 @@ private fun ProductItem(
         onItemClick = onItemClick,
         //canAddToCart = item.stockInfo.status != StockStatus.OUT_OF_STOCK,
         headerContent = {
-            Surface(
-                color = ConstColors.separator,
-                shape = RoundedCornerShape(10.dp),
-                border = BorderStroke(1.dp, ConstColors.separator),
-                elevation = 3.dp
-            ) {
+            Surface{
                 CoilImage(
                     src = CdnUrlProvider.urlFor(item.imageCode, CdnUrlProvider.Size.Px320),
                     modifier = Modifier
-                        .clip(RoundedCornerShape(5.dp))
                         .size(100.dp)
                         .clickable {
                             onImageClick()

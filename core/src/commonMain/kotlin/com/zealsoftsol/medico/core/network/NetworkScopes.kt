@@ -354,6 +354,11 @@ interface NetworkScope {
             page: Int,
         ): BodyResponse<PaginatedData<InStoreProduct>>
 
+        suspend fun searchInStoreSellerAutoComplete(
+            unitCode: String,
+            search: String,
+        ): BodyResponse<PaginatedData<InStoreProduct>>
+
         suspend fun getInStoreUsers(
             unitCode: String,
             search: String,

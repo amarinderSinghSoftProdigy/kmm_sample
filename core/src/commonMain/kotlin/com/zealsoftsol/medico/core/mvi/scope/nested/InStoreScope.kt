@@ -132,7 +132,7 @@ class InStoreProductsScope(
 
     fun firstLoad() {
         currentPage.value = 0
-        EventCollector.sendEvent(Event.Action.InStore.ProductLoad(isFirstLoad = true, 0))
+        EventCollector.sendEvent(Event.Action.InStore.ProductSearch(""))
     }
 
     /*//pass on the seller info to be displayed on header
@@ -158,7 +158,8 @@ class InStoreProductsScope(
 
     fun search(value: String): Boolean {
         return if (searchText.value != value) {
-            EventCollector.sendEvent(Event.Action.InStore.ProductSearch(value, currentPage.value))
+            currentPage.value = 0
+            EventCollector.sendEvent(Event.Action.InStore.ProductSearch(value))
         } else {
             false
         }

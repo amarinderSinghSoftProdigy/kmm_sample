@@ -45,10 +45,7 @@ internal class InStoreEventDelegate(
             event.isFirstLoad,
             page = event.page
         )
-        is Event.Action.InStore.ProductSearch -> searchProductInStore(
-            event.value,
-            page = event.page
-        )
+        is Event.Action.InStore.ProductSearch -> searchProductInStore(event.value)
         is Event.Action.InStore.ProductSelect -> selectProductInStore(event.item)
         is Event.Action.InStore.UserLoad -> loadUserInStore(event.isFirstLoad)
         is Event.Action.InStore.UserSearch -> searchUserInStore(event.value)
@@ -146,7 +143,7 @@ internal class InStoreEventDelegate(
             val result = withProgress {
                 networkInStoreScope.searchInStoreSeller(
                     unitCode = it.unitCode,
-                    search = it.searchText.value,
+                    search = "",
                     page = page,
                 )
             }
@@ -163,14 +160,23 @@ internal class InStoreEventDelegate(
         if (isFirstLoad && cartIfFirst) loadCart()
     }
 
-    private suspend fun searchProductInStore(search: String, page: Int) {
-        /*   loadHelper.search<InStoreProductsScope, InStoreProduct>(searchValue = search) {
-               networkInStoreScope.searchInStoreSeller(
-                   unitCode = unitCode,
-                   search = searchText.value,
-                   page = page
-               ).getBodyOrNull()
-           }*/
+    private suspend fun searchProductInStore(search: String) {
+        navigator.withScope<InStoreProductsScope> {
+            val result = withProgress {
+                networkInStoreScope.searchInStoreSellerAutoComplete(
+                    unitCode = it.unitCode,
+                    search = "ACE",
+                )
+            }
+
+            result.onSuccess { _ ->
+                val data = result.getBodyOrNull()
+                if (data?.data != null) {
+                    it.items.value = data.data
+                    it.totalItems.value = data.total
+                }
+            }.onError(navigator)
+        }
     }
 
     private fun selectProductInStore(item: InStoreProduct) {
