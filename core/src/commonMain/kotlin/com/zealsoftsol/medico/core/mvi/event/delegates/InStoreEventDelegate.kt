@@ -43,7 +43,8 @@ internal class InStoreEventDelegate(
         )
         is Event.Action.InStore.ProductLoad -> loadProductInStore(
             event.isFirstLoad,
-            page = event.page
+            page = event.page,
+            search = event.searchTerm
         )
         is Event.Action.InStore.ProductSearch -> searchProductInStore(event.value)
         is Event.Action.InStore.ProductSelect -> selectProductInStore(event.item)
@@ -136,14 +137,14 @@ internal class InStoreEventDelegate(
 
     private suspend fun loadProductInStore(
         isFirstLoad: Boolean, cartIfFirst: Boolean = true,
-        page: Int
+        page: Int, search: String
     ) {
 
         navigator.withScope<InStoreProductsScope> {
             val result = withProgress {
                 networkInStoreScope.searchInStoreSeller(
                     unitCode = it.unitCode,
-                    search = "",
+                    search = search,
                     page = page,
                 )
             }
@@ -162,18 +163,20 @@ internal class InStoreEventDelegate(
 
     private suspend fun searchProductInStore(search: String) {
         navigator.withScope<InStoreProductsScope> {
-            val result = withProgress {
+            val result =
                 networkInStoreScope.searchInStoreSellerAutoComplete(
                     unitCode = it.unitCode,
-                    search = "ACE",
+                    search = search,
                 )
-            }
 
-            result.onSuccess { _ ->
-                val data = result.getBodyOrNull()
-                if (data?.data != null) {
-                    it.items.value = data.data
-                    it.totalItems.value = data.total
+
+            result.onSuccess { body ->
+                it.autoComplete.value = body
+                if (it.autoComplete.value.isEmpty()) {
+                    it.showNoProducts.value = true
+                }
+                if (search.isNotEmpty() && body.isEmpty() && it.items.value.isNotEmpty()) {
+                    it.items.value = emptyList()
                 }
             }.onError(navigator)
         }
@@ -262,7 +265,7 @@ internal class InStoreEventDelegate(
             }.onSuccess { cart ->
                 if (it is InStoreProductsScope) {
                     it.cart.value = cart
-                    loadProductInStore(true, false, 0)
+                    loadProductInStore(true, false, 0, "")
                 }
             }.onError(navigator)
         }

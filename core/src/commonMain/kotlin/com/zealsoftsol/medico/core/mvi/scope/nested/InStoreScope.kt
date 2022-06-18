@@ -16,6 +16,7 @@ import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.core.utils.trimInput
+import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.InStoreCart
 import com.zealsoftsol.medico.data.InStoreCartEntry
 import com.zealsoftsol.medico.data.InStoreProduct
@@ -117,6 +118,8 @@ class InStoreProductsScope(
     val searchText: DataSource<String> = DataSource("")
     val cart: DataSource<InStoreCart?> = DataSource(null)
     val currentPage = DataSource(0)
+    val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList())
+    var showNoProducts: DataSource<Boolean> = DataSource(false)
 
     fun setCurrentPage(page: Int) {
         currentPage.value = page
@@ -132,7 +135,7 @@ class InStoreProductsScope(
 
     fun firstLoad() {
         currentPage.value = 0
-        EventCollector.sendEvent(Event.Action.InStore.ProductSearch(""))
+        EventCollector.sendEvent(Event.Action.InStore.ProductLoad(isFirstLoad = true, 0))
     }
 
     /*//pass on the seller info to be displayed on header
@@ -152,17 +155,16 @@ class InStoreProductsScope(
         EventCollector.sendEvent(
             Event.Action.InStore.ProductLoad(
                 isFirstLoad = false,
-                page = currentPage.value
+                page = currentPage.value,
+                searchTerm = searchText.value
             )
         )
 
     fun search(value: String): Boolean {
-        return if (searchText.value != value) {
-            currentPage.value = 0
-            EventCollector.sendEvent(Event.Action.InStore.ProductSearch(value))
-        } else {
-            false
-        }
+        searchText.value = value
+        currentPage.value = 0
+        EventCollector.sendEvent(Event.Action.InStore.ProductSearch(value))
+        return true
     }
 
     fun selectItem(item: InStoreProduct) =
@@ -186,6 +188,11 @@ class InStoreProductsScope(
                 freeQuantity,
             )
         )
+
+    fun selectAutoComplete(it: AutoComplete) {
+        searchText.value = it.suggestion
+        loadItems()
+    }
 }
 
 class InStoreUsersScope : Scope.Child.TabBar(), Loadable<InStoreUser>, CommonScope.CanGoBack {

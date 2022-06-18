@@ -888,13 +888,12 @@ class NetworkClient(
     override suspend fun searchInStoreSellerAutoComplete(
         unitCode: String,
         search: String,
-    ): BodyResponse<PaginatedData<InStoreProduct>> = simpleRequest {
+    ): BodyResponse<List<AutoComplete>> = simpleRequest {
         client.get("${baseUrl.url}/instore/search/suggest") {
             withMainToken()
             url {
                 parameters.apply {
                     append("suggest", search)
-                    append("b2bUnitCode", unitCode)
                 }
             }
         }
