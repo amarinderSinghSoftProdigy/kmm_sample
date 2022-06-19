@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.dashboard
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,6 +29,7 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -63,6 +65,7 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
@@ -73,10 +76,13 @@ import com.zealsoftsol.medico.data.EmployeeBannerData
 import com.zealsoftsol.medico.data.ManufacturerData
 import com.zealsoftsol.medico.data.OfferStatus
 import com.zealsoftsol.medico.data.ProductSold
+import com.zealsoftsol.medico.data.StockistListItem
+import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.CoilImageBrands
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
+import com.zealsoftsol.medico.screens.common.Placeholder
 import com.zealsoftsol.medico.screens.common.ShimmerItem
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.inventory.CommonRoundedView
@@ -107,6 +113,7 @@ private fun ShowRetailerAndHospitalDashboard(
     val categories = scope.categoriesData.flow.collectAsState()
     val banners = scope.bannerData.flow.collectAsState()
     val deals = scope.dealsData.flow.collectAsState()
+    val stockConnected = scope.stockConnectedData.flow.collectAsState()
 
     Box(
         modifier = Modifier
@@ -223,8 +230,10 @@ private fun ShowRetailerAndHospitalDashboard(
                     }
                 }
             }
+            ShowConnectedStockist(stockConnected.value, scope)
 
             Space(dp = 16.dp)
+
             Column(
                 modifier = Modifier
                     .background(Color.White)
@@ -388,11 +397,12 @@ private fun ShowRetailerAndHospitalDashboard(
     }
 }
 
+
 /**
  * rewards and cashback view
  */
 @Composable
-fun RewardsAndCashback(scope: DashboardScope){
+fun RewardsAndCashback(scope: DashboardScope) {
     Column(
         modifier = Modifier
             .background(Color.White)
@@ -819,7 +829,7 @@ private fun ShowStockistDashBoard(
     val promotionData = scope.promotionData.flow.collectAsState()
     val activity = LocalContext.current as MainActivity
     val shareText = stringResource(id = R.string.share_content)
-
+    val stockConnected = scope.stockConnectedData.flow.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -929,6 +939,8 @@ private fun ShowStockistDashBoard(
                 }
             }
         }
+
+        ShowConnectedStockist(stockConnected.value, scope)
         Space(dp = 16.dp)
         Column(
             modifier = Modifier
@@ -995,7 +1007,7 @@ private fun ShowStockistDashBoard(
 
         Space(16.dp)
 
-       RewardsAndCashback(scope)
+        RewardsAndCashback(scope)
 
         Space(16.dp)
 
@@ -1489,3 +1501,120 @@ private fun StockistEmpBannerItem(
 }
 
 
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun StockistConnectedData(item: StockistListItem, back: Boolean = false, onClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .size(80.dp)
+            .clickable { onClick() },
+        horizontalAlignment = CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Surface(
+            color = if (back) ConstColors.yellow else Color.White,
+            shape = RoundedCornerShape(percent = 50),
+            onClick = onClick,
+            modifier = Modifier.padding(4.dp),
+            elevation = 8.dp,
+            border = if (back) BorderStroke(
+                1.dp,
+                ConstColors.yellow
+            ) else BorderStroke(
+                1.dp, Color.White
+            )
+        ) {
+            Surface(
+                modifier = Modifier
+                    .size(60.dp),
+                color = Color.White,
+                shape = CircleShape,
+                elevation = 5.dp,
+            ) {
+                Box {
+                    if (item.url.isNotEmpty()) {
+                        CoilImage(
+                            src = item.url,
+                            modifier = Modifier
+                                .align(Center)
+                                .width(60.dp)
+                                .height(60.dp),
+                            onError = { Placeholder(R.drawable.ic_img_placeholder) },
+                            onLoading = { Placeholder(R.drawable.ic_img_placeholder) },
+                            isCrossFadeEnabled = false
+                        )
+                    } else {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = CenterHorizontally
+                        ) {
+                            Text(
+                                text = item.key,
+                                color = Color.Black,
+                                fontSize = 30.sp,
+                                fontWeight = FontWeight.W700,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        Space(dp = 8.dp)
+        Row {
+            Text(
+                modifier = Modifier
+                    .width(65.dp),
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
+                text = item.tradeName,
+                color = Color.Gray,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.W600,
+                textAlign = TextAlign.Start
+            )
+        }
+    }
+}
+
+@Composable
+fun ShowConnectedStockist(stockConnected: List<StockistListItem>?, scope: DashboardScope) {
+    if (!stockConnected.isNullOrEmpty()) {
+        Space(dp = 16.dp)
+        Column(
+            modifier = Modifier
+                .background(Color.White)
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = stringResource(id = R.string.connected_stockist),
+                color = ConstColors.lightBlue,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.W600,
+            )
+            Space(10.dp)
+            LazyRow {
+                itemsIndexed(
+                    items = stockConnected,
+                    key = { index, _ -> index },
+                    itemContent = { _, item ->
+                        StockistConnectedData(item) {
+                            scope.sendEvent(
+                                Event.Transition.StoreDetail(
+                                    Store(
+                                        sellerUnitCode = item.unitCode,
+                                        tradeName = item.tradeName,
+                                        distance = item.distance.value,
+                                        formattedDistance = item.distance.formatted,
+                                    )
+                                )
+                            )
+                        }
+                    },
+                )
+            }
+        }
+    }
+}

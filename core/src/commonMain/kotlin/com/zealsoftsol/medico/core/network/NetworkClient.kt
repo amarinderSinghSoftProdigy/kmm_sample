@@ -33,6 +33,7 @@ import com.zealsoftsol.medico.data.ClearAllNotification
 import com.zealsoftsol.medico.data.ConfigData
 import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.ConnectedStockist
+import com.zealsoftsol.medico.data.ConnectedStockists
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
@@ -431,7 +432,8 @@ class NetworkClient(
         pagination: Pagination,
         addPage: Boolean
     ) = simpleRequest {
-        client.get<BodyResponse<SearchResponse>>("${baseUrl.url}/search/${if (unitCode == null) "global" else "stores"}") {
+        client.get<BodyResponse<SearchResponse>>("${baseUrl.url}/search/${if (unitCode == null) "global" else "v2/stores"}") {
+        //client.get<BodyResponse<SearchResponse>>("${baseUrl.url}/search/${if (unitCode == null) "global" else "stores"}") {
             withMainToken()
             url {
                 parameters.apply {
@@ -1587,6 +1589,12 @@ class NetworkClient(
             }
         }
 
+
+    override suspend fun getConnectedStockist(): BodyResponse<ConnectedStockists> = simpleRequest {
+        client.get("${baseUrl.url}//dashboard/connected/stockists"){
+            withMainToken()
+        }
+    }
 
     // Utils
     private inline fun HttpRequestBuilder.withB2bCodeToken(finalToken: String) {

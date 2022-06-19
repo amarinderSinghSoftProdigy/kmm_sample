@@ -6,25 +6,25 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Store(
-    val distance: Double,
-    val formattedDistance: String,
-    val gstin: String,
-    val location: String,
-    val manufacturersInCatalogue: Int,
-    val mobileNumber: String,
-    val panNumber: String,
-    val paymentMethod: String,
-    val pincode: String,
-    val productsInCatalogue: Int,
-    val sellerUnitCode: String,
+    val distance: Double = 0.0,
+    val formattedDistance: String = "",
+    val gstin: String = "",
+    val location: String = "",
+    val manufacturersInCatalogue: Int = 0,
+    val mobileNumber: String = "",
+    val panNumber: String = "",
+    val paymentMethod: String = "",
+    val pincode: String = "",
+    val productsInCatalogue: Int = 0,
+    val sellerUnitCode: String = "",
     @SerialName("subscribeStatus")
-    val status: SubscriptionStatus,
+    val status: SubscriptionStatus? = null,
     @SerialName("townOrCity")
-    val city: String,
-    val tradeName: String,
-    val tradeNameUrl: String?=null,
+    val city: String = "",
+    val tradeName: String = "",
+    val tradeNameUrl: String? = null,
     @SerialName("unitGeoPoints")
-    val geoPoints: GeoPoints,
+    val geoPoints: GeoPoints? = null,
     val drugLicenseNo1: String? = null,
     val drugLicenseNo2: String? = null
 ) {

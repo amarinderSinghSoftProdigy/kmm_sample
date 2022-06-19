@@ -47,6 +47,7 @@ import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.getManufacturerDataSource
 import com.zealsoftsol.medico.core.repository.getPromotionsDataSource
 import com.zealsoftsol.medico.core.repository.getRecentProductsDataSource
+import com.zealsoftsol.medico.core.repository.getStockConnectedDataSource
 import com.zealsoftsol.medico.core.repository.getStockDataSource
 import com.zealsoftsol.medico.core.repository.getStockistEmpBannerDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
@@ -54,6 +55,7 @@ import com.zealsoftsol.medico.core.repository.getUserDataSourceV2
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.repository.requireUserOld
 import com.zealsoftsol.medico.data.ProductsData
+import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
@@ -95,7 +97,8 @@ internal class TransitionEventDelegate(
                             categoriesData = userRepo.getCategoriesDataSource(),
                             brandsData = userRepo.getBrandsDataSource(),
                             bannerData = userRepo.getBannerDataSource(),
-                            stockistEmpBannerData = userRepo.getStockistEmpBannerDataSource()
+                            stockistEmpBannerData = userRepo.getStockistEmpBannerDataSource(),
+                            stockConnectedData = userRepo.getStockConnectedDataSource()
                         )
                     )
                 }
@@ -174,9 +177,17 @@ internal class TransitionEventDelegate(
                     NotificationScope.All()
                 )
                 is Event.Transition.Stores -> setScope(
-                    StoresScope.All(
+                    StoresScope.StorePreview(
+                        Store(),
                         notificationRepo.getUnreadMessagesDataSource(),
                         cartRepo.getEntriesCountDataSource()
+                    )
+                )
+                is Event.Transition.StoreDetail -> setScope(
+                    StoresScope.StorePreview(
+                        event.store,
+                        cartRepo.getEntriesCountDataSource(),
+                        notificationRepo.getUnreadMessagesDataSource()
                     )
                 )
                 is Event.Transition.Cart -> setScope(

@@ -51,6 +51,7 @@ object ConstColors {
     val highlightGrey = Color(0xff979797)
     val cream = Color(0XffFFFAE1)
     val paleBlue = Color(0x1A009EFF)
+    val skyBlue = Color(0x80DFEFF8)
 }
 
 @Composable

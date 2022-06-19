@@ -169,6 +169,7 @@ import com.zealsoftsol.medico.screens.management.AddRetailerScreen
 import com.zealsoftsol.medico.screens.management.CompaniesScreen
 import com.zealsoftsol.medico.screens.management.ManagementScreen
 import com.zealsoftsol.medico.screens.management.StoresScreen
+import com.zealsoftsol.medico.screens.management.searchedProduct
 import com.zealsoftsol.medico.screens.manufacturers.ManufacturerScreen
 import com.zealsoftsol.medico.screens.menu.MenuScreen
 import com.zealsoftsol.medico.screens.notification.NotificationScreen
@@ -312,6 +313,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                                 info,
                             )
                             is TabBarInfo.NoHeader -> Box {}
+                            is TabBarInfo.StoresSearch -> StoreSearch(scope = scope, info = info)
                         }
                     }
                 }
@@ -1145,6 +1147,55 @@ private fun StoreHeader(
             cart?.cartCount?.value = 0
         }
     }
+}
+
+@Composable
+private fun StoreSearch(scope: TabBarScope, info: TabBarInfo.StoresSearch) {
+
+    val search = info.search.flow.collectAsState()
+    val pagination = info.pagination
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = info.icon.toLocalIcon(),
+            contentDescription = null,
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .fillMaxHeight()
+                .padding(start = 16.dp)
+                .clickable(
+                    indication = null,
+                    onClick = {
+                        scope.goBack()
+                    },
+                )
+        )
+
+        Space(5.dp)
+
+        BasicSearchBar(
+            input = search.value,
+            hint = R.string.search_products,
+            icon = Icons.Default.Search,
+            horizontalPadding = 16.dp,
+            onIconClick = null,
+            isSearchFocused = false,//scope.storage.restore("focus") as? Boolean ?: true,
+            onSearch = { value, _ ->
+                searchedProduct = value
+                pagination.reset()
+                if (value.isEmpty()) {
+                    info.startSearch(false)
+                } else {
+                    info.searchProduct(value)
+                }
+            },
+            isSearchCross = true,
+            onSearchKeyPress = { info.startSearch(true, searchedProduct) }
+        )
+    }
+
 }
 
 /**

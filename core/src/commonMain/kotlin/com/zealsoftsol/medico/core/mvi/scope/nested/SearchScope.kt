@@ -11,10 +11,12 @@ import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.CartData
+import com.zealsoftsol.medico.data.ConnectedStockists
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SortOption
+import com.zealsoftsol.medico.data.StockistListItem
 
 interface BaseSearchScope : Scopable {
     val enableButton: DataSource<Boolean>
@@ -34,12 +36,14 @@ interface BaseSearchScope : Scopable {
     val activeFilterIds: DataSource<List<String>>
     val freeQty: DataSource<Double>
     val productId: DataSource<String>
+    val selectedStockist: DataSource<String>
+    val selectedTradename: DataSource<String>
     val totalResults: DataSource<Int>
     var showNoProducts: DataSource<Boolean>
-
+    val connectedStockist: DataSource<List<StockistListItem>>
 
     // store search if present
-    val unitCode: String?
+    var unitCode: String?
 
     // searches without loading if false
     val supportsAutoComplete: Boolean
@@ -128,11 +132,14 @@ class SearchScope(
     override val freeQty: DataSource<Double> = DataSource(0.0),
     override val productId: DataSource<String> = DataSource(""),
     override val totalResults: DataSource<Int> = DataSource(0),
+    override val connectedStockist: DataSource<List<StockistListItem>> = DataSource(emptyList()),
+    override val selectedStockist: DataSource<String> = DataSource(""),
+    override val selectedTradename: DataSource<String> = DataSource("")
 ) : Scope.Child.TabBar(), BaseSearchScope {
 
     override var showNoProducts: DataSource<Boolean> = DataSource(false)
 
-    override val unitCode: String? = null
+    override var unitCode: String? = null
     override val supportsAutoComplete: Boolean = true
     override val pagination: Pagination = Pagination(Pagination.ITEMS_PER_PAGE_10)
     val showNoStockistAlert = DataSource(false)

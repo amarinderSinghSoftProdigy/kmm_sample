@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.data.AddressData
 import com.zealsoftsol.medico.data.BodyResponse
+import com.zealsoftsol.medico.data.ConnectedStockists
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
 import com.zealsoftsol.medico.data.CustomerMetaData
@@ -64,6 +65,10 @@ class MockCustomerScope : NetworkScope.Customer {
     }
 
     override suspend fun getStockistEmployeeBannerData(type: UserType): BodyResponse<List<EmployeeBannerData>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getConnectedStockist(): BodyResponse<ConnectedStockists> {
         TODO("Not yet implemented")
     }
 

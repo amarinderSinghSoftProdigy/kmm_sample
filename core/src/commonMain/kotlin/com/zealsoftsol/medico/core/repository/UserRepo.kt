@@ -34,6 +34,7 @@ import com.zealsoftsol.medico.data.ProfileResponseData
 import com.zealsoftsol.medico.data.RecentProductInfo
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.StockStatusData
+import com.zealsoftsol.medico.data.StockistListItem
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.TokenInfo
@@ -96,7 +97,10 @@ class UserRepo(
     val brandsFlow: MutableStateFlow<List<BrandsData>> = MutableStateFlow(emptyList())
     val dealsFlow: MutableStateFlow<List<DealsData>> = MutableStateFlow(emptyList())
     val categoriesFlow: MutableStateFlow<List<BrandsData>> = MutableStateFlow(emptyList())
-    val stockistEmployeeBannerFlow: MutableStateFlow<List<EmployeeBannerData>> = MutableStateFlow(emptyList())
+    val stockistEmployeeBannerFlow: MutableStateFlow<List<EmployeeBannerData>> =
+        MutableStateFlow(emptyList())
+    val stockistConnectedFlow: MutableStateFlow<List<StockistListItem>?> =
+        MutableStateFlow(emptyList())
 
     fun getUserAccess(): UserAccess {
         return userV2Flow.value?.let {
@@ -210,7 +214,13 @@ class UserRepo(
             networkCustomerScope.getPromotionData(userType).onSuccess {
                 promotionDataFlow.value = it.results
             }
+            networkCustomerScope.getConnectedStockist().onSuccess {
+                stockistConnectedFlow.value = it.results
+            }
         } else if (userType == UserType.RETAILER || userType == UserType.HOSPITAL) {
+            networkCustomerScope.getConnectedStockist().onSuccess {
+                stockistConnectedFlow.value = it.results
+            }
             networkCustomerScope.getBannerData(userType).onSuccess {
                 bannerFlow.value = it.results
             }
@@ -514,6 +524,11 @@ internal inline fun UserRepo.getRecentProductsDataSource(): ReadOnlyDataSource<R
         recentProductFlow.stateIn(GlobalScope, SharingStarted.Eagerly, null)
     )
 
+internal inline fun UserRepo.getStockConnectedDataSource(): ReadOnlyDataSource<List<StockistListItem>?> =
+    ReadOnlyDataSource(
+        stockistConnectedFlow.stateIn(GlobalScope, SharingStarted.Eagerly, null)
+    )
+
 internal inline fun UserRepo.getPromotionsDataSource(): ReadOnlyDataSource<List<OffersData>?> =
     ReadOnlyDataSource(
         promotionDataFlow.stateIn(GlobalScope, SharingStarted.Eagerly, null)
@@ -543,4 +558,5 @@ internal inline fun UserRepo.getStockistEmpBannerDataSource(): ReadOnlyDataSourc
     ReadOnlyDataSource(
         stockistEmployeeBannerFlow.stateIn(GlobalScope, SharingStarted.Eagerly, null)
     )
+
 private inline fun String.formatIndia() = "91$this"
