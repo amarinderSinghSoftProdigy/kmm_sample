@@ -1091,22 +1091,22 @@ private fun StoreHeader(
                         overflow = TextOverflow.Ellipsis,
                     )
                     Space(dp = 4.dp)
-                   Image(
-                       modifier = Modifier.align(Bottom),
-                       painter = painterResource(id = R.drawable.ic_baseline_more_horiz_24),
-                       contentDescription = null
-                   )
+                    Image(
+                        modifier = Modifier.align(Bottom),
+                        painter = painterResource(id = R.drawable.ic_baseline_more_horiz_24),
+                        contentDescription = null
+                    )
                 }
             }
         }
 
-        Box(
-            modifier = Modifier
-                .weight(0.15f)
-                .clickable(indication = null) { info.goToNotifications() }
-                .padding(10.dp),
-        ) {
-            if (info.showNotifications) {
+        if (info.showNotifications) {
+            Box(
+                modifier = Modifier
+                    .weight(0.15f)
+                    .clickable(indication = null) { info.goToNotifications() }
+                    .padding(10.dp),
+            ) {
 
                 Image(
                     painter = painterResource(id = R.drawable.ic_bell),
