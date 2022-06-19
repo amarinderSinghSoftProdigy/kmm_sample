@@ -120,9 +120,18 @@ class InStoreProductsScope(
     val currentPage = DataSource(0)
     val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList())
     var showNoProducts: DataSource<Boolean> = DataSource(false)
+    val showToast = DataSource(false)
+    val toastData: DataSource<ToastItem?> = DataSource(null)
+
+    data class ToastItem(val productName: String, val quantity: Double, val freeQuantity: Double)
 
     fun setCurrentPage(page: Int) {
         currentPage.value = page
+    }
+
+    fun setToast(toastItem: ToastItem?, showToast: Boolean) {
+        toastData.value = toastItem
+        this.showToast.value = showToast
     }
 
     fun selectImage(item: String) {
@@ -160,11 +169,14 @@ class InStoreProductsScope(
             )
         )
 
-    fun search(value: String): Boolean {
+    fun search(value: String) {
         searchText.value = value
-        currentPage.value = 0
-        EventCollector.sendEvent(Event.Action.InStore.ProductSearch(value))
-        return true
+        if (value.isNotEmpty()) {
+            currentPage.value = 0
+            EventCollector.sendEvent(Event.Action.InStore.ProductSearch(value))
+        } else {
+            firstLoad()
+        }
     }
 
     fun selectItem(item: InStoreProduct) =
@@ -179,9 +191,10 @@ class InStoreProductsScope(
         )
     )
 
-    fun addToCart(code: String, spid: String, quantity: Double, freeQuantity: Double): Boolean =
+    fun addToCart(code: String, spid: String, quantity: Double, freeQuantity: Double, productName: String): Boolean =
         EventCollector.sendEvent(
             Event.Action.InStore.AddCartItem(
+                productName,
                 code,
                 spid,
                 quantity,

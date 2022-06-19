@@ -58,6 +58,7 @@ internal class InStoreEventDelegate(
         is Event.Action.InStore.ConfirmCartOrder -> confirmCartOrder()
         is Event.Action.InStore.AddCartItem -> event.run {
             addItem(
+                productName,
                 productCode,
                 spid,
                 quantity,
@@ -151,6 +152,7 @@ internal class InStoreEventDelegate(
 
             result.onSuccess { _ ->
                 val data = result.getBodyOrNull()
+                it.autoComplete.value = emptyList()
                 if (data?.data != null) {
                     it.items.value = data.data
                     it.totalItems.value = data.total
@@ -246,6 +248,7 @@ internal class InStoreEventDelegate(
     private var cartId = ""
 
     private suspend fun addItem(
+        productName: String,
         productCode: String,
         spid: String,
         quantity: Double,
@@ -265,7 +268,11 @@ internal class InStoreEventDelegate(
             }.onSuccess { cart ->
                 if (it is InStoreProductsScope) {
                     it.cart.value = cart
-                    loadProductInStore(true, false, 0, "")
+//                    loadProductInStore(true, false, 0, "")
+                    it.setToast(
+                        InStoreProductsScope.ToastItem(productName, quantity, freeQuantity),
+                        true
+                    )
                 }
             }.onError(navigator)
         }

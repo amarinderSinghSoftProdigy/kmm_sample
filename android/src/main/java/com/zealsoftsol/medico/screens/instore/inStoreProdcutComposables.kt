@@ -77,6 +77,7 @@ import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
+import com.zealsoftsol.medico.screens.common.ShowToastGlobal
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.management.checkOffer
 import com.zealsoftsol.medico.screens.search.AutoCompleteItem
@@ -95,6 +96,8 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
     val curPage = scope.currentPage.flow.collectAsState()
     val autoComplete = scope.autoComplete.flow.collectAsState()
     val showNoProduct = scope.showNoProducts.flow.collectAsState()
+    val cart = scope.cart.flow.collectAsState()
+    val toastItem = scope.toastData.flow.collectAsState()
 
     remember { scope.firstLoad() }
     Column(
@@ -103,7 +106,6 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
             .background(ConstColors.paleBlue)
             .padding(top = 16.dp)
     ) {
-        val cart = scope.cart.flow.collectAsState()
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -151,7 +153,9 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
             elevation = 3.dp,
             horizontalPadding = 16.dp,
             isSearchFocused = false,
-            onSearch = { v, _ -> scope.search(v) },
+            onSearch = { v, _ ->
+                scope.search(v)
+            },
             backgroundColor = ConstColors.lightBackground,
         )
         Space(dp = 4.dp)
@@ -308,11 +312,9 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
 
                 }
             }
+        }
 
-            if (showNoProduct.value)
-                NoProduct(productName = search.value)
-
-        } else {
+        if(items.value.isNotEmpty()){
             val state = rememberLazyListState()
             LazyColumn(
                 state = state,
@@ -370,6 +372,24 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
                 }
             }
         }
+
+        if (showNoProduct.value)
+            NoProduct(productName = search.value)
+    }
+
+    if (scope.showToast.flow.collectAsState().value) {
+        toastItem.value?.let {
+            ShowToastGlobal(
+                msg = it.productName + " " +
+                        stringResource(id = R.string.added_to_cart) + " " +
+                        stringResource(id = R.string.qty) +
+                        " : " +
+                        it.quantity + " + " +
+                        stringResource(id = R.string.free) + " " +
+                        it.freeQuantity
+            )
+        }
+        scope.setToast(null, false)
     }
 }
 
@@ -396,7 +416,7 @@ private fun ProductItem(
         onItemClick = onItemClick,
         //canAddToCart = item.stockInfo.status != StockStatus.OUT_OF_STOCK,
         headerContent = {
-            Surface{
+            Surface {
                 CoilImage(
                     src = CdnUrlProvider.urlFor(item.imageCode, CdnUrlProvider.Size.Px320),
                     modifier = Modifier
@@ -815,7 +835,8 @@ private fun BaseItem(
                                             item.code,
                                             item.spid,
                                             qty.value,
-                                            freeQty.value
+                                            freeQty.value,
+                                            item.name,
                                         )
                                     },
                                     textSize = 12.sp,

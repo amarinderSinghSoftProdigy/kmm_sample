@@ -423,6 +423,7 @@ sealed class Event {
             object LoadCart : InStore()
             object ClearCart : InStore()
             data class AddCartItem(
+                val productName: String,
                 val productCode: String,
                 val spid: String,
                 val quantity: Double,
