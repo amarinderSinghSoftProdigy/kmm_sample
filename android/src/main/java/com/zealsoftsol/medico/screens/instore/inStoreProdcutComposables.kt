@@ -499,6 +499,13 @@ private fun ProductItem(
                         color = labelColor,
                         fontSize = 12.sp
                     )
+                    if(item.stockInfo.status == StockStatus.IN_STOCK || item.stockInfo.status == StockStatus.LIMITED_STOCK){
+                        Text(
+                            text = "(${item.stockInfo.availableQty})",
+                            color = labelColor,
+                            fontSize = 12.sp
+                        )
+                    }
                 }
             }
         },
@@ -697,7 +704,7 @@ private fun BaseItem(
                                         )
 
                                         val wasQty = remember {
-                                            mutableStateOf("0.0")
+                                            mutableStateOf("0")
                                         }
 
                                         BasicTextField(

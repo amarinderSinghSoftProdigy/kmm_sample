@@ -191,7 +191,9 @@ class InStoreProductsScope(
         )
     )
 
-    fun addToCart(code: String, spid: String, quantity: Double, freeQuantity: Double, productName: String): Boolean =
+    fun addToCart(
+        code: String, spid: String, quantity: Double, freeQuantity: Double, productName: String
+    ): Boolean =
         EventCollector.sendEvent(
             Event.Action.InStore.AddCartItem(
                 productName,
@@ -199,6 +201,8 @@ class InStoreProductsScope(
                 spid,
                 quantity,
                 freeQuantity,
+                currentPage.value,
+                searchText.value
             )
         )
 

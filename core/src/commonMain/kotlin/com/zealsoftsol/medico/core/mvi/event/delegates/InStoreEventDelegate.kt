@@ -63,6 +63,8 @@ internal class InStoreEventDelegate(
                 spid,
                 quantity,
                 freeQuantity,
+                page,
+                search
             )
         }
         is Event.Action.InStore.UpdateCartItem -> event.run {
@@ -253,6 +255,8 @@ internal class InStoreEventDelegate(
         spid: String,
         quantity: Double,
         freeQuantity: Double,
+        page: Int,
+        search: String,
     ) {
         navigator.withScope<Scopable> {
             withProgress {
@@ -268,7 +272,7 @@ internal class InStoreEventDelegate(
             }.onSuccess { cart ->
                 if (it is InStoreProductsScope) {
                     it.cart.value = cart
-//                    loadProductInStore(true, false, 0, "")
+                    loadProductInStore(false, false, page, search)
                     it.setToast(
                         InStoreProductsScope.ToastItem(productName, quantity, freeQuantity),
                         true

@@ -459,6 +459,8 @@ sealed class BottomSheet {
                     product.spid,
                     quantity,
                     freeQuantity,
+                    0,
+                    ""
                 )
             )
     }
@@ -474,6 +476,8 @@ sealed class BottomSheet {
                     product.sellerInfo?.spid ?: "",
                     quantity,
                     freeQuantity,
+                    0,
+                    ""
                 )
             )
     }

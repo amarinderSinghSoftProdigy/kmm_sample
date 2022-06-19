@@ -428,6 +428,8 @@ sealed class Event {
                 val spid: String,
                 val quantity: Double,
                 val freeQuantity: Double,
+                val page: Int,
+                val search: String
             ) : InStore()
 
             data class UpdateCartItem(
