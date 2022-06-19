@@ -41,10 +41,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Bottom
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -1075,40 +1076,27 @@ private fun StoreHeader(
                 .fillMaxWidth()
                 .padding(start = 12.dp),
                 color = Color.White,
-                shape = RoundedCornerShape(3.dp),
-                elevation = 5.dp,
                 onClick = { info.openBottomSheet() }) {
                 Row(
                     modifier = Modifier.padding(all = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
+                        modifier = Modifier.align(CenterVertically),
                         text = info.storeName,
                         color = MaterialTheme.colors.background,
                         fontWeight = FontWeight.W700,
-                        fontSize = 12.sp,
+                        fontSize = 14.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
                     Space(dp = 4.dp)
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_verified),
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp),
-                    )
+                   Image(
+                       modifier = Modifier.align(Bottom),
+                       painter = painterResource(id = R.drawable.ic_baseline_more_horiz_24),
+                       contentDescription = null
+                   )
                 }
-            }
-            Surface(
-                modifier = Modifier
-                    .padding(end = 12.dp)
-                    .align(Alignment.CenterEnd),
-                color = Color.White
-            ) {
-                Icon(
-                    modifier = Modifier.size(14.dp).rotate(90f),
-                    painter = painterResource(id = R.drawable.ic_arrow_right),
-                    contentDescription = null,
-                )
             }
         }
 
