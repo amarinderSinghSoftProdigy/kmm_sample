@@ -370,5 +370,7 @@ internal class InStoreEventDelegate(
         cartId = cart.id.orEmpty()
         items.value = cart.entries
         total.value = cart.total
+        paymentMethod.value = cart.paymentType
+        showNoCart.value = cart.entries.isEmpty()
     }
 }

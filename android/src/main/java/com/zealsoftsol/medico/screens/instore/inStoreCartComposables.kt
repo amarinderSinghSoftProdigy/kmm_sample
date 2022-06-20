@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -65,11 +66,13 @@ import com.zealsoftsol.medico.screens.product.BottomSectionMode
 fun InStoreCartScreen(scope: InStoreCartScope) {
     val items = scope.items.flow.collectAsState()
     val total = scope.total.flow.collectAsState()
-    val showErrorAlert = remember { mutableStateOf(false) }
+    val showNoCart = scope.showNoCart.flow.collectAsState()
 
-    if (items.value.isEmpty()) {
+    if (showNoCart.value) {
         EmptyCart { scope.goHome() }
-    } else {
+    }
+
+    if(items.value.isNotEmpty()){
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
@@ -119,11 +122,78 @@ fun InStoreCartScreen(scope: InStoreCartScope) {
                     }
                 }
             }
+            Space(10.dp)
+            Surface(
+                color = ConstColors.lightBackground,
+                shape = RoundedCornerShape(25.dp),
+                elevation = 0.dp,
+                modifier = Modifier
+                    .padding(start = 10.dp, end = 10.dp)
+                    .height(50.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(start = 25.dp),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = scope.name,
+                        color = MaterialTheme.colors.background,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 16.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Space(2.dp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 16.dp)
+                    ) {
+                        Text(
+                            text = buildAnnotatedString {
+                                append(stringResource(id = R.string.payment_method))
+                                append(": ")
+                                val startIndex = length
+                                append(scope.paymentMethod.flow.collectAsState().value)
+                                addStyle(
+                                    SpanStyle(color = ConstColors.green),
+                                    startIndex,
+                                    length,
+                                )
+                            },
+                            color = ConstColors.gray,
+                            fontWeight = FontWeight.W500,
+                            fontSize = 12.sp,
+                        )
+
+                        Text(
+                            text = buildAnnotatedString {
+                                append(stringResource(id = R.string.total_))
+                                val startIndex = length
+                                append(": ")
+                                append(total.value?.formattedPrice ?: "N/A")
+                                addStyle(
+                                    SpanStyle(color = MaterialTheme.colors.background),
+                                    startIndex,
+                                    length,
+                                )
+                            },
+                            color = ConstColors.gray,
+                            fontWeight = FontWeight.W500,
+                            fontSize = 12.sp,
+                            maxLines = 1,
+                        )
+                    }
+                }
+            }
             BoxWithConstraints {
                 LazyColumn(
                     state = rememberLazyListState(),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier.height(maxHeight - 80.dp),
+                    contentPadding = PaddingValues(top = 10.dp),
                 ) {
                     items(
                         items.value,
@@ -209,6 +279,7 @@ fun InStoreCartScreen(scope: InStoreCartScope) {
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

@@ -153,7 +153,7 @@ class InStoreProductsScope(
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
         return TabBarInfo.StoreTitle(
-            storeName = sellerName,
+            storeName = sellerName.uppercase(),
             showNotifications = false,
             event = Event.Action.Management.GetDetails(unitCode),
             cartItemsCount = null
@@ -381,21 +381,28 @@ class InStoreAddUserScope(
 
 class InStoreCartScope(
     internal val unitCode: String,
-    internal val name: String,
+    val name: String,
     internal val address: String,
     internal val phoneNumber: String,
     val items: DataSource<List<InStoreCartEntry>> = DataSource(emptyList()),
     val total: DataSource<Total?> = DataSource(null),
+    val paymentMethod: DataSource<String> = DataSource("")
 ) : Scope.Child.TabBar() {
+
+    val showNoCart = DataSource(false)
 
     init {
         EventCollector.sendEvent(Event.Action.InStore.LoadCart)
     }
 
-    val isPreviewEnabled: DataSource<Boolean> = DataSource(false)
-
-    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo =
-        TabBarInfo.InStoreProductTitle(name, address, phoneNumber)
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
+        return TabBarInfo.StoreTitle(
+            storeName = name,
+            showNotifications = false,
+            event = Event.Action.Management.GetDetails(unitCode),
+            cartItemsCount = null
+        )
+    }
 
     fun updateItemCount(
         item: InStoreCartEntry,
