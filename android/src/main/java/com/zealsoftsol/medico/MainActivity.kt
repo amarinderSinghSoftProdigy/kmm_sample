@@ -2,7 +2,6 @@ package com.zealsoftsol.medico
 
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.annotation.SuppressLint
-import android.content.ActivityNotFoundException
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -12,7 +11,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,22 +19,17 @@ import androidx.annotation.RequiresApi
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
-import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.FileProvider
 import androidx.core.graphics.toColorInt
 import androidx.core.net.toUri
-import com.github.tutorialsandroid.appxupdater.AppUpdaterUtils
-import com.github.tutorialsandroid.appxupdater.enums.AppUpdaterError
-import com.github.tutorialsandroid.appxupdater.objects.Update
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import com.google.mlkit.vision.common.InputImage
@@ -74,7 +67,7 @@ class MainActivity : ComponentActivity(), DIAware {
 
     override val di: DI by closestDI()
     private val navigator by instance<UiNavigator>()
-    private val isAppUpdateAvailable = mutableStateOf(false)
+    private val UPDATE_REQUEST_CODE = 1000
 
     private var cameraCompletion: CompletableDeferred<Boolean> = CompletableDeferred()
     private val camera by lazy {
@@ -130,9 +123,6 @@ class MainActivity : ComponentActivity(), DIAware {
                 hostScope.value.showErrorAlert()
                 hostScope.value.showBottomSheet(this, coroutineScope)
             }
-            if (isAppUpdateAvailable.value) {
-                ShowAppUpdate()
-            }
         }
         camera
         picker
@@ -147,72 +137,27 @@ class MainActivity : ComponentActivity(), DIAware {
 
     }
 
-    /**
-     * Show dialog to update app
-     */
-    @Composable
-    fun ShowAppUpdate() {
-        MaterialTheme {
-            AlertDialog(
-                title = {
-                    Text(
-                        stringResource(id = R.string.update_available),
-                        color = Color.Black,
-                        fontSize = 20.sp
-                    )
-                },
-                properties = DialogProperties(
-                    dismissOnBackPress = false,
-                    dismissOnClickOutside = false
-                ),
-                text = {
-                    Text(stringResource(id = R.string.update_app), color = Color.Black)
-                },
-                confirmButton = {
-                    Button(
-                        colors = ButtonDefaults.buttonColors(backgroundColor = ConstColors.yellow),
-                        onClick = {
-                            try {
-                                startActivity(
-                                    Intent(
-                                        Intent.ACTION_VIEW,
-                                        Uri.parse("market://details?id=$packageName")
-                                    )
-                                )
-                            } catch (e: ActivityNotFoundException) {
-                                startActivity(
-                                    Intent(
-                                        Intent.ACTION_VIEW,
-                                        Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
-                                    )
-                                )
-                            }
-                        }
-                    ) {
-                        Text(stringResource(id = R.string.update), color = Color.Black)
-                    }
-                },
-                onDismissRequest = {}
-            )
-        }
-    }
 
     /**
      * check for app update
      */
     override fun onResume() {
         super.onResume()
-        val appUpdaterUtils = AppUpdaterUtils(this)
-            .withListener(object : AppUpdaterUtils.UpdateListener {
-                override fun onSuccess(update: Update, isUpdateAvailable: Boolean) {
-                    isAppUpdateAvailable.value = isUpdateAvailable
-                }
+        val appUpdateManager = AppUpdateManagerFactory.create(this)
 
-                override fun onFailed(error: AppUpdaterError) {
-                    Log.e("error", error.toString())
-                }
-            })
-        appUpdaterUtils.start()
+        val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+
+        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+            ) {
+                appUpdateManager.startUpdateFlowForResult(
+                    appUpdateInfo,
+                    AppUpdateType.IMMEDIATE,
+                    this,
+                    UPDATE_REQUEST_CODE)
+            }
+        }
     }
 
     override fun onNewIntent(intent: Intent?) {
