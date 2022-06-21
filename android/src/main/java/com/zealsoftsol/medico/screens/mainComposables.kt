@@ -538,7 +538,8 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                 }
             }
             if (mUserType != null) {
-                if (childScope.value !is OrderHsnEditScope && childScope.value !is ViewOrderScope) {
+                if (childScope.value !is OrderHsnEditScope && childScope.value !is ViewOrderScope &&
+                        childScope.value !is OtpScope.PhoneNumberInput) {
                     BottomNavigationBar(mBottomNavItems)
                 }
             }
@@ -1431,92 +1432,87 @@ private fun OffersHeader(
  */
 @Composable
 fun BottomNavigationBar(items: List<BottomNavigationItem>?, height: Int = 56) {
-    if (mUserType != null) {
-        Surface(
-            elevation = 15.dp,
-            color = Color.White,
-            shape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp),
-            border = BorderStroke(1.dp, ConstColors.newDesignGray)
+    Surface(
+        elevation = 15.dp,
+        color = Color.White,
+        shape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp),
+        border = BorderStroke(1.dp, ConstColors.newDesignGray)
+    ) {
+        Row(
+            modifier = Modifier
+                .background(Color.White)
+                .fillMaxWidth()
+                .height(height.dp),
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Row(
-                modifier = Modifier
-                    .background(Color.White)
-                    .fillMaxWidth()
-                    .height(height.dp),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
 
 
-                items?.forEach { item ->
-                    Column(
+            items?.forEach { item ->
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(height.dp)
+                ) {
+                    Surface(
+                        modifier = Modifier
+                            .height(4.dp)
+                            .padding(horizontal = 8.dp),
+                        color = if (item.selected.value) ConstColors.lightBlue else Color.White,
+                        shape = RoundedCornerShape(bottomStart = 15.dp, bottomEnd = 15.dp),
+                    ) {
+                        Divider(
+                            thickness = 4.dp,
+                            color = if (item.selected.value) ConstColors.lightBlue else Color.White
+                        )
+                    }
+                    Box(
                         modifier = Modifier
                             .weight(1f)
                             .height(height.dp)
+                            .clickable {
+                                if (item.route != null)
+                                    EventCollector.sendEvent(item.route!!)
+                                else
+                                    EventCollector.sendEvent(item.action!!)
+                            },
+                        contentAlignment = Alignment.Center
                     ) {
-                        Surface(
-                            modifier = Modifier
-                                .height(4.dp)
-                                .padding(horizontal = 8.dp),
-                            color = if (item.selected.value) ConstColors.lightBlue else Color.White,
-                            shape = RoundedCornerShape(bottomStart = 15.dp, bottomEnd = 15.dp),
-                        ) {
-                            Divider(
-                                thickness = 4.dp,
-                                color = if (item.selected.value) ConstColors.lightBlue else Color.White
+
+                        Column {
+                            Image(
+                                modifier = Modifier.align(CenterHorizontally),
+                                painter = if (item.selected.value) painterResource(id = item.selectedIcon) else painterResource(
+                                    id = item.unSelectedIcon
+                                ),
+                                contentDescription = null,
+                            )
+                            Space(5.dp)
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .align(CenterHorizontally),
+                                textAlign = TextAlign.Center,
+                                text = item.key.title,
+                                fontSize = 12.sp,
+                                color = if (item.selected.value) ConstColors.lightBlue else ConstColors.txtGrey
                             )
                         }
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(height.dp)
-                                .clickable {
-                                    if (item.route != null)
-                                        EventCollector.sendEvent(item.route!!)
-                                    else
-                                        EventCollector.sendEvent(item.action!!)
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
 
-                            Column {
-                                Image(
-                                    modifier = Modifier.align(CenterHorizontally),
-                                    painter = if (item.selected.value) painterResource(id = item.selectedIcon) else painterResource(
-                                        id = item.unSelectedIcon
-                                    ),
-                                    contentDescription = null,
-                                )
-                                Space(5.dp)
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .align(CenterHorizontally),
-                                    textAlign = TextAlign.Center,
-                                    text = item.key.title,
-                                    fontSize = 12.sp,
-                                    color = if (item.selected.value) ConstColors.lightBlue else ConstColors.txtGrey
-                                )
-                            }
-
-                            if (item.cartCount.value > 0) {
-                                Text(
-                                    text = item.cartCount.value.toString(),
-                                    color = Color.Red,
-                                    fontSize = 12.sp,
-                                    modifier = Modifier.padding(bottom = 35.dp, start = 20.dp),
-                                    fontWeight = FontWeight.W800,
-                                )
-                            }
+                        if (item.cartCount.value > 0) {
+                            Text(
+                                text = item.cartCount.value.toString(),
+                                color = Color.Red,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(bottom = 35.dp, start = 20.dp),
+                                fontWeight = FontWeight.W800,
+                            )
                         }
                     }
                 }
             }
         }
-    } else {
-        Box {}
     }
-
 }
 
 
