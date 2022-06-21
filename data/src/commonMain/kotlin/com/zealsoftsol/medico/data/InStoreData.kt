@@ -161,7 +161,9 @@ data class InStoreCartEntry(
     val spid: String,
     val standardUnit: String,
     val imageCode: String? = null,
-    val mrp: FormattedData<Double?>? = null
+    val mrp: FormattedData<Double?>? = null,
+    val isPromotionActive: Boolean,
+    val promotionData: PromotionData?
 )
 
 @Serializable
