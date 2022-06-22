@@ -314,7 +314,7 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
             }
         }
 
-        if(items.value.isNotEmpty()){
+        if (items.value.isNotEmpty()) {
             val state = rememberLazyListState()
             LazyColumn(
                 state = state,
@@ -499,7 +499,7 @@ private fun ProductItem(
                         color = labelColor,
                         fontSize = 12.sp
                     )
-                    if(item.stockInfo.status == StockStatus.IN_STOCK || item.stockInfo.status == StockStatus.LIMITED_STOCK){
+                    if (item.stockInfo.status == StockStatus.IN_STOCK || item.stockInfo.status == StockStatus.LIMITED_STOCK) {
                         Text(
                             text = "(${item.stockInfo.availableQty})",
                             color = labelColor,
@@ -617,13 +617,13 @@ private fun BaseItem(
                     ) {
                         Text(
                             text = item.order?.quantity?.formatted ?: "0",
-                            color = Color.Black,
+                            color = if (item.order?.quantity?.formatted != "0.0") ConstColors.red else Color.Black,
                             fontWeight = FontWeight.W700,
                             fontSize = 14.sp
                         )
                         Text(
                             text = stringResource(id = R.string.quantity),
-                            color = ConstColors.darkBlue,
+                            color = if (item.order?.quantity?.formatted != "0.0") ConstColors.red else ConstColors.darkBlue,
                             fontSize = 14.sp
                         )
                     }
@@ -637,12 +637,12 @@ private fun BaseItem(
                         Text(
                             text = item.order?.freeQty?.formatted ?: "0",
                             fontWeight = FontWeight.W700,
-                            color = Color.Black,
+                            color = if (item.order?.quantity?.formatted != "0.0") ConstColors.red else Color.Black,
                             fontSize = 14.sp
                         )
                         Text(
                             text = stringResource(id = R.string.free),
-                            color = ConstColors.darkBlue,
+                            color = if (item.order?.quantity?.formatted != "0.0") ConstColors.red else ConstColors.darkBlue,
                             fontSize = 14.sp
                         )
                     }
@@ -664,12 +664,12 @@ private fun BaseItem(
                                     .size(20.dp),
                                 painter = painterResource(R.drawable.ic_add_to_cart_instore),
                                 contentDescription = null,
-                                tint = ConstColors.lightBlue
+                                tint = if (item.order?.quantity?.formatted != "0.0") ConstColors.red else ConstColors.lightBlue
                             )
                             Space(dp = 1.dp)
                             Text(
                                 text = stringResource(id = R.string.add_to_cart),
-                                color = ConstColors.lightBlue,
+                                color = if (item.order?.quantity?.formatted != "0.0") ConstColors.red else ConstColors.lightBlue,
                                 fontSize = 13.sp,
                             )
                         }
