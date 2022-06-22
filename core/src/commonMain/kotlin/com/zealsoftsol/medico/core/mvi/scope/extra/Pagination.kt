@@ -41,7 +41,7 @@ class Pagination(internal val itemsPerPage: Int = DEFAULT_ITEMS_PER_PAGE) {
     }
 
     companion object {
-        internal const val DEFAULT_ITEMS_PER_PAGE = 20
+        const val DEFAULT_ITEMS_PER_PAGE = 20
         const val ITEMS_PER_PAGE_10 = 10
     }
 }

@@ -425,7 +425,7 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
 }
 
 @Composable
-private fun NoProduct(productName: String) {
+fun NoProduct(productName: String) {
     Column(
         modifier = Modifier
             .fillMaxSize()

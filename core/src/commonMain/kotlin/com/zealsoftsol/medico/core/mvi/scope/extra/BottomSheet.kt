@@ -459,10 +459,13 @@ sealed class BottomSheet {
         fun addToCart(quantity: Double, freeQuantity: Double): Boolean =
             EventCollector.sendEvent(
                 Event.Action.InStore.AddCartItem(
+                    product.name,
                     product.code,
                     product.spid,
                     quantity,
                     freeQuantity,
+                    0,
+                    ""
                 )
             )
     }
@@ -473,10 +476,13 @@ sealed class BottomSheet {
         fun addToCart(quantity: Double, freeQuantity: Double): Boolean =
             EventCollector.sendEvent(
                 Event.Action.InStore.AddCartItem(
+                    product.name,
                     product.code,
                     product.sellerInfo?.spid ?: "",
                     quantity,
                     freeQuantity,
+                    0,
+                    ""
                 )
             )
     }

@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -137,6 +138,7 @@ fun CartScreen(scope: CartScope) {
                     LazyColumn(
                         state = rememberLazyListState(),
                         contentPadding = PaddingValues(top = 6.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
                         modifier = Modifier.height(maxHeight - 80.dp),
                     ) {
                         items(
@@ -458,107 +460,160 @@ private fun CartItem(
         elevation = 5.dp,
         modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 4.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            if (!isPreview) {
-
-                Space(dp = 16.dp)
-
-                Surface(shape = RoundedCornerShape(5.dp), color = Color.White, elevation = 5.dp) {
-                    CoilImage(
-                        src = CdnUrlProvider.urlFor(
-                            cartItem.imageCode,
-                            CdnUrlProvider.Size.Px123
-                        ),
-                        size = 90.dp,
-                        onError = { ItemPlaceholder() },
-                        onLoading = { ItemPlaceholder() },
-                    )
+        Column{
+            if (cartItem.isPromotionActive) {
+                cartItem.promotionData?.let {
+                    Box(
+                        modifier = Modifier
+                            .height(18.dp)
+                            .align(Alignment.End)
+                            .background(ConstColors.red, CutCornerShape(topStart = 16.dp))
+                            .padding(horizontal = 16.dp)
+                            .padding(start = 16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = it.displayLabel,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W700,
+                            textAlign = TextAlign.Center,
+                            color = Color.White,
+                        )
+                    }
                 }
             }
-            BaseCartItem(
-                qtyInitial = cartItem.quantity.value,
-                freeQtyInitial = cartItem.freeQuantity.value,
-                onSaveQty = onSaveQty,
-                headerContent = {
-                    Column {
-                        Box(
-                            contentAlignment = Alignment.CenterStart,
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Canvas(modifier = Modifier.size(10.dp)) {
-                                    drawRoundRect(
-                                        labelColor,
-                                        cornerRadius = CornerRadius(8.dp.value)
-                                    )
-                                }
-                                Space(8.dp)
-                                Text(
-                                    text = cartItem.productName,
-                                    color = MaterialTheme.colors.background,
-                                    fontWeight = FontWeight.W700,
-                                    fontSize = 14.sp,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.padding(end = 30.dp)
-                                )
-                            }
 
-                            if (!isPreview) {
-                                Surface(
-                                    shape = CircleShape,
-                                    color = Color.White,
-                                    border = BorderStroke(1.dp, ConstColors.red),
-                                    onClick = onRemove,
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .align(Alignment.CenterEnd),
-                                ) {
-                                    Box(modifier = Modifier.padding(2.dp)) {
-                                        Icon(
-                                            imageVector = Icons.Default.Close,
-                                            contentDescription = null,
-                                            tint = ConstColors.red,
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                if (!isPreview) {
+
+                    Space(dp = 16.dp)
+
+                    Surface(
+                        shape = RoundedCornerShape(5.dp),
+                        color = Color.White,
+                        elevation = 5.dp
+                    ) {
+                        CoilImage(
+                            src = CdnUrlProvider.urlFor(
+                                cartItem.imageCode,
+                                CdnUrlProvider.Size.Px123
+                            ),
+                            size = 90.dp,
+                            onError = { ItemPlaceholder() },
+                            onLoading = { ItemPlaceholder() },
+                        )
+                    }
+                }
+                BaseCartItem(
+                    qtyInitial = cartItem.quantity.value,
+                    freeQtyInitial = cartItem.freeQuantity.value,
+                    onSaveQty = onSaveQty,
+                    headerContent = {
+                        Column {
+                            Box(
+                                contentAlignment = Alignment.CenterStart,
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Canvas(modifier = Modifier.size(10.dp)) {
+                                        drawRoundRect(
+                                            labelColor,
+                                            cornerRadius = CornerRadius(8.dp.value)
                                         )
                                     }
+                                    Space(8.dp)
+                                    Text(
+                                        text = cartItem.productName,
+                                        color = MaterialTheme.colors.background,
+                                        fontWeight = FontWeight.W700,
+                                        fontSize = 14.sp,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier.padding(end = 30.dp)
+                                    )
                                 }
-                            } else {
-                                Space(dp = 24.dp)
+
+                                if (!isPreview) {
+                                    Surface(
+                                        shape = CircleShape,
+                                        color = Color.White,
+                                        border = BorderStroke(1.dp, ConstColors.red),
+                                        onClick = onRemove,
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .align(Alignment.CenterEnd),
+                                    ) {
+                                        Box(modifier = Modifier.padding(2.dp)) {
+                                            Icon(
+                                                imageVector = Icons.Default.Close,
+                                                contentDescription = null,
+                                                tint = ConstColors.red,
+                                            )
+                                        }
+                                    }
+                                } else {
+                                    Space(dp = 24.dp)
+                                }
+                            }
+                            cartItem.seasonBoyRetailer?.let {
+                                Space(4.dp)
+                                Text(
+                                    text = it.tradeName,
+                                    color = ConstColors.gray,
+                                    fontWeight = FontWeight.W500,
+                                    fontSize = 12.sp,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
                             }
                         }
-                        cartItem.seasonBoyRetailer?.let {
-                            Space(4.dp)
-                            Text(
-                                text = it.tradeName,
-                                color = ConstColors.gray,
-                                fontWeight = FontWeight.W500,
-                                fontSize = 12.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
-                    }
-                },
-                mainBodyContent = {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier.fillMaxWidth()
+                    },
+                    mainBodyContent = {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
                         ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
 
 
-                            if (cartItem.quotedData?.isAvailable != false) {
+                                if (cartItem.quotedData?.isAvailable != false) {
+                                    Text(
+                                        text = buildAnnotatedString {
+                                            append("PTR: ")
+                                            val startIndex = length
+                                            append(cartItem.price.formatted)
+                                            addStyle(
+                                                SpanStyle(
+                                                    color = ConstColors.lightGreen,
+                                                    fontWeight = FontWeight.W700
+                                                ),
+                                                startIndex,
+                                                length,
+                                            )
+                                        },
+                                        color = ConstColors.gray.copy(alpha = 0.5f),
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 12.sp,
+                                    )
+                                } else {
+                                    Text(
+                                        text = stringResource(id = R.string.not_available),
+                                        color = ConstColors.red,
+                                        fontWeight = FontWeight.W500,
+                                        fontSize = 14.sp,
+                                    )
+                                }
                                 Text(
                                     text = buildAnnotatedString {
-                                        append("PTR: ")
+                                        append("MRP: ")
                                         val startIndex = length
-                                        append(cartItem.price.formatted)
+                                        append(cartItem.mrp.formatted)
                                         addStyle(
                                             SpanStyle(
                                                 color = ConstColors.lightGreen,
@@ -572,85 +627,60 @@ private fun CartItem(
                                     fontWeight = FontWeight.Normal,
                                     fontSize = 12.sp,
                                 )
-                            } else {
+                            }
+
+                            Space(10.dp)
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
                                 Text(
-                                    text = stringResource(id = R.string.not_available),
-                                    color = ConstColors.red,
-                                    fontWeight = FontWeight.W500,
-                                    fontSize = 14.sp,
+                                    text = buildAnnotatedString {
+                                        append("QTY: ")
+                                        val startIndex = length
+                                        append(cartItem.quantity.formatted)
+                                        addStyle(
+                                            SpanStyle(
+                                                color = MaterialTheme.colors.background,
+                                                fontWeight = FontWeight.W700
+                                            ),
+                                            startIndex,
+                                            length,
+                                        )
+                                    },
+                                    color = ConstColors.gray.copy(alpha = 0.5f),
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 12.sp,
+                                )
+
+                                Text(
+                                    text = buildAnnotatedString {
+                                        append("FREE: ")
+                                        val startIndex = length
+                                        append(cartItem.freeQuantity.formatted)
+                                        addStyle(
+                                            SpanStyle(
+                                                color = MaterialTheme.colors.background,
+                                                fontWeight = FontWeight.W700
+                                            ),
+                                            startIndex,
+                                            length,
+                                        )
+                                    },
+                                    color = ConstColors.gray.copy(alpha = 0.5f),
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 12.sp,
                                 )
                             }
-                            Text(
-                                text = buildAnnotatedString {
-                                    append("MRP: ")
-                                    val startIndex = length
-                                    append(cartItem.mrp.formatted)
-                                    addStyle(
-                                        SpanStyle(
-                                            color = ConstColors.lightGreen,
-                                            fontWeight = FontWeight.W700
-                                        ),
-                                        startIndex,
-                                        length,
-                                    )
-                                },
-                                color = ConstColors.gray.copy(alpha = 0.5f),
-                                fontWeight = FontWeight.Normal,
-                                fontSize = 12.sp,
-                            )
+
                         }
-
-                        Space(10.dp)
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = buildAnnotatedString {
-                                    append("QTY: ")
-                                    val startIndex = length
-                                    append(cartItem.quantity.formatted)
-                                    addStyle(
-                                        SpanStyle(
-                                            color = MaterialTheme.colors.background,
-                                            fontWeight = FontWeight.W700
-                                        ),
-                                        startIndex,
-                                        length,
-                                    )
-                                },
-                                color = ConstColors.gray.copy(alpha = 0.5f),
-                                fontWeight = FontWeight.Normal,
-                                fontSize = 12.sp,
-                            )
-
-                            Text(
-                                text = buildAnnotatedString {
-                                    append("FREE: ")
-                                    val startIndex = length
-                                    append(cartItem.freeQuantity.formatted)
-                                    addStyle(
-                                        SpanStyle(
-                                            color = MaterialTheme.colors.background,
-                                            fontWeight = FontWeight.W700
-                                        ),
-                                        startIndex,
-                                        length,
-                                    )
-                                },
-                                color = ConstColors.gray.copy(alpha = 0.5f),
-                                fontWeight = FontWeight.Normal,
-                                fontSize = 12.sp,
-                            )
-                        }
-
-                    }
-                },
-                openBottomSheet = openBottomSheet,
-                cartItem = cartItem,
-                isPreview = isPreview
-            )
+                    },
+                    openBottomSheet = openBottomSheet,
+                    cartItem = cartItem,
+                    isPreview = isPreview
+                )
+            }
         }
     }
 }
@@ -796,16 +826,6 @@ private fun BaseCartItem(
                         verticalAlignment = Alignment.Bottom,
                         modifier = Modifier.weight(2f),
                     ) {
-                        if (cartItem.isPromotionActive || !isPreview) {
-                            cartItem.promotionData?.let {
-                                Text(
-                                    text = it.displayLabel,
-                                    fontSize = 14.sp,
-                                    color = ConstColors.red,
-                                )
-                            }
-                        }
-
                         Text(
                             text = buildAnnotatedString {
                                 append("ST: ")
@@ -866,28 +886,11 @@ private fun BaseCartItem(
                 }
             }
         }
-        if (isPreview && cartItem.isPromotionActive) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(35.dp),
-            ) {
-
-                cartItem.promotionData?.let {
-                    Text(
-                        text = it.displayLabel,
-                        fontSize = 14.sp,
-                        color = ConstColors.red,
-                    )
-
-                }
-            }
-        }
     }
 }
 
 @Composable
-fun TextItem(label: Int, count: Number) {
+fun TextItem(label: Int, count: Number, txtColor: Color = MaterialTheme.colors.background) {
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -895,16 +898,16 @@ fun TextItem(label: Int, count: Number) {
     ) {
         Text(
             text = stringResource(id = label),
-            color = MaterialTheme.colors.background,
-            fontWeight = FontWeight.W400,
-            fontSize = 12.sp,
+            color = txtColor,
+            fontWeight = FontWeight.W500,
+            fontSize = 14.sp,
             modifier = Modifier.padding(top = 6.dp)
         )
         Text(
             text = count.toString(),
-            color = MaterialTheme.colors.background,
-            fontWeight = FontWeight.W600,
-            fontSize = 12.sp,
+            color = txtColor,
+            fontWeight = FontWeight.W800,
+            fontSize = 14.sp,
             modifier = Modifier.padding(bottom = 6.dp),
             textAlign = TextAlign.Center
         )
@@ -912,30 +915,30 @@ fun TextItem(label: Int, count: Number) {
 }
 
 @Composable
-fun TextItemString(label: Int, count: String) {
+fun TextItemString(label: Int, count: String, txtColor: Color = MaterialTheme.colors.background) {
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxHeight(),
     ) {
         Text(
             text = stringResource(id = label),
-            color = MaterialTheme.colors.background,
-            fontWeight = FontWeight.W400,
-            fontSize = 12.sp,
+            color = txtColor,
+            fontWeight = FontWeight.W500,
+            fontSize = 14.sp,
             modifier = Modifier.padding(top = 6.dp)
         )
         Text(
             text = count,
-            color = MaterialTheme.colors.background,
-            fontWeight = FontWeight.W600,
-            fontSize = 12.sp,
+            color = txtColor,
+            fontWeight = FontWeight.W800,
+            fontSize = 14.sp,
             modifier = Modifier.padding(bottom = 6.dp)
         )
     }
 }
 
 @Composable
-private fun EmptyCart(onBack: () -> Unit) {
+fun EmptyCart(onBack: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier

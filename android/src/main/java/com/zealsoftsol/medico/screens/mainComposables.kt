@@ -41,7 +41,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Bottom
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -1072,53 +1074,42 @@ private fun StoreHeader(
                     },
                 )
         )
-        Box(modifier = Modifier.weight(0.75f)) {
+        Box(modifier = Modifier.weight(0.80f)) {
             Surface(modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 12.dp)
-                .background(Color.White, RoundedCornerShape(8.dp)),
-                border = BorderStroke(1.dp, ConstColors.ltgray),
+                .padding(start = 12.dp),
+                color = Color.White,
                 onClick = { info.openBottomSheet() }) {
                 Row(
-                    modifier = Modifier.padding(all = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(all = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
+                        modifier = Modifier.align(CenterVertically),
                         text = info.storeName,
                         color = MaterialTheme.colors.background,
                         fontWeight = FontWeight.W700,
-                        fontSize = 12.sp,
+                        fontSize = 14.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
                     Space(dp = 4.dp)
                     Image(
-                        painter = painterResource(id = R.drawable.ic_verified),
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp),
+                        modifier = Modifier.align(Bottom),
+                        painter = painterResource(id = R.drawable.ic_baseline_more_horiz_24),
+                        contentDescription = null
                     )
                 }
             }
-            Surface(
-                modifier = Modifier
-                    .padding(end = 12.dp)
-                    .align(Alignment.CenterEnd),
-            ) {
-                Icon(
-                    modifier = Modifier.size(16.dp),
-                    painter = painterResource(id = R.drawable.ic_down_arrow),
-                    contentDescription = null,
-                )
-            }
         }
 
-        Box(
-            modifier = Modifier
-                .weight(0.15f)
-                .clickable(indication = null) { info.goToNotifications() }
-                .padding(10.dp),
-        ) {
-            if (info.showNotifications) {
+        if (info.showNotifications) {
+            Box(
+                modifier = Modifier
+                    .weight(0.15f)
+                    .clickable(indication = null) { info.goToNotifications() }
+                    .padding(10.dp),
+            ) {
 
                 Image(
                     painter = painterResource(id = R.drawable.ic_bell),
