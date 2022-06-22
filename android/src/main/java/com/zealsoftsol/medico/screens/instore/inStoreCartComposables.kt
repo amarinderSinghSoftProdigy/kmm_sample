@@ -684,7 +684,8 @@ private fun BaseCartItem(
                         contentColor = MaterialTheme.colors.background,
                         onClick = { mode.value = BottomSectionMode.ConfirmQty },
                         isEnabled = true,
-                        height = 35.dp
+                        height = 35.dp,
+                        txtColor = Color.White
                     )
                 }
             }
