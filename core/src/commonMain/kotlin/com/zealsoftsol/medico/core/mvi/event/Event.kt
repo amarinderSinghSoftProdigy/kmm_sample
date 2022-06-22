@@ -447,6 +447,8 @@ sealed class Event {
 
             data class SubmitReward(val storeId: String) : InStore()
 
+            data class ShowAltProds(val productCode: String) : InStore()
+
         }
 
         sealed class WhatsAppPreference : Action() {

@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.data.AddEmployee
 import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.AllBanners
 import com.zealsoftsol.medico.data.AllDeals
+import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoApprove
 import com.zealsoftsol.medico.data.AutoComplete
@@ -387,6 +388,8 @@ interface NetworkScope {
         ): BodyResponse<StoreSubmitResponse>
 
         suspend fun deleteInStoreOrder(unitCode: String, id: String): AnyResponse
+
+        suspend fun getAlternateProducts(productCode: String): BodyResponse<List<AlternateProductData>>
     }
 
     interface WhatsappStore : NetworkScope {

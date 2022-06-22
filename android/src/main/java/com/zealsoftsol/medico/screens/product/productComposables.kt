@@ -634,7 +634,7 @@ private fun ProductDetail(title: String, description: String) {
 }
 
 @Composable
-private fun ProductAlternative(product: AlternateProductData, onClick: () -> Unit) {
+fun ProductAlternative(product: AlternateProductData, onClick: () -> Unit) {
     Box {
         Column {
             Card(

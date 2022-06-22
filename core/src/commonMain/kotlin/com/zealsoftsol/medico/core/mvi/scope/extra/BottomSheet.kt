@@ -10,6 +10,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.IocSellerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderInvoiceScope
+import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.Batch
 import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.BuyerDetailsData
@@ -570,6 +571,11 @@ sealed class BottomSheet {
         }
 
 
+    }
+
+    class AlternateProducts(val productList: List<AlternateProductData>) : BottomSheet(){
+        fun selectAlternativeProduct(product: AlternateProductData) =
+            EventCollector.sendEvent(Event.Action.Product.SelectAlternative(product))
     }
 
 }

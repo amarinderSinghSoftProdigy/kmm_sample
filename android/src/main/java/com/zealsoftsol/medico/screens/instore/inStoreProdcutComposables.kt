@@ -391,6 +391,13 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
         }
         scope.setToast(null, false)
     }
+
+    if (scope.showNoAlternateProdToast.flow.collectAsState().value) {
+        ShowToastGlobal(
+            msg = stringResource(id = R.string.no_alternate_prod_found)
+        )
+        scope.hideAlternateProdToastWarning()
+    }
 }
 
 @ExperimentalComposeUiApi
@@ -400,12 +407,12 @@ private fun ProductItem(
     item: InStoreProduct,
     onItemClick: () -> Unit,
     onImageClick: () -> Unit,
-    addToCart: InStoreProductsScope,
+    scope: InStoreProductsScope,
     state: LazyListState? = null,
-    index: Int = 0
+    index: Int = 0,
 ) {
     BaseItem(
-        addToCart = addToCart,
+        scope = scope,
         index = index,
         state = state,
         item = item,
@@ -550,7 +557,7 @@ private fun BaseItem(
     promotionData: PromotionData? = null,
     state: LazyListState? = null,
     onItemClick: () -> Unit,
-    addToCart: InStoreProductsScope
+    scope: InStoreProductsScope,
 ) {
     val qty = remember { mutableStateOf(qtyInitial) }
     val freeQty = remember { mutableStateOf(freeQtyInitial) }
@@ -608,6 +615,18 @@ private fun BaseItem(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Icon(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .weight(1f)
+                            .clickable {
+                                scope.showAlternateProducts(item.code)
+                            },
+                        painter = painterResource(R.drawable.ic_al_prod),
+                        contentDescription = null,
+                        tint = ConstColors.lightBlue
+                    )
+
                     Column(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -838,7 +857,7 @@ private fun BaseItem(
                                     elevation = null,
                                     onClick = {
                                         showButton.value = false
-                                        addToCart.addToCart(
+                                        scope.addToCart(
                                             item.code,
                                             item.spid,
                                             qty.value,
