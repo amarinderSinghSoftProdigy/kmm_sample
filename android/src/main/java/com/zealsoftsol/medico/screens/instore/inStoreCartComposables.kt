@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -60,6 +61,7 @@ import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.management.checkOffer
 import com.zealsoftsol.medico.screens.product.BottomSectionMode
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -323,7 +325,7 @@ private fun CartItem(
                 qtyInitial = cartItem.quantity.value,
                 freeQtyInitial = cartItem.freeQty.value,
                 onSaveQty = onSaveQty,
-                imageCode = cartItem.imageCode,
+                cartItem = cartItem,
                 headerContent = {
                     Column {
                         Box(
@@ -476,7 +478,7 @@ private fun BaseCartItem(
     qtyInitial: Double,
     freeQtyInitial: Double,
     onSaveQty: (Double?, Double?) -> Unit,
-    imageCode: String?
+    cartItem: InStoreCartEntry
 ) {
     val qty = remember { mutableStateOf(qtyInitial) }
     val freeQty = remember { mutableStateOf(freeQtyInitial) }
@@ -494,7 +496,7 @@ private fun BaseCartItem(
             Surface(shape = RoundedCornerShape(5.dp), color = Color.White, elevation = 5.dp) {
                 CoilImage(
                     src = CdnUrlProvider.urlFor(
-                        imageCode ?: "",
+                        cartItem.imageCode ?: "",
                         CdnUrlProvider.Size.Px123
                     ),
                     size = 90.dp,
@@ -521,7 +523,9 @@ private fun BaseCartItem(
                 elevation = 5.dp
             ) {
                 Column(
-                    modifier = Modifier.fillMaxWidth().padding(5.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp),
                 ) {
                     val isError =
                         (qty.value + freeQty.value) % 1 != 0.0 || freeQty.value > qty.value
@@ -534,23 +538,36 @@ private fun BaseCartItem(
                                 label = stringResource(id = R.string.qty),
                                 qty = qty.value.toString(),
                                 isError = isError && focusedError.value == 0,
-                                onChange = { qty.value = it.toDouble() },
+                                onChange = {
+                                    qty.value = it.toDouble()
+                                    freeQty.value = checkOffer(
+                                        cartItem.promotionData,
+                                        qty.value
+                                    )
+                                },
                                 onFocus = { if (!wasErrorSaved && isError) focusedError.value = 0 },
                             )
+
                         }
                         Box(
                             modifier = Modifier
                                 .width(maxWidth / 3)
                                 .align(Alignment.BottomEnd)
                         ) {
-                            EditField(
-                                label = stringResource(id = R.string.free),
-                                isEnabled = qty.value > 0.0,
-                                isError = isError && focusedError.value == 1,
-                                qty = freeQty.value.toString(),
-                                onChange = { freeQty.value = it.toDouble() },
-                                onFocus = { if (!wasErrorSaved && isError) focusedError.value = 1 },
-                            )
+                            Column {
+                                Text(
+                                    modifier= Modifier.align(End),
+                                    text = freeQty.value.toString(),
+                                    color = MaterialTheme.colors.background,
+                                    fontWeight = FontWeight.W700,
+                                    fontSize = 20.sp,
+                                )
+
+                                Divider(
+                                    color = MaterialTheme.colors.background,
+                                    thickness = 1.5.dp
+                                )
+                            }
                         }
                     }
                     if (isError) {
@@ -570,109 +587,109 @@ private fun BaseCartItem(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
-                    ){
-                    MedicoButton(
-                        text = stringResource(id = R.string.cancel),
-                        contentColor = MaterialTheme.colors.background,
-                        height = 35.dp,
-                        isEnabled = (qty.value + freeQty.value) % 1 == 0.0 && qty.value > 0.0 && qty.value >= freeQty.value,
-                        color = ConstColors.lightGrey,
-                        onClick = {
-                            mode.value =
-                                if (qtyInitial > 0 || freeQtyInitial > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart
-                            qty.value = qtyInitial
-                            freeQty.value = freeQtyInitial
-                        },
-                        modifier = Modifier.weight(1f),
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .weight(0.4f)
-                            .fillMaxWidth()
-                    )
-                    MedicoButton(
-                        text = stringResource(id = R.string.confirm),
-                        color = ConstColors.yellow,
-                        contentColor = MaterialTheme.colors.background,
-                        height = 35.dp,
-                        isEnabled = (qty.value + freeQty.value) % 1 == 0.0 && qty.value > 0.0 && qty.value >= freeQty.value,
-                        onClick = {
-                            mode.value =
-                                if (qty.value > 0 || freeQty.value > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart
-                            onSaveQty(qty.value, freeQty.value)
-                        },
-                        modifier = Modifier.weight(1f),
-                    )
+                    ) {
+                        MedicoButton(
+                            text = stringResource(id = R.string.cancel),
+                            contentColor = MaterialTheme.colors.background,
+                            height = 35.dp,
+                            isEnabled = (qty.value + freeQty.value) % 1 == 0.0 && qty.value > 0.0 && qty.value >= freeQty.value,
+                            color = ConstColors.lightGrey,
+                            onClick = {
+                                mode.value =
+                                    if (qtyInitial > 0 || freeQtyInitial > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart
+                                qty.value = qtyInitial
+                                freeQty.value = freeQtyInitial
+                            },
+                            modifier = Modifier.weight(1f),
+                        )
+                        Spacer(
+                            modifier = Modifier
+                                .weight(0.4f)
+                                .fillMaxWidth()
+                        )
+                        MedicoButton(
+                            text = stringResource(id = R.string.confirm),
+                            color = ConstColors.yellow,
+                            contentColor = MaterialTheme.colors.background,
+                            height = 35.dp,
+                            isEnabled = (qty.value + freeQty.value) % 1 == 0.0 && qty.value > 0.0 && qty.value >= freeQty.value,
+                            onClick = {
+                                mode.value =
+                                    if (qty.value > 0 || freeQty.value > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart
+                                onSaveQty(qty.value, freeQty.value)
+                            },
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
                 }
             }
         }
-    }
-    Space(10.dp)
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        when (mode.value) {
-            BottomSectionMode.Select -> {
-                MedicoRoundButton(
-                    text = stringResource(id = R.string.select),
-                    onClick = { onSaveQty(null, null) },
-                )
-            }
-            BottomSectionMode.AddToCart -> {
-                MedicoRoundButton(
-                    text = stringResource(id = R.string.add_to_cart),
-                    onClick = { mode.value = BottomSectionMode.ConfirmQty },
-                )
-            }
-            BottomSectionMode.ConfirmQty -> {
-            }
-            BottomSectionMode.Update -> {
-                Row(
-                    verticalAlignment = Alignment.Bottom,
-                    modifier = Modifier.weight(2f),
-                ) {
-                    /*Text(
-                        text = stringResource(id = R.string.qty).uppercase(),
-                        fontSize = 12.sp,
-                        color = ConstColors.gray,
+        Space(10.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            when (mode.value) {
+                BottomSectionMode.Select -> {
+                    MedicoRoundButton(
+                        text = stringResource(id = R.string.select),
+                        onClick = { onSaveQty(null, null) },
                     )
-                    Space(6.dp)
-                    Text(
-                        text = qty.value.toString(),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.W700,
-                        color = MaterialTheme.colors.background,
+                }
+                BottomSectionMode.AddToCart -> {
+                    MedicoRoundButton(
+                        text = stringResource(id = R.string.add_to_cart),
+                        onClick = { mode.value = BottomSectionMode.ConfirmQty },
                     )
-                    Space(6.dp)
-                    Text(
-                        text = "+${freeQty.value}",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.W700,
+                }
+                BottomSectionMode.ConfirmQty -> {
+                }
+                BottomSectionMode.Update -> {
+                    Row(
+                        verticalAlignment = Alignment.Bottom,
+                        modifier = Modifier.weight(2f),
+                    ) {
+                        /*Text(
+                            text = stringResource(id = R.string.qty).uppercase(),
+                            fontSize = 12.sp,
+                            color = ConstColors.gray,
+                        )
+                        Space(6.dp)
+                        Text(
+                            text = qty.value.toString(),
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.W700,
+                            color = MaterialTheme.colors.background,
+                        )
+                        Space(6.dp)
+                        Text(
+                            text = "+${freeQty.value}",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.W700,
+                            color = ConstColors.lightBlue,
+                            modifier = Modifier
+                                .background(
+                                    ConstColors.lightBlue.copy(alpha = 0.05f),
+                                    RoundedCornerShape(4.dp)
+                                )
+                                .border(1.dp, ConstColors.lightBlue, RoundedCornerShape(4.dp))
+                                .padding(horizontal = 4.dp, vertical = 2.dp),
+                        )*/
+                    }
+                    MedicoButton(
+                        modifier = Modifier.weight(1.5f),
+                        text = stringResource(id = R.string.update),
                         color = ConstColors.lightBlue,
-                        modifier = Modifier
-                            .background(
-                                ConstColors.lightBlue.copy(alpha = 0.05f),
-                                RoundedCornerShape(4.dp)
-                            )
-                            .border(1.dp, ConstColors.lightBlue, RoundedCornerShape(4.dp))
-                            .padding(horizontal = 4.dp, vertical = 2.dp),
-                    )*/
+                        contentColor = MaterialTheme.colors.background,
+                        onClick = { mode.value = BottomSectionMode.ConfirmQty },
+                        isEnabled = true,
+                        height = 35.dp
+                    )
                 }
-                MedicoButton(
-                    modifier = Modifier.weight(1.5f),
-                    text = stringResource(id = R.string.update),
-                    color = ConstColors.lightBlue,
-                    contentColor = MaterialTheme.colors.background,
-                    onClick = { mode.value = BottomSectionMode.ConfirmQty },
-                    isEnabled = true,
-                    height = 35.dp
-                )
             }
         }
     }
-}
 }
 
 @Composable
