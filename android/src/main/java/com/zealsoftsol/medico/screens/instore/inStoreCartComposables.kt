@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -74,7 +73,7 @@ fun InStoreCartScreen(scope: InStoreCartScope) {
         EmptyCart { scope.goHome() }
     }
 
-    if(items.value.isNotEmpty()){
+    if (items.value.isNotEmpty()) {
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
@@ -320,179 +319,164 @@ private fun CartItem(
                 }
             }
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Space(dp = 16.dp)
-                Surface(shape = RoundedCornerShape(5.dp), color = Color.White, elevation = 5.dp) {
-                    CoilImage(
-                        src = CdnUrlProvider.urlFor(
-                            cartItem.imageCode ?: "",
-                            CdnUrlProvider.Size.Px123
-                        ),
-                        size = 90.dp,
-                        onError = { ItemPlaceholder() },
-                        onLoading = { ItemPlaceholder() },
-                    )
-                }
-                BaseCartItem(
-                    qtyInitial = cartItem.quantity.value,
-                    freeQtyInitial = cartItem.freeQty.value,
-                    onSaveQty = onSaveQty,
-                    headerContent = {
-                        Column {
-                            Box(
-                                contentAlignment = Alignment.CenterStart,
-                                modifier = Modifier.fillMaxWidth(),
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Canvas(modifier = Modifier.size(10.dp)) {
-                                        drawRoundRect(
-                                            labelColor,
-                                            cornerRadius = CornerRadius(8.dp.value)
-                                        )
-                                    }
-                                    Space(8.dp)
-                                    Text(
-                                        text = cartItem.productName,
-                                        color = MaterialTheme.colors.background,
-                                        fontWeight = FontWeight.W700,
-                                        fontSize = 14.sp,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        modifier = Modifier.padding(end = 30.dp)
-                                    )
-                                }
-                                Surface(
-                                    shape = CircleShape,
-                                    color = Color.White,
-                                    border = BorderStroke(1.dp, ConstColors.red),
-                                    onClick = onRemove,
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .align(Alignment.CenterEnd),
-                                ) {
-                                    Box(modifier = Modifier.padding(2.dp)) {
-                                        Icon(
-                                            imageVector = Icons.Default.Close,
-                                            contentDescription = null,
-                                            tint = ConstColors.red,
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    mainBodyContent = {
-                        Column(
+            BaseCartItem(
+                qtyInitial = cartItem.quantity.value,
+                freeQtyInitial = cartItem.freeQty.value,
+                onSaveQty = onSaveQty,
+                imageCode = cartItem.imageCode,
+                headerContent = {
+                    Column {
+                        Box(
+                            contentAlignment = Alignment.CenterStart,
                             modifier = Modifier.fillMaxWidth(),
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Canvas(modifier = Modifier.size(10.dp)) {
+                                    drawRoundRect(
+                                        labelColor,
+                                        cornerRadius = CornerRadius(8.dp.value)
+                                    )
+                                }
+                                Space(8.dp)
                                 Text(
-                                    text = buildAnnotatedString {
-                                        append("PTR: ")
-                                        val startIndex = length
-                                        append(cartItem.price.formatted)
-                                        addStyle(
-                                            SpanStyle(
-                                                color = ConstColors.lightGreen,
-                                                fontWeight = FontWeight.W700
-                                            ),
-                                            startIndex,
-                                            length,
-                                        )
-                                    },
-                                    color = ConstColors.gray.copy(alpha = 0.5f),
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 12.sp,
-                                )
-
-                                Text(
-                                    text = buildAnnotatedString {
-                                        append("MRP: ")
-                                        val startIndex = length
-                                        append(cartItem.mrp?.formatted ?: "")
-                                        addStyle(
-                                            SpanStyle(
-                                                color = ConstColors.lightGreen,
-                                                fontWeight = FontWeight.W700
-                                            ),
-                                            startIndex,
-                                            length,
-                                        )
-                                    },
-                                    color = ConstColors.gray.copy(alpha = 0.5f),
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 12.sp,
+                                    text = cartItem.productName,
+                                    color = MaterialTheme.colors.background,
+                                    fontWeight = FontWeight.W700,
+                                    fontSize = 14.sp,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.padding(end = 30.dp)
                                 )
                             }
-
-                            Space(10.dp)
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
+                            Surface(
+                                shape = CircleShape,
+                                color = Color.White,
+                                border = BorderStroke(1.dp, ConstColors.red),
+                                onClick = onRemove,
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .align(Alignment.CenterEnd),
                             ) {
-                                Text(
-                                    text = buildAnnotatedString {
-                                        append("QTY: ")
-                                        val startIndex = length
-                                        append(cartItem.quantity.formatted)
-                                        addStyle(
-                                            SpanStyle(
-                                                color = MaterialTheme.colors.background,
-                                                fontWeight = FontWeight.W700
-                                            ),
-                                            startIndex,
-                                            length,
-                                        )
-                                    },
-                                    color = ConstColors.gray.copy(alpha = 0.5f),
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 12.sp,
-                                )
-
-                                Text(
-                                    text = buildAnnotatedString {
-                                        append("FREE: ")
-                                        val startIndex = length
-                                        append(cartItem.freeQty.formatted)
-                                        addStyle(
-                                            SpanStyle(
-                                                color = MaterialTheme.colors.background,
-                                                fontWeight = FontWeight.W700
-                                            ),
-                                            startIndex,
-                                            length,
-                                        )
-                                    },
-                                    color = ConstColors.gray.copy(alpha = 0.5f),
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 12.sp,
-                                )
+                                Box(modifier = Modifier.padding(2.dp)) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = null,
+                                        tint = ConstColors.red,
+                                    )
+                                }
                             }
-
                         }
-                    },
-                )
-            }
+                    }
+                },
+                mainBodyContent = {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+
+                            Text(
+                                text = buildAnnotatedString {
+                                    append("PTR: ")
+                                    val startIndex = length
+                                    append(cartItem.price.formatted)
+                                    addStyle(
+                                        SpanStyle(
+                                            color = ConstColors.lightGreen,
+                                            fontWeight = FontWeight.W700
+                                        ),
+                                        startIndex,
+                                        length,
+                                    )
+                                },
+                                color = ConstColors.gray.copy(alpha = 0.5f),
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 12.sp,
+                            )
+
+                            Text(
+                                text = buildAnnotatedString {
+                                    append("MRP: ")
+                                    val startIndex = length
+                                    append(cartItem.mrp?.formatted ?: "")
+                                    addStyle(
+                                        SpanStyle(
+                                            color = ConstColors.lightGreen,
+                                            fontWeight = FontWeight.W700
+                                        ),
+                                        startIndex,
+                                        length,
+                                    )
+                                },
+                                color = ConstColors.gray.copy(alpha = 0.5f),
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 12.sp,
+                            )
+                        }
+
+                        Space(10.dp)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = buildAnnotatedString {
+                                    append("QTY: ")
+                                    val startIndex = length
+                                    append(cartItem.quantity.formatted)
+                                    addStyle(
+                                        SpanStyle(
+                                            color = MaterialTheme.colors.background,
+                                            fontWeight = FontWeight.W700
+                                        ),
+                                        startIndex,
+                                        length,
+                                    )
+                                },
+                                color = ConstColors.gray.copy(alpha = 0.5f),
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 12.sp,
+                            )
+
+                            Text(
+                                text = buildAnnotatedString {
+                                    append("FREE: ")
+                                    val startIndex = length
+                                    append(cartItem.freeQty.formatted)
+                                    addStyle(
+                                        SpanStyle(
+                                            color = MaterialTheme.colors.background,
+                                            fontWeight = FontWeight.W700
+                                        ),
+                                        startIndex,
+                                        length,
+                                    )
+                                },
+                                color = ConstColors.gray.copy(alpha = 0.5f),
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 12.sp,
+                            )
+                        }
+
+                    }
+                },
+            )
         }
     }
 }
 
 @Composable
 private fun BaseCartItem(
-    headerContent: @Composable RowScope.() -> Unit,
+    headerContent: @Composable ColumnScope.() -> Unit,
     mainBodyContent: @Composable ColumnScope.() -> Unit,
     qtyInitial: Double,
     freeQtyInitial: Double,
     onSaveQty: (Double?, Double?) -> Unit,
+    imageCode: String?
 ) {
     val qty = remember { mutableStateOf(qtyInitial) }
     val freeQty = remember { mutableStateOf(freeQtyInitial) }
@@ -504,74 +488,89 @@ private fun BaseCartItem(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 10.dp)
+            .padding(horizontal = 12.dp, vertical = 10.dp)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) { headerContent() }
-        Space(8.dp)
-        when (mode.value) {
-            BottomSectionMode.AddToCart, BottomSectionMode.Update -> mainBodyContent()
-            BottomSectionMode.ConfirmQty -> Column(horizontalAlignment = Alignment.End) {
-                val isError = (qty.value + freeQty.value) % 1 != 0.0 || freeQty.value > qty.value
-                val wasError = remember { mutableStateOf(isError) }
-                val wasErrorSaved = wasError.value
-                val focusedError = remember(mode.value) { mutableStateOf(-1) }
-                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                    Box(modifier = Modifier.width(maxWidth / 3)) {
-                        EditField(
-                            label = stringResource(id = R.string.qty),
-                            qty = qty.value.toString(),
-                            isError = isError && focusedError.value == 0,
-                            onChange = { qty.value = it.toDouble() },
-                            onFocus = { if (!wasErrorSaved && isError) focusedError.value = 0 },
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .width(maxWidth / 3)
-                            .align(Alignment.BottomEnd)
-                    ) {
-                        EditField(
-                            label = stringResource(id = R.string.free),
-                            isEnabled = qty.value > 0.0,
-                            isError = isError && focusedError.value == 1,
-                            qty = freeQty.value.toString(),
-                            onChange = { freeQty.value = it.toDouble() },
-                            onFocus = { if (!wasErrorSaved && isError) focusedError.value = 1 },
-                        )
-                    }
-                }
-                if (isError) {
-                    Space(8.dp)
-                    Text(
-                        text = stringResource(id = if (freeQty.value > qty.value) R.string.free_more_qty else R.string.invalid_qty),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W500,
-                        color = ConstColors.red,
-                    )
-                }
-                wasError.value = isError
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Surface(shape = RoundedCornerShape(5.dp), color = Color.White, elevation = 5.dp) {
+                CoilImage(
+                    src = CdnUrlProvider.urlFor(
+                        imageCode ?: "",
+                        CdnUrlProvider.Size.Px123
+                    ),
+                    size = 90.dp,
+                    onError = { ItemPlaceholder() },
+                    onLoading = { ItemPlaceholder() },
+                )
+            }
+            Space(20.dp)
+            Column {
+                headerContent()
+                Space(8.dp)
+                mainBodyContent()
             }
         }
+
         Space(10.dp)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            when (mode.value) {
-                BottomSectionMode.Select -> {
-                    MedicoRoundButton(
-                        text = stringResource(id = R.string.select),
-                        onClick = { onSaveQty(null, null) },
-                    )
-                }
-                BottomSectionMode.AddToCart -> {
-                    MedicoRoundButton(
-                        text = stringResource(id = R.string.add_to_cart),
-                        onClick = { mode.value = BottomSectionMode.ConfirmQty },
-                    )
-                }
-                BottomSectionMode.ConfirmQty -> {
+
+        if (mode.value == BottomSectionMode.ConfirmQty) {
+            Surface(
+                color = Color.White,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(4.dp),
+                elevation = 5.dp
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth().padding(5.dp),
+                ) {
+                    val isError =
+                        (qty.value + freeQty.value) % 1 != 0.0 || freeQty.value > qty.value
+                    val wasError = remember { mutableStateOf(isError) }
+                    val wasErrorSaved = wasError.value
+                    val focusedError = remember(mode.value) { mutableStateOf(-1) }
+                    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                        Box(modifier = Modifier.width(maxWidth / 3)) {
+                            EditField(
+                                label = stringResource(id = R.string.qty),
+                                qty = qty.value.toString(),
+                                isError = isError && focusedError.value == 0,
+                                onChange = { qty.value = it.toDouble() },
+                                onFocus = { if (!wasErrorSaved && isError) focusedError.value = 0 },
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .width(maxWidth / 3)
+                                .align(Alignment.BottomEnd)
+                        ) {
+                            EditField(
+                                label = stringResource(id = R.string.free),
+                                isEnabled = qty.value > 0.0,
+                                isError = isError && focusedError.value == 1,
+                                qty = freeQty.value.toString(),
+                                onChange = { freeQty.value = it.toDouble() },
+                                onFocus = { if (!wasErrorSaved && isError) focusedError.value = 1 },
+                            )
+                        }
+                    }
+                    if (isError) {
+                        Space(8.dp)
+                        Text(
+                            text = stringResource(id = if (freeQty.value > qty.value) R.string.free_more_qty else R.string.invalid_qty),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W500,
+                            color = ConstColors.red,
+                        )
+                    }
+                    wasError.value = isError
+
+                    Space(15.dp)
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ){
                     MedicoButton(
                         text = stringResource(id = R.string.cancel),
                         contentColor = MaterialTheme.colors.background,
@@ -605,51 +604,75 @@ private fun BaseCartItem(
                         modifier = Modifier.weight(1f),
                     )
                 }
-                BottomSectionMode.Update -> {
-                    Row(
-                        verticalAlignment = Alignment.Bottom,
-                        modifier = Modifier.weight(2f),
-                    ) {
-                        /*Text(
-                            text = stringResource(id = R.string.qty).uppercase(),
-                            fontSize = 12.sp,
-                            color = ConstColors.gray,
-                        )
-                        Space(6.dp)
-                        Text(
-                            text = qty.value.toString(),
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.W700,
-                            color = MaterialTheme.colors.background,
-                        )
-                        Space(6.dp)
-                        Text(
-                            text = "+${freeQty.value}",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.W700,
-                            color = ConstColors.lightBlue,
-                            modifier = Modifier
-                                .background(
-                                    ConstColors.lightBlue.copy(alpha = 0.05f),
-                                    RoundedCornerShape(4.dp)
-                                )
-                                .border(1.dp, ConstColors.lightBlue, RoundedCornerShape(4.dp))
-                                .padding(horizontal = 4.dp, vertical = 2.dp),
-                        )*/
-                    }
-                    MedicoButton(
-                        modifier = Modifier.weight(1.5f),
-                        text = stringResource(id = R.string.update),
-                        color = ConstColors.yellow,
-                        contentColor = MaterialTheme.colors.background,
-                        onClick = { mode.value = BottomSectionMode.ConfirmQty },
-                        isEnabled = true,
-                        height = 35.dp
-                    )
-                }
             }
         }
     }
+    Space(10.dp)
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        when (mode.value) {
+            BottomSectionMode.Select -> {
+                MedicoRoundButton(
+                    text = stringResource(id = R.string.select),
+                    onClick = { onSaveQty(null, null) },
+                )
+            }
+            BottomSectionMode.AddToCart -> {
+                MedicoRoundButton(
+                    text = stringResource(id = R.string.add_to_cart),
+                    onClick = { mode.value = BottomSectionMode.ConfirmQty },
+                )
+            }
+            BottomSectionMode.ConfirmQty -> {
+            }
+            BottomSectionMode.Update -> {
+                Row(
+                    verticalAlignment = Alignment.Bottom,
+                    modifier = Modifier.weight(2f),
+                ) {
+                    /*Text(
+                        text = stringResource(id = R.string.qty).uppercase(),
+                        fontSize = 12.sp,
+                        color = ConstColors.gray,
+                    )
+                    Space(6.dp)
+                    Text(
+                        text = qty.value.toString(),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.W700,
+                        color = MaterialTheme.colors.background,
+                    )
+                    Space(6.dp)
+                    Text(
+                        text = "+${freeQty.value}",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.W700,
+                        color = ConstColors.lightBlue,
+                        modifier = Modifier
+                            .background(
+                                ConstColors.lightBlue.copy(alpha = 0.05f),
+                                RoundedCornerShape(4.dp)
+                            )
+                            .border(1.dp, ConstColors.lightBlue, RoundedCornerShape(4.dp))
+                            .padding(horizontal = 4.dp, vertical = 2.dp),
+                    )*/
+                }
+                MedicoButton(
+                    modifier = Modifier.weight(1.5f),
+                    text = stringResource(id = R.string.update),
+                    color = ConstColors.lightBlue,
+                    contentColor = MaterialTheme.colors.background,
+                    onClick = { mode.value = BottomSectionMode.ConfirmQty },
+                    isEnabled = true,
+                    height = 35.dp
+                )
+            }
+        }
+    }
+}
 }
 
 @Composable
