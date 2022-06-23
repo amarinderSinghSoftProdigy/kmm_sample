@@ -163,8 +163,8 @@ interface NetworkScope {
         suspend fun getDealsOfTheDay(type: UserType): BodyResponse<DashboardDeals>
         suspend fun getCustomerDataV2(): BodyResponse<CustomerDataV2>
         suspend fun getCustomerData(): BodyResponse<CustomerData>
-        suspend fun getStockistEmployeeBannerData(type: UserType) : BodyResponse<List<EmployeeBannerData>>
-        suspend fun getConnectedStockist() : BodyResponse<ConnectedStockists>
+        suspend fun getStockistEmployeeBannerData(type: UserType): BodyResponse<List<EmployeeBannerData>>
+        suspend fun getConnectedStockist(): BodyResponse<ConnectedStockists>
     }
 
     interface Product : NetworkScope {
@@ -187,6 +187,9 @@ interface NetworkScope {
     }
 
     interface Search : NetworkScope {
+
+        suspend fun getAlternateProducts(productCode: String): BodyResponse<List<AlternateProductData>>
+
         suspend fun search(
             sort: String?,
             query: List<Pair<String, String>>,

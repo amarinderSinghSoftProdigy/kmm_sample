@@ -180,6 +180,8 @@ sealed class Event {
                 Search()
 
             data class LoadStockist(val code: String, val imageCode: String) : Search()
+            data class ShowAltProds(val productCode: String, val sellerName: String? = null) :
+                Search()
         }
 
         sealed class Product : Action() {
@@ -447,7 +449,8 @@ sealed class Event {
 
             data class SubmitReward(val storeId: String) : InStore()
 
-            data class ShowAltProds(val productCode: String) : InStore()
+            data class ShowAltProds(val productCode: String, val sellerName: String? = null) :
+                InStore()
 
         }
 

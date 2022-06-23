@@ -573,9 +573,8 @@ sealed class BottomSheet {
 
     }
 
-    class AlternateProducts(val productList: List<AlternateProductData>) : BottomSheet(){
+    class AlternateProducts(val productList: List<AlternateProductData>, val sellerName: String?=null) : BottomSheet(){
         fun selectAlternativeProduct(product: AlternateProductData) =
             EventCollector.sendEvent(Event.Action.Product.SelectAlternative(product))
     }
-
 }

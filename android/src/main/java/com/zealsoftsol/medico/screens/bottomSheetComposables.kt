@@ -336,20 +336,36 @@ fun ShowAlternateProducts(
     onDismiss: () -> Unit
 ) {
     BaseBottomSheet(onDismiss) {
-        Space(16.dp)
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(3.dp)
-        ) {
-            itemsIndexed(
-                items = productList,
-                itemContent = { _, item ->
-                    ProductAlternative(item) { bs.selectAlternativeProduct(item) }
-                },
-            )
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 10.dp, horizontal = 16.dp)) {
+            bs.sellerName?.let {
+                Space(10.dp)
+                Text(
+                    text = "${stringResource(id = R.string.alternative_brands)} $it ",
+                    color = Color.Black,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 16.sp,
+                )
+                Space(16.dp)
+            }
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(3.dp)
+            ) {
+                itemsIndexed(
+                    items = productList,
+                    itemContent = { _, item ->
+                        ProductAlternative(item) {
+                            onDismiss()
+                            bs.selectAlternativeProduct(item)
+                        }
+                    },
+                )
+            }
         }
-        Space(20.dp)
     }
+
 }
 
 @Composable

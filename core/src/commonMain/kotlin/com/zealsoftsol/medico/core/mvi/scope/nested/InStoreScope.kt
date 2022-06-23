@@ -217,7 +217,7 @@ class InStoreProductsScope(
     }
 
     fun showAlternateProducts(code: String) =
-        EventCollector.sendEvent(Event.Action.InStore.ShowAltProds(code))
+        EventCollector.sendEvent(Event.Action.InStore.ShowAltProds(code, sellerName))
 }
 
 class InStoreUsersScope : Scope.Child.TabBar(), Loadable<InStoreUser>, CommonScope.CanGoBack {
