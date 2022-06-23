@@ -122,6 +122,7 @@ class InStoreProductsScope(
     var showNoProducts: DataSource<Boolean> = DataSource(false)
     val showToast = DataSource(false)
     val toastData: DataSource<ToastItem?> = DataSource(null)
+    val showNoAlternateProdToast = DataSource(false)
 
     data class ToastItem(val productName: String, val quantity: Double, val freeQuantity: Double)
 
@@ -132,6 +133,10 @@ class InStoreProductsScope(
     fun setToast(toastItem: ToastItem?, showToast: Boolean) {
         toastData.value = toastItem
         this.showToast.value = showToast
+    }
+
+    fun hideAlternateProdToastWarning(){
+        showNoAlternateProdToast.value = false
     }
 
     fun selectImage(item: String) {
@@ -210,6 +215,9 @@ class InStoreProductsScope(
         searchText.value = it.suggestion
         loadItems()
     }
+
+    fun showAlternateProducts(code: String) =
+        EventCollector.sendEvent(Event.Action.InStore.ShowAltProds(code, sellerName))
 }
 
 class InStoreUsersScope : Scope.Child.TabBar(), Loadable<InStoreUser>, CommonScope.CanGoBack {

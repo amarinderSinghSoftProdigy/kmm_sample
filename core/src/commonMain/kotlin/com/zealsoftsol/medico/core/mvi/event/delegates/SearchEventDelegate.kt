@@ -64,6 +64,22 @@ internal class SearchEventDelegate(
         is Event.Action.Search.SelectAutoCompleteGlobal -> selectAutoCompleteGlobal(event.autoComplete)
         is Event.Action.Search.LoadStockist -> loadStockist(event.code, event.imageCode)
         is Event.Action.Search.GetLocalSearchData -> getLocalSearchData()
+        is Event.Action.Search.ShowAltProds -> showAlternativeProducts(event.productCode, event.sellerName)
+    }
+
+    /**
+     * show alternate products based on product code
+     */
+    private suspend fun showAlternativeProducts(productCode: String, sellerName: String?) {
+        navigator.withScope<SearchScope> {
+            withProgress { networkSearchScope.getAlternateProducts(productCode) }
+                .onSuccess { body ->
+                    if (body.isNotEmpty())
+                        this.scope.value.bottomSheet.value = BottomSheet.AlternateProducts(body, sellerName)
+                    else
+                        it.showNoAlternateProdToast.value = true
+                }.onError(navigator)
+        }
     }
 
     /**

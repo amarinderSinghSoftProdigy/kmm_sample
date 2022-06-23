@@ -80,7 +80,22 @@ internal class InStoreEventDelegate(
         }
         is Event.Action.InStore.DeleteOrder -> removeOrder(event.unitcode, event.id)
         is Event.Action.InStore.SubmitReward -> submitReward(event.storeId)
+        is Event.Action.InStore.ShowAltProds -> showAlternativeProducts(event.productCode, event.sellerName)
+    }
 
+    /**
+     * show alternate products based on product code
+     */
+    private suspend fun showAlternativeProducts(productCode: String, sellerName: String?) {
+        navigator.withScope<InStoreProductsScope> {
+            withProgress { networkInStoreScope.getAlternateProducts(productCode) }
+                .onSuccess { body ->
+                    if (body.isNotEmpty())
+                        this.scope.value.bottomSheet.value = BottomSheet.AlternateProducts(body, sellerName)
+                    else
+                        it.showNoAlternateProdToast.value = true
+                }.onError(navigator)
+        }
     }
 
     private suspend fun submitReward(storeId: String) {

@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -45,7 +46,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.LocationOn
@@ -90,6 +90,7 @@ import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
+import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.FileType
@@ -135,6 +136,7 @@ import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.ioc.SpinnerItem
 import com.zealsoftsol.medico.screens.management.GeoLocationSheet
 import com.zealsoftsol.medico.screens.product.BottomSectionMode
+import com.zealsoftsol.medico.screens.product.ProductAlternative
 import com.zealsoftsol.medico.screens.search.BatchItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -319,8 +321,51 @@ fun Scope.Host.showBottomSheet(
                 },
                 onDismiss = { dismissBottomSheet() },
             )
+            is BottomSheet.AlternateProducts -> ShowAlternateProducts(
+                bs.productList,
+                bs,
+                onDismiss = { dismissBottomSheet() })
         }
     }
+}
+
+@Composable
+fun ShowAlternateProducts(
+    productList: List<AlternateProductData>,
+    bs: BottomSheet.AlternateProducts,
+    onDismiss: () -> Unit
+) {
+    BaseBottomSheet(onDismiss) {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 10.dp, horizontal = 16.dp)) {
+            bs.sellerName?.let {
+                Space(10.dp)
+                Text(
+                    text = "${stringResource(id = R.string.alternative_brands)} $it ",
+                    color = Color.Black,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 16.sp,
+                )
+                Space(16.dp)
+            }
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(3.dp)
+            ) {
+                itemsIndexed(
+                    items = productList,
+                    itemContent = { _, item ->
+                        ProductAlternative(item) {
+                            onDismiss()
+                            bs.selectAlternativeProduct(item)
+                        }
+                    },
+                )
+            }
+        }
+    }
+
 }
 
 @Composable
@@ -3005,11 +3050,19 @@ private fun NonSeasonBoyPreviewItem(
                     Space(4.dp)
                     Divider(thickness = 0.3.dp)
                     Space(4.dp)
-                    DataWithLabel(label = R.string.dl_one, data = entityInfo.drugLicenseNo1, size = 12.sp)
+                    DataWithLabel(
+                        label = R.string.dl_one,
+                        data = entityInfo.drugLicenseNo1,
+                        size = 12.sp
+                    )
                     Space(4.dp)
                     Divider(thickness = 0.3.dp)
                     Space(4.dp)
-                    DataWithLabel(label = R.string.dl_two, data = entityInfo.drugLicenseNo2, size = 12.sp)
+                    DataWithLabel(
+                        label = R.string.dl_two,
+                        data = entityInfo.drugLicenseNo2,
+                        size = 12.sp
+                    )
                     Space(4.dp)
                     Row {
                         BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {

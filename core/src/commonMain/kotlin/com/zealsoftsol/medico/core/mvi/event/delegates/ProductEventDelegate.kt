@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.BuyProductScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
@@ -82,14 +83,14 @@ internal class ProductEventDelegate(
     }
 
     private fun selectAlternative(product: AlternateProductData) {
-        navigator.dropScope()
-        EventCollector.sendEvent(
-            Event.Action.Search.SearchInput(
-                isOneOf = false,
-                product.name,
-                hashMapOf(product.query to product.baseProductName),
+        navigator.setScope(SearchScope(null))
+            EventCollector.sendEvent(
+                Event.Action.Search.SearchInput(
+                    isOneOf = false,
+                    product.name,
+                    hashMapOf(product.query to product.baseProductName),
+                )
             )
-        )
     }
 
     private suspend fun buyProduct(product: ProductSearch, buyingOption: BuyingOption) {
