@@ -22,6 +22,7 @@ import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SortOption
+import com.zealsoftsol.medico.data.Value
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -65,6 +66,14 @@ internal class SearchEventDelegate(
         is Event.Action.Search.LoadStockist -> loadStockist(event.code, event.imageCode)
         is Event.Action.Search.GetLocalSearchData -> getLocalSearchData()
         is Event.Action.Search.ShowAltProds -> showAlternativeProducts(event.productCode, event.sellerName)
+        is Event.Action.Search.ShowManufacturers -> showFilterManufacturers(event.data)
+    }
+
+    private fun showFilterManufacturers(data: List<Value>) {
+        navigator.withScope<SearchScope> {
+            val hostScope = scope.value
+            hostScope.bottomSheet.value = BottomSheet.FilerManufacturers(data)
+        }
     }
 
     /**
@@ -492,7 +501,7 @@ internal class SearchEventDelegate(
             addPage,
         ).onSuccess { body ->
             pagination.setTotal(body.totalResults)
-            filtersManufactures.value = body.facets.toManufactureFilter()
+            filtersManufactures.value = body.facets[0].values //todo replace with correct logic to find manu list
             filters.value = body.facets.toFilter()
             products.value = /*if (!addPage)*/
                 body.products /*else products.value + body.products*/

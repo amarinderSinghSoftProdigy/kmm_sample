@@ -26,6 +26,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -33,6 +34,7 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
@@ -59,6 +61,8 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -75,10 +79,14 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
+import com.google.accompanist.flowlayout.FlowMainAxisAlignment
+import com.google.accompanist.flowlayout.FlowRow
+import com.google.accompanist.flowlayout.SizeMode
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
@@ -108,7 +116,9 @@ import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.data.TaxInfo
 import com.zealsoftsol.medico.data.TaxType
 import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.data.Value
 import com.zealsoftsol.medico.screens.common.CoilImage
+import com.zealsoftsol.medico.screens.common.CoilImageBrands
 import com.zealsoftsol.medico.screens.common.CoilImageZoom
 import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.Dropdown
@@ -325,20 +335,74 @@ fun Scope.Host.showBottomSheet(
                 bs.productList,
                 bs,
                 onDismiss = { dismissBottomSheet() })
+            is BottomSheet.FilerManufacturers -> ShowManufacturersFilter(bs.listManufacturers) { dismissBottomSheet() }
         }
     }
 }
 
 @Composable
-fun ShowAlternateProducts(
+private fun ShowManufacturersFilter(listManufacturers: List<Value>, onDismiss: () -> Unit) {
+    BaseBottomSheet(onDismiss) {
+        val itemSize: Dp = (LocalConfiguration.current.screenWidthDp.dp / 3) - 8.dp
+
+        FlowRow(
+            mainAxisSize = SizeMode.Expand,
+            mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
+        ) {
+            listManufacturers.let {
+                it.forEachIndexed { index, item ->
+                    Column {
+                        Card(
+                            modifier = Modifier
+                                .height(90.dp)
+                                .width(150.dp)
+                                .selectable(
+                                    selected = true,
+                                    onClick = {}
+                                ),
+                            elevation = 3.dp,
+                            shape = RoundedCornerShape(5.dp),
+                            backgroundColor = Color.White,
+                        ) {
+                            CoilImageBrands(
+                                src = CdnUrlProvider.urlForM(item.id),
+                                contentScale = ContentScale.Crop,
+                                onError = { ItemPlaceholder() },
+                                onLoading = { ItemPlaceholder() },
+                                height = 90.dp,
+                                width = itemSize,
+                            )
+                        }
+                        Space(5.dp)
+                        Text(
+                            modifier = Modifier
+                                .width(150.dp),
+                            text = item.value,
+                            color = Color.Black,
+                            fontSize = 12.sp,
+                            textAlign = TextAlign.Center,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ShowAlternateProducts(
     productList: List<AlternateProductData>,
     bs: BottomSheet.AlternateProducts,
     onDismiss: () -> Unit
 ) {
     BaseBottomSheet(onDismiss) {
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 10.dp, horizontal = 16.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 10.dp, horizontal = 16.dp)
+        ) {
             bs.sellerName?.let {
                 Space(10.dp)
                 Text(

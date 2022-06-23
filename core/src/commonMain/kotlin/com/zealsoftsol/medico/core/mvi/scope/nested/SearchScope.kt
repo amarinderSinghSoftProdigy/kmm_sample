@@ -16,6 +16,7 @@ import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.StockistListItem
+import com.zealsoftsol.medico.data.Value
 
 interface BaseSearchScope : Scopable {
     val enableButton: DataSource<Boolean>
@@ -25,7 +26,7 @@ interface BaseSearchScope : Scopable {
     val showToast: DataSource<Boolean>
     val cartData: DataSource<CartData?>
     val checkedProduct: DataSource<ProductSearch?>
-    val filtersManufactures: DataSource<List<Filter>>
+    val filtersManufactures: DataSource<List<Value>>
     val filters: DataSource<List<Filter>>
     val filterSearches: DataSource<Map<String, String>>
     val autoComplete: DataSource<List<AutoComplete>>
@@ -120,7 +121,7 @@ class SearchScope(
     override val showToast: DataSource<Boolean> = DataSource(false),
     override val checkedProduct: DataSource<ProductSearch?> = DataSource(null),
     override val cartData: DataSource<CartData?> = DataSource(null),
-    override val filtersManufactures: DataSource<List<Filter>> = DataSource(emptyList()),
+    override val filtersManufactures: DataSource<List<Value>> = DataSource(emptyList()),
     override val filters: DataSource<List<Filter>> = DataSource(emptyList()),
     override val filterSearches: DataSource<Map<String, String>> = DataSource(emptyMap()),
     override val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList()),
@@ -196,6 +197,6 @@ class SearchScope(
     }
 
     fun showAlternateProducts(code: String, sellerName: String?) =
-        EventCollector.sendEvent(Event.Action.Search.ShowAltProds(code, sellerName))
+        EventCollector.sendEvent(Event.Action.Search.ShowManufacturers(filtersManufactures.value))
 
 }

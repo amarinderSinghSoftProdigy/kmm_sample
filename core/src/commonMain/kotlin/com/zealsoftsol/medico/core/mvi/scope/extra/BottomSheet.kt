@@ -37,6 +37,7 @@ import com.zealsoftsol.medico.data.TaxInfo
 import com.zealsoftsol.medico.data.UpdateInvoiceRequest
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.data.Value
 import java.io.File
 
 sealed class BottomSheet {
@@ -573,8 +574,14 @@ sealed class BottomSheet {
 
     }
 
-    class AlternateProducts(val productList: List<AlternateProductData>, val sellerName: String?=null) : BottomSheet(){
+    class AlternateProducts(
+        val productList: List<AlternateProductData>,
+        val sellerName: String? = null
+    ) : BottomSheet() {
         fun selectAlternativeProduct(product: AlternateProductData) =
             EventCollector.sendEvent(Event.Action.Product.SelectAlternative(product))
     }
+
+    class FilerManufacturers(val listManufacturers: List<Value>) : BottomSheet()
+
 }

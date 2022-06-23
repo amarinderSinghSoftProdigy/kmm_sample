@@ -57,6 +57,7 @@ import com.zealsoftsol.medico.data.UpdateInvoiceRequest
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.data.Value
 import kotlin.reflect.KClass
 
 sealed class Event {
@@ -182,6 +183,8 @@ sealed class Event {
             data class LoadStockist(val code: String, val imageCode: String) : Search()
             data class ShowAltProds(val productCode: String, val sellerName: String? = null) :
                 Search()
+            data class ShowManufacturers(val data: List<Value>) : Search()
+
         }
 
         sealed class Product : Action() {

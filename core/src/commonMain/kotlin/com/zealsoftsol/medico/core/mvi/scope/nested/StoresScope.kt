@@ -11,12 +11,12 @@ import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.CartData
-import com.zealsoftsol.medico.data.ConnectedStockists
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.StockistListItem
 import com.zealsoftsol.medico.data.Store
+import com.zealsoftsol.medico.data.Value
 
 // TODO make part of management scope
 sealed class StoresScope : Scope.Child.TabBar() {
@@ -67,7 +67,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
         override val checkedProduct: DataSource<ProductSearch?> = DataSource(null),
         override val isBatchSelected: DataSource<Boolean> = DataSource(false),
         override val filters: DataSource<List<Filter>> = DataSource(emptyList()),
-        override val filtersManufactures: DataSource<List<Filter>> = DataSource(emptyList()),
+        override val filtersManufactures: DataSource<List<Value>> = DataSource(emptyList()),
         override val filterSearches: DataSource<Map<String, String>> = DataSource(emptyMap()),
         override val products: DataSource<List<ProductSearch>> = DataSource(emptyList()),
         override val sortOptions: DataSource<List<SortOption>> = DataSource(emptyList()),
