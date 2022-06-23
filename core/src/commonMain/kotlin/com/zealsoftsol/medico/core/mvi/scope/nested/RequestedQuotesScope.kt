@@ -13,7 +13,7 @@ import com.zealsoftsol.medico.data.SellerInfo
 class RequestedQuotesScope(
     val productData: ProductSearch,
     val requestedData: DataSource<List<ProductSearch>>
-) : Scope.Child.TabBar() ,ToastScope{
+) : Scope.Child.TabBar(), ToastScope {
     val sellerInfoLocal: DataSource<SellerInfo?> = DataSource(null)
 
     override val showToast: DataSource<Boolean> = DataSource(false)
@@ -31,7 +31,7 @@ class RequestedQuotesScope(
     }
 
     fun buy(buyingOption: BuyingOption) {
-        productData.sellerInfo = this.sellerInfoLocal.value
+        productData.sellerInfo = sellerInfoLocal.value
         productData.buyingOption = buyingOption
         EventCollector.sendEvent(
             Event.Action.Product.BuyProduct(

@@ -67,6 +67,7 @@ import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.ShowToastGlobal
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.management.checkOffer
 import com.zealsoftsol.medico.screens.search.YellowOutlineIndication
 
 
@@ -179,7 +180,10 @@ fun RequestedQuotesComposable(scope: RequestedQuotesScope) {
                     itemsIndexed(
                         items = productList,
                         itemContent = { index, item ->
-                            SellerData(result = item.sellerInfo, seller.value) {
+                            SellerData(
+                                result = item.sellerInfo,
+                                seller.value?.unitCode == item.sellerInfo?.unitCode
+                            ) {
                                 scope.setSellerInfo(item.sellerInfo)
                                 isSelected.value = it
                             }
@@ -308,6 +312,10 @@ fun RequestedQuotesComposable(scope: RequestedQuotesScope) {
                                                         wasQty.value = "$modBefore$modAfter"
                                                         scope.productData.quantity =
                                                             wasQty.value.toDouble()
+                                                        scope.productData.freeQuantity = checkOffer(
+                                                            scope.productData.sellerInfo?.promotionData,
+                                                            scope.productData.quantity
+                                                        )
                                                         enableButton.value =
                                                             wasQty.value.isNotEmpty() && wasQty.value != "0.0"
                                                     },
@@ -413,6 +421,7 @@ fun RequestedQuotesComposable(scope: RequestedQuotesScope) {
         isChecked.value = false
         isSelected.value = false
         quantity.value = 0
+        scope.setSellerInfo(null)
         if (cartItem != null)
             ShowToastGlobal(
                 msg = cartItem.productName + " " +
@@ -428,10 +437,10 @@ fun RequestedQuotesComposable(scope: RequestedQuotesScope) {
 }
 
 @Composable
-fun SellerData(result: SellerInfo?, checked: SellerInfo?, onChecked: ((Boolean) -> Unit)) {
+fun SellerData(result: SellerInfo?, checked: Boolean = false, onChecked: ((Boolean) -> Unit)) {
 
     val isChecked = remember {
-        mutableStateOf(checked?.unitCode == result?.unitCode)
+        mutableStateOf(checked)
     }
 
     Surface(
