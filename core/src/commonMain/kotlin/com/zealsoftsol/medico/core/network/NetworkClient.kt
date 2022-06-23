@@ -92,6 +92,7 @@ import com.zealsoftsol.medico.data.PasswordResetRequest2
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.ProductBuyResponse
+import com.zealsoftsol.medico.data.ProductRequestResponse
 import com.zealsoftsol.medico.data.ProductResponse
 import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
 import com.zealsoftsol.medico.data.ProfileImageData
@@ -538,6 +539,12 @@ class NetworkClient(
                 withMainToken()
             }
         }
+
+    override suspend fun getRequestedProductData(productCode: String) = simpleRequest {
+        client.get<BodyResponse<ProductRequestResponse>>("${baseUrl.url}/search/quote/${productCode}") {
+            withMainToken()
+        }
+    }
 
     override suspend fun getManagementInfo(
         unitCode: String,

@@ -675,5 +675,8 @@
     <string name="E0057">Please enter a valid Food License</string>
     <string name="E0058">Food License already registered. Please try again.</string>
     <string name="demo">Demos</string>
+    <string name="sub_stockist_message">Do you want to place an order to nearest Stockist/ Sub-Stockist ?</string>
+    <string name="only_cod_message">(*Only COD orders can be placed)</string>
+    <string name="select_stockist_message">Please select a stockist</string>
 
 </resources>
