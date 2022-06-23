@@ -16,6 +16,7 @@ import com.zealsoftsol.medico.data.AddEmployee
 import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.AllBanners
 import com.zealsoftsol.medico.data.AllDeals
+import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoApprove
 import com.zealsoftsol.medico.data.AutoComplete
@@ -433,7 +434,7 @@ class NetworkClient(
         addPage: Boolean
     ) = simpleRequest {
         client.get<BodyResponse<SearchResponse>>("${baseUrl.url}/search/${if (unitCode == null) "global" else "v2/stores"}") {
-        //client.get<BodyResponse<SearchResponse>>("${baseUrl.url}/search/${if (unitCode == null) "global" else "stores"}") {
+            //client.get<BodyResponse<SearchResponse>>("${baseUrl.url}/search/${if (unitCode == null) "global" else "stores"}") {
             withMainToken()
             url {
                 parameters.apply {
@@ -1591,10 +1592,17 @@ class NetworkClient(
 
 
     override suspend fun getConnectedStockist(): BodyResponse<ConnectedStockists> = simpleRequest {
-        client.get("${baseUrl.url}//dashboard/connected/stockists"){
+        client.get("${baseUrl.url}//dashboard/connected/stockists") {
             withMainToken()
         }
     }
+
+    override suspend fun getAlternateProducts(productCode: String): BodyResponse<List<AlternateProductData>> =
+        simpleRequest {
+            client.get("${baseUrl.url}/search/product/alternate/${productCode}") {
+                withMainToken()
+            }
+        }
 
     // Utils
     private inline fun HttpRequestBuilder.withB2bCodeToken(finalToken: String) {

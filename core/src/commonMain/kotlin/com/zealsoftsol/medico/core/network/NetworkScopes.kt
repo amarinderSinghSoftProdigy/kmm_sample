@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.data.AddEmployee
 import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.AllBanners
 import com.zealsoftsol.medico.data.AllDeals
+import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoApprove
 import com.zealsoftsol.medico.data.AutoComplete
@@ -162,8 +163,8 @@ interface NetworkScope {
         suspend fun getDealsOfTheDay(type: UserType): BodyResponse<DashboardDeals>
         suspend fun getCustomerDataV2(): BodyResponse<CustomerDataV2>
         suspend fun getCustomerData(): BodyResponse<CustomerData>
-        suspend fun getStockistEmployeeBannerData(type: UserType) : BodyResponse<List<EmployeeBannerData>>
-        suspend fun getConnectedStockist() : BodyResponse<ConnectedStockists>
+        suspend fun getStockistEmployeeBannerData(type: UserType): BodyResponse<List<EmployeeBannerData>>
+        suspend fun getConnectedStockist(): BodyResponse<ConnectedStockists>
     }
 
     interface Product : NetworkScope {
@@ -186,6 +187,9 @@ interface NetworkScope {
     }
 
     interface Search : NetworkScope {
+
+        suspend fun getAlternateProducts(productCode: String): BodyResponse<List<AlternateProductData>>
+
         suspend fun search(
             sort: String?,
             query: List<Pair<String, String>>,
@@ -387,6 +391,8 @@ interface NetworkScope {
         ): BodyResponse<StoreSubmitResponse>
 
         suspend fun deleteInStoreOrder(unitCode: String, id: String): AnyResponse
+
+        suspend fun getAlternateProducts(productCode: String): BodyResponse<List<AlternateProductData>>
     }
 
     interface WhatsappStore : NetworkScope {

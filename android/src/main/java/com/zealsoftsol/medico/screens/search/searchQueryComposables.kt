@@ -100,6 +100,7 @@ import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.PaginationButtons
 import com.zealsoftsol.medico.screens.common.Separator
 import com.zealsoftsol.medico.screens.common.ShowAlert
+import com.zealsoftsol.medico.screens.common.ShowToastGlobal
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
 import kotlinx.coroutines.launch
@@ -421,6 +422,13 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                 scope.manageAlertVisibility(false)
             }
 
+    }
+
+    if (scope.showNoAlternateProdToast.flow.collectAsState().value) {
+        ShowToastGlobal(
+            msg = stringResource(id = R.string.no_alternate_prod_found)
+        )
+        scope.hideAlternateProdToastWarning()
     }
 }
 
@@ -757,25 +765,34 @@ fun ProductItem(
                 Space(10.dp)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.Bottom,
                 ) {
-                    Space(4.dp)
-                    MedicoButton(
+                    Icon(
                         modifier = Modifier
-                            .weight(0.5f)
-                            .padding(end = 20.dp),
-                        text = stringResource(id = R.string.view_stockist),
-                        isEnabled = true,
-                        height = 36.dp,
-                        color = ConstColors.lightGrey,
-                        elevation = null,
-                        onClick = {
-                            scope.showConnectedStockist(product.code, product.imageCode)
-                        },
+                            .size(28.dp)
+                            .weight(1f)
+                            .clickable {
+                                scope.showAlternateProducts(product.code, product.sellerInfo?.tradeName)
+                            },
+                        painter = painterResource(R.drawable.ic_al_prod),
+                        contentDescription = null,
+                        tint = ConstColors.lightBlue
                     )
 
-                    Box(modifier = Modifier.width(120.dp)) {
+                    Icon(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .weight(1f)
+                            .clickable {
+                                scope.showConnectedStockist(product.code, product.imageCode)
+                            },
+                        painter = painterResource(R.drawable.ic_menu_stockist),
+                        contentDescription = null,
+                        tint = ConstColors.lightBlue
+                    )
+
+                    Box(modifier = Modifier.weight(1f)) {
                         when (product.buyingOption) {
                             BuyingOption.BUY -> MedicoButton(
                                 text = stringResource(id = R.string.buy),

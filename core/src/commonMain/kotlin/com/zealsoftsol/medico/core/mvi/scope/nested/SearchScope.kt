@@ -11,7 +11,6 @@ import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.CartData
-import com.zealsoftsol.medico.data.ConnectedStockists
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
@@ -143,6 +142,7 @@ class SearchScope(
     override val supportsAutoComplete: Boolean = true
     override val pagination: Pagination = Pagination(Pagination.ITEMS_PER_PAGE_10)
     val showNoStockistAlert = DataSource(false)
+    val showNoAlternateProdToast = DataSource(false)
 
     init {
         //if there is already an autocomplete item start search based on brand manufacturer else perform normal search
@@ -161,6 +161,10 @@ class SearchScope(
         } else {
             EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true))
         }
+    }
+
+    fun hideAlternateProdToastWarning(){
+        showNoAlternateProdToast.value = false
     }
 
     fun startSearch(check: Boolean) {
@@ -190,5 +194,8 @@ class SearchScope(
         )
         EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(url))
     }
+
+    fun showAlternateProducts(code: String, sellerName: String?) =
+        EventCollector.sendEvent(Event.Action.Search.ShowAltProds(code, sellerName))
 
 }
