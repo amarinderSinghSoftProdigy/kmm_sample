@@ -336,19 +336,18 @@ fun ShowAlternateProducts(
     onDismiss: () -> Unit
 ) {
     BaseBottomSheet(onDismiss) {
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 10.dp, horizontal = 16.dp)) {
-            bs.sellerName?.let {
-                Space(10.dp)
-                Text(
-                    text = "${stringResource(id = R.string.alternative_brands)} $it ",
-                    color = Color.Black,
-                    fontWeight = FontWeight.W600,
-                    fontSize = 16.sp,
-                )
-                Space(16.dp)
-            }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 10.dp, horizontal = 16.dp)
+        ) {
+            Text(
+                text = stringResource(id = R.string.alt_brands),
+                color = Color.Black,
+                fontWeight = FontWeight.W600,
+                fontSize = 16.sp,
+            )
+            Space(16.dp)
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 contentPadding = PaddingValues(3.dp)

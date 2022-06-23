@@ -2,9 +2,12 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
+import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreProductsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
+import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.NotificationRepo
@@ -30,6 +33,23 @@ internal class StoresEventDelegate(
         is Event.Action.Stores.Search -> searchStores(event.value)
         is Event.Action.Stores.Select -> select(event.item)
         is Event.Action.Stores.ShowLargeImage -> selectProductLargeImage(event.item, event.type)
+        is Event.Action.Stores.ShowAltProds -> showAlternativeProducts(event.productCode, null)
+    }
+
+    /**
+     * show alternate products based on product code
+     */
+    private suspend fun showAlternativeProducts(productCode: String, sellerName: String?) {
+        navigator.withScope<StoresScope> {
+            withProgress { networkStoresScope.getAlternateProducts(productCode) }
+                .onSuccess { body ->
+                    if (body.isNotEmpty())
+                        this.scope.value.bottomSheet.value =
+                            BottomSheet.AlternateProducts(body, sellerName)
+                    else
+                        it.showNoAlternateProdToast.value = true
+                }.onError(navigator)
+        }
     }
 
     fun selectProductLargeImage(item: String, type: String?) {

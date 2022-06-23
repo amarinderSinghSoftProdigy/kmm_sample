@@ -249,6 +249,8 @@ sealed class Event {
             data class Search(val value: String) : Stores()
             data class Load(val isFirstLoad: Boolean) : Stores()
             data class ShowLargeImage(val item: String, val type: String? = "") : Stores()
+            data class ShowAltProds(val productCode: String, val sellerName: String? = null) :
+                Stores()
         }
 
         sealed class Cart : Action() {

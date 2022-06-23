@@ -3,6 +3,8 @@ package com.zealsoftsol.medico.core.network.mock
 import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.network.NetworkScope
+import com.zealsoftsol.medico.data.AlternateProductData
+import com.zealsoftsol.medico.data.BodyResponse
 import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.Store
 
@@ -19,4 +21,7 @@ class MockStoresScope : NetworkScope.Stores {
     ) = mockResponse {
         PaginatedData(emptyList<Store>(), 0)
     }
+
+    override suspend fun getAlternateProducts(productCode: String): BodyResponse<List<AlternateProductData>> =
+        mockResponse { emptyList() }
 }

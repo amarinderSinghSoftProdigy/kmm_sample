@@ -534,9 +534,11 @@ fun AutoCompleteItem(
                             modifier = Modifier.weight(5f)
                         )
 
-                        Row(modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(2f), horizontalArrangement = Arrangement.End) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(2f), horizontalArrangement = Arrangement.End
+                        ) {
 
                             if (autoComplete.stockists.isNotEmpty()) {
                                 Text(
@@ -768,29 +770,57 @@ fun ProductItem(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.Bottom,
                 ) {
-                    Icon(
+                    Column(
                         modifier = Modifier
-                            .size(28.dp)
                             .weight(1f)
                             .clickable {
-                                scope.showAlternateProducts(product.code, product.sellerInfo?.tradeName)
+                                scope.showAlternateProducts(
+                                    product.code,
+                                    product.sellerInfo?.tradeName
+                                )
                             },
-                        painter = painterResource(R.drawable.ic_al_prod),
-                        contentDescription = null,
-                        tint = ConstColors.lightBlue
-                    )
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .size(28.dp),
+                            painter = painterResource(R.drawable.ic_al_prod),
+                            contentDescription = null,
+                            tint = ConstColors.lightBlue
+                        )
+                        Space(3.dp)
+                        Text(
+                            text = stringResource(id = R.string.alternate),
+                            color = ConstColors.lightBlue,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.W600,
+                        )
+                    }
 
-                    Icon(
+                    Column(
                         modifier = Modifier
-                            .size(28.dp)
                             .weight(1f)
+                            .padding(end = 16.dp)
                             .clickable {
                                 scope.showConnectedStockist(product.code, product.imageCode)
                             },
-                        painter = painterResource(R.drawable.ic_menu_stockist),
-                        contentDescription = null,
-                        tint = ConstColors.lightBlue
-                    )
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .size(28.dp),
+                            painter = painterResource(R.drawable.ic_menu_stockist),
+                            contentDescription = null,
+                            tint = ConstColors.lightBlue
+                        )
+                        Space(3.dp)
+                        Text(
+                            text = stringResource(id = R.string.view_stockist),
+                            color = ConstColors.lightBlue,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.W600,
+                        )
+                    }
 
                     Box(modifier = Modifier.weight(1f)) {
                         when (product.buyingOption) {
