@@ -263,6 +263,9 @@ interface NetworkScope {
             search: String,
             pagination: Pagination,
         ): BodyResponse<PaginatedData<Store>>
+
+        suspend fun getAlternateProducts(productCode: String): BodyResponse<List<AlternateProductData>>
+
     }
 
     interface Cart : NetworkScope {

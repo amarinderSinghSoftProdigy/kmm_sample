@@ -123,6 +123,14 @@ fun StoresScreen(scope: StoresScope) {
             is StoresScope.StorePreview -> StorePreview(scope)
         }
     }
+
+
+    if (scope.showNoAlternateProdToast.flow.collectAsState().value) {
+        ShowToastGlobal(
+            msg = stringResource(id = R.string.no_alternate_prod_found)
+        )
+        scope.hideAlternateProdToastWarning()
+    }
 }
 
 var searchedProduct = ""
@@ -930,7 +938,7 @@ fun ProductItemStore(
                     Space(8.dp)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
 

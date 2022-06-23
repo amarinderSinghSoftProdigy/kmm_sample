@@ -21,6 +21,11 @@ import com.zealsoftsol.medico.data.Store
 // TODO make part of management scope
 sealed class StoresScope : Scope.Child.TabBar() {
 
+    val showNoAlternateProdToast = DataSource(false)
+
+    fun hideAlternateProdToastWarning(){
+        showNoAlternateProdToast.value = false
+    }
 
     class All(
         private val notificationCount: ReadOnlyDataSource<Int>,
@@ -146,7 +151,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
         }
 
         fun showAlternateProducts(code: String) =
-            EventCollector.sendEvent(Event.Action.InStore.ShowAltProds(code, null))
+            EventCollector.sendEvent(Event.Action.Stores.ShowAltProds(code, null))
 
     }
 }
