@@ -180,6 +180,8 @@ sealed class Event {
                 Search()
 
             data class LoadStockist(val code: String, val imageCode: String) : Search()
+            data class ShowAltProds(val productCode: String, val sellerName: String? = null) :
+                Search()
         }
 
         sealed class Product : Action() {
@@ -407,7 +409,10 @@ sealed class Event {
             ) : InStore()
 
             data class ProductSearch(val value: String) : InStore()
-            data class ProductLoad(val isFirstLoad: Boolean) : InStore()
+            data class ProductLoad(
+                val isFirstLoad: Boolean, val page: Int, val searchTerm: String = ""
+            ) : InStore()
+
             data class ProductSelect(val item: InStoreProduct) : InStore()
 
             data class UserSearch(val value: String) : InStore()
@@ -420,10 +425,13 @@ sealed class Event {
             object LoadCart : InStore()
             object ClearCart : InStore()
             data class AddCartItem(
+                val productName: String,
                 val productCode: String,
                 val spid: String,
                 val quantity: Double,
                 val freeQuantity: Double,
+                val page: Int,
+                val search: String
             ) : InStore()
 
             data class UpdateCartItem(
@@ -440,6 +448,9 @@ sealed class Event {
             object ConfirmCartOrder : InStore()
 
             data class SubmitReward(val storeId: String) : InStore()
+
+            data class ShowAltProds(val productCode: String, val sellerName: String? = null) :
+                InStore()
 
         }
 

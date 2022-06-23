@@ -12,9 +12,11 @@ import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
+import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.core.utils.trimInput
+import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.InStoreCart
 import com.zealsoftsol.medico.data.InStoreCartEntry
 import com.zealsoftsol.medico.data.InStoreProduct
@@ -109,29 +111,76 @@ class InStoreProductsScope(
     private val sellerName: String,
     private val address: String,
     private val phoneNumber: String
-) : Scope.Child.TabBar(),
-    Loadable<InStoreProduct> {
+) : Scope.Child.TabBar() {
 
-    override val items: DataSource<List<InStoreProduct>> = DataSource(emptyList())
-    override val totalItems: DataSource<Int> = DataSource(0)
-    override val searchText: DataSource<String> = DataSource("")
-    override val pagination: Pagination = Pagination()
+    val items: DataSource<List<InStoreProduct>> = DataSource(emptyList())
+    val totalItems: DataSource<Int> = DataSource(0)
+    val searchText: DataSource<String> = DataSource("")
     val cart: DataSource<InStoreCart?> = DataSource(null)
+    val currentPage = DataSource(0)
+    val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList())
+    var showNoProducts: DataSource<Boolean> = DataSource(false)
+    val showToast = DataSource(false)
+    val toastData: DataSource<ToastItem?> = DataSource(null)
+    val showNoAlternateProdToast = DataSource(false)
 
-    fun firstLoad() = EventCollector.sendEvent(Event.Action.InStore.ProductLoad(isFirstLoad = true))
+    data class ToastItem(val productName: String, val quantity: Double, val freeQuantity: Double)
 
-    //pass on the seller info to be displayed on header
+    fun setCurrentPage(page: Int) {
+        currentPage.value = page
+    }
+
+    fun setToast(toastItem: ToastItem?, showToast: Boolean) {
+        toastData.value = toastItem
+        this.showToast.value = showToast
+    }
+
+    fun hideAlternateProdToastWarning(){
+        showNoAlternateProdToast.value = false
+    }
+
+    fun selectImage(item: String) {
+        val url = CdnUrlProvider.urlFor(
+            item, CdnUrlProvider.Size.Px320
+        )
+        EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(url))
+    }
+
+
+    fun firstLoad() {
+        currentPage.value = 0
+        EventCollector.sendEvent(Event.Action.InStore.ProductLoad(isFirstLoad = true, 0))
+    }
+
+    /*//pass on the seller info to be displayed on header
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo =
-        TabBarInfo.InStoreProductTitle(sellerName, address, phoneNumber)
+        TabBarInfo.InStoreProductTitle(sellerName, address, phoneNumber)*/
+
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
+        return TabBarInfo.StoreTitle(
+            storeName = sellerName.uppercase(),
+            showNotifications = false,
+            event = Event.Action.Management.GetDetails(unitCode),
+            cartItemsCount = null
+        )
+    }
 
     fun loadItems() =
-        EventCollector.sendEvent(Event.Action.InStore.ProductLoad(isFirstLoad = false))
+        EventCollector.sendEvent(
+            Event.Action.InStore.ProductLoad(
+                isFirstLoad = false,
+                page = currentPage.value,
+                searchTerm = searchText.value
+            )
+        )
 
-    fun search(value: String): Boolean {
-        return if (searchText.value != value) {
+    fun search(value: String) {
+        searchText.value = value
+        if (value.isNotEmpty()) {
+            currentPage.value = 0
             EventCollector.sendEvent(Event.Action.InStore.ProductSearch(value))
         } else {
-            false
+            firstLoad()
         }
     }
 
@@ -146,6 +195,29 @@ class InStoreProductsScope(
             cart.value?.mobileNumber.orEmpty()
         )
     )
+
+    fun addToCart(
+        code: String, spid: String, quantity: Double, freeQuantity: Double, productName: String
+    ): Boolean =
+        EventCollector.sendEvent(
+            Event.Action.InStore.AddCartItem(
+                productName,
+                code,
+                spid,
+                quantity,
+                freeQuantity,
+                currentPage.value,
+                searchText.value
+            )
+        )
+
+    fun selectAutoComplete(it: AutoComplete) {
+        searchText.value = it.suggestion
+        loadItems()
+    }
+
+    fun showAlternateProducts(code: String) =
+        EventCollector.sendEvent(Event.Action.InStore.ShowAltProds(code, sellerName))
 }
 
 class InStoreUsersScope : Scope.Child.TabBar(), Loadable<InStoreUser>, CommonScope.CanGoBack {
@@ -317,19 +389,28 @@ class InStoreAddUserScope(
 
 class InStoreCartScope(
     internal val unitCode: String,
-    internal val name: String,
+    val name: String,
     internal val address: String,
     internal val phoneNumber: String,
     val items: DataSource<List<InStoreCartEntry>> = DataSource(emptyList()),
     val total: DataSource<Total?> = DataSource(null),
+    val paymentMethod: DataSource<String> = DataSource("")
 ) : Scope.Child.TabBar() {
+
+    val showNoCart = DataSource(false)
 
     init {
         EventCollector.sendEvent(Event.Action.InStore.LoadCart)
     }
 
-    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo =
-        TabBarInfo.InStoreProductTitle(name, address, phoneNumber)
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
+        return TabBarInfo.StoreTitle(
+            storeName = name,
+            showNotifications = false,
+            event = Event.Action.Management.GetDetails(unitCode),
+            cartItemsCount = null
+        )
+    }
 
     fun updateItemCount(
         item: InStoreCartEntry,

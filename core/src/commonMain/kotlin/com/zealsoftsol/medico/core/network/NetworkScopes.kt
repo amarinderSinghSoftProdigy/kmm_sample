@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.data.AddEmployee
 import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.AllBanners
 import com.zealsoftsol.medico.data.AllDeals
+import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoApprove
 import com.zealsoftsol.medico.data.AutoComplete
@@ -35,31 +36,6 @@ import com.zealsoftsol.medico.data.DashboardManufacturer
 import com.zealsoftsol.medico.data.DashboardPromotion
 import com.zealsoftsol.medico.data.DemoResponse
 import com.zealsoftsol.medico.data.DrugLicenseUpload
-import com.zealsoftsol.medico.data.LicenseDocumentData
-import com.zealsoftsol.medico.data.LocationData
-import com.zealsoftsol.medico.data.ManufacturersListData
-import com.zealsoftsol.medico.data.PasswordValidation
-import com.zealsoftsol.medico.data.PincodeValidation
-import com.zealsoftsol.medico.data.ProductResponse
-import com.zealsoftsol.medico.data.RecentProductInfo
-import com.zealsoftsol.medico.data.Response
-import com.zealsoftsol.medico.data.SellerUsersData
-import com.zealsoftsol.medico.data.StockStatusData
-import com.zealsoftsol.medico.data.StorageKeyResponse
-import com.zealsoftsol.medico.data.SubmitRegistration
-import com.zealsoftsol.medico.data.TokenInfo
-import com.zealsoftsol.medico.data.UploadResponseData
-import com.zealsoftsol.medico.data.UserRegistration1
-import com.zealsoftsol.medico.data.UserRegistration2
-import com.zealsoftsol.medico.data.UserRegistration3
-import com.zealsoftsol.medico.data.UserRequest
-import com.zealsoftsol.medico.data.UserType
-import com.zealsoftsol.medico.data.UserValidation1
-import com.zealsoftsol.medico.data.UserValidation2
-import com.zealsoftsol.medico.data.UserValidation3
-import com.zealsoftsol.medico.data.ValidationResponse
-import com.zealsoftsol.medico.data.WhatsappData
-import com.zealsoftsol.medico.data.ViewEmployee
 import com.zealsoftsol.medico.data.EmployeeBannerData
 import com.zealsoftsol.medico.data.EmployeeRegistration1
 import com.zealsoftsol.medico.data.EmployeeRegistration2
@@ -80,7 +56,10 @@ import com.zealsoftsol.medico.data.InventoryData
 import com.zealsoftsol.medico.data.Invoice
 import com.zealsoftsol.medico.data.InvoiceDetails
 import com.zealsoftsol.medico.data.InvoiceResponse
+import com.zealsoftsol.medico.data.LicenseDocumentData
+import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
+import com.zealsoftsol.medico.data.ManufacturersListData
 import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
@@ -95,7 +74,10 @@ import com.zealsoftsol.medico.data.OrderResponse
 import com.zealsoftsol.medico.data.OrderResponseInvoice
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.PaginatedData
+import com.zealsoftsol.medico.data.PasswordValidation
+import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.ProductBuyResponse
+import com.zealsoftsol.medico.data.ProductResponse
 import com.zealsoftsol.medico.data.ProductRequestResponse
 import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
 import com.zealsoftsol.medico.data.ProfileImageData
@@ -104,16 +86,35 @@ import com.zealsoftsol.medico.data.ProfileResponseData
 import com.zealsoftsol.medico.data.PromotionTypeData
 import com.zealsoftsol.medico.data.PromotionUpdateRequest
 import com.zealsoftsol.medico.data.QrCodeData
+import com.zealsoftsol.medico.data.RecentProductInfo
+import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.RewardsList
 import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.SearchResponse
+import com.zealsoftsol.medico.data.SellerUsersData
+import com.zealsoftsol.medico.data.StockStatusData
+import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.StoreSubmitResponse
 import com.zealsoftsol.medico.data.SubmitEmployeeRegistration
 import com.zealsoftsol.medico.data.SubmitPaymentRequest
+import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.SubscribeRequest
+import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.UnreadNotifications
 import com.zealsoftsol.medico.data.UpdateInvoiceRequest
+import com.zealsoftsol.medico.data.UploadResponseData
+import com.zealsoftsol.medico.data.UserRegistration1
+import com.zealsoftsol.medico.data.UserRegistration2
+import com.zealsoftsol.medico.data.UserRegistration3
+import com.zealsoftsol.medico.data.UserRequest
+import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.data.UserValidation1
+import com.zealsoftsol.medico.data.UserValidation2
+import com.zealsoftsol.medico.data.UserValidation3
+import com.zealsoftsol.medico.data.ValidationResponse
+import com.zealsoftsol.medico.data.ViewEmployee
+import com.zealsoftsol.medico.data.WhatsappData
 
 interface NetworkScope {
 
@@ -188,6 +189,9 @@ interface NetworkScope {
     }
 
     interface Search : NetworkScope {
+
+        suspend fun getAlternateProducts(productCode: String): BodyResponse<List<AlternateProductData>>
+
         suspend fun search(
             sort: String?,
             query: List<Pair<String, String>>,
@@ -355,8 +359,13 @@ interface NetworkScope {
         suspend fun searchInStoreSeller(
             unitCode: String,
             search: String,
-            pagination: Pagination,
+            page: Int,
         ): BodyResponse<PaginatedData<InStoreProduct>>
+
+        suspend fun searchInStoreSellerAutoComplete(
+            unitCode: String,
+            search: String,
+        ): BodyResponse<List<AutoComplete>>
 
         suspend fun getInStoreUsers(
             unitCode: String,
@@ -384,6 +393,8 @@ interface NetworkScope {
         ): BodyResponse<StoreSubmitResponse>
 
         suspend fun deleteInStoreOrder(unitCode: String, id: String): AnyResponse
+
+        suspend fun getAlternateProducts(productCode: String): BodyResponse<List<AlternateProductData>>
     }
 
     interface WhatsappStore : NetworkScope {

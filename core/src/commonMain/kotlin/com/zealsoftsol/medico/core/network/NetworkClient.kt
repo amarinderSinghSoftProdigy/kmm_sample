@@ -16,6 +16,7 @@ import com.zealsoftsol.medico.data.AddEmployee
 import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.AllBanners
 import com.zealsoftsol.medico.data.AllDeals
+import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoApprove
 import com.zealsoftsol.medico.data.AutoComplete
@@ -434,7 +435,7 @@ class NetworkClient(
         addPage: Boolean
     ) = simpleRequest {
         client.get<BodyResponse<SearchResponse>>("${baseUrl.url}/search/${if (unitCode == null) "global" else "v2/stores"}") {
-        //client.get<BodyResponse<SearchResponse>>("${baseUrl.url}/search/${if (unitCode == null) "global" else "stores"}") {
+            //client.get<BodyResponse<SearchResponse>>("${baseUrl.url}/search/${if (unitCode == null) "global" else "stores"}") {
             withMainToken()
             url {
                 parameters.apply {
@@ -879,20 +880,32 @@ class NetworkClient(
     override suspend fun searchInStoreSeller(
         unitCode: String,
         search: String,
-        pagination: Pagination
+        page: Int,
     ): BodyResponse<PaginatedData<InStoreProduct>> = simpleRequest {
-        client.get<BodyResponse<PaginatedData<InStoreProduct>>>("${baseUrl.url}/instore/search") {
+        client.get("${baseUrl.url}/instore/search") {
             withMainToken()
             url {
                 parameters.apply {
                     append("search", search)
                     append("b2bUnitCode", unitCode)
-                    append("page", pagination.nextPage().toString())
-                    append("pageSize", pagination.itemsPerPage.toString())
+                    append("page", page.toString())
+                    append("pageSize", Pagination.DEFAULT_ITEMS_PER_PAGE.toString())
                 }
             }
-        }.also {
-            if (it.isSuccess) pagination.pageLoaded()
+        }
+    }
+
+    override suspend fun searchInStoreSellerAutoComplete(
+        unitCode: String,
+        search: String,
+    ): BodyResponse<List<AutoComplete>> = simpleRequest {
+        client.get("${baseUrl.url}/instore/search/suggest") {
+            withMainToken()
+            url {
+                parameters.apply {
+                    append("suggest", search)
+                }
+            }
         }
     }
 
@@ -1563,6 +1576,7 @@ class NetworkClient(
                 withMainToken()
             }
         }
+
     override suspend fun getRewards(page: Int): BodyResponse<RewardsList> =
         simpleRequest {
             client.get("${baseUrl.url}/rewards") {
@@ -1585,10 +1599,17 @@ class NetworkClient(
 
 
     override suspend fun getConnectedStockist(): BodyResponse<ConnectedStockists> = simpleRequest {
-        client.get("${baseUrl.url}//dashboard/connected/stockists"){
+        client.get("${baseUrl.url}//dashboard/connected/stockists") {
             withMainToken()
         }
     }
+
+    override suspend fun getAlternateProducts(productCode: String): BodyResponse<List<AlternateProductData>> =
+        simpleRequest {
+            client.get("${baseUrl.url}/search/product/alternate/${productCode}") {
+                withMainToken()
+            }
+        }
 
     // Utils
     private inline fun HttpRequestBuilder.withB2bCodeToken(finalToken: String) {
