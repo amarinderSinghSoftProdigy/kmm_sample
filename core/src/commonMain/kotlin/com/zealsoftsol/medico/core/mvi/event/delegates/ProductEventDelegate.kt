@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.BuyProductScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.RequestedQuotesScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
@@ -92,7 +93,7 @@ internal class ProductEventDelegate(
         )
     }
 
-    private suspend fun buyProduct(product: ProductSearch, buyingOption: BuyingOption) {
+    /*private suspend fun buyProduct(product: ProductSearch, buyingOption: BuyingOption) {
 
         navigator.searchQueuesFor<StoresScope.StorePreview>()?.store?.let {
             addToCartItems(product)
@@ -134,6 +135,53 @@ internal class ProductEventDelegate(
             }
             navigator.setScope(nextScope)
         }.onError(navigator)
+    }*/
+
+    private suspend fun buyProduct(product: ProductSearch, buyingOption: BuyingOption) {
+
+        navigator.searchQueuesFor<StoresScope.StorePreview>()?.store?.let {
+            addToCartItems(product)
+            return
+        }
+        navigator.searchQueuesFor<RequestedQuotesScope>()?.productData?.let {
+            if (buyingOption == BuyingOption.BUY) {
+                addToCartItems(product)
+                return
+            }
+        }
+
+        navigator.searchQueuesFor<ProductInfoScope>()?.cartData?.let {
+            addToCartItems(product)
+            return
+        }
+
+        val address = userRepo.requireUser()//userRepo.requireUser().addressData
+        when (buyingOption) {
+            BuyingOption.BUY -> navigator.withProgress {
+                networkProductScope.buyProductInfo(
+                    product.code,
+                    address.latitude,
+                    address.longitude
+                )
+            }.onSuccess { body ->
+                val isSeasonBoy = userRepo.requireUser().type == UserType.SEASON_BOY
+
+                val nextScope = BuyProductScope.ChooseStockist(
+                    isSeasonBoy = isSeasonBoy,
+                    product = body.product,
+                    sellersInfo = DataSource(body.sellerInfo),
+                    tapModeHelper = tapModeHelper,
+                )
+                navigator.setScope(nextScope)
+            }.onError(navigator)
+
+            BuyingOption.QUOTE -> navigator.withProgress {
+                networkProductScope.getRequestedProductData(product.code)
+            }.onSuccess { body ->
+                val nextScope = RequestedQuotesScope(product, DataSource(body.results))
+                navigator.setScope(nextScope)
+            }.onError(navigator)
+        }
     }
 
     private suspend fun addToCartItems(product: ProductSearch) {
@@ -156,16 +204,16 @@ internal class ProductEventDelegate(
     }
 
     private fun filterProduct(filter: String) {
-          navigator.withScope<BuyProductScope<WithTradeName>> {
-              it.itemsFilter.value = filter
-              it.items.value = if (filter.isNotEmpty()) {
-                  it.allItems.filter { seller ->
-                      seller.tradeName.contains(filter, ignoreCase = true)
-                  }
-              } else {
-                  it.allItems
-              }
-          }
+        navigator.withScope<BuyProductScope<WithTradeName>> {
+            it.itemsFilter.value = filter
+            it.items.value = if (filter.isNotEmpty()) {
+                it.allItems.filter { seller ->
+                    seller.tradeName.contains(filter, ignoreCase = true)
+                }
+            } else {
+                it.allItems
+            }
+        }
     }
 
     private suspend fun selectSeasonBoyRetailer(productCode: String, sellerInfo: SellerInfo?) {

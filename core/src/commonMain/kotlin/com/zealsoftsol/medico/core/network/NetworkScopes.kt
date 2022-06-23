@@ -96,6 +96,7 @@ import com.zealsoftsol.medico.data.OrderResponseInvoice
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.ProductBuyResponse
+import com.zealsoftsol.medico.data.ProductRequestResponse
 import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
 import com.zealsoftsol.medico.data.ProfileImageData
 import com.zealsoftsol.medico.data.ProfileImageUpload
@@ -162,8 +163,8 @@ interface NetworkScope {
         suspend fun getDealsOfTheDay(type: UserType): BodyResponse<DashboardDeals>
         suspend fun getCustomerDataV2(): BodyResponse<CustomerDataV2>
         suspend fun getCustomerData(): BodyResponse<CustomerData>
-        suspend fun getStockistEmployeeBannerData(type: UserType) : BodyResponse<List<EmployeeBannerData>>
-        suspend fun getConnectedStockist() : BodyResponse<ConnectedStockists>
+        suspend fun getStockistEmployeeBannerData(type: UserType): BodyResponse<List<EmployeeBannerData>>
+        suspend fun getConnectedStockist(): BodyResponse<ConnectedStockists>
     }
 
     interface Product : NetworkScope {
@@ -183,6 +184,7 @@ interface NetworkScope {
         ): BodyResponse<ProductSeasonBoyRetailerSelectResponse>
 
         suspend fun getQuotedProductData(productCode: String): BodyResponse<ProductBuyResponse>
+        suspend fun getRequestedProductData(productCode: String): BodyResponse<ProductRequestResponse>
     }
 
     interface Search : NetworkScope {

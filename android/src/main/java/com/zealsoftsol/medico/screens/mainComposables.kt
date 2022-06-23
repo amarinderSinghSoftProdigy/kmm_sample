@@ -96,6 +96,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.RequestedQuotesScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
@@ -184,6 +185,7 @@ import com.zealsoftsol.medico.screens.password.EnterNewPasswordScreen
 import com.zealsoftsol.medico.screens.password.VerifyCurrentPasswordScreen
 import com.zealsoftsol.medico.screens.product.BuyProductScreen
 import com.zealsoftsol.medico.screens.product.ProductScreen
+import com.zealsoftsol.medico.screens.product.RequestedQuotesComposable
 import com.zealsoftsol.medico.screens.qrcode.QrCodeScreen
 import com.zealsoftsol.medico.screens.rewards.RewardsAndCashbackScreen
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
@@ -499,6 +501,9 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                             manageBottomNavState(BottomNavKey.REWARDS)
                         }
                         RewardsAndCashbackScreen(it)
+                    }
+                    is RequestedQuotesScope ->{
+                        RequestedQuotesComposable(scope = it)
                     }
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
