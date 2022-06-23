@@ -522,6 +522,8 @@
     <string name="about_medico2">medictostores.com is a transparent, trustworthy and secure digital ecosystem for buyers and sellers in the pharma ecosystem</string>
     <string name="user">User</string>
     <string name="no_alternate_prod_found">No alternate products found</string>
+    <string name="alt_brands">Alternate Brands</string>
+    <string name="alternate">Alternate</string>
 
     <!-- Termrs and Cond -->
 

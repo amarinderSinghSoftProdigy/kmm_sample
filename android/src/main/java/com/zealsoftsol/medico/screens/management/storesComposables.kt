@@ -930,9 +930,32 @@ fun ProductItemStore(
                     Space(8.dp)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.Bottom,
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
+
+                        Column(
+                            modifier = Modifier
+                                .clickable {
+                                    scope.showAlternateProducts(product.code)
+                                },
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                modifier = Modifier
+                                    .size(22.dp),
+                                painter = painterResource(R.drawable.ic_al_prod),
+                                contentDescription = null,
+                                tint = ConstColors.lightBlue
+                            )
+                            Text(
+                                text = stringResource(id = R.string.alternate),
+                                color = ConstColors.lightBlue,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.W600,
+                            )
+                        }
+
                         Box {
                             if (cartInfo != null) {
                                 product.quantity = cartInfo.quantity.value

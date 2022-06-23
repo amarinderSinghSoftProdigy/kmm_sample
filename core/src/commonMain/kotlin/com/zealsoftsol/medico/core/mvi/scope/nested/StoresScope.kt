@@ -145,5 +145,8 @@ sealed class StoresScope : Scope.Child.TabBar() {
             startSearch(true, "")
         }
 
+        fun showAlternateProducts(code: String) =
+            EventCollector.sendEvent(Event.Action.InStore.ShowAltProds(code, null))
+
     }
 }
