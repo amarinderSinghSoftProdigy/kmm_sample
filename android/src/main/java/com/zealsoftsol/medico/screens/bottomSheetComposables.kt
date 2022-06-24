@@ -57,6 +57,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -342,48 +343,69 @@ fun Scope.Host.showBottomSheet(
 
 @Composable
 private fun ShowManufacturersFilter(listManufacturers: List<Value>, onDismiss: () -> Unit) {
+
+    val listOfManufacturers = remember { mutableStateOf(listManufacturers) }
+
     BaseBottomSheet(onDismiss) {
         val itemSize: Dp = (LocalConfiguration.current.screenWidthDp.dp / 3) - 8.dp
 
-        FlowRow(
-            mainAxisSize = SizeMode.Expand,
-            mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp)
+                .heightIn(0.dp, 500.dp)
         ) {
-            listManufacturers.let {
-                it.forEachIndexed { index, item ->
-                    Column {
-                        Card(
-                            modifier = Modifier
-                                .height(90.dp)
-                                .width(150.dp)
-                                .selectable(
-                                    selected = true,
-                                    onClick = {}
-                                ),
-                            elevation = 3.dp,
-                            shape = RoundedCornerShape(5.dp),
-                            backgroundColor = Color.White,
-                        ) {
-                            CoilImageBrands(
-                                src = CdnUrlProvider.urlForM(item.id),
-                                contentScale = ContentScale.Crop,
-                                onError = { ItemPlaceholder() },
-                                onLoading = { ItemPlaceholder() },
-                                height = 90.dp,
-                                width = itemSize,
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                FlowRow(
+                    mainAxisSize = SizeMode.Expand,
+                    mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
+                ) {
+                    listOfManufacturers.value.forEachIndexed { index, item ->
+                        Column(horizontalAlignment = CenterHorizontally) {
+                            Space(10.dp)
+                            Surface(
+                                modifier = Modifier
+                                    .height(itemSize - 20.dp)
+                                    .width(itemSize - 20.dp)
+                                    .selectable(
+                                        selected = true,
+                                        onClick = {
+                                            item.checked = !item.checked
+                                        }
+                                    ),
+                                elevation = 5.dp,
+                                shape = CircleShape,
+                                color = Color.White,
+                                border = BorderStroke(
+                                    1.dp,
+                                    color = if (listOfManufacturers.value[index].checked) ConstColors.yellow else Color.Transparent
+                                )
+                            ) {
+                                CoilImageBrands(
+                                    src = CdnUrlProvider.urlForM(item.id),
+                                    contentScale = ContentScale.Crop,
+                                    onError = { ItemPlaceholder() },
+                                    onLoading = { ItemPlaceholder() },
+                                    height = itemSize - 20.dp,
+                                    width = itemSize - 20.dp,
+                                )
+                            }
+                            Space(5.dp)
+                            Text(
+                                modifier = Modifier
+                                    .width(itemSize - 20.dp),
+                                text = item.value,
+                                color = Color.Black,
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
                             )
                         }
-                        Space(5.dp)
-                        Text(
-                            modifier = Modifier
-                                .width(150.dp),
-                            text = item.value,
-                            color = Color.Black,
-                            fontSize = 12.sp,
-                            textAlign = TextAlign.Center,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
                     }
                 }
             }

@@ -31,6 +31,7 @@ data class Value(
     val count: Int,
     val value: String,
     val id: String,
+    var checked: Boolean = false
 )
 
 @Serializable
