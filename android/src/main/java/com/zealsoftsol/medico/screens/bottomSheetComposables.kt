@@ -342,9 +342,10 @@ fun Scope.Host.showBottomSheet(
 }
 
 @Composable
-private fun ShowManufacturersFilter(listManufacturers: List<Value>, onDismiss: () -> Unit) {
+private fun ShowManufacturersFilter(data: List<Value>, onDismiss: () -> Unit) {
 
-    val listOfManufacturers = remember { mutableStateOf(listManufacturers) }
+    val listOfManufacturers = remember{ mutableStateOf(data)}
+    val tempList = listOfManufacturers.value.toMutableList()
 
     BaseBottomSheet(onDismiss) {
         val itemSize: Dp = (LocalConfiguration.current.screenWidthDp.dp / 3) - 8.dp
@@ -364,47 +365,54 @@ private fun ShowManufacturersFilter(listManufacturers: List<Value>, onDismiss: (
                     mainAxisSize = SizeMode.Expand,
                     mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
                 ) {
-                    listOfManufacturers.value.forEachIndexed { index, item ->
-                        Column(horizontalAlignment = CenterHorizontally) {
-                            Space(10.dp)
-                            Surface(
-                                modifier = Modifier
-                                    .height(itemSize - 20.dp)
-                                    .width(itemSize - 20.dp)
-                                    .selectable(
-                                        selected = true,
-                                        onClick = {
-                                            item.checked = !item.checked
-                                        }
-                                    ),
-                                elevation = 5.dp,
-                                shape = CircleShape,
-                                color = Color.White,
-                                border = BorderStroke(
-                                    1.dp,
-                                    color = if (listOfManufacturers.value[index].checked) ConstColors.yellow else Color.Transparent
-                                )
-                            ) {
-                                CoilImageBrands(
-                                    src = CdnUrlProvider.urlForM(item.id),
-                                    contentScale = ContentScale.Crop,
-                                    onError = { ItemPlaceholder() },
-                                    onLoading = { ItemPlaceholder() },
-                                    height = itemSize - 20.dp,
-                                    width = itemSize - 20.dp,
+                    listOfManufacturers.value.let {
+                        it.forEachIndexed { index, item ->
+                            Column(horizontalAlignment = CenterHorizontally) {
+                                Space(10.dp)
+                                Surface(
+                                    modifier = Modifier
+                                        .height(itemSize - 20.dp)
+                                        .width(itemSize - 20.dp)
+                                        .selectable(
+                                            selected = true,
+                                            onClick = {
+                                                val checked =  !it[index].checked
+                                                val value = Value(
+                                                    item.count,
+                                                    item.value,
+                                                    item.id,
+                                                    checked
+                                                )
+                                                tempList[index] = value
+                                                listOfManufacturers.value = tempList
+                                            }
+                                        ),
+                                    elevation = 5.dp,
+                                    shape = CircleShape,
+                                    color = Color.White,
+                                    border = BorderStroke(1.dp, color = if(it[index].checked) ConstColors.yellow else Color.Transparent)
+                                ) {
+                                    CoilImageBrands(
+                                        src = CdnUrlProvider.urlForM(item.id),
+                                        contentScale = ContentScale.Crop,
+                                        onError = { ItemPlaceholder() },
+                                        onLoading = { ItemPlaceholder() },
+                                        height = itemSize - 20.dp,
+                                        width = itemSize - 20.dp,
+                                    )
+                                }
+                                Space(5.dp)
+                                Text(
+                                    modifier = Modifier
+                                        .width(itemSize - 20.dp),
+                                    text = item.value,
+                                    color = Color.Black,
+                                    fontSize = 12.sp,
+                                    textAlign = TextAlign.Center,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
                                 )
                             }
-                            Space(5.dp)
-                            Text(
-                                modifier = Modifier
-                                    .width(itemSize - 20.dp),
-                                text = item.value,
-                                color = Color.Black,
-                                fontSize = 12.sp,
-                                textAlign = TextAlign.Center,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
                         }
                     }
                 }
