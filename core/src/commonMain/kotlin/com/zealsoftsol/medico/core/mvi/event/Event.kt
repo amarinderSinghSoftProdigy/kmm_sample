@@ -455,6 +455,8 @@ sealed class Event {
             data class ShowAltProds(val productCode: String, val sellerName: String? = null) :
                 InStore()
 
+            data class ShowManufacturers(val data: List<Value>) : InStore()
+            data class ApplyManufacturersFilter(val filters: List<Value>) : InStore()
         }
 
         sealed class WhatsAppPreference : Action() {

@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreOrderPlacedScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreProductsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreSellerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreUsersScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.CartRepo
@@ -23,6 +24,7 @@ import com.zealsoftsol.medico.data.InStoreCartRequest
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InStoreSeller
 import com.zealsoftsol.medico.data.InStoreUser
+import com.zealsoftsol.medico.data.Value
 
 internal class InStoreEventDelegate(
     navigator: Navigator,
@@ -81,6 +83,33 @@ internal class InStoreEventDelegate(
         is Event.Action.InStore.DeleteOrder -> removeOrder(event.unitcode, event.id)
         is Event.Action.InStore.SubmitReward -> submitReward(event.storeId)
         is Event.Action.InStore.ShowAltProds -> showAlternativeProducts(event.productCode, event.sellerName)
+        is Event.Action.InStore.ApplyManufacturersFilter -> updateSelectedManufacturersFilters(event.filters)
+        is Event.Action.InStore.ShowManufacturers -> showFilterManufacturers(event.data)
+    }
+
+    /**
+     * this will get the manufacturers selected by user to be applied as filter
+     */
+    private fun updateSelectedManufacturersFilters(filters: List<Value>) {
+        navigator.withScope<InStoreProductsScope> {
+            it.selectedFilters.value = filters
+            it.isFilterApplied.value = filters.isNotEmpty()
+        }
+    }
+
+    /**
+     * show all the manufacturers to user that are available for filter
+     * and send preselected filters if any
+     */
+    private fun showFilterManufacturers(data: List<Value>) {
+        navigator.withScope<InStoreProductsScope> {
+            val hostScope = scope.value
+            hostScope.bottomSheet.value = BottomSheet.FilerManufacturers(
+                data,
+                it.selectedFilters.value,
+                BottomSheet.FilerManufacturers.FilterScopes.IN_STORES_PRODUCTS
+            )
+        }
     }
 
     /**

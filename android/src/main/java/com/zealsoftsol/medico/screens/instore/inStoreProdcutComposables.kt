@@ -98,6 +98,9 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
     val showNoProduct = scope.showNoProducts.flow.collectAsState()
     val cart = scope.cart.flow.collectAsState()
     val toastItem = scope.toastData.flow.collectAsState()
+    val isFilterApplied = scope.isFilterApplied.flow.collectAsState()
+    val keyboard = LocalSoftwareKeyboardController.current
+    val search = scope.searchText.flow.collectAsState()
 
     remember { scope.firstLoad() }
     Column(
@@ -144,11 +147,13 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
         Space(8.dp)
         Divider(thickness = (1.5).dp)
         Space(dp = 10.dp)
-        val search = scope.searchText.flow.collectAsState()
         BasicSearchBar(
             input = search.value,
             hint = R.string.search_products,
-            searchBarEnd = SearchBarEnd.Eraser,
+            searchBarEnd = SearchBarEnd.Filter(isFilterApplied.value) {
+                keyboard?.hide()
+                scope.openManufacturersFilter()
+            },
             icon = Icons.Default.Search,
             elevation = 3.dp,
             horizontalPadding = 16.dp,

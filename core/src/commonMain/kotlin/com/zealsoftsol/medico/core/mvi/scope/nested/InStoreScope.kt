@@ -29,6 +29,7 @@ import com.zealsoftsol.medico.data.StoreSubmitResponse
 import com.zealsoftsol.medico.data.Total
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserV2
+import com.zealsoftsol.medico.data.Value
 
 class InStoreSellerScope(
     val unreadNotifications: ReadOnlyDataSource<Int>?,
@@ -123,6 +124,9 @@ class InStoreProductsScope(
     val showToast = DataSource(false)
     val toastData: DataSource<ToastItem?> = DataSource(null)
     val showNoAlternateProdToast = DataSource(false)
+    val isFilterApplied: DataSource<Boolean> = DataSource(false)
+    val filtersManufactures: DataSource<List<Value>> = DataSource(emptyList())
+    val selectedFilters = DataSource(emptyList<Value>())
 
     data class ToastItem(val productName: String, val quantity: Double, val freeQuantity: Double)
 
@@ -218,6 +222,9 @@ class InStoreProductsScope(
 
     fun showAlternateProducts(code: String) =
         EventCollector.sendEvent(Event.Action.InStore.ShowAltProds(code, sellerName))
+
+    fun openManufacturersFilter() =
+        EventCollector.sendEvent(Event.Action.InStore.ShowManufacturers(filtersManufactures.value))
 }
 
 class InStoreUsersScope : Scope.Child.TabBar(), Loadable<InStoreUser>, CommonScope.CanGoBack {

@@ -599,11 +599,11 @@ sealed class BottomSheet {
                     FilterScopes.SEARCH -> Event.Action.Search.ApplyManufacturersFilter(
                         selectedFilters
                     )
-                    FilterScopes.IN_STORES_PRODUCTS -> {//TODO add event for in store prods
-                        Event.Action.Search.ApplyManufacturersFilter(
+                    FilterScopes.IN_STORES_PRODUCTS -> {
+                        Event.Action.InStore.ApplyManufacturersFilter(
                             selectedFilters
                         )
-                     }
+                    }
                 }
             )
         }
