@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.screens
 
 import android.app.DatePickerDialog
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,12 +22,13 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -34,7 +36,6 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
@@ -45,6 +46,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -58,6 +60,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.End
+import androidx.compose.ui.Alignment.Companion.TopEnd
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -73,6 +77,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -85,9 +90,6 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
-import com.google.accompanist.flowlayout.FlowMainAxisAlignment
-import com.google.accompanist.flowlayout.FlowRow
-import com.google.accompanist.flowlayout.SizeMode
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
@@ -336,84 +338,254 @@ fun Scope.Host.showBottomSheet(
                 bs.productList,
                 bs,
                 onDismiss = { dismissBottomSheet() })
-            is BottomSheet.FilerManufacturers -> ShowManufacturersFilter(bs.listManufacturers) { dismissBottomSheet() }
+            is BottomSheet.FilerManufacturers -> ShowManufacturersFilter(
+                data = bs.listManufacturers,
+                selectedFilters = emptyList(),
+                onDismiss = { dismissBottomSheet() }
+            )
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
 @Composable
-private fun ShowManufacturersFilter(data: List<Value>, onDismiss: () -> Unit) {
+private fun ShowManufacturersFilter(
+    data: List<Value>,
+    selectedFilters: List<Value> = emptyList(),
+    onDismiss: () -> Unit
+) {
 
-    val listOfManufacturers = remember{ mutableStateOf(data)}
-    val tempList = listOfManufacturers.value.toMutableList()
+    val searchTerm = remember { mutableStateOf("") }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val listOfManufacturers = remember { mutableStateOf(data) }
+    val listSelectedItems = remember { mutableStateOf(selectedFilters) }
 
     BaseBottomSheet(onDismiss) {
         val itemSize: Dp = (LocalConfiguration.current.screenWidthDp.dp / 3) - 8.dp
 
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 20.dp)
-                .heightIn(0.dp, 500.dp)
+                .fillMaxSize()
+                .padding(bottom = 10.dp, top = 10.dp),
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                FlowRow(
-                    mainAxisSize = SizeMode.Expand,
-                    mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
-                ) {
-                    listOfManufacturers.value.let {
-                        it.forEachIndexed { index, item ->
-                            Column(horizontalAlignment = CenterHorizontally) {
-                                Space(10.dp)
-                                Surface(
-                                    modifier = Modifier
-                                        .height(itemSize - 20.dp)
-                                        .width(itemSize - 20.dp)
-                                        .selectable(
-                                            selected = true,
-                                            onClick = {
-                                                val checked =  !it[index].checked
-                                                val value = Value(
-                                                    item.count,
-                                                    item.value,
-                                                    item.id,
-                                                    checked
-                                                )
-                                                tempList[index] = value
-                                                listOfManufacturers.value = tempList
-                                            }
-                                        ),
-                                    elevation = 5.dp,
-                                    shape = CircleShape,
-                                    color = Color.White,
-                                    border = BorderStroke(1.dp, color = if(it[index].checked) ConstColors.yellow else Color.Transparent)
-                                ) {
-                                    CoilImageBrands(
-                                        src = CdnUrlProvider.urlForM(item.id),
-                                        contentScale = ContentScale.Crop,
-                                        onError = { ItemPlaceholder() },
-                                        onLoading = { ItemPlaceholder() },
-                                        height = itemSize - 20.dp,
-                                        width = itemSize - 20.dp,
+
+                Text(
+                    text = stringResource(id = R.string.apply),
+                    color = ConstColors.lightBlue,
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    fontWeight = FontWeight.W800,
+                    overflow = TextOverflow.Ellipsis,
+                )
+
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = null,
+                    tint = ConstColors.gray,
+                    modifier = Modifier
+                        .size(28.dp)
+                        .clickable { onDismiss() },
+                )
+            }
+
+            Space(15.dp)
+
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                shape = RoundedCornerShape(5.dp),
+                elevation = 5.dp,
+            ) {
+                TextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            border = BorderStroke(1.dp, color = Color.LightGray),
+                            shape = RoundedCornerShape(5.dp)
+                        ),
+                    value = searchTerm.value,
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = Color.White,
+                        textColor = Color.Black,
+                        placeholderColor = Color.Black,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent
+                    ),
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
+                    onValueChange = {
+                        searchTerm.value = it
+                        if (it.isNotEmpty()) {
+                            val searchList: List<Value> = data.filter { s ->
+                                s.value.lowercase().contains(it.lowercase())
+                            }
+                            listOfManufacturers.value = searchList
+                        } else {
+                            listOfManufacturers.value = data
+                        }
+                    },
+                    label = {
+                        Text(
+                            stringResource(id = R.string.search),
+                            color = Color.Black
+                        )
+                    },
+                    maxLines = 1
+
+                )
+            }
+
+            Space(15.dp)
+
+            if (listSelectedItems.value.isNotEmpty()) {
+
+                Text(
+                    modifier = Modifier.padding(start = 10.dp),
+                    text = "${stringResource(id = R.string.selected)}(${listSelectedItems.value.size})",
+                    color = ConstColors.lightBlue,
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+
+                Space(10.dp)
+
+                listSelectedItems.value.let {
+                    LazyRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        contentPadding = PaddingValues(3.dp)
+                    ) {
+                        itemsIndexed(
+                            items = it.asReversed(),
+                            key = { index: Int, _: Value -> index },
+                            itemContent = { index, item ->
+                                Column(horizontalAlignment = CenterHorizontally) {
+                                    Box(
+                                        modifier = Modifier
+                                            .height(itemSize - 20.dp)
+                                            .width(itemSize - 20.dp),
+                                        contentAlignment = TopEnd
+                                    ) {
+                                        Surface(
+                                            modifier = Modifier
+                                                .height(itemSize - 20.dp)
+                                                .width(itemSize - 20.dp),
+                                            elevation = 5.dp,
+                                            shape = CircleShape,
+                                            color = Color.White,
+                                        ) {
+
+                                            CoilImageBrands(
+                                                src = CdnUrlProvider.urlForM(item.id),
+                                                contentScale = ContentScale.Crop,
+                                                onError = { ItemPlaceholder() },
+                                                onLoading = { ItemPlaceholder() },
+                                                height = itemSize - 20.dp,
+                                                width = itemSize - 20.dp,
+                                            )
+                                        }
+                                        Icon(
+                                            modifier = Modifier
+                                                .size(25.dp)
+                                                .clickable {
+                                                    listSelectedItems.value =
+                                                        listSelectedItems.value - item
+                                                },
+                                            imageVector = Icons.Default.Close,
+                                            contentDescription = null,
+                                            tint = ConstColors.gray,
+                                        )
+                                    }
+                                    Space(5.dp)
+                                    Text(
+                                        modifier = Modifier
+                                            .width(itemSize - 20.dp),
+                                        text = item.value,
+                                        color = Color.Black,
+                                        fontSize = 12.sp,
+                                        textAlign = TextAlign.Center,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
                                     )
                                 }
-                                Space(5.dp)
-                                Text(
-                                    modifier = Modifier
-                                        .width(itemSize - 20.dp),
-                                    text = item.value,
-                                    color = Color.Black,
-                                    fontSize = 12.sp,
-                                    textAlign = TextAlign.Center,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
                             }
+                        )
+                    }
+
+                }
+                Space(15.dp)
+            }
+
+            Text(
+                modifier = Modifier.padding(start = 10.dp),
+                text = "${stringResource(id = R.string.manufacturers)}(${listOfManufacturers.value.size})",
+                color = ConstColors.lightBlue,
+                fontSize = 14.sp,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+
+            Space(10.dp)
+
+            LazyVerticalGrid(
+                cells = GridCells.Fixed(3)
+            ) {
+                items(listOfManufacturers.value.size) {
+                    Column(horizontalAlignment = CenterHorizontally) {
+                        Space(10.dp)
+                        Surface(
+                            modifier = Modifier
+                                .height(itemSize - 20.dp)
+                                .width(itemSize - 20.dp)
+                                .clickable {
+                                    val contains = listSelectedItems.value.any { data ->
+                                        data.id ==
+                                                listOfManufacturers.value[it].id
+                                    }
+                                    if (!contains)
+                                        listSelectedItems.value =
+                                            listSelectedItems.value + listOfManufacturers.value[it]
+                                    else
+                                        listSelectedItems.value =
+                                            listSelectedItems.value - listOfManufacturers.value[it]
+                                },
+                            elevation = 5.dp,
+                            shape = CircleShape,
+                            color = Color.White,
+                        ) {
+                            CoilImageBrands(
+                                src = CdnUrlProvider.urlForM(listOfManufacturers.value[it].id),
+                                contentScale = ContentScale.Crop,
+                                onError = { ItemPlaceholder() },
+                                onLoading = { ItemPlaceholder() },
+                                height = itemSize - 20.dp,
+                                width = itemSize - 20.dp,
+                            )
                         }
+                        Space(5.dp)
+                        Text(
+                            modifier = Modifier
+                                .width(itemSize - 20.dp),
+                            text = listOfManufacturers.value[it].value,
+                            color = Color.Black,
+                            fontSize = 12.sp,
+                            textAlign = TextAlign.Center,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
                     }
                 }
             }
