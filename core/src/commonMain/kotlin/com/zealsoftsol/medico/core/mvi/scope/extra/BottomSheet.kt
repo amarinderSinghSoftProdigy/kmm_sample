@@ -582,6 +582,31 @@ sealed class BottomSheet {
             EventCollector.sendEvent(Event.Action.Product.SelectAlternative(product))
     }
 
-    class FilerManufacturers(val listManufacturers: List<Value>) : BottomSheet()
+    class FilerManufacturers(
+        val listManufacturers: List<Value>,
+        val selectedFilters: List<Value>,
+        val filterScope: FilterScopes
+    ) : BottomSheet() {
+
+        enum class FilterScopes {
+            SEARCH, IN_STORES_PRODUCTS
+        }
+
+        //send selected filters back to resp class
+        fun updateSelectedFilter(selectedFilters: List<Value>) {
+            EventCollector.sendEvent(
+                event = when (filterScope) {
+                    FilterScopes.SEARCH -> Event.Action.Search.ApplyManufacturersFilter(
+                        selectedFilters
+                    )
+                    FilterScopes.IN_STORES_PRODUCTS -> {//TODO add event for in store prods
+                        Event.Action.Search.ApplyManufacturersFilter(
+                            selectedFilters
+                        )
+                     }
+                }
+            )
+        }
+    }
 
 }

@@ -773,7 +773,7 @@ fun ProductItem(
                             .size(28.dp)
                             .weight(1f)
                             .clickable {
-                                scope.showAlternateProducts(product.code, product.sellerInfo?.tradeName)
+                                scope.showAlternateProducts(product.code)
                             },
                         painter = painterResource(R.drawable.ic_al_prod),
                         contentDescription = null,

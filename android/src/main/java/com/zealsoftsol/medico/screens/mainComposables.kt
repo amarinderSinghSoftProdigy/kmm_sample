@@ -767,16 +767,17 @@ private fun ActiveSearchTabBar(
     info: TabBarInfo.ActiveSearch,
 ) {
     val search = info.search.flow.collectAsState()
-    val activeFilterIds = info.activeFilterIds.flow.collectAsState()
     val keyboard = LocalSoftwareKeyboardController.current
+    val isFilterApplied = info.isFilterApplied.flow.collectAsState()
+
     BasicSearchBar(
         input = search.value,
         hint = R.string.search_products,
         icon = Icons.Default.ArrowBack,
-        /*   searchBarEnd = SearchBarEnd.Filter(isHighlighted = activeFilterIds.value.isNotEmpty()) {
+        searchBarEnd = SearchBarEnd.Filter(isFilterApplied.value) {
                keyboard?.hide()
-               info.toggleFilter()
-           },*/
+               info.openManufacturersFilter()
+           },
         onIconClick = { scope.goBack() },
         isSearchFocused = scope.storage.restore("focus") as? Boolean ?: true,
         onSearch = { value, isFromKeyboard ->

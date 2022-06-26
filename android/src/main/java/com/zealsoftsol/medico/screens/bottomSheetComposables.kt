@@ -340,7 +340,8 @@ fun Scope.Host.showBottomSheet(
                 onDismiss = { dismissBottomSheet() })
             is BottomSheet.FilerManufacturers -> ShowManufacturersFilter(
                 data = bs.listManufacturers,
-                selectedFilters = emptyList(),
+                selectedFilters = bs.selectedFilters,
+                bs,
                 onDismiss = { dismissBottomSheet() }
             )
         }
@@ -352,6 +353,7 @@ fun Scope.Host.showBottomSheet(
 private fun ShowManufacturersFilter(
     data: List<Value>,
     selectedFilters: List<Value> = emptyList(),
+    bs: BottomSheet.FilerManufacturers,
     onDismiss: () -> Unit
 ) {
 
@@ -369,12 +371,18 @@ private fun ShowManufacturersFilter(
                 .padding(bottom = 10.dp, top = 10.dp),
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
                 Text(
+                    modifier = Modifier.clickable {
+                        onDismiss()
+                        bs.updateSelectedFilter(listSelectedItems.value)
+                    },
                     text = stringResource(id = R.string.apply),
                     color = ConstColors.lightBlue,
                     fontSize = 16.sp,

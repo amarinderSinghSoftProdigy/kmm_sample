@@ -65,14 +65,36 @@ internal class SearchEventDelegate(
         is Event.Action.Search.SelectAutoCompleteGlobal -> selectAutoCompleteGlobal(event.autoComplete)
         is Event.Action.Search.LoadStockist -> loadStockist(event.code, event.imageCode)
         is Event.Action.Search.GetLocalSearchData -> getLocalSearchData()
-        is Event.Action.Search.ShowAltProds -> showAlternativeProducts(event.productCode, event.sellerName)
+        is Event.Action.Search.ShowAltProds -> showAlternativeProducts(
+            event.productCode,
+            event.sellerName
+        )
         is Event.Action.Search.ShowManufacturers -> showFilterManufacturers(event.data)
+        is Event.Action.Search.ApplyManufacturersFilter -> updateSelectedManufacturersFilters(event.filters)
     }
 
+    /**
+     * this will get the manufacturers selected by user to be applied as filter
+     */
+    private fun updateSelectedManufacturersFilters(filters: List<Value>) {
+        navigator.withScope<SearchScope> {
+            it.selectedFilters.value = filters
+            it.isFilterApplied.value = filters.isNotEmpty()
+        }
+    }
+
+    /**
+     * show all the manufacturers to user that are available for filter
+     * and send preselected filters if any
+     */
     private fun showFilterManufacturers(data: List<Value>) {
         navigator.withScope<SearchScope> {
             val hostScope = scope.value
-            hostScope.bottomSheet.value = BottomSheet.FilerManufacturers(data)
+            hostScope.bottomSheet.value = BottomSheet.FilerManufacturers(
+                data,
+                it.selectedFilters.value,
+                BottomSheet.FilerManufacturers.FilterScopes.SEARCH
+            )
         }
     }
 
@@ -84,7 +106,8 @@ internal class SearchEventDelegate(
             withProgress { networkSearchScope.getAlternateProducts(productCode) }
                 .onSuccess { body ->
                     if (body.isNotEmpty())
-                        this.scope.value.bottomSheet.value = BottomSheet.AlternateProducts(body, sellerName)
+                        this.scope.value.bottomSheet.value =
+                            BottomSheet.AlternateProducts(body, sellerName)
                     else
                         it.showNoAlternateProdToast.value = true
                 }.onError(navigator)
@@ -501,7 +524,8 @@ internal class SearchEventDelegate(
             addPage,
         ).onSuccess { body ->
             pagination.setTotal(body.totalResults)
-            filtersManufactures.value = body.facets[0].values //todo replace with correct logic to find manu list
+            filtersManufactures.value =
+                body.facets.find { s -> s.queryId == "manufacturers" }?.values ?: emptyList()
             filters.value = body.facets.toFilter()
             products.value = /*if (!addPage)*/
                 body.products /*else products.value + body.products*/

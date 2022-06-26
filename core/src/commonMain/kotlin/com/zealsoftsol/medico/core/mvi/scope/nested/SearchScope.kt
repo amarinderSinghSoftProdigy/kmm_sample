@@ -144,6 +144,8 @@ class SearchScope(
     override val pagination: Pagination = Pagination(Pagination.ITEMS_PER_PAGE_10)
     val showNoStockistAlert = DataSource(false)
     val showNoAlternateProdToast = DataSource(false)
+    val isFilterApplied = DataSource(false)
+    val selectedFilters = DataSource(emptyList<Value>())
 
     init {
         //if there is already an autocomplete item start search based on brand manufacturer else perform normal search
@@ -164,7 +166,7 @@ class SearchScope(
         }
     }
 
-    fun hideAlternateProdToastWarning(){
+    fun hideAlternateProdToastWarning() {
         showNoAlternateProdToast.value = false
     }
 
@@ -186,7 +188,7 @@ class SearchScope(
     }
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
-        return TabBarInfo.ActiveSearch(productSearch, activeFilterIds)
+        return TabBarInfo.ActiveSearch(productSearch, filtersManufactures, isFilterApplied)
     }
 
     fun selectItem(item: String) {
@@ -196,7 +198,7 @@ class SearchScope(
         EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(url))
     }
 
-    fun showAlternateProducts(code: String, sellerName: String?) =
-        EventCollector.sendEvent(Event.Action.Search.ShowManufacturers(filtersManufactures.value))
+    fun showAlternateProducts(code: String) =
+        EventCollector.sendEvent(Event.Action.Search.ShowAltProds(code))
 
 }

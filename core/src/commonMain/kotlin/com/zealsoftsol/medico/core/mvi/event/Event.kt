@@ -184,7 +184,7 @@ sealed class Event {
             data class ShowAltProds(val productCode: String, val sellerName: String? = null) :
                 Search()
             data class ShowManufacturers(val data: List<Value>) : Search()
-
+            data class ApplyManufacturersFilter(val filters: List<Value>) : Search()
         }
 
         sealed class Product : Action() {
