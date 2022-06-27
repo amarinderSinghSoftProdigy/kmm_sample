@@ -275,9 +275,7 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
                             isEnabled = true,
                             onClick = {
                                 scope.confirm(
-                                    if (declineReasonCode.value.isNotEmpty()) {
-                                        declineReasonCode.value
-                                    } else {
+                                    declineReasonCode.value.ifEmpty {
                                         ""
                                     }
                                 )
