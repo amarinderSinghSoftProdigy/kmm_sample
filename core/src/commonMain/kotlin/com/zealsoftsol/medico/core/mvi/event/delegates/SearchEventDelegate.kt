@@ -76,10 +76,17 @@ internal class SearchEventDelegate(
     /**
      * this will get the manufacturers selected by user to be applied as filter
      */
-    private fun updateSelectedManufacturersFilters(filters: List<Value>) {
+    private suspend fun updateSelectedManufacturersFilters(filters: List<Value>) {
         navigator.withScope<SearchScope> {
             it.selectedFilters.value = filters
             it.isFilterApplied.value = filters.isNotEmpty()
+            val autoComplete = AutoComplete(
+                query = "manufacturers",
+                suggestion = filters.joinToString(",") { data -> data.id },
+                stockists = "",
+                details = filters.joinToString(",") { data -> data.value }
+            )
+            selectAutocomplete(autoComplete)
         }
     }
 
@@ -328,7 +335,7 @@ internal class SearchEventDelegate(
             )
         )
         navigator.withScope<BaseSearchScope> {
-            it.productSearch.value = autoComplete.suggestion
+            it.productSearch.value = autoComplete.details.ifEmpty { autoComplete.suggestion }
             it.pagination.reset()
             withProgress {
                 it.search(

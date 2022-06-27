@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.core.mvi.scope.nested
 
-import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.NavigationOption
@@ -176,8 +175,6 @@ class InStoreProductsScope(
             currentPage.value = 0
             items.value = emptyList()
         }
-
-        selectedFilters.value.joinToString { it.id }.log(selectedFilters.value.joinToString(separator = ",") { it.id })
 
         EventCollector.sendEvent(
             Event.Action.InStore.ProductLoad(
