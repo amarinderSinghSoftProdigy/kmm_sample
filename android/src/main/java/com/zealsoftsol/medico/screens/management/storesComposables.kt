@@ -103,7 +103,6 @@ import com.zealsoftsol.medico.screens.search.AutoCompleteItem
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.ChipString
 import com.zealsoftsol.medico.screens.search.FilterSection
-import com.zealsoftsol.medico.screens.search.HorizontalFilterSection
 import com.zealsoftsol.medico.screens.search.SearchBarBox
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
 import com.zealsoftsol.medico.screens.search.SearchOption

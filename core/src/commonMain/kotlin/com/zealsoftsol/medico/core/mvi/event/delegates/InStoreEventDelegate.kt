@@ -97,7 +97,6 @@ internal class InStoreEventDelegate(
     private fun updateSelectedManufacturersFilters(filters: List<Value>) {
         navigator.withScope<InStoreProductsScope> {
             it.selectedFilters.value = filters
-            it.isFilterApplied.value = filters.isNotEmpty()
             it.loadItems(true)
         }
     }

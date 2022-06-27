@@ -144,7 +144,6 @@ class SearchScope(
     override val pagination: Pagination = Pagination(Pagination.ITEMS_PER_PAGE_10)
     val showNoStockistAlert = DataSource(false)
     val showNoAlternateProdToast = DataSource(false)
-    val isFilterApplied = DataSource(false)
     val selectedFilters = DataSource(emptyList<Value>())
 
     init {
@@ -188,7 +187,7 @@ class SearchScope(
     }
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
-        return TabBarInfo.ActiveSearch(productSearch, filtersManufactures, isFilterApplied)
+        return TabBarInfo.ActiveSearch(productSearch, filtersManufactures)
     }
 
     fun selectItem(item: String) {
@@ -200,5 +199,8 @@ class SearchScope(
 
     fun showAlternateProducts(code: String) =
         EventCollector.sendEvent(Event.Action.Search.ShowAltProds(code))
+
+    fun openManufacturersFilter() =
+        EventCollector.sendEvent(Event.Action.Search.ShowManufacturers(filtersManufactures.value))
 
 }

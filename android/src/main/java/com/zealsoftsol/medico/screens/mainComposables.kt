@@ -242,7 +242,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
             ) //don't show top bar for OrderEditHsnScreen and Inventory and IOC listing & deals & banners
             {
                 TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(verticalAlignment = CenterVertically) {
                         when (val info = tabBarInfo.value) {
                             is TabBarInfo.Simple -> SimpleTabBar(
                                 scope,
@@ -263,7 +263,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                                     imageVector = info.icon.toLocalIcon(),
                                     contentDescription = null,
                                     modifier = Modifier
-                                        .align(Alignment.CenterVertically)
+                                        .align(CenterVertically)
                                         .fillMaxHeight()
                                         .padding(16.dp)
                                         .clickable(
@@ -297,7 +297,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                                     color = MaterialTheme.colors.background,
                                     modifier = Modifier
                                         .weight(0.7f)
-                                        .align(Alignment.CenterVertically)
+                                        .align(CenterVertically)
                                         .padding(start = 16.dp),
                                 )
                             }
@@ -333,7 +333,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                 }
             } else if (mUserType == UserType.STOCKIST_EMPLOYEE && childScope.value is ViewOrderScope && tabBarInfo.value is TabBarInfo.StoreTitle) {
                 TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(verticalAlignment = CenterVertically) {
                         StoreHeader(scope, tabBarInfo.value as TabBarInfo.StoreTitle)
                     }
                 }
@@ -570,7 +570,7 @@ private fun RowScope.SimpleTabBar(
             contentDescription = null,
             modifier = Modifier
                 .weight(0.15f)
-                .align(Alignment.CenterVertically)
+                .align(CenterVertically)
                 .fillMaxHeight()
                 .padding(16.dp)
                 .clickable(
@@ -594,7 +594,7 @@ private fun RowScope.SimpleTabBar(
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.h6,
             modifier = Modifier
-                .align(Alignment.CenterVertically)
+                .align(CenterVertically)
                 .weight(0.7f)
                 .padding(start = 16.dp),
             color = if (info.titleColor != -1L) {
@@ -610,7 +610,7 @@ private fun RowScope.SimpleTabBar(
             style = MaterialTheme.typography.h6,
             modifier = Modifier
                 .weight(0.7f)
-                .align(Alignment.CenterVertically)
+                .align(CenterVertically)
                 .padding(start = 16.dp),
         )
     }
@@ -697,7 +697,7 @@ private fun RowScope.SearchTabBar(
                 .clickable(indication = null) { info.goToSearch() }
                 .background(Color.White, MaterialTheme.shapes.medium)
                 .padding(horizontal = 14.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = CenterVertically,
         ) {
             Icon(
                 imageVector = Icons.Default.Search,
@@ -767,17 +767,11 @@ private fun ActiveSearchTabBar(
     info: TabBarInfo.ActiveSearch,
 ) {
     val search = info.search.flow.collectAsState()
-    val keyboard = LocalSoftwareKeyboardController.current
-    val isFilterApplied = info.isFilterApplied.flow.collectAsState()
 
     BasicSearchBar(
         input = search.value,
         hint = R.string.search_products,
         icon = Icons.Default.ArrowBack,
-        searchBarEnd = SearchBarEnd.Filter(isFilterApplied.value) {
-               keyboard?.hide()
-               info.openManufacturersFilter()
-           },
         onIconClick = { scope.goBack() },
         isSearchFocused = scope.storage.restore("focus") as? Boolean ?: true,
         onSearch = { value, isFromKeyboard ->
@@ -803,7 +797,7 @@ private fun InStoreHeaderData(info: TabBarInfo.InStoreProductTitle, scope: TabBa
             imageVector = info.icon.toLocalIcon(),
             contentDescription = null,
             modifier = Modifier
-                .align(Alignment.CenterVertically)
+                .align(CenterVertically)
                 .fillMaxHeight()
                 .padding(start = 16.dp)
                 .clickable(
@@ -886,7 +880,7 @@ private fun NoIconHeader(
 ) {
     val isBackButtonEnabled = info.showBackButton?.flow?.collectAsState()
     Row(
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = CenterVertically,
     ) {
         if (mUserType == UserType.STOCKIST) {
             if (isBackButtonEnabled?.value == true) {
@@ -894,7 +888,7 @@ private fun NoIconHeader(
                     imageVector = info.icon.toLocalIcon(),
                     contentDescription = null,
                     modifier = Modifier
-                        .align(Alignment.CenterVertically)
+                        .align(CenterVertically)
                         .fillMaxHeight()
                         .padding(end = 10.dp, start = 16.dp)
                         .clickable(
@@ -926,7 +920,7 @@ private fun NoIconHeader(
                     imageVector = info.icon.toLocalIcon(),
                     contentDescription = null,
                     modifier = Modifier
-                        .align(Alignment.CenterVertically)
+                        .align(CenterVertically)
                         .fillMaxHeight()
                         .padding(end = 10.dp, start = 16.dp)
                         .clickable(
@@ -980,7 +974,7 @@ private fun NoIconHeader(
                             .background(Color.White, MaterialTheme.shapes.medium)
                             .padding(horizontal = 14.dp)
                             .height(40.dp),
-                        verticalAlignment = Alignment.CenterVertically,
+                        verticalAlignment = CenterVertically,
                     ) {
                         Icon(
                             imageVector = Icons.Default.Search,
@@ -1059,13 +1053,13 @@ private fun StoreHeader(
     info: TabBarInfo.StoreTitle,
 ) {
     Row(
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = CenterVertically,
     ) {
         Icon(
             imageVector = info.icon.toLocalIcon(),
             contentDescription = null,
             modifier = Modifier
-                .align(Alignment.CenterVertically)
+                .align(CenterVertically)
                 .fillMaxHeight()
                 .padding(start = 16.dp)
                 .clickable(
@@ -1158,13 +1152,13 @@ private fun StoreSearch(scope: TabBarScope, info: TabBarInfo.StoresSearch) {
     val pagination = info.pagination
 
     Row(
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = CenterVertically,
     ) {
         Icon(
             imageVector = info.icon.toLocalIcon(),
             contentDescription = null,
             modifier = Modifier
-                .align(Alignment.CenterVertically)
+                .align(CenterVertically)
                 .fillMaxHeight()
                 .padding(start = 16.dp)
                 .clickable(
@@ -1211,13 +1205,13 @@ private fun OnlyBackHeader(
     info: TabBarInfo.OnlyBackHeader,
 ) {
     Row(
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = CenterVertically,
     ) {
         Icon(
             imageVector = info.icon.toLocalIcon(),
             contentDescription = null,
             modifier = Modifier
-                .align(Alignment.CenterVertically)
+                .align(CenterVertically)
                 .fillMaxHeight()
                 .padding(16.dp)
                 .clickable(
@@ -1261,13 +1255,13 @@ private fun PlayerBackHeader(
     info: TabBarInfo.PlayerBackHeader,
 ) {
     Row(
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = CenterVertically,
     ) {
         Icon(
             imageVector = info.icon.toLocalIcon(),
             contentDescription = null,
             modifier = Modifier
-                .align(Alignment.CenterVertically)
+                .align(CenterVertically)
                 .fillMaxHeight()
                 .padding(16.dp)
                 .clickable(
@@ -1318,17 +1312,17 @@ private fun OffersHeader(
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = CenterVertically,
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
             Icon(
                 imageVector = info.icon.toLocalIcon(),
                 contentDescription = null,
                 modifier = Modifier
-                    .align(Alignment.CenterVertically)
+                    .align(CenterVertically)
                     .fillMaxHeight()
                     .padding(16.dp)
                     .clickable(
@@ -1380,7 +1374,7 @@ private fun OffersHeader(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(end = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = CenterVertically,
             horizontalArrangement = Arrangement.End
         ) {
             Surface(
@@ -1436,7 +1430,7 @@ fun BottomNavigationBar(items: List<BottomNavigationItem>?, height: Int = 56) {
                 .fillMaxWidth()
                 .height(height.dp),
             horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = CenterVertically,
         ) {
 
 

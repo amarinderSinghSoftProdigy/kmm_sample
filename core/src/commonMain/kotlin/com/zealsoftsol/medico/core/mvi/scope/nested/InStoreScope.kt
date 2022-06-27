@@ -124,7 +124,6 @@ class InStoreProductsScope(
     val showToast = DataSource(false)
     val toastData: DataSource<ToastItem?> = DataSource(null)
     val showNoAlternateProdToast = DataSource(false)
-    val isFilterApplied: DataSource<Boolean> = DataSource(false)
     val filtersManufactures: DataSource<List<Value>> = DataSource(emptyList())
     val selectedFilters = DataSource(emptyList<Value>())
 

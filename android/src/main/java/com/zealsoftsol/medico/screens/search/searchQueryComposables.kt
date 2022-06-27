@@ -111,310 +111,258 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
         val showAlert = scope.showNoStockistAlert.flow.collectAsState()
         val search = scope.productSearch.flow.collectAsState()
         val autoComplete = scope.autoComplete.flow.collectAsState()
-        val filters = scope.filters.flow.collectAsState()
-        val filterSearches = scope.filterSearches.flow.collectAsState()
         val products = scope.products.flow.collectAsState()
-        val showFilter = scope.isFilterOpened.flow.collectAsState()
-        val sortOptions = scope.sortOptions.flow.collectAsState()
-        val selectedSortOption = scope.selectedSortOption.flow.collectAsState()
-        val activeFilterIds = scope.activeFilterIds.flow.collectAsState()
         val listStateScroll = rememberScrollState()
         val coroutineScope = rememberCoroutineScope()
-        val totalResults = scope.totalResults.flow.collectAsState()
         val showNoProduct = scope.showNoProducts.flow.collectAsState()
+        val selectedFilters = scope.selectedFilters.flow.collectAsState()
 
         Column(
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         ) {
-            if (showFilter.value) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(bottom = 24.dp * 2 + 48.dp)
-                            .verticalScroll(rememberScrollState()),
-                    ) {
-                        Space(16.dp)
-                        Text(
-                            text = stringResource(id = R.string.filters),
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.W600,
-                            color = MaterialTheme.colors.background,
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                        )
-                        if (activeFilterIds.value.isNotEmpty()) {
-                            Space(16.dp)
-                            Separator(padding = 16.dp)
-                            Space(12.dp)
-                            FlowRow(modifier = Modifier.padding(horizontal = 16.dp)) {
-                                activeFilterIds.value.forEach { q ->
-                                    val filter = scope.getFilterNameById(q)
-                                    FilterChip(name = filter.name) {
-                                        scope.clearFilter(filter)
-                                    }
-                                }
-                            }
-                        }
-                        SortSection(
-                            options = sortOptions.value,
-                            selectedOption = selectedSortOption.value,
-                            onClick = { scope.selectSortOption(it) },
-                        )
-                        filters.value.forEach { filter ->
-                            FilterSection(
-                                name = filter.name,
-                                options = filter.options,
-                                searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
-                                    scope.searchFilter(
-                                        filter,
-                                        it
-                                    )
-                                },
-                                onOptionClick = { scope.selectFilter(filter, it) },
-                                onFilterClear = { scope.clearFilter(filter) },
-                            )
-                        }
-                        Space(16.dp)
-                    }
-                    Column(modifier = Modifier.align(Alignment.BottomCenter)) {
-                        Canvas(
-                            Modifier
-                                .fillMaxWidth()
-                                .height(24.dp)
-                        ) {
-                            drawRect(Brush.verticalGradient(listOf(Color.Transparent, Color.White)))
-                        }
-                        Separator(padding = 0.dp)
-                        Row(modifier = Modifier.background(Color.White)) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(24.dp),
-                            ) {
-                                MedicoButton(
-                                    modifier = Modifier.weight(.5f),
-                                    text = stringResource(R.string.clear),
-                                    isEnabled = true,
-                                    color = Color.Transparent,
-                                    contentColor = ConstColors.lightBlue,
-                                    border = BorderStroke(2.dp, ConstColors.lightBlue),
-                                    elevation = null,
-                                    onClick = { scope.clearFilter(null) },
-                                )
-                                Space(16.dp)
-                                MedicoButton(
-                                    modifier = Modifier.weight(.5f),
-                                    text = stringResource(R.string.apply),
-                                    isEnabled = true,
-                                    color = ConstColors.yellow,
-                                    contentColor = MaterialTheme.colors.background,
-                                    elevation = null,
-                                    onClick = { scope.toggleFilter() },
-                                )
-                            }
-                        }
-                    }
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(15.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                LazyRow(
+                    modifier = Modifier.weight(0.9f),
+                    state = rememberLazyListState(),
+                    contentPadding = PaddingValues(top = 6.dp),
+                ) {
+                    items(
+                        items = selectedFilters.value,
+                        itemContent = { data -> ChipString(data.value) {} }
+                    )
                 }
-            } else {
-                if (autoComplete.value.isEmpty()) {
-                    if (products.value.isNotEmpty()) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .verticalScroll(listStateScroll)
-                        ) {
-                            FlowRow(
-                                mainAxisSize = SizeMode.Expand,
-                                mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
-                            ) {
-                                products.value.forEachIndexed { index, productSearch ->
-                                    ProductItem(
-                                        productSearch,
-                                        onClick = {
-                                            scope.selectProduct(productSearch)
-                                        },
-                                        onBuy = { scope.buy(productSearch) },
-                                        scope = scope
-                                    )
-                                }
-                            }
-                            Space(dp = 12.dp)
-                            if (products.value.isNotEmpty() && products.value.size == Pagination.ITEMS_PER_PAGE_10) {
-                                PaginationButtons(modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
-                                    scope.pagination, products.value.size, {
-                                        coroutineScope.launch {
-                                            listStateScroll.scrollTo(0)
-                                        }
-                                        scope.startSearch(true)
-                                    }, {
-                                        coroutineScope.launch {
-                                            listStateScroll.scrollTo(0)
-                                        }
-                                        scope.startSearch(false)
-                                    })
-                            }
-                        }
-                    }
-                    if (showNoProduct.value)
-                        NoProduct(productName = search.value)
+
+                Space(5.dp)
+
+                val boxMod = if (selectedFilters.value.isNotEmpty()) {
+                    Modifier.background(ConstColors.yellow, MaterialTheme.shapes.small)
                 } else {
-                    Surface(
-                        modifier = Modifier
-                            .padding(all = 10.dp)
-                            .fillMaxSize(),
-                        elevation = 10.dp,
-                        shape = MaterialTheme.shapes.medium
-                    ) {
-                        LazyColumn(
-                            state = rememberLazyListState(),
+                    Modifier
+                }
+                Box(
+                    modifier = boxMod
+                        .weight(0.1f)
+                        .clickable { scope.openManufacturersFilter() }
+                        .padding(2.dp)
+                ) {
+                    if (selectedFilters.value.isNotEmpty()) {
+                        Canvas(
                             modifier = Modifier
-                                .fillMaxSize()
-                                .background(color = Color.White)
+                                .align(Alignment.TopEnd)
+                                .size(6.dp)
                         ) {
-                            item {
-
-                                val arrayList = ArrayList<AutoComplete>()
-
-                                Column(modifier = Modifier.fillMaxWidth()) {
-                                    Space(dp = 20.dp)
-                                    Text(
-                                        text = stringResource(R.string.products),
-                                        color = Color.Black,
-                                        fontWeight = FontWeight.W700,
-                                        fontSize = 18.sp,
-                                        modifier = Modifier.padding(start = 15.dp)
-                                    )
-
-                                    autoComplete.value.forEachIndexed { index, autoCompleteData ->
-                                        if (autoCompleteData.query == "search") {
-                                            arrayList.add(autoCompleteData)
-                                        }
-                                    }
-
-                                    if (arrayList.isNotEmpty()) {
-                                        arrayList.forEach {
-                                            AutoCompleteItem(
-                                                autoComplete = it,
-                                                input = search.value
-                                            ) {
-                                                scope.selectAutoComplete(it)
-                                            }
-                                        }
-                                    } else {
-
-                                        Text(
-                                            text = stringResource(id = R.string.prod_not_found),
-                                            color = Color.Black,
-                                            fontWeight = FontWeight.W700,
-                                            fontSize = 18.sp,
-                                            modifier = Modifier
-                                                .padding(start = 15.dp)
-                                                .fillMaxWidth(),
-                                            textAlign = TextAlign.Center
-                                        )
-                                    }
-                                }
-
-                                Column(modifier = Modifier.fillMaxWidth()) {
-                                    arrayList.clear()
-                                    Space(dp = 5.dp)
-                                    Divider(modifier = Modifier.padding(horizontal = 5.dp))
-                                    Space(dp = 10.dp)
-                                    Text(
-                                        text = stringResource(R.string.compositions),
-                                        color = Color.Black,
-                                        fontWeight = FontWeight.W700,
-                                        fontSize = 18.sp,
-                                        modifier = Modifier.padding(start = 15.dp)
-                                    )
-
-                                    autoComplete.value.forEachIndexed { index, autoCompleteData ->
-                                        if (autoCompleteData.query == "compositions") {
-                                            arrayList.add(autoCompleteData)
-                                        }
-                                    }
-
-                                    if (arrayList.isNotEmpty()) {
-                                        arrayList.forEach {
-                                            AutoCompleteItem(
-                                                autoComplete = it,
-                                                input = search.value
-                                            ) {
-                                                scope.selectAutoComplete(it)
-                                            }
-                                        }
-                                    } else {
-
-                                        Space(dp = 20.dp)
-
-                                        Text(
-                                            text = stringResource(id = R.string.compo_not_found),
-                                            color = Color.Black,
-                                            fontSize = 16.sp,
-                                            modifier = Modifier
-                                                .padding(start = 15.dp)
-                                                .fillMaxWidth(),
-                                            textAlign = TextAlign.Center
-                                        )
-                                        Space(dp = 10.dp)
-                                    }
-                                }
-
-                                Column(modifier = Modifier.fillMaxWidth()) {
-                                    arrayList.clear()
-                                    Space(dp = 10.dp)
-                                    Divider(modifier = Modifier.padding(horizontal = 5.dp))
-                                    Space(dp = 15.dp)
-                                    Text(
-                                        text = stringResource(R.string.manufacturers),
-                                        color = Color.Black,
-                                        fontWeight = FontWeight.W700,
-                                        fontSize = 18.sp,
-                                        modifier = Modifier.padding(start = 15.dp)
-                                    )
-
-                                    autoComplete.value.forEachIndexed { index, autoCompleteData ->
-                                        if (autoCompleteData.query == "manufacturers") {
-                                            arrayList.add(autoCompleteData)
-                                        }
-                                    }
-
-                                    if (arrayList.isNotEmpty()) {
-                                        arrayList.forEach {
-                                            AutoCompleteItem(
-                                                autoComplete = it,
-                                                input = search.value
-                                            ) {
-                                                scope.selectAutoComplete(it)
-                                            }
-                                        }
-
-                                    } else {
-
-                                        Space(dp = 20.dp)
-
-                                        Text(
-                                            text = stringResource(id = R.string.manu_not_found),
-                                            color = Color.Black,
-                                            fontSize = 16.sp,
-                                            modifier = Modifier
-                                                .padding(start = 15.dp)
-                                                .fillMaxWidth(),
-                                            textAlign = TextAlign.Center
-                                        )
-                                        Space(dp = 25.dp)
-                                    }
-                                }
-                            }
-
+                            drawCircle(Color.Red)
                         }
                     }
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_filter),
+                        contentDescription = null,
+                        tint = if (selectedFilters.value.isNotEmpty()) MaterialTheme.colors.background else ConstColors.gray,
+                        modifier = Modifier.padding(3.dp)
+                    )
                 }
             }
 
+            if (autoComplete.value.isEmpty()) {
+                if (products.value.isNotEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(listStateScroll)
+                    ) {
+                        FlowRow(
+                            mainAxisSize = SizeMode.Expand,
+                            mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
+                        ) {
+                            products.value.forEachIndexed { index, productSearch ->
+                                ProductItem(
+                                    productSearch,
+                                    onClick = {
+                                        scope.selectProduct(productSearch)
+                                    },
+                                    onBuy = { scope.buy(productSearch) },
+                                    scope = scope
+                                )
+                            }
+                        }
+                        Space(dp = 12.dp)
+                        if (products.value.isNotEmpty() && products.value.size == Pagination.ITEMS_PER_PAGE_10) {
+                            PaginationButtons(modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                                scope.pagination, products.value.size, {
+                                    coroutineScope.launch {
+                                        listStateScroll.scrollTo(0)
+                                    }
+                                    scope.startSearch(true)
+                                }, {
+                                    coroutineScope.launch {
+                                        listStateScroll.scrollTo(0)
+                                    }
+                                    scope.startSearch(false)
+                                })
+                        }
+                    }
+                }
+                if (showNoProduct.value)
+                    NoProduct(productName = search.value)
+            } else {
+                Surface(
+                    modifier = Modifier
+                        .padding(all = 10.dp)
+                        .fillMaxSize(),
+                    elevation = 10.dp,
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    LazyColumn(
+                        state = rememberLazyListState(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(color = Color.White)
+                    ) {
+                        item {
+
+                            val arrayList = ArrayList<AutoComplete>()
+
+                            Column(modifier = Modifier.fillMaxWidth()) {
+                                Space(dp = 20.dp)
+                                Text(
+                                    text = stringResource(R.string.products),
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.W700,
+                                    fontSize = 18.sp,
+                                    modifier = Modifier.padding(start = 15.dp)
+                                )
+
+                                autoComplete.value.forEachIndexed { index, autoCompleteData ->
+                                    if (autoCompleteData.query == "search") {
+                                        arrayList.add(autoCompleteData)
+                                    }
+                                }
+
+                                if (arrayList.isNotEmpty()) {
+                                    arrayList.forEach {
+                                        AutoCompleteItem(
+                                            autoComplete = it,
+                                            input = search.value
+                                        ) {
+                                            scope.selectAutoComplete(it)
+                                        }
+                                    }
+                                } else {
+
+                                    Text(
+                                        text = stringResource(id = R.string.prod_not_found),
+                                        color = Color.Black,
+                                        fontWeight = FontWeight.W700,
+                                        fontSize = 18.sp,
+                                        modifier = Modifier
+                                            .padding(start = 15.dp)
+                                            .fillMaxWidth(),
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
+
+                            Column(modifier = Modifier.fillMaxWidth()) {
+                                arrayList.clear()
+                                Space(dp = 5.dp)
+                                Divider(modifier = Modifier.padding(horizontal = 5.dp))
+                                Space(dp = 10.dp)
+                                Text(
+                                    text = stringResource(R.string.compositions),
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.W700,
+                                    fontSize = 18.sp,
+                                    modifier = Modifier.padding(start = 15.dp)
+                                )
+
+                                autoComplete.value.forEachIndexed { index, autoCompleteData ->
+                                    if (autoCompleteData.query == "compositions") {
+                                        arrayList.add(autoCompleteData)
+                                    }
+                                }
+
+                                if (arrayList.isNotEmpty()) {
+                                    arrayList.forEach {
+                                        AutoCompleteItem(
+                                            autoComplete = it,
+                                            input = search.value
+                                        ) {
+                                            scope.selectAutoComplete(it)
+                                        }
+                                    }
+                                } else {
+
+                                    Space(dp = 20.dp)
+
+                                    Text(
+                                        text = stringResource(id = R.string.compo_not_found),
+                                        color = Color.Black,
+                                        fontSize = 16.sp,
+                                        modifier = Modifier
+                                            .padding(start = 15.dp)
+                                            .fillMaxWidth(),
+                                        textAlign = TextAlign.Center
+                                    )
+                                    Space(dp = 10.dp)
+                                }
+                            }
+
+                            Column(modifier = Modifier.fillMaxWidth()) {
+                                arrayList.clear()
+                                Space(dp = 10.dp)
+                                Divider(modifier = Modifier.padding(horizontal = 5.dp))
+                                Space(dp = 15.dp)
+                                Text(
+                                    text = stringResource(R.string.manufacturers),
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.W700,
+                                    fontSize = 18.sp,
+                                    modifier = Modifier.padding(start = 15.dp)
+                                )
+
+                                autoComplete.value.forEachIndexed { index, autoCompleteData ->
+                                    if (autoCompleteData.query == "manufacturers") {
+                                        arrayList.add(autoCompleteData)
+                                    }
+                                }
+
+                                if (arrayList.isNotEmpty()) {
+                                    arrayList.forEach {
+                                        AutoCompleteItem(
+                                            autoComplete = it,
+                                            input = search.value
+                                        ) {
+                                            scope.selectAutoComplete(it)
+                                        }
+                                    }
+
+                                } else {
+
+                                    Space(dp = 20.dp)
+
+                                    Text(
+                                        text = stringResource(id = R.string.manu_not_found),
+                                        color = Color.Black,
+                                        fontSize = 16.sp,
+                                        modifier = Modifier
+                                            .padding(start = 15.dp)
+                                            .fillMaxWidth(),
+                                        textAlign = TextAlign.Center
+                                    )
+                                    Space(dp = 25.dp)
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
         }
 
         if (showAlert.value)
@@ -534,9 +482,11 @@ fun AutoCompleteItem(
                             modifier = Modifier.weight(5f)
                         )
 
-                        Row(modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(2f), horizontalArrangement = Arrangement.End) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(2f), horizontalArrangement = Arrangement.End
+                        ) {
 
                             if (autoComplete.stockists.isNotEmpty()) {
                                 Text(
@@ -1016,37 +966,6 @@ fun FilterSection(
             Space(12.dp)
             FlowRow {
                 options.forEach { Chip(it) { onOptionClick(it) } }
-            }
-        }
-    }
-}
-
-@Composable
-fun HorizontalFilterSection(
-    name: String,
-    options: List<Option>,
-    searchOption: SearchOption? = null,
-    onOptionClick: (Option) -> Unit,
-    onFilterClear: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp)
-    ) {
-        if (options.isNotEmpty()) {
-            LazyRow(
-                state = rememberLazyListState(),
-                contentPadding = PaddingValues(top = 6.dp),
-            ) {
-                items(
-                    items = options,
-                    itemContent = { value ->
-                        RoundChip(
-                            value
-                        ) { onOptionClick(value) }
-                    }
-                )
             }
         }
     }

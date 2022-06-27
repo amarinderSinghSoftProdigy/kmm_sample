@@ -102,14 +102,8 @@ sealed class TabBarInfo {
     data class ActiveSearch(
         val search: DataSource<String>,
         val filtersManufactures: DataSource<List<Value>>,
-        val isFilterApplied: DataSource<Boolean> = DataSource(false)
     ) : TabBarInfo() {
         override val icon: ScopeIcon = ScopeIcon.NO_ICON
-
-        fun toggleFilter() = EventCollector.sendEvent(Event.Action.Search.ToggleFilter)
-
-        fun openManufacturersFilter() =
-            EventCollector.sendEvent(Event.Action.Search.ShowManufacturers(filtersManufactures.value))
 
         fun searchProduct(input: String, withAutoComplete: Boolean): Boolean {
             return if(input.isNotEmpty()) {

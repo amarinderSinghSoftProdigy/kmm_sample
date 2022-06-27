@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.screens.instore
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -98,9 +99,8 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
     val showNoProduct = scope.showNoProducts.flow.collectAsState()
     val cart = scope.cart.flow.collectAsState()
     val toastItem = scope.toastData.flow.collectAsState()
-    val isFilterApplied = scope.isFilterApplied.flow.collectAsState()
-    val keyboard = LocalSoftwareKeyboardController.current
     val search = scope.searchText.flow.collectAsState()
+    val selectedFilters = scope.selectedFilters.flow.collectAsState()
 
     remember { scope.firstLoad() }
     Column(
@@ -150,10 +150,10 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
         BasicSearchBar(
             input = search.value,
             hint = R.string.search_products,
-            searchBarEnd = SearchBarEnd.Filter(isFilterApplied.value) {
+          /*  searchBarEnd = SearchBarEnd.Filter(isFilterApplied.value) {
                 keyboard?.hide()
                 scope.openManufacturersFilter()
-            },
+            },*/
             icon = Icons.Default.Search,
             elevation = 3.dp,
             horizontalPadding = 16.dp,
@@ -163,7 +163,55 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
             },
             backgroundColor = ConstColors.lightBackground,
         )
-        Space(dp = 4.dp)
+        Space(dp = 15.dp)
+
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 15.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            LazyRow(
+                modifier = Modifier.weight(0.9f),
+                state = rememberLazyListState(),
+                contentPadding = PaddingValues(top = 6.dp),
+            ) {
+                items(
+                    items = selectedFilters.value,
+                    itemContent = { data -> ChipString(data.value) {} }
+                )
+            }
+
+            Space(5.dp)
+
+            val boxMod = if (selectedFilters.value.isNotEmpty()) {
+                Modifier.background(ConstColors.yellow, MaterialTheme.shapes.small)
+            } else {
+                Modifier
+            }
+            Box(
+                modifier = boxMod
+                    .weight(0.1f)
+                    .clickable { scope.openManufacturersFilter() }
+                    .padding(2.dp)
+            ) {
+                if (selectedFilters.value.isNotEmpty()) {
+                    Canvas(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .size(6.dp)
+                    ) {
+                        drawCircle(Color.Red)
+                    }
+                }
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_filter),
+                    contentDescription = null,
+                    tint = if (selectedFilters.value.isNotEmpty()) MaterialTheme.colors.background else ConstColors.gray,
+                    modifier = Modifier.padding(3.dp)
+                )
+            }
+        }
+
         val items = scope.items.flow.collectAsState()
         if (autoComplete.value.isNotEmpty()) {
             Surface(

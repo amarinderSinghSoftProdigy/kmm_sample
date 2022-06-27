@@ -79,7 +79,6 @@ internal class SearchEventDelegate(
     private suspend fun updateSelectedManufacturersFilters(filters: List<Value>) {
         navigator.withScope<SearchScope> {
             it.selectedFilters.value = filters
-            it.isFilterApplied.value = filters.isNotEmpty()
             val autoComplete = AutoComplete(
                 query = "manufacturers",
                 suggestion = filters.joinToString(",") { data -> data.id },
@@ -335,7 +334,8 @@ internal class SearchEventDelegate(
             )
         )
         navigator.withScope<BaseSearchScope> {
-            it.productSearch.value = autoComplete.details.ifEmpty { autoComplete.suggestion }
+            it.productSearch.value =
+                if (autoComplete.details.isNotEmpty()) "" else autoComplete.suggestion
             it.pagination.reset()
             withProgress {
                 it.search(
