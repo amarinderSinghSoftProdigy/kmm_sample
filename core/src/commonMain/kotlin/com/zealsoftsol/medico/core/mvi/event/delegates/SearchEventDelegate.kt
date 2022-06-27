@@ -85,7 +85,7 @@ internal class SearchEventDelegate(
                 stockists = "",
                 details = filters.joinToString(",") { data -> data.value }
             )
-            selectAutocomplete(autoComplete)
+            selectAutocomplete(autoComplete, false)
         }
     }
 
@@ -322,7 +322,10 @@ internal class SearchEventDelegate(
         }
     }
 
-    private suspend fun selectAutocomplete(autoComplete: AutoComplete) {
+    private suspend fun selectAutocomplete(
+        autoComplete: AutoComplete,
+        showSuggestionsInSearchBox: Boolean = true
+    ) {
 //        userRepo.saveLocalSearchHistory(autoComplete) //un comment to save local search history
         reset()
         activeFilters.putAll(
@@ -334,8 +337,11 @@ internal class SearchEventDelegate(
             )
         )
         navigator.withScope<BaseSearchScope> {
-            it.productSearch.value =
-                if (autoComplete.details.isNotEmpty()) "" else autoComplete.suggestion
+            if (showSuggestionsInSearchBox)
+                it.productSearch.value = autoComplete.suggestion
+            else
+                it.productSearch.value = ""
+
             it.pagination.reset()
             withProgress {
                 it.search(

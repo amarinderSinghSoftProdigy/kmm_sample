@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.screens.management
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -87,7 +88,6 @@ import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.PromotionData
 import com.zealsoftsol.medico.data.StockStatus
-import com.zealsoftsol.medico.data.StockistListItem
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.screens.common.CoilImage
@@ -110,7 +110,6 @@ import com.zealsoftsol.medico.screens.search.SortSection
 import com.zealsoftsol.medico.screens.search.YellowOutlineIndication
 import kotlinx.coroutines.launch
 import java.util.*
-import kotlin.collections.ArrayList
 
 // TODO reuse with management
 @ExperimentalComposeUiApi
@@ -148,17 +147,16 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
         Box {
             val search = scope.productSearch.flow.collectAsState()
             val filters = scope.filters.flow.collectAsState()
-            val filtersManufactures = scope.filtersManufactures.flow.collectAsState()
             val filterSearches = scope.filterSearches.flow.collectAsState()
             val products = scope.products.flow.collectAsState()
             val showFilter = scope.isFilterOpened.flow.collectAsState()
             val sortOptions = scope.sortOptions.flow.collectAsState()
             val selectedSortOption = scope.selectedSortOption.flow.collectAsState()
-            val activeFilterIds = scope.activeFilterIds.flow.collectAsState()
             val autoComplete = scope.autoComplete.flow.collectAsState()
             val stockConnected = scope.connectedStockist.flow.collectAsState()
             val selectedStockist = scope.selectedStockist.flow.collectAsState()
             val selectedTradename = scope.selectedTradename.flow.collectAsState()
+            val selectedFilters = scope.selectedFilters.flow.collectAsState()
 
             Image(
                 contentDescription = "",
@@ -224,19 +222,58 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                                 )
                             )
                         }
+                    }
+                }
+                Space(dp = 16.dp)
 
-                        /*Row {
-                            Text(
-                                text = stringResource(id = R.string.filters),
-                                color = ConstColors.lightBlue,
-                                fontWeight = FontWeight.W500,
-                                fontSize = 14.sp
-                            )
-                        }*/
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(15.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    LazyRow(
+                        modifier = Modifier.weight(0.9f),
+                        state = rememberLazyListState(),
+                        contentPadding = PaddingValues(top = 6.dp),
+                    ) {
+                        items(
+                            items = selectedFilters.value,
+                            itemContent = { data -> ChipString(data.value) {} }
+                        )
+                    }
+
+                    Space(5.dp)
+
+                    val boxMod = if (selectedFilters.value.isNotEmpty()) {
+                        Modifier.background(ConstColors.yellow, MaterialTheme.shapes.small)
+                    } else {
+                        Modifier
+                    }
+                    Box(
+                        modifier = boxMod
+                            .weight(0.1f)
+                            .clickable { scope.openManufacturersFilter() }
+                            .padding(2.dp)
+                    ) {
+                        if (selectedFilters.value.isNotEmpty()) {
+                            Canvas(
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .size(6.dp)
+                            ) {
+                                drawCircle(Color.Red)
+                            }
+                        }
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_filter),
+                            contentDescription = null,
+                            tint = if (selectedFilters.value.isNotEmpty()) MaterialTheme.colors.background else ConstColors.gray,
+                            modifier = Modifier.padding(3.dp)
+                        )
                     }
                 }
 
-                Space(dp = 16.dp)
+
                 Divider()
                 Space(dp = 16.dp)
 
@@ -249,20 +286,18 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                     LazyRow(
                         modifier = Modifier.padding(start = 5.dp)
                     ) {
-                        stockConnected.value.let {
-                            itemsIndexed(
-                                items = it,
-                                key = { index, _ -> index },
-                                itemContent = { _, item ->
-                                    StockistConnectedData(
-                                        item,
-                                        back = item.unitCode == selectedStockist.value
-                                    ) {
-                                        scope.updateView(item)
-                                    }
-                                },
-                            )
-                        }
+                        itemsIndexed(
+                            items = stockConnected.value,
+                            key = { index, _ -> index },
+                            itemContent = { _, item ->
+                                StockistConnectedData(
+                                    item,
+                                    back = item.unitCode == selectedStockist.value
+                                ) {
+                                    scope.updateView(item)
+                                }
+                            },
+                        )
                     }
                 }
                 Space(dp = 16.dp)

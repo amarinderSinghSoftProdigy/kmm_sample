@@ -589,7 +589,7 @@ sealed class BottomSheet {
     ) : BottomSheet() {
 
         enum class FilterScopes {
-            SEARCH, IN_STORES_PRODUCTS
+            SEARCH, IN_STORES_PRODUCTS, STORES
         }
 
         //send selected filters back to resp class
@@ -601,6 +601,11 @@ sealed class BottomSheet {
                     )
                     FilterScopes.IN_STORES_PRODUCTS -> {
                         Event.Action.InStore.ApplyManufacturersFilter(
+                            selectedFilters
+                        )
+                    }
+                    FilterScopes.STORES -> {
+                        Event.Action.Stores.ApplyManufacturersFilter(
                             selectedFilters
                         )
                     }

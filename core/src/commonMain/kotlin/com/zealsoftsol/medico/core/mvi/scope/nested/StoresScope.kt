@@ -87,6 +87,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
         override val pagination: Pagination = Pagination(Pagination.ITEMS_PER_PAGE_10)
         override var unitCode: String? = store.sellerUnitCode
         override val supportsAutoComplete: Boolean = true
+        val selectedFilters = DataSource(emptyList<Value>())
 
         init {
             startSearch(true)
@@ -130,7 +131,8 @@ sealed class StoresScope : Scope.Child.TabBar() {
                 activeFilterIds = activeFilterIds,
                 pagination = pagination,
                 productSearch = productSearch,
-                store = store
+                store = store,
+                cartItemsCount = cartItemsCount
             )
         }
 
@@ -145,5 +147,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
             startSearch(true, "")
         }
 
+        fun openManufacturersFilter() =
+            EventCollector.sendEvent(Event.Action.Stores.ShowManufacturers(filtersManufactures.value))
     }
 }

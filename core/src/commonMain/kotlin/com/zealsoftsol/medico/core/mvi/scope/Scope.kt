@@ -195,7 +195,8 @@ sealed class TabBarInfo {
         val activeFilterIds: DataSource<List<String>>,
         val pagination: Pagination,
         val productSearch: DataSource<String>,
-        val store: Store
+        val store: Store,
+        val cartItemsCount: ReadOnlyDataSource<Int>?
     ) : TabBarInfo() {
 
         override val icon: ScopeIcon = ScopeIcon.BACK

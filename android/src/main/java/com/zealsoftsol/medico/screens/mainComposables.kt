@@ -1192,6 +1192,17 @@ private fun StoreSearch(scope: TabBarScope, info: TabBarInfo.StoresSearch) {
         )
     }
 
+    val cartCount = info.cartItemsCount?.flow?.collectAsState()
+    if (cartCount != null) {
+        if (cartCount.value > 0) {
+            val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
+            cart?.cartCount?.value = cartCount.value
+        } else {
+            val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
+            cart?.cartCount?.value = 0
+        }
+    }
+
 }
 
 /**
