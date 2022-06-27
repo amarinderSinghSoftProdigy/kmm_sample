@@ -533,6 +533,8 @@ private fun ShowManufacturersFilter(
                     }
 
                 }
+                Space(10.dp)
+                Divider()
                 Space(15.dp)
             }
 

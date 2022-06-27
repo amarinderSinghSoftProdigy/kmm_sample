@@ -17,6 +17,6 @@ class MockStoresScope : NetworkScope.Stores {
         search: String,
         pagination: Pagination
     ) = mockResponse {
-        PaginatedData(emptyList<Store>(), 0)
+        PaginatedData(emptyList<Store>(), 0, emptyList())
     }
 }

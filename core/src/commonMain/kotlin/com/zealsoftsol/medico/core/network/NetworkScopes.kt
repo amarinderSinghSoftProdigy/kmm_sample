@@ -358,6 +358,7 @@ interface NetworkScope {
             unitCode: String,
             search: String,
             page: Int,
+            manufacturers: String,
         ): BodyResponse<PaginatedData<InStoreProduct>>
 
         suspend fun searchInStoreSellerAutoComplete(

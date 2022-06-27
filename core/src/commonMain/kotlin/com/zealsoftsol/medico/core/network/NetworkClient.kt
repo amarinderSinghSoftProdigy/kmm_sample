@@ -874,12 +874,14 @@ class NetworkClient(
         unitCode: String,
         search: String,
         page: Int,
-    ): BodyResponse<PaginatedData<InStoreProduct>> = simpleRequest {
+        manufacturers: String,
+        ): BodyResponse<PaginatedData<InStoreProduct>> = simpleRequest {
         client.get("${baseUrl.url}/instore/search") {
             withMainToken()
             url {
                 parameters.apply {
                     append("search", search)
+                    append("manufacturers", manufacturers)
                     append("b2bUnitCode", unitCode)
                     append("page", page.toString())
                     append("pageSize", Pagination.DEFAULT_ITEMS_PER_PAGE.toString())

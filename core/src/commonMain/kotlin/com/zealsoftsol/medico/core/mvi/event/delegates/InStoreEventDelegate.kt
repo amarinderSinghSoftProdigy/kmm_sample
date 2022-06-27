@@ -46,7 +46,8 @@ internal class InStoreEventDelegate(
         is Event.Action.InStore.ProductLoad -> loadProductInStore(
             event.isFirstLoad,
             page = event.page,
-            search = event.searchTerm
+            search = event.searchTerm,
+            manufacturers = event.manufacturers
         )
         is Event.Action.InStore.ProductSearch -> searchProductInStore(event.value)
         is Event.Action.InStore.ProductSelect -> selectProductInStore(event.item)
@@ -82,7 +83,10 @@ internal class InStoreEventDelegate(
         }
         is Event.Action.InStore.DeleteOrder -> removeOrder(event.unitcode, event.id)
         is Event.Action.InStore.SubmitReward -> submitReward(event.storeId)
-        is Event.Action.InStore.ShowAltProds -> showAlternativeProducts(event.productCode, event.sellerName)
+        is Event.Action.InStore.ShowAltProds -> showAlternativeProducts(
+            event.productCode,
+            event.sellerName
+        )
         is Event.Action.InStore.ApplyManufacturersFilter -> updateSelectedManufacturersFilters(event.filters)
         is Event.Action.InStore.ShowManufacturers -> showFilterManufacturers(event.data)
     }
@@ -94,6 +98,7 @@ internal class InStoreEventDelegate(
         navigator.withScope<InStoreProductsScope> {
             it.selectedFilters.value = filters
             it.isFilterApplied.value = filters.isNotEmpty()
+            it.loadItems(true)
         }
     }
 
@@ -120,7 +125,8 @@ internal class InStoreEventDelegate(
             withProgress { networkInStoreScope.getAlternateProducts(productCode) }
                 .onSuccess { body ->
                     if (body.isNotEmpty())
-                        this.scope.value.bottomSheet.value = BottomSheet.AlternateProducts(body, sellerName)
+                        this.scope.value.bottomSheet.value =
+                            BottomSheet.AlternateProducts(body, sellerName)
                     else
                         it.showNoAlternateProdToast.value = true
                 }.onError(navigator)
@@ -184,7 +190,7 @@ internal class InStoreEventDelegate(
 
     private suspend fun loadProductInStore(
         isFirstLoad: Boolean, cartIfFirst: Boolean = true,
-        page: Int, search: String
+        page: Int, search: String, manufacturers: String
     ) {
 
         navigator.withScope<InStoreProductsScope> {
@@ -193,6 +199,7 @@ internal class InStoreEventDelegate(
                     unitCode = it.unitCode,
                     search = search,
                     page = page,
+                    manufacturers = manufacturers
                 )
             }
 
@@ -202,6 +209,9 @@ internal class InStoreEventDelegate(
                 if (data?.data != null) {
                     it.items.value = data.data
                     it.totalItems.value = data.total
+                    it.filtersManufactures.value =
+                        data.facets?.find { s -> s.queryId == "manufacturers" }?.values
+                            ?: emptyList()
                 }
             }.onError(navigator)
         }
@@ -316,7 +326,7 @@ internal class InStoreEventDelegate(
             }.onSuccess { cart ->
                 if (it is InStoreProductsScope) {
                     it.cart.value = cart
-                    loadProductInStore(false, false, page, search)
+                    loadProductInStore(false, false, page, search,"")
                     it.setToast(
                         InStoreProductsScope.ToastItem(productName, quantity, freeQuantity),
                         true
