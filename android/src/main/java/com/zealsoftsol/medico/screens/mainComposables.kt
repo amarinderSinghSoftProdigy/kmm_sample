@@ -493,6 +493,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     is EmployeeScope.SuccessEmployee -> SuccessEmployees(it)
                     is EmployeeScope.PreviewDetails -> EmployeePreview(it)
                     is PreferenceScope -> PreferenceScreen(it)
+                    //is PreferenceScope -> PreferenceScreen(it)
                     is BannersScope -> BannersScreen(it)
                     is DealsScope -> DealsScreen(it)
                     is OcrScope -> OcrScreen(it, scaffoldState)
@@ -504,7 +505,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                         }
                         RewardsAndCashbackScreen(it)
                     }
-                    is RequestedQuotesScope ->{
+                    is RequestedQuotesScope -> {
                         RequestedQuotesComposable(scope = it)
                     }
                 }
@@ -546,7 +547,8 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
             }
             if (mUserType != null) {
                 if (childScope.value !is OrderHsnEditScope && childScope.value !is ViewOrderScope &&
-                        childScope.value !is OtpScope.PhoneNumberInput) {
+                    childScope.value !is OtpScope.PhoneNumberInput
+                ) {
                     BottomNavigationBar(mBottomNavItems)
                 }
             }

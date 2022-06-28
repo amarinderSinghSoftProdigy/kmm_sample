@@ -67,6 +67,7 @@ internal class CartEventDelegate(
         }
         is Event.Action.Cart.RemoveSellerItems -> event.run { removeSellerItems(sellerUnitCode) }
         is Event.Action.Cart.LoadCart -> loadCart()
+        is Event.Action.Cart.GetAlertToggle -> getAlertToggle()
         is Event.Action.Cart.ClearCart -> clearCart()
         is Event.Action.Cart.PreviewCart -> previewCart()
         is Event.Action.Cart.ConfirmCartOrder -> confirmCartOrder(event.cartScope)
@@ -257,6 +258,12 @@ internal class CartEventDelegate(
 
     private suspend fun loadCart() {
         cartRepo.loadCartFromServer(userRepo.requireUser().unitCode)
+    }
+
+    private suspend fun getAlertToggle() {
+        navigator.withScope<CommonScope.AlertScope> {
+            it.isOrderAlert.value = userRepo.getAlertToggle()
+        }
     }
 
     private suspend inline fun async(crossinline block: suspend () -> Unit) {

@@ -282,7 +282,6 @@ fun CartScreen(scope: CartScope) {
                             onClick = {
                                 if (isPreviewEnabled.value) {
                                     scope.placeOrder(scope)
-
                                 } else {
                                     showErrorAlert.value = true
                                 }

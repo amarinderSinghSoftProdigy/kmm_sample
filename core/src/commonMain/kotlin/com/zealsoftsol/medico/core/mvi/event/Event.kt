@@ -304,6 +304,7 @@ sealed class Event {
             data class PlaceCartOrder(val checkForQuotedItems: Boolean) : Cart()
             object HideBackButton : Cart()
             data class SubmitReward(val rewardId: String) : Cart()
+            object GetAlertToggle : Cart()
         }
 
         sealed class Help : Action() {
@@ -682,6 +683,7 @@ sealed class Event {
 
             object GetPreferences : Preferences()
             data class SetAutoConnectPreferences(val isEnabled: Boolean) : Preferences()
+            data class SaveAlertToggle(val isEnabled: Boolean) : Preferences()
         }
 
         sealed class Banners : Action() {

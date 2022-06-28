@@ -18,6 +18,7 @@ internal class PreferencesEventDelegate(
     override suspend fun handleEvent(event: Event.Action.Preferences) = when (event) {
         is Event.Action.Preferences.GetPreferences -> getPreferences()
         is Event.Action.Preferences.SetAutoConnectPreferences -> setPreferences(event.isEnabled)
+        is Event.Action.Preferences.SaveAlertToggle -> saveAlertToggle(event.isEnabled)
     }
 
     private suspend fun getPreferences() {
@@ -29,6 +30,12 @@ internal class PreferencesEventDelegate(
                         it.showAlertText.value = body.autoApprove.formatted
                     }.onError(navigator)
             }
+        }
+    }
+
+    private suspend fun saveAlertToggle(value: Boolean) {
+        navigator.withScope<PreferenceScope> {
+            userRepo.saveAlertToggle(value)
         }
     }
 

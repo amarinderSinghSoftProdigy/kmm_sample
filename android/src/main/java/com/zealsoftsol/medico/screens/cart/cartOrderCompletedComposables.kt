@@ -1,5 +1,10 @@
 package com.zealsoftsol.medico.screens.cart
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.SharedPreferences
+import android.media.MediaPlayer
+import android.os.Vibrator
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -29,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -48,12 +54,29 @@ import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.Space
 
 
+@SuppressLint("RememberReturnType")
 @Composable
-fun CartOrderCompletedScreen(scope: CartOrderCompletedScope) {
+fun CartOrderCompletedScreen(
+    scope: CartOrderCompletedScope,
+) {
 
     val isOfferSwiped = scope.isOfferSwiped.flow.collectAsState()
+    val isAlertDisplay = scope.isOrderAlert.flow.collectAsState()
     val showOfferAlert = remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val mediaPlayer = MediaPlayer.create(context, R.raw.alert)
+    val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
+    remember {
+        if (isAlertDisplay.value) {
+            vibrator.vibrate(200)
+            mediaPlayer.start()
+        }
+    }
+    /*remember {
+        vibrator.vibrate(200)
+        mediaPlayer.start()
+    }*/
     Column(
         modifier = Modifier
             .fillMaxSize()

@@ -108,6 +108,14 @@ class UserRepo(
         } ?: UserAccess.NO_ACCESS
     }
 
+    fun saveAlertToggle(value: Boolean) {
+        settings.putBoolean(ALERT_TOGGLE, value)
+    }
+
+    fun getAlertToggle(): Boolean {
+        return settings.getBoolean(ALERT_TOGGLE, false)
+    }
+
     suspend fun login(login: String, password: String): BodyResponse<TokenInfo> {
         settings.putString(AUTH_LOGIN_KEY, login)
         return networkAuthScope.login(
@@ -488,6 +496,7 @@ class UserRepo(
 
     companion object {
         // TODO make secure
+        const val ALERT_TOGGLE = "ALERT_TOGGLE"
         private const val AUTH_LOGIN_KEY = "auid"
         private const val AUTH_USER_KEY = "ukey"
         private const val AUTH_USER_KEY_V2 = "ukeyV2"

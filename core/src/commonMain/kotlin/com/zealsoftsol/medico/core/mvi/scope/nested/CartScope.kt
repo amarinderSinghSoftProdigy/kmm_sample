@@ -132,13 +132,20 @@ class CartPreviewScope(
 class CartOrderCompletedScope(
     val order: CartSubmitResponse,
     val total: Total,
-) : Scope.Child.TabBar() {
+) : Scope.Child.TabBar(), CommonScope.AlertScope {
 
     override val isRoot: Boolean = true
 
     val isOfferSwiped = DataSource(false)
+    override var isOrderAlert: DataSource<Boolean> = DataSource(false)
+
+    init {
+        getAlertToggle()
+    }
 
     fun goToOrders(): Boolean = EventCollector.sendEvent(Event.Transition.Orders)
+
+    private fun getAlertToggle() = EventCollector.sendEvent(Event.Action.Cart.GetAlertToggle)
 
     fun submitReward() = EventCollector.sendEvent(Event.Action.Cart.SubmitReward(order.cartId))
 }

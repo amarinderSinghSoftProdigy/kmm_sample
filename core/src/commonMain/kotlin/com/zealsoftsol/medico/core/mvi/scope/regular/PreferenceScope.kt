@@ -1,17 +1,19 @@
 package com.zealsoftsol.medico.core.mvi.scope.regular
 
+import android.content.SharedPreferences
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 
-class PreferenceScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
+class PreferenceScope() : Scope.Child.TabBar(), CommonScope.CanGoBack, CommonScope.AlertScope {
 
     init {
         EventCollector.sendEvent(Event.Action.Preferences.GetPreferences)
     }
 
+    override var isOrderAlert: DataSource<Boolean> = DataSource(false)
     val showAlert = DataSource(false)
     val showAlertText = DataSource("")
     val isAutoApproved = DataSource(false)
@@ -21,6 +23,10 @@ class PreferenceScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
      */
     fun showAlertBottomSheet(value: Boolean) {
         showAlert.value = value
+    }
+
+    init {
+        getAlertToggle()
     }
 
     /**
@@ -35,6 +41,16 @@ class PreferenceScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
      */
     fun submitPreference() {
         EventCollector.sendEvent(Event.Action.Preferences.SetAutoConnectPreferences(isAutoApproved.value))
+    }
+
+    private fun getAlertToggle() = EventCollector.sendEvent(Event.Action.Cart.GetAlertToggle)
+
+    fun updateOrderAlert(value: Boolean) {
+        isOrderAlert.value = value
+    }
+
+    fun submitOrderAlert() {
+        EventCollector.sendEvent(Event.Action.Preferences.SaveAlertToggle(isOrderAlert.value))
     }
 
 }

@@ -33,6 +33,7 @@ fun PreferenceScreen(scope: PreferenceScope) {
     val showAlert = scope.showAlert.flow.collectAsState()
     val showAlertText = scope.showAlertText.flow.collectAsState()
     val isAutoApproved = scope.isAutoApproved.flow.collectAsState()
+    val isOrderAlert = scope.isOrderAlert.flow.collectAsState()
 
     Box {
         Column(
@@ -88,6 +89,41 @@ fun PreferenceScreen(scope: PreferenceScope) {
                 fontSize = 12.sp,
                 color = Color.Gray
             )
+            Space(40.dp)
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 20.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(id = R.string.order_alert_setting),
+                    color = Color.Black,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.W600
+                )
+
+                Switch(
+                    checked = isOrderAlert.value,
+                    onCheckedChange = {
+                        scope.updateOrderAlert(it)
+                    }, colors = SwitchDefaults.colors(
+                        checkedThumbColor = ConstColors.green
+                    )
+                )
+            }
+
+            Space(40.dp)
+
+            MedicoButton(
+                modifier = Modifier.padding(horizontal = 20.dp),
+                text = stringResource(id = R.string.save),
+                isEnabled = true
+            ) {
+                scope.submitOrderAlert()
+            }
 
         }
 
