@@ -198,7 +198,6 @@ interface NetworkScope {
             longitude: Double,
             pagination: Pagination,
             addPage: Boolean,
-            manufacturers: String = "",
         ): BodyResponse<SearchResponse>
 
         suspend fun autocomplete(

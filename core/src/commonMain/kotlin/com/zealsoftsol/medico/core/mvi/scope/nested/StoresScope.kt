@@ -105,8 +105,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
             EventCollector.sendEvent(
                 Event.Action.Search.SearchInput(
                     isOneOf = check,
-                    search = search,
-                    manufacturers = selectedFilters.value.joinToString(",") { it.id }
+                    search = search
                 )
             )
         }

@@ -25,7 +25,6 @@ class MockSearchScope : NetworkScope.Search {
         longitude: Double,
         pagination: Pagination,
         addPage:Boolean,
-        manufacturers: String,
     ) = mockResponse {
         SearchResponse(emptyList(), emptyList(), 0, emptyList())
     }

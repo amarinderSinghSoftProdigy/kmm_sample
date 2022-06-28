@@ -149,7 +149,6 @@ sealed class Event {
                 val isOneOf: Boolean,
                 val search: String? = null,
                 val query: HashMap<String, String> = hashMapOf(),
-                val manufacturers: String = ""
             ) : Search() {
                 init {
                     if (search != null) {

@@ -16,6 +16,8 @@ import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.utils.LoadHelper
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.EntityInfo
+import com.zealsoftsol.medico.data.Filter
+import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.Value
 
@@ -43,7 +45,31 @@ internal class StoresEventDelegate(
     private fun updateSelectedManufacturersFilters(filters: List<Value>) {
         navigator.withScope<StoresScope.StorePreview> {
             it.selectedFilters.value = filters
-            it.startSearch(true, "")
+
+            val options = mutableListOf<Option>()
+
+            filters.forEach { data ->
+                val option = Option.StringValue(
+                    id = "manufacturers",
+                    value = filters.joinToString(",") { data.id },
+                    isSelected = true,
+                    isVisible = true,
+                )
+                options.add(option)
+            }
+
+            val option = Option.StringValue(
+                id = "manufacturers",
+                value = filters.joinToString(",") {data-> data.id },
+                isSelected = true,
+                isVisible = true,
+            )
+
+
+            val offersFilter =
+                Filter(name = "manufacturers", queryId = "manufacturers", options = options)
+
+            it.selectFilter(offersFilter, option)
         }
     }
 

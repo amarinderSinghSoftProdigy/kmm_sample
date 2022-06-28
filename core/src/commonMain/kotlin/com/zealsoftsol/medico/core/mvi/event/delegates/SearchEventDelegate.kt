@@ -42,7 +42,6 @@ internal class SearchEventDelegate(
             event.isOneOf,
             event.search,
             event.query,
-            event.manufacturers
         )
         is Event.Action.Search.SearchAutoComplete -> searchAutoComplete(
             event.value,
@@ -237,7 +236,6 @@ internal class SearchEventDelegate(
         isOneOf: Boolean,
         search: String?,
         query: Map<String, String>,
-        manufacturers: String = "",
     ) {
         if (isOneOf)
             reset()
@@ -245,7 +243,6 @@ internal class SearchEventDelegate(
             if (search != null) it.pagination.reset()
             if (search != null) it.productSearch.value = search
             it.autoComplete.value = emptyList()
-            val isWildcardSearch = search == null && query.isEmpty()
             withProgress {
                 it.search(
                     it.pagination,
@@ -258,8 +255,7 @@ internal class SearchEventDelegate(
                             false
                         )
                     },
-                    manufacturers
-                    )
+                )
             }
         }
     }
@@ -403,6 +399,14 @@ internal class SearchEventDelegate(
                         activeFilters =
                             (activeFilters + extraFilters) as HashMap<String, Option.StringValue>
                     }
+
+                    //manufacturers on instores
+
+                    if(filter.queryId == "manufacturers"){
+                        extraFilters["manufacturers"] = option
+                        activeFilters = (activeFilters + extraFilters) as HashMap<String, Option.StringValue>
+                    }
+
                     it.search(
                         it.pagination,
                         addPage = false,
@@ -523,7 +527,6 @@ internal class SearchEventDelegate(
         withDelay: Boolean,
         withProgress: Boolean,
         extraFilters: Map<String, Option.StringValue> = emptyMap(),
-        manufacturers: String = "",
         crossinline onEnd: () -> Unit = {}
     ) {
         //searchAsync(withDelay = withDelay, withProgress = withProgress) {
@@ -538,7 +541,6 @@ internal class SearchEventDelegate(
             address.longitude,
             pagination,
             addPage,
-            manufacturers
         ).onSuccess { body ->
             pagination.setTotal(body.totalResults)
             filtersManufactures.value =
