@@ -83,7 +83,8 @@ internal class StoresEventDelegate(
             hostScope.bottomSheet.value = BottomSheet.FilerManufacturers(
                 data,
                 it.selectedFilters.value,
-                BottomSheet.FilerManufacturers.FilterScopes.STORES
+                BottomSheet.FilerManufacturers.FilterScopes.STORES,
+                tradeName = it.selectedTradename.value
             )
         }
     }

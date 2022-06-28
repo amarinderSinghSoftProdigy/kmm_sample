@@ -111,7 +111,8 @@ internal class InStoreEventDelegate(
             hostScope.bottomSheet.value = BottomSheet.FilerManufacturers(
                 data,
                 it.selectedFilters.value,
-                BottomSheet.FilerManufacturers.FilterScopes.IN_STORES_PRODUCTS
+                BottomSheet.FilerManufacturers.FilterScopes.IN_STORES_PRODUCTS,
+                it.sellerName
             )
         }
     }

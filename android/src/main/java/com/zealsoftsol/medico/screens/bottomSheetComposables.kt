@@ -339,6 +339,7 @@ fun Scope.Host.showBottomSheet(
                 data = bs.listManufacturers,
                 selectedFilters = bs.selectedFilters,
                 bs,
+                tradeName = bs.tradeName,
                 onDismiss = { dismissBottomSheet() }
             )
         }
@@ -351,6 +352,7 @@ private fun ShowManufacturersFilter(
     data: List<Value>,
     selectedFilters: List<Value> = emptyList(),
     bs: BottomSheet.FilerManufacturers,
+    tradeName: String,
     onDismiss: () -> Unit
 ) {
 
@@ -374,9 +376,19 @@ private fun ShowManufacturersFilter(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 10.dp),
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
 
+                    Text(
+                        text = tradeName,
+                        color = ConstColors.lightBlue,
+                        fontSize = 14.sp,
+                        maxLines = 1,
+                        fontWeight= FontWeight.W700,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Space(5.dp)
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = null,

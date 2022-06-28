@@ -109,7 +109,7 @@ class InStoreSellerScope(
 
 class InStoreProductsScope(
     internal val unitCode: String,
-    private val sellerName: String,
+    val sellerName: String,
     private val address: String,
     private val phoneNumber: String
 ) : Scope.Child.TabBar() {

@@ -585,7 +585,8 @@ sealed class BottomSheet {
     class FilerManufacturers(
         val listManufacturers: List<Value>,
         val selectedFilters: List<Value>,
-        val filterScope: FilterScopes
+        val filterScope: FilterScopes,
+        val tradeName: String = "",
     ) : BottomSheet() {
 
         enum class FilterScopes {

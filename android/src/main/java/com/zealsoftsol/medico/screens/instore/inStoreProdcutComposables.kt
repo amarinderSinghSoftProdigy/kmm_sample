@@ -101,6 +101,7 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
     val toastItem = scope.toastData.flow.collectAsState()
     val search = scope.searchText.flow.collectAsState()
     val selectedFilters = scope.selectedFilters.flow.collectAsState()
+    val items = scope.items.flow.collectAsState()
 
     remember { scope.firstLoad() }
     Column(
@@ -163,56 +164,39 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
             },
             backgroundColor = ConstColors.lightBackground,
         )
-        Space(dp = 15.dp)
-
+        Space(10.dp)
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 15.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(horizontal = 16.dp, vertical = 10.dp)
+                .clickable { scope.openManufacturersFilter() },
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.End
         ) {
-            LazyRow(
-                modifier = Modifier.weight(0.9f),
-                state = rememberLazyListState(),
-                contentPadding = PaddingValues(top = 6.dp),
-            ) {
-                items(
-                    items = selectedFilters.value,
-                    itemContent = { data -> ChipString(data.value) {} }
-                )
-            }
-
+            Divider(
+                modifier = Modifier
+                    .height(16.dp)
+                    .width(1.dp)
+            )
             Space(5.dp)
-
-            val boxMod = if (selectedFilters.value.isNotEmpty()) {
-                Modifier.background(ConstColors.yellow, MaterialTheme.shapes.small)
-            } else {
-                Modifier
-            }
-            Box(
-                modifier = boxMod
-                    .weight(0.1f)
-                    .clickable { scope.openManufacturersFilter() }
-                    .padding(2.dp)
-            ) {
-                if (selectedFilters.value.isNotEmpty()) {
-                    Canvas(
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .size(6.dp)
-                    ) {
-                        drawCircle(Color.Red)
-                    }
-                }
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_filter),
-                    contentDescription = null,
-                    tint = if (selectedFilters.value.isNotEmpty()) MaterialTheme.colors.background else ConstColors.gray,
-                    modifier = Modifier.padding(3.dp)
-                )
-            }
+            Text(
+                text = if (selectedFilters.value.isEmpty()) stringResource(id = R.string.filters)
+                else "${stringResource(id = R.string.filters)} (${selectedFilters.value.size})",
+                color = ConstColors.lightBlue,
+                fontSize = 14.sp
+            )
+            Space(5.dp)
+            Icon(
+                modifier = Modifier.size(10.dp),
+                painter = painterResource(id = R.drawable.ic_down_arrow),
+                contentDescription = null,
+                tint = ConstColors.lightBlue
+            )
         }
 
-        val items = scope.items.flow.collectAsState()
+        Space(5.dp)
+
         if (autoComplete.value.isNotEmpty()) {
             Surface(
                 modifier = Modifier
