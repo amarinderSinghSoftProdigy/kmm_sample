@@ -521,6 +521,8 @@
     <string name="user">User</string>
     <string name="no_alternate_prod_found">No alternate products found</string>
     <string name="selected">Selected</string>
+    <string name="alt_brands">Alternate Brands</string>
+    <string name="alternate">Alternate</string>
 
     <!-- Termrs and Cond -->
 
@@ -674,5 +676,8 @@
     <string name="E0057">Please enter a valid Food License</string>
     <string name="E0058">Food License already registered. Please try again.</string>
     <string name="demo">Demos</string>
+    <string name="sub_stockist_message">Do you want to place an order to nearest Stockist/ Sub-Stockist ?</string>
+    <string name="only_cod_message">(*Only COD orders can be placed)</string>
+    <string name="select_stockist_message">Please select a stockist</string>
 
 </resources>

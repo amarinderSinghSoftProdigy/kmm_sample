@@ -78,6 +78,7 @@ import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.ProductBuyResponse
 import com.zealsoftsol.medico.data.ProductResponse
+import com.zealsoftsol.medico.data.ProductRequestResponse
 import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
 import com.zealsoftsol.medico.data.ProfileImageData
 import com.zealsoftsol.medico.data.ProfileImageUpload
@@ -184,6 +185,7 @@ interface NetworkScope {
         ): BodyResponse<ProductSeasonBoyRetailerSelectResponse>
 
         suspend fun getQuotedProductData(productCode: String): BodyResponse<ProductBuyResponse>
+        suspend fun getRequestedProductData(productCode: String): BodyResponse<ProductRequestResponse>
     }
 
     interface Search : NetworkScope {
@@ -264,6 +266,9 @@ interface NetworkScope {
             pagination: Pagination,
             manufacturers: String,
         ): BodyResponse<PaginatedData<Store>>
+
+        suspend fun getAlternateProducts(productCode: String): BodyResponse<List<AlternateProductData>>
+
     }
 
     interface Cart : NetworkScope {

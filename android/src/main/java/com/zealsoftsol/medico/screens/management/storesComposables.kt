@@ -120,6 +120,14 @@ fun StoresScreen(scope: StoresScope) {
             is StoresScope.StorePreview -> StorePreview(scope)
         }
     }
+
+
+    if (scope.showNoAlternateProdToast.flow.collectAsState().value) {
+        ShowToastGlobal(
+            msg = stringResource(id = R.string.no_alternate_prod_found)
+        )
+        scope.hideAlternateProdToastWarning()
+    }
 }
 
 var searchedProduct = ""
@@ -929,8 +937,31 @@ fun ProductItemStore(
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.Bottom,
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
+
+                        Column(
+                            modifier = Modifier
+                                .clickable {
+                                    scope.showAlternateProducts(product.code)
+                                },
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                modifier = Modifier
+                                    .size(22.dp),
+                                painter = painterResource(R.drawable.ic_al_prod),
+                                contentDescription = null,
+                                tint = ConstColors.lightBlue
+                            )
+                            Text(
+                                text = stringResource(id = R.string.alternate),
+                                color = ConstColors.lightBlue,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.W600,
+                            )
+                        }
+
                         Box {
                             if (cartInfo != null) {
                                 product.quantity = cartInfo.quantity.value

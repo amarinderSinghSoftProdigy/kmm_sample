@@ -35,7 +35,7 @@ data class Value(
 
 @Serializable
 data class ProductSearch(
-    val buyingOption: BuyingOption? = null,
+    var buyingOption: BuyingOption? = null,
     val compositions: List<String>,
     val formattedMrp: String,
     val formattedPrice: String? = null,
@@ -49,7 +49,7 @@ data class ProductSearch(
     val stockInfo: StockInfo? = null,
     val uomName: String,
     val standardUnit: String? = null,
-    val sellerInfo: SellerInfo? = null,
+    var sellerInfo: SellerInfo? = null,
     val manufacturerId: String? = null,
     var quantity: Double = 0.0,
     var freeQuantity: Double = 0.0,

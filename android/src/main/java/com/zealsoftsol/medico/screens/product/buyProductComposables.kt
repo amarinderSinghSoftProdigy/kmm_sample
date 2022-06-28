@@ -445,13 +445,15 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
                                     scope.select(it)
                                 }
                             },
-                            onItemClick = (scope as? BuyProductScope.ChooseStockist)?.let { s ->
+                            onItemClick = {
+
+                            }/*(scope as? BuyProductScope.ChooseStockist)?.let { s ->
                                 {
                                     s.previewStockist(
                                         it
                                     )
                                 }
-                            },
+                            }*/,
                         )
                         is SeasonBoyRetailer -> SeasonBoyReatilerInfoItem(
                             seasonBoyRetailer = it,

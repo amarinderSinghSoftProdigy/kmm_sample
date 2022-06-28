@@ -635,6 +635,13 @@ private fun ShowAlternateProducts(
                 )
                 Space(16.dp)
             }
+            Text(
+                text = stringResource(id = R.string.alt_brands),
+                color = Color.Black,
+                fontWeight = FontWeight.W600,
+                fontSize = 16.sp,
+            )
+            Space(16.dp)
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 contentPadding = PaddingValues(3.dp)

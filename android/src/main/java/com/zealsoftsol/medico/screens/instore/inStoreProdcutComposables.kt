@@ -652,18 +652,28 @@ private fun BaseItem(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
+                    Column(
                         modifier = Modifier
-                            .size(28.dp)
                             .weight(1f)
                             .clickable {
                                 scope.showAlternateProducts(item.code)
                             },
-                        painter = painterResource(R.drawable.ic_al_prod),
-                        contentDescription = null,
-                        tint = ConstColors.lightBlue
-                    )
-
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .size(21.dp),
+                            painter = painterResource(R.drawable.ic_al_prod),
+                            contentDescription = null,
+                            tint = ConstColors.lightBlue
+                        )
+                        Text(
+                            text = stringResource(id = R.string.alternate),
+                            color = ConstColors.lightBlue,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.W600,
+                        )
+                    }
                     Column(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -677,6 +687,7 @@ private fun BaseItem(
                             fontWeight = FontWeight.W700,
                             fontSize = 14.sp
                         )
+                        Space(2.dp)
                         Text(
                             text = stringResource(id = R.string.quantity),
                             color = if (item.order?.quantity?.formatted != "0.0") ConstColors.red else ConstColors.darkBlue,
@@ -696,6 +707,7 @@ private fun BaseItem(
                             color = if (item.order?.quantity?.formatted != "0.0") ConstColors.red else Color.Black,
                             fontSize = 14.sp
                         )
+                        Space(2.dp)
                         Text(
                             text = stringResource(id = R.string.free),
                             color = if (item.order?.quantity?.formatted != "0.0") ConstColors.red else ConstColors.darkBlue,

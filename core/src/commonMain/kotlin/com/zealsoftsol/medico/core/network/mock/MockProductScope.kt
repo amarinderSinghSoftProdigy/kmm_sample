@@ -2,7 +2,9 @@ package com.zealsoftsol.medico.core.network.mock
 
 import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.network.NetworkScope
+import com.zealsoftsol.medico.data.BodyResponse
 import com.zealsoftsol.medico.data.ProductBuyResponse
+import com.zealsoftsol.medico.data.ProductRequestResponse
 import com.zealsoftsol.medico.data.ProductResponse
 import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
 
@@ -36,4 +38,8 @@ class MockProductScope : NetworkScope.Product {
         mockResponse<ProductBuyResponse> {
             null
         }
+
+    override suspend fun getRequestedProductData(productCode: String): BodyResponse<ProductRequestResponse> {
+        TODO("Not yet implemented")
+    }
 }
