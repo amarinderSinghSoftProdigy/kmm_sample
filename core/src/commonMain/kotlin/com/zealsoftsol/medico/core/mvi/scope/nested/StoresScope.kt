@@ -100,32 +100,18 @@ sealed class StoresScope : Scope.Child.TabBar() {
             EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(url))
         }
 
-        fun searchProduct(value: String) {
-            productSearch.value = value
-            searchProduct(
-                value,
-                withAutoComplete = true,
-                store.sellerUnitCode
-            )
-        }
-
         fun startSearch(check: Boolean, search: String? = null) {
             productSearch.value = ""
             EventCollector.sendEvent(
                 Event.Action.Search.SearchInput(
                     isOneOf = check,
-                    search = search
+                    search = search,
+                    manufacturers = selectedFilters.value.joinToString(",") { it.id }
                 )
             )
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
-            /*return TabBarInfo.StoreTitle(
-                storeName = store.tradeName,
-                showNotifications = false,
-                event = Event.Action.Management.GetDetails(store.sellerUnitCode),
-                cartItemsCount = cartItemsCount
-            )*/
             return TabBarInfo.StoresSearch(
                 search = productSearch,
                 activeFilterIds = activeFilterIds,

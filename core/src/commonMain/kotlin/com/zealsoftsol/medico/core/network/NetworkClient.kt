@@ -431,10 +431,10 @@ class NetworkClient(
         latitude: Double,
         longitude: Double,
         pagination: Pagination,
-        addPage: Boolean
+        addPage: Boolean,
+        manufacturers: String
     ) = simpleRequest {
         client.get<BodyResponse<SearchResponse>>("${baseUrl.url}/search/${if (unitCode == null) "global" else "v2/stores"}") {
-            //client.get<BodyResponse<SearchResponse>>("${baseUrl.url}/search/${if (unitCode == null) "global" else "stores"}") {
             withMainToken()
             url {
                 parameters.apply {
@@ -443,6 +443,9 @@ class NetworkClient(
                     }
                     sort?.let { append("sort", it) }
                     unitCode?.let { append("unitCode", it) }
+                    if (manufacturers.isNotEmpty()) {
+                        append("manufacturers", manufacturers)
+                    }
                     append("latitude", latitude.toString())
                     append("longitude", longitude.toString())
                     append(
@@ -644,12 +647,14 @@ class NetworkClient(
         unitCode: String,
         search: String,
         pagination: Pagination,
+        manufacturers: String
     ) = simpleRequest {
         client.get<BodyResponse<PaginatedData<Store>>>("${baseUrl.url}/b2bapp/stores/${unitCode}") {
             withMainToken()
             url {
                 parameters.apply {
                     append("search", search)
+                    append("manufacturers", manufacturers)
                     append("page", pagination.nextPage().toString())
                     append("pageSize", pagination.itemsPerPage.toString())
                 }
@@ -875,7 +880,7 @@ class NetworkClient(
         search: String,
         page: Int,
         manufacturers: String,
-        ): BodyResponse<PaginatedData<InStoreProduct>> = simpleRequest {
+    ): BodyResponse<PaginatedData<InStoreProduct>> = simpleRequest {
         client.get("${baseUrl.url}/instore/search") {
             withMainToken()
             url {

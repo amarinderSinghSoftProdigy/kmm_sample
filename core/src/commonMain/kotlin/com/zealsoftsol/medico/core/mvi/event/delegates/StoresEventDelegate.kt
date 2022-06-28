@@ -29,8 +29,8 @@ internal class StoresEventDelegate(
 ) : EventDelegate<Event.Action.Stores>(navigator) {
 
     override suspend fun handleEvent(event: Event.Action.Stores) = when (event) {
-        is Event.Action.Stores.Load -> loadStores(event.isFirstLoad)
-        is Event.Action.Stores.Search -> searchStores(event.value)
+        is Event.Action.Stores.Load -> loadStores(event.isFirstLoad, event.manufacturers)
+        is Event.Action.Stores.Search -> searchStores(event.value, event.manufacturers)
         is Event.Action.Stores.Select -> select(event.item)
         is Event.Action.Stores.ShowLargeImage -> selectProductLargeImage(event.item, event.type)
         is Event.Action.Stores.ShowManufacturers -> showFilterManufacturers(event.data)
@@ -40,16 +40,10 @@ internal class StoresEventDelegate(
     /**
      * this will get the manufacturers selected by user to be applied as filter
      */
-    private suspend fun updateSelectedManufacturersFilters(filters: List<Value>) {
+    private fun updateSelectedManufacturersFilters(filters: List<Value>) {
         navigator.withScope<StoresScope.StorePreview> {
             it.selectedFilters.value = filters
-            val autoComplete = AutoComplete(
-                query = "manufacturers",
-                suggestion = filters.joinToString(",") { data -> data.id },
-                stockists = "",
-                details = filters.joinToString(",") { data -> data.value }
-            )
-//            selectAutocomplete(autoComplete)
+            it.startSearch(true, "")
         }
     }
 
@@ -72,24 +66,26 @@ internal class StoresEventDelegate(
         navigator.scope.value.bottomSheet.value = BottomSheet.ViewLargeImage(item, type)
     }
 
-    private suspend fun loadStores(isFirstLoad: Boolean) {
+    private suspend fun loadStores(isFirstLoad: Boolean, manufacturers:String) {
         loadHelper.load<StoresScope.All, Store>(isFirstLoad = isFirstLoad) {
             val user = userRepo.requireUser()
             networkStoresScope.getStores(
                 unitCode = user.unitCode,
                 search = searchText.value,
                 pagination = pagination,
+                manufacturers = manufacturers
             ).getBodyOrNull()
         }
     }
 
-    private suspend fun searchStores(search: String) {
+    private suspend fun searchStores(search: String, manufacturers:String) {
         loadHelper.search<StoresScope.All, Store>(searchValue = search) {
             val user = userRepo.requireUser()
             networkStoresScope.getStores(
                 unitCode = user.unitCode,
                 search = searchText.value,
                 pagination = pagination,
+                manufacturers = manufacturers
             ).getBodyOrNull()
         }
     }

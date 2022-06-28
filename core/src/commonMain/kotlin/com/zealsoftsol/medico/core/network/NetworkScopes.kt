@@ -198,6 +198,7 @@ interface NetworkScope {
             longitude: Double,
             pagination: Pagination,
             addPage: Boolean,
+            manufacturers: String = "",
         ): BodyResponse<SearchResponse>
 
         suspend fun autocomplete(
@@ -262,6 +263,7 @@ interface NetworkScope {
             unitCode: String,
             search: String,
             pagination: Pagination,
+            manufacturers: String,
         ): BodyResponse<PaginatedData<Store>>
     }
 
