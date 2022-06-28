@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.screens
 
 import android.app.DatePickerDialog
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,8 +22,10 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -43,6 +46,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -55,10 +59,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.BottomCenter
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.TopEnd
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -108,7 +116,9 @@ import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.data.TaxInfo
 import com.zealsoftsol.medico.data.TaxType
 import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.data.Value
 import com.zealsoftsol.medico.screens.common.CoilImage
+import com.zealsoftsol.medico.screens.common.CoilImageBrands
 import com.zealsoftsol.medico.screens.common.CoilImageZoom
 import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.Dropdown
@@ -325,12 +335,286 @@ fun Scope.Host.showBottomSheet(
                 bs.productList,
                 bs,
                 onDismiss = { dismissBottomSheet() })
+            is BottomSheet.FilerManufacturers -> ShowManufacturersFilter(
+                data = bs.listManufacturers,
+                selectedFilters = bs.selectedFilters,
+                bs,
+                tradeName = bs.tradeName,
+                onDismiss = { dismissBottomSheet() }
+            )
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
 @Composable
-fun ShowAlternateProducts(
+private fun ShowManufacturersFilter(
+    data: List<Value>,
+    selectedFilters: List<Value> = emptyList(),
+    bs: BottomSheet.FilerManufacturers,
+    tradeName: String,
+    onDismiss: () -> Unit
+) {
+
+    val searchTerm = remember { mutableStateOf("") }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val listOfManufacturers = remember { mutableStateOf(data) }
+    val listSelectedItems = remember { mutableStateOf(selectedFilters) }
+
+    BaseBottomSheet(onDismiss) {
+
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = BottomCenter
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 70.dp, top = 10.dp),
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Text(
+                        text = tradeName,
+                        color = ConstColors.lightBlue,
+                        fontSize = 14.sp,
+                        maxLines = 1,
+                        fontWeight= FontWeight.W700,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Space(5.dp)
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = null,
+                        tint = ConstColors.gray,
+                        modifier = Modifier
+                            .size(28.dp)
+                            .clickable { onDismiss() },
+                    )
+                }
+
+                Space(15.dp)
+
+                if (listSelectedItems.value.isNotEmpty()) {
+
+                    Text(
+                        modifier = Modifier.padding(start = 10.dp),
+                        text = "${stringResource(id = R.string.selected)}(${listSelectedItems.value.size})",
+                        color = ConstColors.lightBlue,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+
+                    Space(10.dp)
+
+                    listSelectedItems.value.let {
+                        LazyRow(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                            contentPadding = PaddingValues(5.dp)
+                        ) {
+                            itemsIndexed(
+                                items = it.asReversed(),
+                                key = { index: Int, _: Value -> index },
+                                itemContent = { index, item ->
+                                    Column(horizontalAlignment = CenterHorizontally) {
+                                        Box(
+                                            modifier = Modifier
+                                                .height(55.dp)
+                                                .width(55.dp),
+                                            contentAlignment = TopEnd
+                                        ) {
+                                            Surface(
+                                                elevation = 5.dp,
+                                                shape = CircleShape,
+                                                color = Color.White,
+                                            ) {
+
+                                                CoilImageBrands(
+                                                    src = CdnUrlProvider.urlForM(item.id),
+                                                    contentScale = ContentScale.Crop,
+                                                    onError = { ItemPlaceholder() },
+                                                    onLoading = { ItemPlaceholder() },
+                                                    height = 55.dp,
+                                                    width = 55.dp,
+                                                )
+                                            }
+                                            Icon(
+                                                modifier = Modifier
+                                                    .size(20.dp)
+                                                    .clickable {
+                                                        listSelectedItems.value =
+                                                            listSelectedItems.value - item
+                                                    },
+                                                imageVector = Icons.Default.Close,
+                                                contentDescription = null,
+                                                tint = ConstColors.gray,
+                                            )
+                                        }
+                                        Space(5.dp)
+                                        Text(
+                                            modifier = Modifier
+                                                .width(70.dp),
+                                            text = item.value,
+                                            color = Color.Black,
+                                            fontSize = 12.sp,
+                                            textAlign = TextAlign.Center,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+                                    }
+                                }
+                            )
+                        }
+
+                    }
+                    Space(10.dp)
+                    Divider()
+                    Space(15.dp)
+                }
+
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .padding(horizontal = 16.dp),
+                    shape = RoundedCornerShape(10.dp),
+                    elevation = 5.dp,
+                ) {
+                    TextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
+                            .border(
+                                border = BorderStroke(1.dp, color = Color.LightGray),
+                                shape = RoundedCornerShape(10.dp)
+                            ),
+                        value = searchTerm.value,
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            textColor = Color.Black,
+                            placeholderColor = Color.Black,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent
+                        ),
+                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
+                        onValueChange = {
+                            searchTerm.value = it
+                            if (it.isNotEmpty()) {
+                                val searchList: List<Value> = data.filter { s ->
+                                    s.value.lowercase().contains(it.lowercase())
+                                }
+                                listOfManufacturers.value = searchList
+                            } else {
+                                listOfManufacturers.value = data
+                            }
+                        },
+                        placeholder = {
+                            Text(
+                                modifier = Modifier
+                                    .height(50.dp),
+                                text = stringResource(id = R.string.search),
+                                color = ConstColors.txtGrey,
+                                fontSize = 14.sp
+                            )
+                        },
+                        maxLines = 1
+
+                    )
+                }
+
+                Space(15.dp)
+
+                Text(
+                    modifier = Modifier.padding(start = 10.dp),
+                    text = "${stringResource(id = R.string.manufacturers)}(${listOfManufacturers.value.size})",
+                    color = ConstColors.lightBlue,
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+
+                Space(10.dp)
+
+                LazyVerticalGrid(
+                    cells = GridCells.Fixed(3),
+                    contentPadding = PaddingValues(5.dp)
+                ) {
+                    items(listOfManufacturers.value.size) {
+                        Column(horizontalAlignment = CenterHorizontally) {
+                            Space(10.dp)
+                            Surface(
+                                modifier = Modifier
+                                    .height(55.dp)
+                                    .width(55.dp)
+                                    .clickable {
+                                        val contains = listSelectedItems.value.any { data ->
+                                            data.id ==
+                                                    listOfManufacturers.value[it].id
+                                        }
+                                        if (!contains)
+                                            listSelectedItems.value =
+                                                listSelectedItems.value + listOfManufacturers.value[it]
+                                        else
+                                            listSelectedItems.value =
+                                                listSelectedItems.value - listOfManufacturers.value[it]
+                                    },
+                                elevation = 5.dp,
+                                shape = CircleShape,
+                                color = Color.White,
+                            ) {
+                                CoilImageBrands(
+                                    src = CdnUrlProvider.urlForM(listOfManufacturers.value[it].id),
+                                    contentScale = ContentScale.Crop,
+                                    onError = { ItemPlaceholder() },
+                                    onLoading = { ItemPlaceholder() },
+                                    height = 55.dp,
+                                    width = 55.dp,
+                                )
+                            }
+                            Space(5.dp)
+                            Text(
+                                text = listOfManufacturers.value[it].value,
+                                color = Color.Black,
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
+                }
+            }
+
+            Space(10.dp)
+            MedicoButton(
+                modifier = Modifier.padding(20.dp),
+                text = stringResource(id = R.string.apply), isEnabled = true,
+                txtColor = Color.White, color = ConstColors.lightBlue
+            ) {
+                onDismiss()
+                bs.updateSelectedFilter(listSelectedItems.value)
+            }
+        }
+
+    }
+}
+
+@Composable
+private fun ShowAlternateProducts(
     productList: List<AlternateProductData>,
     bs: BottomSheet.AlternateProducts,
     onDismiss: () -> Unit
@@ -341,6 +625,16 @@ fun ShowAlternateProducts(
                 .fillMaxWidth()
                 .padding(vertical = 10.dp, horizontal = 16.dp)
         ) {
+            bs.sellerName?.let {
+                Space(10.dp)
+                Text(
+                    text = "${stringResource(id = R.string.alternative_brands)} $it ",
+                    color = Color.Black,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 16.sp,
+                )
+                Space(16.dp)
+            }
             Text(
                 text = stringResource(id = R.string.alt_brands),
                 color = Color.Black,

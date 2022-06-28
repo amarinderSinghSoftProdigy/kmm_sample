@@ -264,6 +264,7 @@ interface NetworkScope {
             unitCode: String,
             search: String,
             pagination: Pagination,
+            manufacturers: String,
         ): BodyResponse<PaginatedData<Store>>
 
         suspend fun getAlternateProducts(productCode: String): BodyResponse<List<AlternateProductData>>
@@ -363,6 +364,7 @@ interface NetworkScope {
             unitCode: String,
             search: String,
             page: Int,
+            manufacturers: String,
         ): BodyResponse<PaginatedData<InStoreProduct>>
 
         suspend fun searchInStoreSellerAutoComplete(

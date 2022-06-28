@@ -11,6 +11,7 @@ import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.Store
+import com.zealsoftsol.medico.data.Value
 import kotlin.reflect.KClass
 
 sealed class Scope : Scopable {
@@ -100,11 +101,9 @@ sealed class TabBarInfo {
 
     data class ActiveSearch(
         val search: DataSource<String>,
-        val activeFilterIds: DataSource<List<String>>
+        val filtersManufactures: DataSource<List<Value>>,
     ) : TabBarInfo() {
         override val icon: ScopeIcon = ScopeIcon.NO_ICON
-
-        fun toggleFilter() = EventCollector.sendEvent(Event.Action.Search.ToggleFilter)
 
         fun searchProduct(input: String, withAutoComplete: Boolean): Boolean {
             return if(input.isNotEmpty()) {
@@ -196,7 +195,8 @@ sealed class TabBarInfo {
         val activeFilterIds: DataSource<List<String>>,
         val pagination: Pagination,
         val productSearch: DataSource<String>,
-        val store: Store
+        val store: Store,
+        val cartItemsCount: ReadOnlyDataSource<Int>?
     ) : TabBarInfo() {
 
         override val icon: ScopeIcon = ScopeIcon.BACK

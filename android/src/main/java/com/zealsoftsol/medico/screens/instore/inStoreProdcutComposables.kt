@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.screens.instore
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -98,6 +99,9 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
     val showNoProduct = scope.showNoProducts.flow.collectAsState()
     val cart = scope.cart.flow.collectAsState()
     val toastItem = scope.toastData.flow.collectAsState()
+    val search = scope.searchText.flow.collectAsState()
+    val selectedFilters = scope.selectedFilters.flow.collectAsState()
+    val items = scope.items.flow.collectAsState()
 
     remember { scope.firstLoad() }
     Column(
@@ -144,11 +148,13 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
         Space(8.dp)
         Divider(thickness = (1.5).dp)
         Space(dp = 10.dp)
-        val search = scope.searchText.flow.collectAsState()
         BasicSearchBar(
             input = search.value,
             hint = R.string.search_products,
-            searchBarEnd = SearchBarEnd.Eraser,
+          /*  searchBarEnd = SearchBarEnd.Filter(isFilterApplied.value) {
+                keyboard?.hide()
+                scope.openManufacturersFilter()
+            },*/
             icon = Icons.Default.Search,
             elevation = 3.dp,
             horizontalPadding = 16.dp,
@@ -158,8 +164,39 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
             },
             backgroundColor = ConstColors.lightBackground,
         )
-        Space(dp = 4.dp)
-        val items = scope.items.flow.collectAsState()
+        Space(10.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(horizontal = 16.dp, vertical = 10.dp)
+                .clickable { scope.openManufacturersFilter() },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End
+        ) {
+            Divider(
+                modifier = Modifier
+                    .height(16.dp)
+                    .width(1.dp)
+            )
+            Space(5.dp)
+            Text(
+                text = if (selectedFilters.value.isEmpty()) stringResource(id = R.string.filters)
+                else "${stringResource(id = R.string.filters)} (${selectedFilters.value.size})",
+                color = ConstColors.lightBlue,
+                fontSize = 14.sp
+            )
+            Space(5.dp)
+            Icon(
+                modifier = Modifier.size(10.dp),
+                painter = painterResource(id = R.drawable.ic_down_arrow),
+                contentDescription = null,
+                tint = ConstColors.lightBlue
+            )
+        }
+
+        Space(5.dp)
+
         if (autoComplete.value.isNotEmpty()) {
             Surface(
                 modifier = Modifier

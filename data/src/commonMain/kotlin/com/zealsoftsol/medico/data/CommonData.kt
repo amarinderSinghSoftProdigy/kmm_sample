@@ -108,6 +108,7 @@ data class PaginatedData<T>(
     val data: List<T>,
     @SerialName("totalResults")
     val total: Int,
+    val facets: List<Facet>? = null
 )
 
 enum class PaymentMethod(val serverValue: String) {

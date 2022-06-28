@@ -17,9 +17,10 @@ class MockStoresScope : NetworkScope.Stores {
     override suspend fun getStores(
         unitCode: String,
         search: String,
-        pagination: Pagination
-    ) = mockResponse {
-        PaginatedData(emptyList<Store>(), 0)
+        pagination: Pagination,
+        manufacturers: String
+    ): BodyResponse<PaginatedData<Store>> = mockResponse {
+        PaginatedData(emptyList<Store>(), 0, emptyList())
     }
 
     override suspend fun getAlternateProducts(productCode: String): BodyResponse<List<AlternateProductData>> =

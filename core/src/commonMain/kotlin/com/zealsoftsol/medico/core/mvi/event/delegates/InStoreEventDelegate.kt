@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreOrderPlacedScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreProductsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreSellerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreUsersScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.CartRepo
@@ -23,6 +24,7 @@ import com.zealsoftsol.medico.data.InStoreCartRequest
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InStoreSeller
 import com.zealsoftsol.medico.data.InStoreUser
+import com.zealsoftsol.medico.data.Value
 
 internal class InStoreEventDelegate(
     navigator: Navigator,
@@ -44,7 +46,8 @@ internal class InStoreEventDelegate(
         is Event.Action.InStore.ProductLoad -> loadProductInStore(
             event.isFirstLoad,
             page = event.page,
-            search = event.searchTerm
+            search = event.searchTerm,
+            manufacturers = event.manufacturers
         )
         is Event.Action.InStore.ProductSearch -> searchProductInStore(event.value)
         is Event.Action.InStore.ProductSelect -> selectProductInStore(event.item)
@@ -80,7 +83,38 @@ internal class InStoreEventDelegate(
         }
         is Event.Action.InStore.DeleteOrder -> removeOrder(event.unitcode, event.id)
         is Event.Action.InStore.SubmitReward -> submitReward(event.storeId)
-        is Event.Action.InStore.ShowAltProds -> showAlternativeProducts(event.productCode, event.sellerName)
+        is Event.Action.InStore.ShowAltProds -> showAlternativeProducts(
+            event.productCode,
+            event.sellerName
+        )
+        is Event.Action.InStore.ApplyManufacturersFilter -> updateSelectedManufacturersFilters(event.filters)
+        is Event.Action.InStore.ShowManufacturers -> showFilterManufacturers(event.data)
+    }
+
+    /**
+     * this will get the manufacturers selected by user to be applied as filter
+     */
+    private fun updateSelectedManufacturersFilters(filters: List<Value>) {
+        navigator.withScope<InStoreProductsScope> {
+            it.selectedFilters.value = filters
+            it.loadItems(true)
+        }
+    }
+
+    /**
+     * show all the manufacturers to user that are available for filter
+     * and send preselected filters if any
+     */
+    private fun showFilterManufacturers(data: List<Value>) {
+        navigator.withScope<InStoreProductsScope> {
+            val hostScope = scope.value
+            hostScope.bottomSheet.value = BottomSheet.FilerManufacturers(
+                data,
+                it.selectedFilters.value,
+                BottomSheet.FilerManufacturers.FilterScopes.IN_STORES_PRODUCTS,
+                it.sellerName
+            )
+        }
     }
 
     /**
@@ -91,7 +125,8 @@ internal class InStoreEventDelegate(
             withProgress { networkInStoreScope.getAlternateProducts(productCode) }
                 .onSuccess { body ->
                     if (body.isNotEmpty())
-                        this.scope.value.bottomSheet.value = BottomSheet.AlternateProducts(body, sellerName)
+                        this.scope.value.bottomSheet.value =
+                            BottomSheet.AlternateProducts(body, sellerName)
                     else
                         it.showNoAlternateProdToast.value = true
                 }.onError(navigator)
@@ -155,7 +190,7 @@ internal class InStoreEventDelegate(
 
     private suspend fun loadProductInStore(
         isFirstLoad: Boolean, cartIfFirst: Boolean = true,
-        page: Int, search: String
+        page: Int, search: String, manufacturers: String
     ) {
 
         navigator.withScope<InStoreProductsScope> {
@@ -164,6 +199,7 @@ internal class InStoreEventDelegate(
                     unitCode = it.unitCode,
                     search = search,
                     page = page,
+                    manufacturers = manufacturers
                 )
             }
 
@@ -173,6 +209,9 @@ internal class InStoreEventDelegate(
                 if (data?.data != null) {
                     it.items.value = data.data
                     it.totalItems.value = data.total
+                    it.filtersManufactures.value =
+                        data.facets?.find { s -> s.queryId == "manufacturers" }?.values
+                            ?: emptyList()
                 }
             }.onError(navigator)
         }
@@ -287,7 +326,7 @@ internal class InStoreEventDelegate(
             }.onSuccess { cart ->
                 if (it is InStoreProductsScope) {
                     it.cart.value = cart
-                    loadProductInStore(false, false, page, search)
+                    loadProductInStore(false, false, page, search,"")
                     it.setToast(
                         InStoreProductsScope.ToastItem(productName, quantity, freeQuantity),
                         true

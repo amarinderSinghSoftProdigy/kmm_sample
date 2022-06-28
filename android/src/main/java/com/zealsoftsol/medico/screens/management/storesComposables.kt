@@ -7,13 +7,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -87,7 +87,6 @@ import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.PromotionData
 import com.zealsoftsol.medico.data.StockStatus
-import com.zealsoftsol.medico.data.StockistListItem
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.screens.common.CoilImage
@@ -103,7 +102,6 @@ import com.zealsoftsol.medico.screens.search.AutoCompleteItem
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.ChipString
 import com.zealsoftsol.medico.screens.search.FilterSection
-import com.zealsoftsol.medico.screens.search.HorizontalFilterSection
 import com.zealsoftsol.medico.screens.search.SearchBarBox
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
 import com.zealsoftsol.medico.screens.search.SearchOption
@@ -111,7 +109,6 @@ import com.zealsoftsol.medico.screens.search.SortSection
 import com.zealsoftsol.medico.screens.search.YellowOutlineIndication
 import kotlinx.coroutines.launch
 import java.util.*
-import kotlin.collections.ArrayList
 
 // TODO reuse with management
 @ExperimentalComposeUiApi
@@ -157,17 +154,16 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
         Box {
             val search = scope.productSearch.flow.collectAsState()
             val filters = scope.filters.flow.collectAsState()
-            val filtersManufactures = scope.filtersManufactures.flow.collectAsState()
             val filterSearches = scope.filterSearches.flow.collectAsState()
             val products = scope.products.flow.collectAsState()
             val showFilter = scope.isFilterOpened.flow.collectAsState()
             val sortOptions = scope.sortOptions.flow.collectAsState()
             val selectedSortOption = scope.selectedSortOption.flow.collectAsState()
-            val activeFilterIds = scope.activeFilterIds.flow.collectAsState()
             val autoComplete = scope.autoComplete.flow.collectAsState()
             val stockConnected = scope.connectedStockist.flow.collectAsState()
             val selectedStockist = scope.selectedStockist.flow.collectAsState()
             val selectedTradename = scope.selectedTradename.flow.collectAsState()
+            val selectedFilters = scope.selectedFilters.flow.collectAsState()
 
             Image(
                 contentDescription = "",
@@ -186,96 +182,98 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
             )
             val offersFilter =
                 Filter(name = "Offers", queryId = "offers", options = emptyList())
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
                 scope.storage.save("focus", false)
-                Space(16.dp)
-                BoxWithConstraints(
+                Space(10.dp)
+                LazyRow(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
+                        .background(Color.White)
+                        .padding(bottom = 16.dp, start = 16.dp, top = 5.dp)
+                ) {
+                    itemsIndexed(
+                        items = stockConnected.value,
+                        key = { index, _ -> index },
+                        itemContent = { _, item ->
+                            StockistConnectedData(
+                                item,
+                                back = item.unitCode == selectedStockist.value
+                            ) {
+                                scope.updateView(item)
+                            }
+                        },
+                    )
+                }
+                Space(10.dp)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White)
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_eye),
-                                contentDescription = null,
-                                tint = ConstColors.red,
-                                modifier = Modifier.size(16.dp)
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_eye),
+                            contentDescription = null,
+                            tint = ConstColors.red,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Space(8.dp)
+                        Text(
+                            text = stringResource(id = R.string.offers),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.W700,
+                            color = ConstColors.red,
+                            textAlign = TextAlign.Center,
+                        )
+                        Space(8.dp)
+                        Switch(
+                            checked = switchEnabled.value, onCheckedChange = {
+                                switchEnabled.value = it
+                                if (it) {
+                                    scope.selectFilter(offersFilter, options)
+                                } else {
+                                    scope.clearFilter(offersFilter)
+                                }
+                            }, colors = SwitchDefaults.colors(
+                                checkedThumbColor = ConstColors.green
                             )
-                            Space(8.dp)
-                            Text(
-                                text = stringResource(id = R.string.offers),
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.W700,
-                                color = ConstColors.red,
-                                textAlign = TextAlign.Center,
-                            )
-                            Space(8.dp)
-                            Switch(
-                                checked = switchEnabled.value, onCheckedChange = {
-                                    switchEnabled.value = it
-                                    if (it) {
-                                        scope.selectFilter(offersFilter, options)
-                                    } else {
-                                        scope.clearFilter(offersFilter)
-                                    }
-                                }, colors = SwitchDefaults.colors(
-                                    checkedThumbColor = ConstColors.green
-                                )
-                            )
-                        }
+                        )
+                    }
 
-                        /*Row {
-                            Text(
-                                text = stringResource(id = R.string.filters),
-                                color = ConstColors.lightBlue,
-                                fontWeight = FontWeight.W500,
-                                fontSize = 14.sp
-                            )
-                        }*/
+                    Row(
+                        modifier = Modifier.clickable { scope.openManufacturersFilter() },
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Divider(
+                            modifier = Modifier
+                                .height(16.dp)
+                                .width(1.dp)
+                        )
+                        Space(5.dp)
+                        Text(
+                            text = if (selectedFilters.value.isEmpty()) stringResource(id = R.string.filters)
+                            else "${stringResource(id = R.string.filters)} (${selectedFilters.value.size})",
+                            color = ConstColors.lightBlue,
+                            fontSize = 14.sp
+                        )
+                        Space(5.dp)
+                        Icon(
+                            modifier = Modifier.size(10.dp),
+                            painter = painterResource(id = R.drawable.ic_down_arrow),
+                            contentDescription = null,
+                            tint = ConstColors.lightBlue
+                        )
                     }
                 }
-
-                Space(dp = 16.dp)
-                Divider()
-                Space(dp = 16.dp)
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp, start = 16.dp)
-                )
-                {
-                    LazyRow(
-                        modifier = Modifier.padding(start = 5.dp)
-                    ) {
-                        stockConnected.value.let {
-                            itemsIndexed(
-                                items = it,
-                                key = { index, _ -> index },
-                                itemContent = { _, item ->
-                                    StockistConnectedData(
-                                        item,
-                                        back = item.unitCode == selectedStockist.value
-                                    ) {
-                                        scope.updateView(item)
-                                    }
-                                },
-                            )
-                        }
-                    }
-                }
-                Space(dp = 16.dp)
-                Divider()
                 Space(dp = 16.dp)
 
                 if (scope.store.sellerUnitCode.isNotEmpty() || selectedStockist.value.isNotEmpty()) {

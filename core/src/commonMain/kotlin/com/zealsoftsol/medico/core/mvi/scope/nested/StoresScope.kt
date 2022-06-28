@@ -11,12 +11,12 @@ import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.CartData
-import com.zealsoftsol.medico.data.ConnectedStockists
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.StockistListItem
 import com.zealsoftsol.medico.data.Store
+import com.zealsoftsol.medico.data.Value
 
 // TODO make part of management scope
 sealed class StoresScope : Scope.Child.TabBar() {
@@ -72,7 +72,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
         override val checkedProduct: DataSource<ProductSearch?> = DataSource(null),
         override val isBatchSelected: DataSource<Boolean> = DataSource(false),
         override val filters: DataSource<List<Filter>> = DataSource(emptyList()),
-        override val filtersManufactures: DataSource<List<Filter>> = DataSource(emptyList()),
+        override val filtersManufactures: DataSource<List<Value>> = DataSource(emptyList()),
         override val filterSearches: DataSource<Map<String, String>> = DataSource(emptyMap()),
         override val products: DataSource<List<ProductSearch>> = DataSource(emptyList()),
         override val sortOptions: DataSource<List<SortOption>> = DataSource(emptyList()),
@@ -92,6 +92,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
         override val pagination: Pagination = Pagination(Pagination.ITEMS_PER_PAGE_10)
         override var unitCode: String? = store.sellerUnitCode
         override val supportsAutoComplete: Boolean = true
+        val selectedFilters = DataSource(emptyList<Value>())
 
         init {
             startSearch(true)
@@ -102,15 +103,6 @@ sealed class StoresScope : Scope.Child.TabBar() {
                 item, CdnUrlProvider.Size.Px320
             )
             EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(url))
-        }
-
-        fun searchProduct(value: String) {
-            productSearch.value = value
-            searchProduct(
-                value,
-                withAutoComplete = true,
-                store.sellerUnitCode
-            )
         }
 
         fun startSearch(check: Boolean, search: String? = null) {
@@ -124,18 +116,13 @@ sealed class StoresScope : Scope.Child.TabBar() {
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
-            /*return TabBarInfo.StoreTitle(
-                storeName = store.tradeName,
-                showNotifications = false,
-                event = Event.Action.Management.GetDetails(store.sellerUnitCode),
-                cartItemsCount = cartItemsCount
-            )*/
             return TabBarInfo.StoresSearch(
                 search = productSearch,
                 activeFilterIds = activeFilterIds,
                 pagination = pagination,
                 productSearch = productSearch,
-                store = store
+                store = store,
+                cartItemsCount = cartItemsCount
             )
         }
 
@@ -150,8 +137,10 @@ sealed class StoresScope : Scope.Child.TabBar() {
             startSearch(true, "")
         }
 
+        fun openManufacturersFilter() =
+            EventCollector.sendEvent(Event.Action.Stores.ShowManufacturers(filtersManufactures.value))
+
         fun showAlternateProducts(code: String) =
             EventCollector.sendEvent(Event.Action.Stores.ShowAltProds(code, null))
-
     }
 }

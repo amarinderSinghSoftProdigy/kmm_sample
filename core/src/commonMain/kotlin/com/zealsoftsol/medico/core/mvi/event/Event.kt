@@ -57,6 +57,7 @@ import com.zealsoftsol.medico.data.UpdateInvoiceRequest
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.data.Value
 import kotlin.reflect.KClass
 
 sealed class Event {
@@ -182,6 +183,9 @@ sealed class Event {
             data class LoadStockist(val code: String, val imageCode: String) : Search()
             data class ShowAltProds(val productCode: String, val sellerName: String? = null) :
                 Search()
+
+            data class ShowManufacturers(val data: List<Value>) : Search()
+            data class ApplyManufacturersFilter(val filters: List<Value>) : Search()
         }
 
         sealed class Product : Action() {
@@ -246,9 +250,11 @@ sealed class Event {
             override val typeClazz: KClass<*> = Stores::class
 
             data class Select(val item: Store) : Stores()
-            data class Search(val value: String) : Stores()
-            data class Load(val isFirstLoad: Boolean) : Stores()
+            data class Search(val value: String, val manufacturers: String = "") : Stores()
+            data class Load(val isFirstLoad: Boolean, val manufacturers: String = "") : Stores()
             data class ShowLargeImage(val item: String, val type: String? = "") : Stores()
+            data class ShowManufacturers(val data: List<Value>) : Stores()
+            data class ApplyManufacturersFilter(val filters: List<Value>) : Stores()
             data class ShowAltProds(val productCode: String, val sellerName: String? = null) :
                 Stores()
         }
@@ -412,7 +418,8 @@ sealed class Event {
 
             data class ProductSearch(val value: String) : InStore()
             data class ProductLoad(
-                val isFirstLoad: Boolean, val page: Int, val searchTerm: String = ""
+                val isFirstLoad: Boolean, val page: Int, val searchTerm: String = "",
+                val manufacturers: String = "",
             ) : InStore()
 
             data class ProductSelect(val item: InStoreProduct) : InStore()
@@ -454,6 +461,8 @@ sealed class Event {
             data class ShowAltProds(val productCode: String, val sellerName: String? = null) :
                 InStore()
 
+            data class ShowManufacturers(val data: List<Value>) : InStore()
+            data class ApplyManufacturersFilter(val filters: List<Value>) : InStore()
         }
 
         sealed class WhatsAppPreference : Action() {

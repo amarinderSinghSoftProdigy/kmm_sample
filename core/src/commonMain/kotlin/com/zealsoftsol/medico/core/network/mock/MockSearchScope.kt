@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BodyResponse
 import com.zealsoftsol.medico.data.ConnectedStockist
+import com.zealsoftsol.medico.data.Manufacturer
 import com.zealsoftsol.medico.data.SearchResponse
 
 class MockSearchScope : NetworkScope.Search {
@@ -23,7 +24,7 @@ class MockSearchScope : NetworkScope.Search {
         latitude: Double,
         longitude: Double,
         pagination: Pagination,
-        addPage:Boolean
+        addPage:Boolean,
     ) = mockResponse {
         SearchResponse(emptyList(), emptyList(), 0, emptyList())
     }

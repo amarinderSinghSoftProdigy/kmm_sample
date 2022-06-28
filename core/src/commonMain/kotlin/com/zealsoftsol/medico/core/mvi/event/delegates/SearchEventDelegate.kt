@@ -22,6 +22,7 @@ import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SortOption
+import com.zealsoftsol.medico.data.Value
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -64,7 +65,43 @@ internal class SearchEventDelegate(
         is Event.Action.Search.SelectAutoCompleteGlobal -> selectAutoCompleteGlobal(event.autoComplete)
         is Event.Action.Search.LoadStockist -> loadStockist(event.code, event.imageCode)
         is Event.Action.Search.GetLocalSearchData -> getLocalSearchData()
-        is Event.Action.Search.ShowAltProds -> showAlternativeProducts(event.productCode, event.sellerName)
+        is Event.Action.Search.ShowAltProds -> showAlternativeProducts(
+            event.productCode,
+            event.sellerName
+        )
+        is Event.Action.Search.ShowManufacturers -> showFilterManufacturers(event.data)
+        is Event.Action.Search.ApplyManufacturersFilter -> updateSelectedManufacturersFilters(event.filters)
+    }
+
+    /**
+     * this will get the manufacturers selected by user to be applied as filter
+     */
+    private suspend fun updateSelectedManufacturersFilters(filters: List<Value>) {
+        navigator.withScope<SearchScope> {
+            it.selectedFilters.value = filters
+            val autoComplete = AutoComplete(
+                query = "manufacturers",
+                suggestion = filters.joinToString(",") { data -> data.id },
+                stockists = "",
+                details = filters.joinToString(",") { data -> data.value }
+            )
+            selectAutocomplete(autoComplete, false)
+        }
+    }
+
+    /**
+     * show all the manufacturers to user that are available for filter
+     * and send preselected filters if any
+     */
+    private fun showFilterManufacturers(data: List<Value>) {
+        navigator.withScope<SearchScope> {
+            val hostScope = scope.value
+            hostScope.bottomSheet.value = BottomSheet.FilerManufacturers(
+                data,
+                it.selectedFilters.value,
+                BottomSheet.FilerManufacturers.FilterScopes.SEARCH
+            )
+        }
     }
 
     /**
@@ -75,7 +112,8 @@ internal class SearchEventDelegate(
             withProgress { networkSearchScope.getAlternateProducts(productCode) }
                 .onSuccess { body ->
                     if (body.isNotEmpty())
-                        this.scope.value.bottomSheet.value = BottomSheet.AlternateProducts(body, sellerName)
+                        this.scope.value.bottomSheet.value =
+                            BottomSheet.AlternateProducts(body, sellerName)
                     else
                         it.showNoAlternateProdToast.value = true
                 }.onError(navigator)
@@ -205,7 +243,6 @@ internal class SearchEventDelegate(
             if (search != null) it.pagination.reset()
             if (search != null) it.productSearch.value = search
             it.autoComplete.value = emptyList()
-            val isWildcardSearch = search == null && query.isEmpty()
             withProgress {
                 it.search(
                     it.pagination,
@@ -218,8 +255,7 @@ internal class SearchEventDelegate(
                             false
                         )
                     },
-
-                    )
+                )
             }
         }
     }
@@ -284,7 +320,10 @@ internal class SearchEventDelegate(
         }
     }
 
-    private suspend fun selectAutocomplete(autoComplete: AutoComplete) {
+    private suspend fun selectAutocomplete(
+        autoComplete: AutoComplete,
+        showSuggestionsInSearchBox: Boolean = true
+    ) {
 //        userRepo.saveLocalSearchHistory(autoComplete) //un comment to save local search history
         reset()
         activeFilters.putAll(
@@ -296,7 +335,11 @@ internal class SearchEventDelegate(
             )
         )
         navigator.withScope<BaseSearchScope> {
-            it.productSearch.value = autoComplete.suggestion
+            if (showSuggestionsInSearchBox)
+                it.productSearch.value = autoComplete.suggestion
+            else
+                it.productSearch.value = ""
+
             it.pagination.reset()
             withProgress {
                 it.search(
@@ -356,12 +399,20 @@ internal class SearchEventDelegate(
                         activeFilters =
                             (activeFilters + extraFilters) as HashMap<String, Option.StringValue>
                     }
+
+                    //manufacturers on instores
+
+                    if(filter.queryId == "manufacturers"){
+                        extraFilters["manufacturers"] = option
+                        activeFilters = (activeFilters + extraFilters) as HashMap<String, Option.StringValue>
+                    }
+
                     it.search(
                         it.pagination,
                         addPage = false,
                         withDelay = false,
                         withProgress = true,
-                        extraFilters = extraFilters
+                        extraFilters = extraFilters,
                     )
                 }
             }
@@ -492,7 +543,8 @@ internal class SearchEventDelegate(
             addPage,
         ).onSuccess { body ->
             pagination.setTotal(body.totalResults)
-            filtersManufactures.value = body.facets.toManufactureFilter()
+            filtersManufactures.value =
+                body.facets.find { s -> s.queryId == "manufacturers" }?.values ?: emptyList()
             filters.value = body.facets.toFilter()
             products.value = /*if (!addPage)*/
                 body.products /*else products.value + body.products*/
