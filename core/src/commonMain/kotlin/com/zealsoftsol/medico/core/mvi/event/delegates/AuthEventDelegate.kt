@@ -120,6 +120,7 @@ internal class AuthEventDelegate(
                     .onSuccess {
                         navigator.dropScope(Navigator.DropStrategy.All, updateDataSource = false)
                         navigator.setScope(LogInScope(DataSource(userRepo.getAuthCredentials())))
+                        userRepo.saveAlertToggle(false)
                     }.onError(navigator)
             } else {
                 userRepo.clear()
