@@ -1,10 +1,14 @@
 package com.zealsoftsol.medico
 
 import android.app.PendingIntent
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
+import android.net.Uri
 import com.zealsoftsol.medico.core.notifications.FirebaseMessaging
 import com.zealsoftsol.medico.core.notifications.NotificationMessage
+import com.zealsoftsol.medico.core.repository.UserRepo
 import io.karn.notify.Notify
 
 class NotificationCenter(
@@ -33,8 +37,20 @@ class NotificationCenter(
             .header {
                 icon = R.mipmap.ic_launcher_foreground
             }
-            .alerting("medico") {
+            /*.alerting("medico") {
                 channelImportance = Notify.IMPORTANCE_MAX
+            }
+            */.alerting("medico") {
+                channelImportance = Notify.IMPORTANCE_NORMAL
+
+                if (context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
+                        .getBoolean(UserRepo.ALERT_TOGGLE, false)
+                ) {
+                    sound = Uri.parse(
+                        ContentResolver.SCHEME_ANDROID_RESOURCE
+                                + "://" + context.packageName + "/raw/alert"
+                    )
+                }
             }
             .content {
                 title = message.title

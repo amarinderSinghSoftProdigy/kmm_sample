@@ -524,6 +524,7 @@
     <string name="no_alternate_prod_found">No alternate products found</string>
     <string name="alt_brands">Alternate Brands</string>
     <string name="alternate">Alternate</string>
+    <string name="order_alert_setting">Order Alert</string>
 
     <!-- Termrs and Cond -->
 

@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -155,7 +156,8 @@ class MainActivity : ComponentActivity(), DIAware {
                     appUpdateInfo,
                     AppUpdateType.IMMEDIATE,
                     this,
-                    UPDATE_REQUEST_CODE)
+                    UPDATE_REQUEST_CODE
+                )
             }
         }
     }

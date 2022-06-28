@@ -33,6 +33,10 @@ interface CommonScope : Scopable {
         fun goBack() = EventCollector.sendEvent(Event.Transition.Back)
     }
 
+    interface AlertScope : Scopable {
+        var isOrderAlert: DataSource<Boolean>
+    }
+
     interface WithNotifications : CommonScope {
         val notifications: DataSource<ScopeNotification?>
 
@@ -46,6 +50,7 @@ interface CommonScope : Scopable {
     interface WithUserV2 : CommonScope {
         val userV2: ReadOnlyDataSource<UserV2>
     }
+
     interface WithUser : CommonScope {
         val user: ReadOnlyDataSource<User>
     }

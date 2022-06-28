@@ -306,6 +306,11 @@ class EventCollector(
         }
     }
 
+    fun getAlertToggle(): Boolean {
+        return userRepo.getAlertToggle()
+    }
+
+
     fun updateData() {
         if (userRepo.getUserAccess() != UserRepo.UserAccess.NO_ACCESS) {
             GlobalScope.launch(compatDispatcher) {

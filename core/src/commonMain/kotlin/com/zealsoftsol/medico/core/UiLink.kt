@@ -48,7 +48,11 @@ object UiLink {
         val navigator = directDI.instance<Navigator>()
         val eventCollector = directDI.instance<EventCollector>()
         eventCollector.updateData()
-        return AppStartResult(di, navigator, directDI.instance<FirebaseMessagingCenter>())
+        return AppStartResult(
+            di,
+            navigator,
+            directDI.instance<FirebaseMessagingCenter>()
+        )
     }
 
     /**
