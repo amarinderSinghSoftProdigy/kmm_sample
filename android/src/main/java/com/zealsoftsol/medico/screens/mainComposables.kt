@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -49,19 +48,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
@@ -303,8 +297,6 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                                         .padding(start = 16.dp),
                                 )
                             }
-                            //display header in instore section from side menu when a retailer is selected
-                            is TabBarInfo.InStoreProductTitle -> InStoreHeaderData(info, scope)
                             //display search bar with product logo
                             is TabBarInfo.NoIconTitle -> NoIconHeader(scope, info)
                             is TabBarInfo.StoreTitle -> StoreHeader(scope, info)
@@ -790,89 +782,6 @@ private fun ActiveSearchTabBar(
         showSearchIcon = true
     )
     scope.storage.save("focus", false)
-}
-
-/**
- * display header data for instore seller details
- */
-@Composable
-private fun InStoreHeaderData(info: TabBarInfo.InStoreProductTitle, scope: TabBarScope) {
-    val activity = LocalContext.current as MainActivity
-
-    Row(modifier = Modifier.fillMaxWidth()) {
-        Icon(
-            imageVector = info.icon.toLocalIcon(),
-            contentDescription = null,
-            modifier = Modifier
-                .align(CenterVertically)
-                .fillMaxHeight()
-                .padding(start = 16.dp)
-                .clickable(
-                    indication = null,
-                    onClick = {
-                        scope.goBack()
-                    },
-                )
-        )
-        ConstraintLayout(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 10.dp)
-        ) {
-            val (name, address, phone, phoneLogo, locationLogo) = createRefs()
-            Text(
-                text = info.title,
-                color = MaterialTheme.colors.background,
-                fontWeight = FontWeight.W600,
-                fontSize = 15.sp,
-                modifier = Modifier.constrainAs(name) {
-                    width = Dimension.preferredWrapContent
-                    start.linkTo(parent.start)
-                    top.linkTo(parent.top, margin = 5.dp)
-                }
-            )
-            Image(
-                painter = painterResource(id = R.drawable.ic_address_small),
-                contentDescription = null,
-                modifier = Modifier.constrainAs(locationLogo) {
-                    start.linkTo(parent.start)
-                    top.linkTo(parent.bottom, margin = 5.dp)
-                }
-            )
-            Text(
-                text = info.address,
-                textAlign = TextAlign.Start,
-                fontSize = 14.sp,
-                color = MaterialTheme.colors.background,
-                modifier = Modifier.constrainAs(address) {
-                    width = Dimension.fillToConstraints
-                    start.linkTo(locationLogo.end, margin = 3.dp)
-                    end.linkTo(phoneLogo.start, margin = 5.dp)
-                    top.linkTo(locationLogo.top)
-                    bottom.linkTo(locationLogo.bottom)
-                }
-            )
-            Image(
-                painter = painterResource(id = R.drawable.ic_call),
-                contentDescription = null,
-                modifier = Modifier.constrainAs(phoneLogo) {
-                    end.linkTo(phone.start, margin = 3.dp)
-                    bottom.linkTo(locationLogo.bottom)
-                }
-            )
-            ClickableText(
-                text = AnnotatedString(info.phone),
-                style = TextStyle(color = MaterialTheme.colors.background, fontSize = 14.sp),
-                onClick = { activity.openDialer(info.phone) },
-                modifier = Modifier.constrainAs(phone) {
-                    width = Dimension.preferredWrapContent
-                    end.linkTo(parent.end, margin = 10.dp)
-                    top.linkTo(phoneLogo.top)
-                    bottom.linkTo(phoneLogo.bottom)
-                }
-            )
-        }
-    }
 }
 
 

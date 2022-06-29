@@ -102,7 +102,7 @@ sealed class BottomSheet {
             (base64.length * 3 / 4) - base64.takeLast(2).count { it == '=' }
 
         companion object {
-            private const val MAX_FILE_SIZE = 2_000_000
+            private const val MAX_FILE_SIZE = 5_000_000
         }
     }
 
@@ -132,7 +132,7 @@ sealed class BottomSheet {
             (base64.length * 3 / 4) - base64.takeLast(2).count { it == '=' }
 
         companion object {
-            private const val MAX_FILE_SIZE = 2_000_000
+            private const val MAX_FILE_SIZE = 5_000_000
         }
     }
 
@@ -160,7 +160,7 @@ sealed class BottomSheet {
             (base64.length * 3 / 4) - base64.takeLast(2).count { it == '=' }
 
         companion object {
-            private const val MAX_FILE_SIZE = 2_000_000
+            private const val MAX_FILE_SIZE = 5_000_000
         }
     }
 
@@ -189,7 +189,7 @@ sealed class BottomSheet {
             (base64.length * 3 / 4) - base64.takeLast(2).count { it == '=' }
 
         companion object {
-            private const val MAX_FILE_SIZE = 2_000_000
+            private const val MAX_FILE_SIZE = 5_000_000
         }
     }
 

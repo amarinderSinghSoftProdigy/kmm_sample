@@ -385,7 +385,7 @@ private fun ShowManufacturersFilter(
                         color = ConstColors.lightBlue,
                         fontSize = 14.sp,
                         maxLines = 1,
-                        fontWeight= FontWeight.W700,
+                        fontWeight = FontWeight.W700,
                         overflow = TextOverflow.Ellipsis
                     )
                     Space(5.dp)
@@ -2364,6 +2364,12 @@ private fun PreviewItemBottomSheet(
                             }
                         }
                     }
+                    Space(4.dp)
+                    Text(
+                        text = headerData.name,
+                        color = MaterialTheme.colors.background,
+                        fontSize = 14.sp
+                    )
                     Space(4.dp)
                     headerData.mobileNumber.let {
                         Row(

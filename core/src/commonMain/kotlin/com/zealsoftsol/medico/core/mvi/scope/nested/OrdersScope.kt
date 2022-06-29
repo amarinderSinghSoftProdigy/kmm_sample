@@ -126,32 +126,6 @@ class ViewOrderScope(
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
         val b2bData = b2bData.value
         b2bData?.let {
-            val address = GeoData(
-                location = "${it.addressData.district} ${it.addressData.pincode}",
-                city = it.addressData.city,
-                pincode = it.addressData.pincode.toString(),
-                distance = 0.0,
-                formattedDistance = "",
-                addressLine = it.addressData.address,
-                destination = null,
-                landmark = "",
-                origin = GeoPoints(0.0, 0.0)
-            )
-            val item = EntityInfo(
-                tradeName = it.tradeName,
-                phoneNumber = it.phoneNumber,
-                geoData = address,
-                seasonBoyData = null,
-                seasonBoyRetailerData = null,
-                drugLicenseNo1 = it.drugLicenseNo1,
-                drugLicenseNo2 = it.drugLicenseNo2,
-                gstin = it.gstin,
-                isVerified = true,
-                panNumber = it.panNumber,
-                subscriptionData = null,
-                unitCode = "",
-                tradeNameUrl = it.tradeProfile
-            )
 
             return TabBarInfo.StoreTitle(
                 storeName = b2bData.tradeName,
@@ -340,33 +314,6 @@ class ViewOrderInvoiceScope(
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
         val b2bData = b2bData.value
         b2bData?.let {
-            val address = GeoData(
-                location = "${it.addressData.district} ${it.addressData.pincode}",
-                city = it.addressData.city,
-                pincode = it.addressData.pincode.toString(),
-                distance = 0.0,
-                formattedDistance = "",
-                addressLine = it.addressData.address,
-                destination = null,
-                landmark = "",
-                origin = GeoPoints(0.0, 0.0)
-            )
-            val item = EntityInfo(
-                tradeName = it.tradeName,
-                phoneNumber = it.phoneNumber,
-                geoData = address,
-                seasonBoyData = null,
-                seasonBoyRetailerData = null,
-                drugLicenseNo1 = it.drugLicenseNo1,
-                drugLicenseNo2 = it.drugLicenseNo2,
-                gstin = it.gstin,
-                isVerified = true,
-                panNumber = it.panNumber,
-                subscriptionData = null,
-                unitCode = "",
-                tradeNameUrl = it.tradeProfile
-            )
-
             return TabBarInfo.StoreTitle(
                 storeName = b2bData.tradeName,
                 showNotifications = false,
@@ -441,33 +388,6 @@ class ConfirmOrderScope(
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
         val b2bData = b2bData.value
         b2bData?.let {
-            val address = GeoData(
-                location = "${it.addressData.district} ${it.addressData.pincode}",
-                city = it.addressData.city,
-                pincode = it.addressData.pincode.toString(),
-                distance = 0.0,
-                formattedDistance = "",
-                addressLine = it.addressData.address,
-                destination = null,
-                landmark = "",
-                origin = GeoPoints(0.0, 0.0)
-            )
-            val item = EntityInfo(
-                tradeName = it.tradeName,
-                phoneNumber = it.phoneNumber,
-                geoData = address,
-                seasonBoyData = null,
-                seasonBoyRetailerData = null,
-                drugLicenseNo1 = it.drugLicenseNo1,
-                drugLicenseNo2 = it.drugLicenseNo2,
-                gstin = it.gstin,
-                isVerified = true,
-                panNumber = it.panNumber,
-                subscriptionData = null,
-                unitCode = "",
-                tradeNameUrl = it.tradeProfile
-            )
-
             return TabBarInfo.StoreTitle(
                 storeName = b2bData.tradeName,
                 showNotifications = false,
