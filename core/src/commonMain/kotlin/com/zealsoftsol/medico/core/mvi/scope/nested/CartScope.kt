@@ -137,7 +137,7 @@ class CartOrderCompletedScope(
     override val isRoot: Boolean = true
 
     val isOfferSwiped = DataSource(false)
-    override var isOrderAlert: DataSource<Boolean> = DataSource(false)
+    override var isOrderAlert: DataSource<Boolean> = DataSource(true)
 
     init {
         getAlertToggle()
