@@ -113,7 +113,7 @@ class UserRepo(
     }
 
     fun getAlertToggle(): Boolean {
-        return settings.getBoolean(ALERT_TOGGLE, false)
+        return settings.getBoolean(ALERT_TOGGLE, true)
     }
 
     suspend fun login(login: String, password: String): BodyResponse<TokenInfo> {

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
@@ -17,6 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -114,8 +117,46 @@ fun PreferenceScreen(scope: PreferenceScope) {
                     )
                 )
             }
-
-            Space(40.dp)
+            Text(
+                text = buildAnnotatedString {
+                    append(stringResource(id = R.string.on_label))
+                    val startIndex = length
+                    append(" ")
+                    append(stringResource(id = R.string.on_message))
+                    addStyle(
+                        SpanStyle(
+                            color = MaterialTheme.colors.background,
+                            fontWeight = FontWeight.W500
+                        ),
+                        startIndex,
+                        length,
+                    )
+                },
+                color = MaterialTheme.colors.background,
+                fontWeight = FontWeight.W700,
+                fontSize = 14.sp,
+            )
+            Space(dp = 5.dp)
+            Text(
+                text = buildAnnotatedString {
+                    append(stringResource(id = R.string.off_label))
+                    val startIndex = length
+                    append(" ")
+                    append(stringResource(id = R.string.off_message))
+                    addStyle(
+                        SpanStyle(
+                            color = MaterialTheme.colors.background,
+                            fontWeight = FontWeight.W500
+                        ),
+                        startIndex,
+                        length,
+                    )
+                },
+                color = MaterialTheme.colors.background,
+                fontWeight = FontWeight.W700,
+                fontSize = 14.sp,
+            )
+            Space(20.dp)
 
             MedicoButton(
                 modifier = Modifier.padding(horizontal = 20.dp),
