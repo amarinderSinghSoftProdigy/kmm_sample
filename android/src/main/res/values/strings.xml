@@ -528,6 +528,38 @@
     <string name="on_message"><![CDATA[Rings & Vibrates when Order placed by your connected User]]></string>
     <string name="off_label"><![CDATA[OFF ->]]></string>
     <string name="off_message"><![CDATA[Ring & Vibration stopped]]></string>
+    <string name="demo">Demos</string>
+    <string name="sub_stockist_message">Do you want to place an order to nearest Stockist/ Sub-Stockist ?</string>
+    <string name="only_cod_message">(*Only COD orders can be placed)</string>
+    <string name="select_stockist_message">Please select a stockist</string>
+
+    <!--Categories-->
+    <string name="ayurvedic">Ayurvedic</string>
+    <string name="allopathic">Allopathic</string>
+    <string name="homeopathic">Homeopathic</string>
+    <string name="otc">OTC</string>
+    <string name="Veterinary">Veterinary</string>
+    <string name="cough_respiratory">Cough Respiratory</string>
+    <string name="diabetic_care">Diabetic Care</string>
+    <string name="eye_care">Eye Care</string>
+    <string name="pain_relief">Pain Relief</string>
+    <string name="skin_care">Skin Care</string>
+    <string name="vitamins_and_aupplements">Vitamins And Supplements</string>
+    <string name="metal_wellness">Metal Wellness</string>
+    <string name="dental_care">Dental Care</string>
+    <string name="liver_care">Liver Care</string>
+    <string name="pediatrics">Pediatrics</string>
+    <string name="cardiac_care">Cardiac Care</string>
+    <string name="kidney_care">Kidney Care</string>
+    <string name="ortho_care">Ortho Care</string>
+    <string name="antibiotics">Antibiotics</string>
+    <string name="sexual_wellness">Sexual Wellness</string>
+    <string name="ent">ENT</string>
+    <string name="cold_Immunity">Cold &amp; Immunity</string>
+    <string name="piles_care">Piles Care</string>
+    <string name="personal_care">Personal Care</string>
+    <string name="health_devices">Health Devices</string>
+
 
     <!-- Termrs and Cond -->
 
@@ -680,9 +712,5 @@
     <string name="E0056">Document/Image Not found</string>
     <string name="E0057">Please enter a valid Food License</string>
     <string name="E0058">Food License already registered. Please try again.</string>
-    <string name="demo">Demos</string>
-    <string name="sub_stockist_message">Do you want to place an order to nearest Stockist/ Sub-Stockist ?</string>
-    <string name="only_cod_message">(*Only COD orders can be placed)</string>
-    <string name="select_stockist_message">Please select a stockist</string>
-
+    
 </resources>

@@ -5,6 +5,7 @@ import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.CategoriesScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.EmployeeScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreAddUserScope
@@ -294,6 +295,7 @@ internal class TransitionEventDelegate(
                         cartRepo.getEntriesCountDataSource()
                     )
                 )
+                is Event.Transition.Categories -> setScope(CategoriesScope())
             }
         }
     }
