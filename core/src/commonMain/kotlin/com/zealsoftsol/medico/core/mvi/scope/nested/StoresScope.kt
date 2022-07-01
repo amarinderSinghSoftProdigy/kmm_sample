@@ -62,7 +62,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
     }
 
     class StorePreview(
-        var store: Store,
+        var store: DataSource<Store>,
         private val cartItemsCount: ReadOnlyDataSource<Int>,
         private val notificationCount: ReadOnlyDataSource<Int>,
         override val productSearch: DataSource<String> = DataSource(""),
@@ -90,7 +90,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
 
         override val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList())
         override val pagination: Pagination = Pagination(Pagination.ITEMS_PER_PAGE_10)
-        override var unitCode: String? = store.sellerUnitCode
+        override var unitCode: String? = store.value.sellerUnitCode
         override val supportsAutoComplete: Boolean = true
         val selectedFilters = DataSource(emptyList<Value>())
 
@@ -121,18 +121,19 @@ sealed class StoresScope : Scope.Child.TabBar() {
                 activeFilterIds = activeFilterIds,
                 pagination = pagination,
                 productSearch = productSearch,
-                store = store,
+                sellerUnitCode = selectedStockist,
                 cartItemsCount = cartItemsCount
             )
         }
 
         fun updateView(item: StockistListItem) {
-            store = Store(
+            store.value = Store(
                 sellerUnitCode = item.unitCode,
                 tradeName = item.tradeName,
                 distance = item.distance.value,
                 formattedDistance = item.distance.formatted,
             )
+            selectedStockist.value = item.unitCode
             unitCode = item.unitCode
             startSearch(true, "")
         }
