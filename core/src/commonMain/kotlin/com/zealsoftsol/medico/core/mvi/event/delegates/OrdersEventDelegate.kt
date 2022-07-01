@@ -18,7 +18,9 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
+import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.utils.LoadHelper
 import com.zealsoftsol.medico.core.utils.TapModeHelper
@@ -40,6 +42,7 @@ internal class OrdersEventDelegate(
     private val networkProductScope: NetworkScope.Product,
     private val loadHelper: LoadHelper,
     private val tapModeHelper: TapModeHelper,
+    private val cartRepo: CartRepo
 ) : EventDelegate<Event.Action.Orders>(navigator), CommonScope.CanGoBack {
 
     override suspend fun handleEvent(event: Event.Action.Orders) = when (event) {
@@ -110,6 +113,7 @@ internal class OrdersEventDelegate(
                         product = body.product,
                         sellersInfo = DataSource(body.sellerInfo),
                         tapModeHelper = tapModeHelper,
+                        cartItemsCount = cartRepo.getEntriesCountDataSource()
                     )
                 }
                 BuyingOption.QUOTE -> BuyProductScope.ChooseQuote(
@@ -117,6 +121,7 @@ internal class OrdersEventDelegate(
                     product = body.product,
                     sellersInfo = DataSource(body.sellerInfo),
                     tapModeHelper = tapModeHelper,
+                    cartItemsCount = cartRepo.getEntriesCountDataSource()
                 )
             }
             navigator.setScope(nextScope)
