@@ -7,13 +7,13 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 
-class PreferenceScope() : Scope.Child.TabBar(), CommonScope.CanGoBack, CommonScope.AlertScope {
+class PreferenceScope : Scope.Child.TabBar(), CommonScope.CanGoBack, CommonScope.AlertScope {
 
     init {
         EventCollector.sendEvent(Event.Action.Preferences.GetPreferences)
     }
 
-    override var isOrderAlert: DataSource<Boolean> = DataSource(false)
+    override var isOrderAlert: DataSource<Boolean> = DataSource(true)
     val showAlert = DataSource(false)
     val showAlertText = DataSource("")
     val isAutoApproved = DataSource(false)

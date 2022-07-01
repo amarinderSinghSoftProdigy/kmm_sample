@@ -524,6 +524,10 @@
     <string name="alt_brands">Alternate Brands</string>
     <string name="alternate">Alternate</string>
     <string name="order_alert_setting">Order Alert</string>
+    <string name="on_label"><![CDATA[ON ->]]></string>
+    <string name="on_message"><![CDATA[Rings & Vibrates when Order placed by your connected User]]></string>
+    <string name="off_label"><![CDATA[OFF ->]]></string>
+    <string name="off_message"><![CDATA[Ring & Vibration stopped]]></string>
 
     <!-- Termrs and Cond -->
 
