@@ -85,13 +85,13 @@ internal class ProductEventDelegate(
 
     private fun selectAlternative(product: AlternateProductData) {
         navigator.setScope(SearchScope(null))
-            EventCollector.sendEvent(
-                Event.Action.Search.SearchInput(
-                    isOneOf = false,
-                    product.name,
-                    hashMapOf(product.query to product.baseProductName),
-                )
+        EventCollector.sendEvent(
+            Event.Action.Search.SearchInput(
+                isOneOf = false,
+                product.name,
+                hashMapOf(product.query to product.baseProductName),
             )
+        )
     }
 
     /*private suspend fun buyProduct(product: ProductSearch, buyingOption: BuyingOption) {
@@ -172,6 +172,7 @@ internal class ProductEventDelegate(
                     product = body.product,
                     sellersInfo = DataSource(body.sellerInfo),
                     tapModeHelper = tapModeHelper,
+                    cartItemsCount = cartRepo.getEntriesCountDataSource()
                 )
                 navigator.setScope(nextScope)
             }.onError(navigator)
@@ -179,7 +180,11 @@ internal class ProductEventDelegate(
             BuyingOption.QUOTE -> navigator.withProgress {
                 networkProductScope.getRequestedProductData(product.code)
             }.onSuccess { body ->
-                val nextScope = RequestedQuotesScope(product, DataSource(body.results))
+                val nextScope = RequestedQuotesScope(
+                    product,
+                    DataSource(body.results),
+                    cartItemsCount = cartRepo.getEntriesCountDataSource()
+                )
                 navigator.setScope(nextScope)
             }.onError(navigator)
         }
@@ -236,6 +241,7 @@ internal class ProductEventDelegate(
                         sellerInfo = body.sellerInfo,
                         retailers = DataSource(body.retailers),
                         tapModeHelper = tapModeHelper,
+                        cartItemsCount = cartRepo.getEntriesCountDataSource()
                     )
                 )
             }.onError(navigator)

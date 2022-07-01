@@ -1,9 +1,11 @@
 package com.zealsoftsol.medico.core.mvi.scope.nested
 
 import com.zealsoftsol.medico.core.interop.DataSource
+import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartData
@@ -12,12 +14,16 @@ import com.zealsoftsol.medico.data.SellerInfo
 
 class RequestedQuotesScope(
     val productData: ProductSearch,
-    val requestedData: DataSource<List<ProductSearch>>
-) : Scope.Child.TabBar(), ToastScope {
+    val requestedData: DataSource<List<ProductSearch>>,
+    val cartItemsCount: ReadOnlyDataSource<Int>,
+    ) : Scope.Child.TabBar(), ToastScope {
     val sellerInfoLocal: DataSource<SellerInfo?> = DataSource(null)
 
     override val showToast: DataSource<Boolean> = DataSource(false)
     override val cartData: DataSource<CartData?> = DataSource(null)
+
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
+        TabBarInfo.NoIconTitle("", null, cartItemsCount)
 
     fun setSellerInfo(sellInfo: SellerInfo?) {
         this.sellerInfoLocal.value = sellInfo

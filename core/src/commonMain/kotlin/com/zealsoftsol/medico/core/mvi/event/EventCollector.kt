@@ -164,7 +164,8 @@ class EventCollector(
             ordersNetworkScope,
             productNetworkScope,
             LoadHelper(navigator, loadHelperScope),
-            tapModeHelper
+            tapModeHelper,
+            cartRepo
         ),
         Event.Action.OrderHsn::class to OrdersHsnEventDelegate(
             navigator,

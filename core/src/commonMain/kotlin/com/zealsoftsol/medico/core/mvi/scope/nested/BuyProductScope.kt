@@ -1,10 +1,12 @@
 package com.zealsoftsol.medico.core.mvi.scope.nested
 
 import com.zealsoftsol.medico.core.interop.DataSource
+import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.core.utils.TapModeHelper
 import com.zealsoftsol.medico.data.CartData
@@ -51,7 +53,11 @@ sealed class BuyProductScope<T : WithTradeName>(
         product: ProductSearch,
         sellersInfo: DataSource<List<SellerInfo>>,
         tapModeHelper: TapModeHelper,
+        val cartItemsCount: ReadOnlyDataSource<Int>,
     ) : BuyProductScope<SellerInfo>(product, sellersInfo, tapModeHelper = tapModeHelper) {
+
+        override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
+            TabBarInfo.NoIconTitle("", null, cartItemsCount)
 
         fun toggleOption(option: Option) {
             selectedOption.value = option
@@ -111,7 +117,8 @@ sealed class BuyProductScope<T : WithTradeName>(
         product: ProductSearch,
         sellersInfo: DataSource<List<SellerInfo>>,
         tapModeHelper: TapModeHelper,
-    ) : BuyProductScope<SellerInfo>(product, sellersInfo, tapModeHelper = tapModeHelper) {
+        val cartItemsCount: ReadOnlyDataSource<Int>,
+        ) : BuyProductScope<SellerInfo>(product, sellersInfo, tapModeHelper = tapModeHelper) {
 
         init {
             if (!isSeasonBoy) {
@@ -120,6 +127,9 @@ sealed class BuyProductScope<T : WithTradeName>(
                     .toMap()
             }
         }
+
+        override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
+            TabBarInfo.NoIconTitle("", null, cartItemsCount)
 
         fun previewStockist(info: SellerInfo) =
             EventCollector.sendEvent(Event.Action.Product.PreviewStockistBottomSheet(info))
@@ -154,6 +164,7 @@ sealed class BuyProductScope<T : WithTradeName>(
         val sellerInfo: SellerInfo?,
         retailers: DataSource<List<SeasonBoyRetailer>>,
         tapModeHelper: TapModeHelper,
+        val cartItemsCount: ReadOnlyDataSource<Int>,
     ) : BuyProductScope<SeasonBoyRetailer>(product, retailers, tapModeHelper = tapModeHelper) {
 
         init {
@@ -161,6 +172,9 @@ sealed class BuyProductScope<T : WithTradeName>(
                 .map { it to (it.cartInfo!!.quantity.value to it.cartInfo!!.freeQuantity.value) }
                 .toMap()
         }
+
+        override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
+            TabBarInfo.NoIconTitle("", null, cartItemsCount)
 
         override fun ensureMaxQuantity(item: SeasonBoyRetailer, count: Int): Boolean =
             sellerInfo?.stockInfo?.let {
