@@ -1098,7 +1098,7 @@ private fun StoreSearch(scope: TabBarScope, info: TabBarInfo.StoresSearch) {
                 searchedProduct = value
                 pagination.reset()
                 if (value.isEmpty()) {
-                    info.startSearch(false)
+                    info.startSearch(true)
                 } else {
                     info.searchProduct(value)
                 }
