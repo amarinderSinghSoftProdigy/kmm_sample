@@ -144,6 +144,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
     val cartItem = entries?.get(entries.size - 1)
     val listStateScroll = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
+    val store = scope.store.flow.collectAsState()
 
     Surface(
         color = ConstColors.skyBlue,
@@ -276,7 +277,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                 }
                 Space(dp = 16.dp)
 
-                if (scope.store.sellerUnitCode.isNotEmpty() || selectedStockist.value.isNotEmpty()) {
+                if (store.value.sellerUnitCode.isNotEmpty() || selectedStockist.value.isNotEmpty()) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -287,7 +288,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
 
                         Row {
                             Text(
-                                text = selectedTradename.value.ifEmpty { scope.store.tradeName },
+                                text = selectedTradename.value.ifEmpty { store.value.tradeName },
                                 color = Color.Black,
                                 fontWeight = FontWeight.W700,
                                 fontSize = 14.sp
@@ -302,7 +303,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                                 .clickable {
                                     EventCollector.sendEvent(
                                         Event.Action.Management.GetDetails(
-                                            selectedStockist.value.ifEmpty { scope.store.sellerUnitCode }
+                                            selectedStockist.value.ifEmpty { store.value.sellerUnitCode }
                                         )
                                     )
                                 }

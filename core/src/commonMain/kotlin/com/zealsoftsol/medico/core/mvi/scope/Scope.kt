@@ -190,7 +190,7 @@ sealed class TabBarInfo {
         val activeFilterIds: DataSource<List<String>>,
         val pagination: Pagination,
         val productSearch: DataSource<String>,
-        val store: Store,
+        val store: DataSource<Store>,
         val cartItemsCount: ReadOnlyDataSource<Int>?
     ) : TabBarInfo() {
 
@@ -221,7 +221,7 @@ sealed class TabBarInfo {
             searchProduct(
                 value,
                 withAutoComplete = true,
-                store.sellerUnitCode
+                store.value.sellerUnitCode
             )
         }
     }

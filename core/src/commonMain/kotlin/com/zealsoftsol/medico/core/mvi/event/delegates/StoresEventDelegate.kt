@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
+import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
@@ -141,7 +142,7 @@ internal class StoresEventDelegate(
         navigator.withScope<Scope> {
             setScope(
                 StoresScope.StorePreview(
-                    item,
+                    DataSource(item),
                     cartRepo.getEntriesCountDataSource(),
                     notificationRepo.getUnreadMessagesDataSource()
                 )
