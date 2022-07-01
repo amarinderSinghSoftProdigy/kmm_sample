@@ -121,7 +121,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
                 activeFilterIds = activeFilterIds,
                 pagination = pagination,
                 productSearch = productSearch,
-                store = store,
+                sellerUnitCode = selectedStockist,
                 cartItemsCount = cartItemsCount
             )
         }
@@ -133,6 +133,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
                 distance = item.distance.value,
                 formattedDistance = item.distance.formatted,
             )
+            selectedStockist.value = item.unitCode
             unitCode = item.unitCode
             startSearch(true, "")
         }

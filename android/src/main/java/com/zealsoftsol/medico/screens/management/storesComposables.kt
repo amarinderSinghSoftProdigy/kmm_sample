@@ -139,6 +139,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
     val cartData = scope.cartData.flow.collectAsState()
     val switchEnabled = remember { mutableStateOf(false) }
     val batchSelected = scope.isBatchSelected.flow.collectAsState()
+    val displayAutoCompleteList = remember{ mutableStateOf(false)}
 
     val entries = if (cartData.value != null) cartData.value?.sellerCarts?.get(0)?.items else null
     val cartItem = entries?.get(entries.size - 1)
@@ -188,6 +189,152 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                 modifier = Modifier
                     .fillMaxSize()
             ) {
+                if(displayAutoCompleteList.value){
+                    LazyColumn(
+                        state = rememberLazyListState(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(color = Color.White)
+                    ) {
+                        item {
+
+                            val arrayList = ArrayList<AutoComplete>()
+
+                            Column(modifier = Modifier.fillMaxWidth()) {
+                                Space(dp = 20.dp)
+                                Text(
+                                    text = stringResource(R.string.products),
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.W700,
+                                    fontSize = 18.sp,
+                                    modifier = Modifier.padding(start = 15.dp)
+                                )
+
+                                autoComplete.value.forEachIndexed { _, autoCompleteData ->
+                                    if (autoCompleteData.query == "search") {
+                                        arrayList.add(autoCompleteData)
+                                    }
+                                }
+
+                                if (arrayList.isNotEmpty()) {
+                                    arrayList.forEach {
+                                        AutoCompleteItem(
+                                            autoComplete = it,
+                                            input = search.value
+                                        ) {
+                                            scope.selectAutoComplete(it)
+                                        }
+                                    }
+                                } else {
+
+                                    Text(
+                                        text = "Products not found",
+                                        color = Color.Black,
+                                        fontWeight = FontWeight.W700,
+                                        fontSize = 18.sp,
+                                        modifier = Modifier
+                                            .padding(start = 15.dp)
+                                            .fillMaxWidth(),
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
+
+                            Column(modifier = Modifier.fillMaxWidth()) {
+                                arrayList.clear()
+                                Space(dp = 5.dp)
+                                Divider(modifier = Modifier.padding(horizontal = 5.dp))
+                                Space(dp = 10.dp)
+                                Text(
+                                    text = stringResource(R.string.compositions),
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.W700,
+                                    fontSize = 18.sp,
+                                    modifier = Modifier.padding(start = 15.dp)
+                                )
+
+                                autoComplete.value.forEachIndexed { _, autoCompleteData ->
+                                    if (autoCompleteData.query == "compositions") {
+                                        arrayList.add(autoCompleteData)
+                                    }
+                                }
+
+                                if (arrayList.isNotEmpty()) {
+                                    arrayList.forEach {
+                                        AutoCompleteItem(
+                                            autoComplete = it,
+                                            input = search.value
+                                        ) {
+                                            scope.selectAutoComplete(it)
+                                        }
+                                    }
+                                } else {
+
+                                    Space(dp = 20.dp)
+
+                                    Text(
+                                        text = "Compositions not found",
+                                        color = Color.Black,
+                                        fontSize = 16.sp,
+                                        modifier = Modifier
+                                            .padding(start = 15.dp)
+                                            .fillMaxWidth(),
+                                        textAlign = TextAlign.Center
+                                    )
+                                    Space(dp = 10.dp)
+                                }
+                            }
+
+                            Column(modifier = Modifier.fillMaxWidth()) {
+                                arrayList.clear()
+                                Space(dp = 10.dp)
+                                Divider(modifier = Modifier.padding(horizontal = 5.dp))
+                                Space(dp = 15.dp)
+                                Text(
+                                    text = stringResource(R.string.manufacturers),
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.W700,
+                                    fontSize = 18.sp,
+                                    modifier = Modifier.padding(start = 15.dp)
+                                )
+
+                                autoComplete.value.forEachIndexed { _, autoCompleteData ->
+                                    if (autoCompleteData.query == "manufacturers") {
+                                        arrayList.add(autoCompleteData)
+                                    }
+                                }
+
+                                if (arrayList.isNotEmpty()) {
+                                    arrayList.forEach {
+                                        AutoCompleteItem(
+                                            autoComplete = it,
+                                            input = search.value
+                                        ) {
+                                            scope.selectAutoComplete(it)
+                                        }
+                                    }
+
+                                } else {
+
+                                    Space(dp = 20.dp)
+
+                                    Text(
+                                        text = "Manufacturers not found",
+                                        color = Color.Black,
+                                        fontSize = 16.sp,
+                                        modifier = Modifier
+                                            .padding(start = 15.dp)
+                                            .fillMaxWidth(),
+                                        textAlign = TextAlign.Center
+                                    )
+                                    Space(dp = 25.dp)
+                                }
+                            }
+                        }
+
+                    }
+                }
+
                 scope.storage.save("focus", false)
                 Space(10.dp)
                 LazyRow(
@@ -367,6 +514,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
 
                     //list of products
                     if (products.value.isEmpty() && scope.products.updateCount > 0 && autoComplete.value.isEmpty()) {
+                        displayAutoCompleteList.value = false
                         NoRecords(
                             icon = R.drawable.ic_missing_stores,
                             text = R.string.missing_products,
@@ -376,6 +524,8 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                         )
                     } else {
                         if (autoComplete.value.isEmpty()) {
+                            displayAutoCompleteList.value = false
+
                             val listState = rememberLazyListState()
 
                             Column(
@@ -428,149 +578,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                                 }
                             }
                         } else {
-                            LazyColumn(
-                                state = rememberLazyListState(),
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(color = Color.White)
-                            ) {
-                                item {
-
-                                    val arrayList = ArrayList<AutoComplete>()
-
-                                    Column(modifier = Modifier.fillMaxWidth()) {
-                                        Space(dp = 20.dp)
-                                        Text(
-                                            text = stringResource(R.string.products),
-                                            color = Color.Black,
-                                            fontWeight = FontWeight.W700,
-                                            fontSize = 18.sp,
-                                            modifier = Modifier.padding(start = 15.dp)
-                                        )
-
-                                        autoComplete.value.forEachIndexed { _, autoCompleteData ->
-                                            if (autoCompleteData.query == "search") {
-                                                arrayList.add(autoCompleteData)
-                                            }
-                                        }
-
-                                        if (arrayList.isNotEmpty()) {
-                                            arrayList.forEach {
-                                                AutoCompleteItem(
-                                                    autoComplete = it,
-                                                    input = search.value
-                                                ) {
-                                                    scope.selectAutoComplete(it)
-                                                }
-                                            }
-                                        } else {
-
-                                            Text(
-                                                text = "Products not found",
-                                                color = Color.Black,
-                                                fontWeight = FontWeight.W700,
-                                                fontSize = 18.sp,
-                                                modifier = Modifier
-                                                    .padding(start = 15.dp)
-                                                    .fillMaxWidth(),
-                                                textAlign = TextAlign.Center
-                                            )
-                                        }
-                                    }
-
-                                    Column(modifier = Modifier.fillMaxWidth()) {
-                                        arrayList.clear()
-                                        Space(dp = 5.dp)
-                                        Divider(modifier = Modifier.padding(horizontal = 5.dp))
-                                        Space(dp = 10.dp)
-                                        Text(
-                                            text = stringResource(R.string.compositions),
-                                            color = Color.Black,
-                                            fontWeight = FontWeight.W700,
-                                            fontSize = 18.sp,
-                                            modifier = Modifier.padding(start = 15.dp)
-                                        )
-
-                                        autoComplete.value.forEachIndexed { _, autoCompleteData ->
-                                            if (autoCompleteData.query == "compositions") {
-                                                arrayList.add(autoCompleteData)
-                                            }
-                                        }
-
-                                        if (arrayList.isNotEmpty()) {
-                                            arrayList.forEach {
-                                                AutoCompleteItem(
-                                                    autoComplete = it,
-                                                    input = search.value
-                                                ) {
-                                                    scope.selectAutoComplete(it)
-                                                }
-                                            }
-                                        } else {
-
-                                            Space(dp = 20.dp)
-
-                                            Text(
-                                                text = "Compositions not found",
-                                                color = Color.Black,
-                                                fontSize = 16.sp,
-                                                modifier = Modifier
-                                                    .padding(start = 15.dp)
-                                                    .fillMaxWidth(),
-                                                textAlign = TextAlign.Center
-                                            )
-                                            Space(dp = 10.dp)
-                                        }
-                                    }
-
-                                    Column(modifier = Modifier.fillMaxWidth()) {
-                                        arrayList.clear()
-                                        Space(dp = 10.dp)
-                                        Divider(modifier = Modifier.padding(horizontal = 5.dp))
-                                        Space(dp = 15.dp)
-                                        Text(
-                                            text = stringResource(R.string.manufacturers),
-                                            color = Color.Black,
-                                            fontWeight = FontWeight.W700,
-                                            fontSize = 18.sp,
-                                            modifier = Modifier.padding(start = 15.dp)
-                                        )
-
-                                        autoComplete.value.forEachIndexed { _, autoCompleteData ->
-                                            if (autoCompleteData.query == "manufacturers") {
-                                                arrayList.add(autoCompleteData)
-                                            }
-                                        }
-
-                                        if (arrayList.isNotEmpty()) {
-                                            arrayList.forEach {
-                                                AutoCompleteItem(
-                                                    autoComplete = it,
-                                                    input = search.value
-                                                ) {
-                                                    scope.selectAutoComplete(it)
-                                                }
-                                            }
-
-                                        } else {
-
-                                            Space(dp = 20.dp)
-
-                                            Text(
-                                                text = "Manufacturers not found",
-                                                color = Color.Black,
-                                                fontSize = 16.sp,
-                                                modifier = Modifier
-                                                    .padding(start = 15.dp)
-                                                    .fillMaxWidth(),
-                                                textAlign = TextAlign.Center
-                                            )
-                                            Space(dp = 25.dp)
-                                        }
-                                    }
-                                }
-
-                            }
+                            displayAutoCompleteList.value = true
                         }
                     }
                 }
