@@ -190,7 +190,7 @@ sealed class TabBarInfo {
         val activeFilterIds: DataSource<List<String>>,
         val pagination: Pagination,
         val productSearch: DataSource<String>,
-        val store: Store,
+        val sellerUnitCode: DataSource<String>,
         val cartItemsCount: ReadOnlyDataSource<Int>?
     ) : TabBarInfo() {
 
@@ -205,7 +205,7 @@ sealed class TabBarInfo {
                 )
             )
         }
-        fun searchProduct(input: String, withAutoComplete: Boolean, sellerUnitCode: String): Boolean {
+        private fun searchProduct(input: String, withAutoComplete: Boolean, sellerUnitCode: String): Boolean {
             return trimInput(input, productSearch.value) {
                 val event = if (withAutoComplete) {
                     Event.Action.Search.SearchAutoComplete(it, sellerUnitCode)
@@ -221,7 +221,7 @@ sealed class TabBarInfo {
             searchProduct(
                 value,
                 withAutoComplete = true,
-                store.sellerUnitCode
+                sellerUnitCode.value
             )
         }
     }
