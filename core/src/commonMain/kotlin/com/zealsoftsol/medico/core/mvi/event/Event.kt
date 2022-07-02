@@ -50,6 +50,7 @@ import com.zealsoftsol.medico.data.RetailerData
 import com.zealsoftsol.medico.data.SellerCart
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.SortOption
+import com.zealsoftsol.medico.data.StockistListItem
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.SubmitPaymentRequest
 import com.zealsoftsol.medico.data.TaxType
@@ -257,6 +258,8 @@ sealed class Event {
             data class ApplyManufacturersFilter(val filters: List<Value>) : Stores()
             data class ShowAltProds(val productCode: String, val sellerName: String? = null) :
                 Stores()
+            data class ShowStockistFilter(val data: List<StockistListItem>) : Stores()
+            data class ApplyStockistFilter(val stockist: StockistListItem): Stores()
         }
 
         sealed class Cart : Action() {

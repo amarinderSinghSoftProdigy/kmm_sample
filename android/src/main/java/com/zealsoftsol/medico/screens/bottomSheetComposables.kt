@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -112,6 +113,7 @@ import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.StockInfo
+import com.zealsoftsol.medico.data.StockistListItem
 import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.data.TaxInfo
 import com.zealsoftsol.medico.data.TaxType
@@ -342,7 +344,229 @@ fun Scope.Host.showBottomSheet(
                 tradeName = bs.tradeName,
                 onDismiss = { dismissBottomSheet() }
             )
+            is BottomSheet.FilterStockist -> ShowStockistFilter(
+                data = bs.listStockist,
+                selectedStockist = bs.selectedStockist,
+                bs,
+                onDismiss = { dismissBottomSheet() }
+            )
         }
+    }
+}
+
+@OptIn(
+    ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class,
+    ExperimentalMaterialApi::class
+)
+@Composable
+private fun ShowStockistFilter(
+    data: List<StockistListItem>,
+    selectedStockist: String,
+    bs: BottomSheet.FilterStockist,
+    onDismiss: () -> Unit
+) {
+    val originalList = getRearrangeListBasedOnSelectedStockist(selectedStockist, data)
+    val searchTerm = remember { mutableStateOf("") }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val listOfStockists =
+        remember { mutableStateOf(getRearrangeListBasedOnSelectedStockist(selectedStockist, data)) }
+
+    BaseBottomSheet(onDismiss) {
+
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = BottomCenter
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 70.dp, top = 10.dp),
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = null,
+                        tint = ConstColors.gray,
+                        modifier = Modifier
+                            .size(28.dp)
+                            .clickable { onDismiss() },
+                    )
+                }
+
+                Space(15.dp)
+
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .padding(horizontal = 16.dp),
+                    shape = RoundedCornerShape(10.dp),
+                    elevation = 5.dp,
+                ) {
+                    TextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
+                            .border(
+                                border = BorderStroke(1.dp, color = Color.LightGray),
+                                shape = RoundedCornerShape(10.dp)
+                            ),
+                        value = searchTerm.value,
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            textColor = Color.Black,
+                            placeholderColor = Color.Black,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent
+                        ),
+                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
+                        onValueChange = {
+                            searchTerm.value = it
+                            if (it.isNotEmpty()) {
+                                val searchList: List<StockistListItem> = data.filter { s ->
+                                    s.tradeName.lowercase().contains(it.lowercase())
+                                }
+                                listOfStockists.value = searchList
+                            } else {
+                                listOfStockists.value = originalList
+                            }
+                        },
+                        placeholder = {
+                            Text(
+                                modifier = Modifier
+                                    .height(50.dp),
+                                text = stringResource(id = R.string.search),
+                                color = ConstColors.txtGrey,
+                                fontSize = 14.sp
+                            )
+                        },
+                        maxLines = 1
+
+                    )
+                }
+
+                Space(15.dp)
+
+                Text(
+                    modifier = Modifier.padding(start = 10.dp),
+                    text = "${stringResource(id = R.string.stockists)}(${listOfStockists.value.size})",
+                    color = ConstColors.lightBlue,
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+
+                Space(10.dp)
+
+                LazyColumn(
+                    state = rememberLazyListState(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    itemsIndexed(
+                        items = listOfStockists.value,
+                        itemContent = { index, item ->
+                            Surface(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(10.dp),
+                                onClick = {
+                                    onDismiss()
+                                    bs.updateSelectedStockist(item)
+                                },
+                                shape = MaterialTheme.shapes.medium,
+                                elevation = 5.dp,
+                                color = Color.White,
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(15.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceAround
+                                ) {
+                                    Surface(
+                                        modifier = Modifier
+                                            .height(55.dp)
+                                            .width(55.dp),
+                                        shape = CircleShape,
+                                    ) {
+                                        CoilImageBrands(
+                                            src = listOfStockists.value[index].url,
+                                            contentScale = ContentScale.Crop,
+                                            onError = { ItemPlaceholder() },
+                                            onLoading = { ItemPlaceholder() },
+                                            height = 55.dp,
+                                            width = 55.dp,
+                                        )
+                                    }
+
+                                    Space(15.dp)
+
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalArrangement = Arrangement.SpaceBetween,
+                                    ) {
+                                        Text(
+                                            text = item.tradeName,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.W600,
+                                            color = MaterialTheme.colors.background,
+                                        )
+
+                                        Space(10.dp)
+
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.ic_location),
+                                                contentDescription = null,
+                                                modifier = Modifier.size(18.dp),
+                                                tint = ConstColors.orange
+                                            )
+                                            Space(4.dp)
+                                            Text(
+                                                text = item.distance.formatted,
+                                                fontSize = 12.sp,
+                                                color = ConstColors.gray,
+                                                overflow = TextOverflow.Ellipsis,
+                                                maxLines = 1,
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    )
+                }
+            }
+
+            Space(10.dp)
+        }
+    }
+}
+
+private fun getRearrangeListBasedOnSelectedStockist(
+    selectedStockist: String,
+    data: List<StockistListItem>
+): List<StockistListItem> {
+    val index = data.indexOfFirst { it.unitCode == selectedStockist } // -1 if not found
+    return if (index == -1) {
+        data
+    } else {
+        val list = data.toMutableList()
+        val item = list[index]
+        list.removeAt(index)
+        list.add(0, item)
+        return list
     }
 }
 

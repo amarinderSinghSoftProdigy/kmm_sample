@@ -76,6 +76,7 @@ import com.zealsoftsol.medico.core.extensions.density
 import com.zealsoftsol.medico.core.extensions.screenWidth
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.AutoComplete
@@ -90,6 +91,7 @@ import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.screens.common.CoilImage
+import com.zealsoftsol.medico.screens.common.DropDownArrowText
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.NoRecords
@@ -139,7 +141,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
     val cartData = scope.cartData.flow.collectAsState()
     val switchEnabled = remember { mutableStateOf(false) }
     val batchSelected = scope.isBatchSelected.flow.collectAsState()
-    val displayAutoCompleteList = remember{ mutableStateOf(false)}
+    val displayAutoCompleteList = remember { mutableStateOf(false) }
 
     val entries = if (cartData.value != null) cartData.value?.sellerCarts?.get(0)?.items else null
     val cartItem = entries?.get(entries.size - 1)
@@ -189,7 +191,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                if(displayAutoCompleteList.value){
+                if (displayAutoCompleteList.value) {
                     LazyColumn(
                         state = rememberLazyListState(),
                         modifier = Modifier
@@ -334,28 +336,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
 
                     }
                 }
-
                 scope.storage.save("focus", false)
-                Space(10.dp)
-                LazyRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.White)
-                        .padding(bottom = 16.dp, start = 16.dp, top = 5.dp)
-                ) {
-                    itemsIndexed(
-                        items = stockConnected.value,
-                        key = { index, _ -> index },
-                        itemContent = { _, item ->
-                            StockistConnectedData(
-                                item,
-                                back = item.unitCode == selectedStockist.value
-                            ) {
-                                scope.updateView(item)
-                            }
-                        },
-                    )
-                }
                 Space(10.dp)
                 Row(
                     modifier = Modifier
@@ -397,29 +378,20 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                         )
                     }
 
-                    Row(
-                        modifier = Modifier.clickable { scope.openManufacturersFilter() },
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Divider(
-                            modifier = Modifier
-                                .height(16.dp)
-                                .width(1.dp)
-                        )
-                        Space(5.dp)
-                        Text(
-                            text = if (selectedFilters.value.isEmpty()) stringResource(id = R.string.filters)
-                            else "${stringResource(id = R.string.filters)} (${selectedFilters.value.size})",
-                            color = ConstColors.lightBlue,
-                            fontSize = 14.sp
-                        )
-                        Space(5.dp)
-                        Icon(
-                            modifier = Modifier.size(10.dp),
-                            painter = painterResource(id = R.drawable.ic_down_arrow),
-                            contentDescription = null,
-                            tint = ConstColors.lightBlue
-                        )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        DropDownArrowText(
+                            text = stringResource(id = R.string.stockist),
+                        ) {
+                            scope.openStockist()
+                        }
+                        Space(10.dp)
+                        DropDownArrowText(
+                            text = stringResource(id = R.string.filters),
+                            showCount = selectedFilters.value.isNotEmpty(),
+                            count = selectedFilters.value.size
+                        ) {
+                            scope.openManufacturersFilter()
+                        }
                     }
                 }
                 Space(dp = 16.dp)
@@ -493,24 +465,6 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                     }
                 } else {
                     Space(dp = 16.dp)
-                    /*if (autoComplete.value.isEmpty()) {
-                        filtersManufactures.value.forEach { filter ->
-                            if (filter.queryId == "manufacturers") {
-                                Box(modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)) {
-                                    HorizontalFilterSection(
-                                        name = filter.name,
-                                        options = filter.options,
-                                        *//*searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
-                                         scope.searchFilter(filter, it)
-                                     },*//*
-                                        onOptionClick = { scope.selectFilter(filter, it) },
-                                        onFilterClear = { scope.clearFilter(null) }
-                                    )
-                                }
-                            }
-                        }
-                    }*/
-
 
                     //list of products
                     if (products.value.isEmpty() && scope.products.updateCount > 0 && autoComplete.value.isEmpty()) {
@@ -559,7 +513,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                                     }
                                 }
                                 Space(dp = 12.dp)
-                                if (products.value.isNotEmpty()) {
+                                if (products.value.size == Pagination.ITEMS_PER_PAGE_10) {
                                     PaginationButtons(modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),

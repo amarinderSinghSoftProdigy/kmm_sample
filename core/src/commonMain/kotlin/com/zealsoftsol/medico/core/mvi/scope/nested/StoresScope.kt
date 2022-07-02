@@ -143,5 +143,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
 
         fun showAlternateProducts(code: String) =
             EventCollector.sendEvent(Event.Action.Stores.ShowAltProds(code, null))
+
+        fun openStockist() = EventCollector.sendEvent(Event.Action.Stores.ShowStockistFilter(connectedStockist.value))
     }
 }

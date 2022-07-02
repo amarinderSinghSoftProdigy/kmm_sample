@@ -6,8 +6,6 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
-import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreProductsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
@@ -18,10 +16,9 @@ import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.utils.LoadHelper
-import com.zealsoftsol.medico.data.AutoComplete
-import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
+import com.zealsoftsol.medico.data.StockistListItem
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.Value
 
@@ -42,6 +39,30 @@ internal class StoresEventDelegate(
         is Event.Action.Stores.ShowManufacturers -> showFilterManufacturers(event.data)
         is Event.Action.Stores.ApplyManufacturersFilter -> updateSelectedManufacturersFilters(event.filters)
         is Event.Action.Stores.ShowAltProds -> showAlternativeProducts(event.productCode, null)
+        is Event.Action.Stores.ApplyStockistFilter -> updateSelectedStockistFilter(event.stockist)
+        is Event.Action.Stores.ShowStockistFilter -> showFilterStockist(event.data)
+    }
+
+    /**
+     * show stockists for filters in bottom sheet
+     */
+    private fun showFilterStockist(data: List<StockistListItem>) {
+        navigator.withScope<StoresScope.StorePreview> {
+            val hostScope = scope.value
+            hostScope.bottomSheet.value = BottomSheet.FilterStockist(
+                data,
+                it.selectedStockist.value,
+            )
+        }
+    }
+
+    /**
+     * this will get the stockist selected by user to be applied as filter
+     */
+    private fun updateSelectedStockistFilter(stockist: StockistListItem) {
+        navigator.withScope<StoresScope.StorePreview> {
+            it.updateView(stockist)
+        }
     }
 
     /**
@@ -65,7 +86,7 @@ internal class StoresEventDelegate(
 
             val option = Option.StringValue(
                 id = "manufacturers",
-                value = filters.joinToString(",") {data-> data.id },
+                value = filters.joinToString(",") { data -> data.id },
                 isSelected = true,
                 isVisible = true,
             )
@@ -114,7 +135,7 @@ internal class StoresEventDelegate(
         navigator.scope.value.bottomSheet.value = BottomSheet.ViewLargeImage(item, type)
     }
 
-    private suspend fun loadStores(isFirstLoad: Boolean, manufacturers:String) {
+    private suspend fun loadStores(isFirstLoad: Boolean, manufacturers: String) {
         loadHelper.load<StoresScope.All, Store>(isFirstLoad = isFirstLoad) {
             val user = userRepo.requireUser()
             networkStoresScope.getStores(
@@ -126,7 +147,7 @@ internal class StoresEventDelegate(
         }
     }
 
-    private suspend fun searchStores(search: String, manufacturers:String) {
+    private suspend fun searchStores(search: String, manufacturers: String) {
         loadHelper.search<StoresScope.All, Store>(searchValue = search) {
             val user = userRepo.requireUser()
             networkStoresScope.getStores(
