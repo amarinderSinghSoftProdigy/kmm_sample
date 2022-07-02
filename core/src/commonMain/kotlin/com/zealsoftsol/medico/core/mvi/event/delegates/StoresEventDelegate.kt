@@ -62,6 +62,7 @@ internal class StoresEventDelegate(
     private fun updateSelectedStockistFilter(stockist: StockistListItem) {
         navigator.withScope<StoresScope.StorePreview> {
             it.updateView(stockist)
+            it.selectedFilters.value = emptyList()
         }
     }
 
