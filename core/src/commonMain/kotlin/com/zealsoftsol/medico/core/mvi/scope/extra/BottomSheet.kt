@@ -33,6 +33,7 @@ import com.zealsoftsol.medico.data.PromotionType
 import com.zealsoftsol.medico.data.Promotions
 import com.zealsoftsol.medico.data.SellerCart
 import com.zealsoftsol.medico.data.SellerInfo
+import com.zealsoftsol.medico.data.StockistListItem
 import com.zealsoftsol.medico.data.TaxInfo
 import com.zealsoftsol.medico.data.UpdateInvoiceRequest
 import com.zealsoftsol.medico.data.UserRegistration1
@@ -613,6 +614,16 @@ sealed class BottomSheet {
                 }
             )
         }
+    }
+
+    class FilterStockist(
+        val listStockist: List<StockistListItem>,
+        val selectedStockist: String,
+        ): BottomSheet(){
+
+            fun updateSelectedStockist(selected: StockistListItem){
+                EventCollector.sendEvent(Event.Action.Stores.ApplyStockistFilter(selected))
+            }
     }
 
 }

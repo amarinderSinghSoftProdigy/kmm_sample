@@ -1166,5 +1166,37 @@ fun NotifyAlertDialog(onDismiss: () -> Unit, onClick: () -> Unit) {
             }
         )
     }
+}
 
+@Composable
+fun DropDownArrowText(
+    text: String,
+    showCount: Boolean = false,
+    count: Int = 0,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier.clickable { onClick() },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Divider(
+            modifier = Modifier
+                .height(16.dp)
+                .width(1.dp)
+        )
+        Space(5.dp)
+        Text(
+            text = if (!showCount) text
+            else "$text (${count})",
+            color = ConstColors.lightBlue,
+            fontSize = 14.sp
+        )
+        Space(5.dp)
+        Icon(
+            modifier = Modifier.size(10.dp),
+            painter = painterResource(id = R.drawable.ic_down_arrow),
+            contentDescription = null,
+            tint = ConstColors.lightBlue
+        )
+    }
 }

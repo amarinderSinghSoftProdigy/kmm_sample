@@ -75,6 +75,7 @@ import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.screens.cart.TextItem
 import com.zealsoftsol.medico.screens.cart.TextItemString
 import com.zealsoftsol.medico.screens.common.CoilImage
+import com.zealsoftsol.medico.screens.common.DropDownArrowText
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
@@ -151,7 +152,7 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
         BasicSearchBar(
             input = search.value,
             hint = R.string.search_products,
-          /*  searchBarEnd = SearchBarEnd.Filter(isFilterApplied.value) {
+            /*  searchBarEnd = SearchBarEnd.Filter(isFilterApplied.value) {
                 keyboard?.hide()
                 scope.openManufacturersFilter()
             },*/
@@ -165,6 +166,7 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
             backgroundColor = ConstColors.lightBackground,
         )
         Space(10.dp)
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -174,25 +176,13 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.End
         ) {
-            Divider(
-                modifier = Modifier
-                    .height(16.dp)
-                    .width(1.dp)
-            )
-            Space(5.dp)
-            Text(
-                text = if (selectedFilters.value.isEmpty()) stringResource(id = R.string.filters)
-                else "${stringResource(id = R.string.filters)} (${selectedFilters.value.size})",
-                color = ConstColors.lightBlue,
-                fontSize = 14.sp
-            )
-            Space(5.dp)
-            Icon(
-                modifier = Modifier.size(10.dp),
-                painter = painterResource(id = R.drawable.ic_down_arrow),
-                contentDescription = null,
-                tint = ConstColors.lightBlue
-            )
+            DropDownArrowText(
+                text = stringResource(id = R.string.filters),
+                showCount = selectedFilters.value.isNotEmpty(),
+                count = selectedFilters.value.size
+            ) {
+                scope.openManufacturersFilter()
+            }
         }
 
         Space(5.dp)

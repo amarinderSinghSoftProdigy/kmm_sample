@@ -179,8 +179,8 @@ internal class TransitionEventDelegate(
                 is Event.Transition.Stores -> setScope(
                     StoresScope.StorePreview(
                     DataSource(Store()),
-                    notificationRepo.getUnreadMessagesDataSource(),
-                    cartRepo.getEntriesCountDataSource()
+                    notificationCount = notificationRepo.getUnreadMessagesDataSource(),
+                    cartItemsCount = cartRepo.getEntriesCountDataSource()
                     )
                 )
                 is Event.Transition.StoreDetail -> setScope(
