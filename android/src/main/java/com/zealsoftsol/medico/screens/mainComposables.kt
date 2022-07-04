@@ -69,6 +69,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.BuyProductScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartOrderCompletedScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartPreviewScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.CategoriesScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ConfirmOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.EmployeeScope
@@ -132,6 +133,7 @@ import com.zealsoftsol.medico.screens.batches.ViewBatchesScreen
 import com.zealsoftsol.medico.screens.cart.CartOrderCompletedScreen
 import com.zealsoftsol.medico.screens.cart.CartPreviewScreen
 import com.zealsoftsol.medico.screens.cart.CartScreen
+import com.zealsoftsol.medico.screens.dashboard.CategoriesComposable
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.TabBar
 import com.zealsoftsol.medico.screens.common.clickable
@@ -500,6 +502,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     is RequestedQuotesScope -> {
                         RequestedQuotesComposable(scope = it)
                     }
+                    is CategoriesScope -> CategoriesComposable(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }

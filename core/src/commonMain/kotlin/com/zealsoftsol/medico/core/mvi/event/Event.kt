@@ -832,5 +832,6 @@ sealed class Event {
         object Demo : Transition()
         object Rewards : Transition()
         object OnlineOrders : Transition()
+        object Categories : Transition()
     }
 }
