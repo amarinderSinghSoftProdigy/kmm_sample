@@ -38,8 +38,9 @@ fun CategoriesComposable(scope: CategoriesScope) {
 
     LazyVerticalGrid(cells = GridCells.Fixed(scope.CELL_COUNT), content = {
         itemsIndexed(scope.categoriesData, itemContent = { index, item ->
+            val title = stringResourceByName(name = item.title)
             CategoriesItems(scope.categoriesData[index]) {
-                scope.startBrandSearch(item.title, "category")
+                scope.startBrandSearch(title, "category")
             }
         })
     })

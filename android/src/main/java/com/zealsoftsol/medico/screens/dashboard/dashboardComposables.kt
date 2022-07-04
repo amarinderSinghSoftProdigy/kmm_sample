@@ -87,6 +87,7 @@ import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.Placeholder
 import com.zealsoftsol.medico.screens.common.ShimmerItem
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.inventory.CommonRoundedView
 import kotlinx.coroutines.delay
 
@@ -418,13 +419,15 @@ private fun ShowRetailerAndHospitalDashboard(
                     mainAxisSize = SizeMode.Expand,
                     mainAxisAlignment = FlowMainAxisAlignment.Start
                 ) {
-                    scope.categories.let {
-                        it.forEachIndexed { index, item ->
-                            CategoriesItems(scope.categories[index], Modifier.width(itemSize)) {
-                                scope.startBrandSearch(item.title, "category")
-                            }
-                            //CategoriesItem(it[index], scope, modifier = Modifier.width(itemSize))
+                    scope.categories.forEachIndexed { index, item ->
+                        val title = stringResourceByName(name = item.title)
+                        CategoriesItems(scope.categories[index], Modifier.width(itemSize)) {
+                            scope.startBrandSearch(
+                                title,
+                                "category"
+                            )
                         }
+                        //CategoriesItem(it[index], scope, modifier = Modifier.width(itemSize))
                     }
                 }
             }
