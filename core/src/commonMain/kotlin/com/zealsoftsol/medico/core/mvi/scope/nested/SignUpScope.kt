@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.core.mvi.scope.nested
 
-import android.util.Patterns
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
@@ -13,6 +12,8 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.AddressComponent
 import com.zealsoftsol.medico.core.mvi.scope.extra.TraderDetailsComponent
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.core.utils.StringResource
+import com.zealsoftsol.medico.core.utils.Validator.isValidPassword
+import com.zealsoftsol.medico.core.utils.Validator.validEmail
 import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.FileType
@@ -143,29 +144,12 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
             }
         }
 
-        fun validEmail(email: String): Boolean {
-            if (email.isEmpty()) {
-                return true
-            }
-            val pattern = Patterns.EMAIL_ADDRESS
-            return pattern.matcher(email).matches()
-        }
 
         fun validPhone(phone: String): Boolean {
             if (phone.isEmpty()) {
                 return true
             }
             return phone.length == 10
-        }
-
-
-        fun isValidPassword(str: String): Boolean {
-            if (str.isEmpty()) {
-                return true
-            }
-            val regex = ("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$")
-            val p = regex.toRegex()
-            return p.matches(str) && str.length >= 8
         }
 
         /**

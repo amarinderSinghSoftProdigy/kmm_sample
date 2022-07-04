@@ -9,6 +9,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
+import com.zealsoftsol.medico.core.utils.Validator.isValidPassword
 import com.zealsoftsol.medico.screens.common.BasicScreen
 import com.zealsoftsol.medico.screens.common.InputWithError
 import com.zealsoftsol.medico.screens.common.PasswordFormatInputField
@@ -40,7 +41,7 @@ fun EnterNewPasswordScreen(scope: PasswordScope.EnterNew) {
     val password1 = scope.password.flow.collectAsState()
     val password2 = scope.confirmPassword.flow.collectAsState()
     val validation = scope.passwordValidation.flow.collectAsState()
-    val password = scope.isValidPassword(password1.value)
+    val password = isValidPassword(password1.value)
 
     BasicScreen(
         subtitle = stringResource(id = R.string.new_password_hint),

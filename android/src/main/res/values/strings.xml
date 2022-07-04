@@ -528,6 +528,16 @@
     <string name="on_message"><![CDATA[Rings & Vibrates when Order placed by your connected User]]></string>
     <string name="off_label"><![CDATA[OFF ->]]></string>
     <string name="off_message"><![CDATA[Ring & Vibration stopped]]></string>
+    <string name="bank_details">Bank Details</string>
+    <string name="upi_account">UPI Account</string>
+    <string name="name">Name</string>
+    <string name="account_number">Account Number</string>
+    <string name="re_account_number">Re-enter Account Number</string>
+    <string name="ifsc_code">IFSC Code</string>
+    <string name="upi_hint">UPI@address</string>
+    <string name="acc_num_warning">Account number must be between 8 to 19 characters</string>
+    <string name="acc_num_warning">Account number must be between 8 to 19 characters</string>
+
 
     <!-- Termrs and Cond -->
 

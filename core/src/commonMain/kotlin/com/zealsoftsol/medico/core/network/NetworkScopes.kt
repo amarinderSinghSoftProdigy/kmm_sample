@@ -634,4 +634,7 @@ interface NetworkScope {
         suspend fun getRewards(page: Int): BodyResponse<RewardsList>
     }
 
+    interface BankDetailsStore : NetworkScope {
+
+    }
 }

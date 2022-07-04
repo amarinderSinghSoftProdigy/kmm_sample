@@ -1,5 +1,7 @@
 package com.zealsoftsol.medico.core.utils
 
+import android.util.Patterns
+
 object Validator {
 
     object TraderDetails {
@@ -76,4 +78,40 @@ object Validator {
             return c == 0
         }
     }
+
+    fun isValidPhone(phone: String): Boolean {
+        return phone.length == 10
+    }
+
+    fun isValidPhoneEmpty(phone: String): Boolean {
+        if(phone.isEmpty())
+            return true
+        return phone.length == 10
+    }
+
+    fun isValidPassword(str: String): Boolean {
+        val regex = ("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$")
+        val p = regex.toRegex()
+        return p.matches(str) && str.length >= 8
+    }
+
+    fun validEmail(email: String): Boolean {
+        if (email.isEmpty()) {
+            return true
+        }
+        val pattern = Patterns.EMAIL_ADDRESS
+        return pattern.matcher(email).matches()
+    }
+
+    fun isIfscCodeValid(ifscCode: String): Boolean {
+        val regExp = "^[A-Za-z]{4}0[A-Z0-9a-z]{6}$".toRegex()
+        var isvalid = false
+        if (ifscCode.isNotEmpty()) {
+            isvalid = ifscCode.matches(regExp)
+        }
+        return isvalid
+    }
+
+    fun isValidBankAccountNumber(accountNumber: String): Boolean = accountNumber.length in 9..18
+
 }

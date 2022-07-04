@@ -59,6 +59,7 @@ import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.IocBuyerScope
+import com.zealsoftsol.medico.core.utils.Validator.isValidPhoneEmpty
 import com.zealsoftsol.medico.data.BuyerDetailsData
 import com.zealsoftsol.medico.data.InvContactDetails
 import com.zealsoftsol.medico.data.InvUserData
@@ -988,7 +989,7 @@ private fun IocPayNow(
     val lineManName = scope.lineManName.flow.collectAsState()
     val totalAmount = scope.totalAmount.flow.collectAsState()
     val mobileNumber = scope.mobileNumber.flow.collectAsState()
-    val validPhone = scope.validPhone(mobileNumber.value)
+    val validPhone = isValidPhoneEmpty(mobileNumber.value)
     val enable = scope.enableButton.flow.collectAsState()
     val showError = scope.showError.flow.collectAsState()
     Column(

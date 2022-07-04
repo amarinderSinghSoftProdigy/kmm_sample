@@ -10,6 +10,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
 import com.zealsoftsol.medico.data.AadhaarData
+import com.zealsoftsol.medico.data.AddBankDetails
 import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AutoComplete
@@ -760,6 +761,13 @@ sealed class Event {
 
             data class GetRewards(val page: Int) : Rewards()
         }
+
+        sealed class BankDetails : Action(){
+            override val typeClazz: KClass<*> = BankDetails::class
+
+            data class SubmitAccountDetails(val accountData: AddBankDetails) : BankDetails()
+            data class SubmitUpiDetails(val name: String, val upiAddress: String) : BankDetails()
+        }
     }
 
 
@@ -832,5 +840,7 @@ sealed class Event {
         object Demo : Transition()
         object Rewards : Transition()
         object OnlineOrders : Transition()
+        object AccountDetails: Transition()
+        object UpiDetails: Transition()
     }
 }

@@ -1,0 +1,85 @@
+package com.zealsoftsol.medico.core.mvi.scope.nested
+
+import com.zealsoftsol.medico.core.interop.DataSource
+import com.zealsoftsol.medico.core.mvi.scope.CommonScope
+import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
+import com.zealsoftsol.medico.core.utils.Validator.isIfscCodeValid
+import com.zealsoftsol.medico.core.utils.Validator.isValidBankAccountNumber
+import com.zealsoftsol.medico.core.utils.Validator.isValidPhone
+import com.zealsoftsol.medico.data.AddBankDetails
+
+open class BankDetailsScope(private val titleId: String) : Scope.Child.TabBar(),
+    CommonScope.CanGoBack {
+
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
+        TabBarInfo.OnlyBackHeader(titleId)
+
+    class AccountDetails : BankDetailsScope("bank_details") {
+
+        val bankDetails = DataSource(AddBankDetails("", "", "", ""))
+        val reEnterAccountNumber = DataSource("")
+        val canSubmitDetails = DataSource(false)
+
+        fun updateName(name: String) {
+            bankDetails.value = bankDetails.value.copy(name = name)
+            canSubmitData()
+        }
+
+        fun updateAccountNumber(accNumber: String) {
+            bankDetails.value = bankDetails.value.copy(accountNumber = accNumber)
+            canSubmitData()
+        }
+
+        fun updateIfscCode(ifscCode: String) {
+            bankDetails.value = bankDetails.value.copy(ifscCode = ifscCode)
+            canSubmitData()
+        }
+
+        fun updateMobile(mobNumber: String) {
+            bankDetails.value = bankDetails.value.copy(mobileNumber = mobNumber)
+            canSubmitData()
+        }
+
+        fun updateReEnterAccountNumber(accNumber: String) {
+            reEnterAccountNumber.value = accNumber
+            canSubmitData()
+        }
+
+        private fun canSubmitData() {
+            val details = bankDetails.value
+            canSubmitDetails.value = details.name.isNotEmpty() && isValidBankAccountNumber(details.accountNumber)
+                    && details.accountNumber == reEnterAccountNumber.value && isIfscCodeValid(details.ifscCode)
+                    && isValidPhone(details.mobileNumber)
+        }
+
+        fun submitAccountDetails() {
+            //TODO call API to submit details
+        }
+    }
+
+    class UpiDetails : BankDetailsScope("upi_account") {
+
+        val name = DataSource("")
+        val upiAddress = DataSource("")
+        val canSubmitDetails = DataSource(false)
+
+        fun updateName(name: String) {
+            this.name.value = name
+            canSubmitData()
+        }
+
+        fun updateUpiAddress(upiAddress: String) {
+            this.upiAddress.value = upiAddress
+            canSubmitData()
+        }
+
+        private fun canSubmitData() {
+            canSubmitDetails.value = name.value.isNotEmpty() && upiAddress.value.isNotEmpty()
+        }
+
+        fun submitUpiDetails() {
+            //TODO call API to submit details
+        }
+    }
+}
