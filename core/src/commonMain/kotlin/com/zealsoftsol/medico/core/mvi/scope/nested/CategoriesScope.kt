@@ -5,6 +5,7 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.data.AutoComplete
+
 class CategoriesScope : Scope.Child.TabBar() {
 
     var categoriesData: List<Category>
@@ -52,31 +53,31 @@ class CategoriesScope : Scope.Child.TabBar() {
     }
 
     enum class Category(val title: String, val imgPath: String) {
-        Category1("ayurvedic", ""),
-        Category2("allopathic", ""),
-        Category3("homeopathic", ""),
-        Category4("otc", ""),
-        Category5("Veterinary", ""),
-        Category6("cough_respiratory", ""),
-        Category7("diabetic_care", ""),
-        Category8("eye_care", ""),
-        Category9("pain_relief", ""),
-        Category10("skin_care", ""),
-        Category11("vitamins_and_aupplements", ""),
-        Category12("metal_wellness", ""),
-        Category13("dental_care", ""),
-        Category14("liver_care", ""),
-        Category15("pediatrics", ""),
-        Category16("cardiac_care", ""),
-        Category17("kidney_care", ""),
-        Category18("ortho_care", ""),
-        Category19("antibiotics", ""),
-        Category20("sexual_wellness", ""),
-        Category21("ent", ""),
-        Category22("cold_Immunity", ""),
-        Category23("piles_care", ""),
-        Category24("personal_care", ""),
-        Category25("health_devices", "")
+        Category1("ayurvedic", "1"),
+        Category2("allopathic", "2"),
+        Category3("homeopathic", "3"),
+        Category4("otc", "4"),
+        Category5("Veterinary", "5"),
+        Category6("cough_respiratory", "6"),
+        Category7("diabetic_care", "7"),
+        Category8("eye_care", "8"),
+        Category9("pain_relief", "9"),
+        Category10("skin_care", "10"),
+        Category11("vitamins_and_aupplements", "11"),
+        Category12("metal_wellness", "12"),
+        Category13("dental_care", "13"),
+        Category14("liver_care", "14"),
+        Category15("pediatrics", "15"),
+        Category16("cardiac_care", "16"),
+        Category17("kidney_care", "17"),
+        Category18("ortho_care", "18"),
+        Category19("antibiotics", "19"),
+        Category20("sexual_wellness", "20"),
+        Category21("ent", "21"),
+        Category22("cold_Immunity", "22"),
+        Category23("piles_care", "23"),
+        Category24("personal_care", "24"),
+        Category25("health_devices", "25")
     }
 
 }
