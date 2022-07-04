@@ -38,23 +38,29 @@ fun CategoriesComposable(scope: CategoriesScope) {
 
     LazyVerticalGrid(cells = GridCells.Fixed(scope.CELL_COUNT), content = {
         itemsIndexed(scope.categoriesData, itemContent = { index, item ->
-            CategoriesItems(scope.categoriesData[index], scope)
+            CategoriesItems(scope.categoriesData[index]) {
+                scope.startBrandSearch(item.title, "category")
+            }
         })
     })
 }
 
 @Composable
-fun CategoriesItems(categoriesData: CategoriesScope.Category, scope: CategoriesScope) {
+fun CategoriesItems(
+    categoriesData: CategoriesScope.Category,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
     val name = stringResourceByName(name = categoriesData.title)
 
     Card(
-        modifier = Modifier
+        modifier = modifier
             .height(160.dp)
             .selectable(
                 selected = true,
                 onClick = {
                     //send parameters for search based on product
-                    scope.startBrandSearch(name, "category")
+                    onClick()
                 })
             .padding(horizontal = 8.dp, vertical = 8.dp),
         elevation = 3.dp,

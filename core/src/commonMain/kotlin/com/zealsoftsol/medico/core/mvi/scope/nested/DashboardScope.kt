@@ -44,6 +44,8 @@ class DashboardScope private constructor(
     val stockistEmployeeBannerData: ReadOnlyDataSource<List<EmployeeBannerData>?>,
     val stockConnectedData: ReadOnlyDataSource<List<StockistListItem>?>
 ) : Scope.Child.TabBar() {
+    var categories: List<CategoriesScope.Category>
+    val CELL_COUNT = 3
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
         TabBarInfo.NoIconTitle("", unreadNotifications, cartItemsCount)
@@ -85,6 +87,34 @@ class DashboardScope private constructor(
 
     init {
         EventCollector.sendEvent(Event.Action.Auth.UpdateDashboard)
+
+        categories = listOf(
+            CategoriesScope.Category.Category6,
+            CategoriesScope.Category.Category7,
+            CategoriesScope.Category.Category8,
+            CategoriesScope.Category.Category9,
+            CategoriesScope.Category.Category10,
+            CategoriesScope.Category.Category11,
+            CategoriesScope.Category.Category1,
+            CategoriesScope.Category.Category2,
+            CategoriesScope.Category.Category3,
+            CategoriesScope.Category.Category4,
+            CategoriesScope.Category.Category5,
+            CategoriesScope.Category.Category12,
+            CategoriesScope.Category.Category13,
+            CategoriesScope.Category.Category14,
+            CategoriesScope.Category.Category15,
+            CategoriesScope.Category.Category16,
+            CategoriesScope.Category.Category17,
+            CategoriesScope.Category.Category18,
+            CategoriesScope.Category.Category19,
+            CategoriesScope.Category.Category20,
+            CategoriesScope.Category.Category21,
+            CategoriesScope.Category.Category22,
+            CategoriesScope.Category.Category23,
+            CategoriesScope.Category.Category24,
+            CategoriesScope.Category.Category25
+        )
     }
 
     /**

@@ -18,8 +18,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -372,8 +374,10 @@ private fun ShowRetailerAndHospitalDashboard(
                     .fillMaxWidth()
                     .padding(vertical = 16.dp)
             ) {
-                Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
                     Text(
                         text = stringResource(id = R.string.our_categories),
                         color = ConstColors.lightBlue,
@@ -381,7 +385,8 @@ private fun ShowRetailerAndHospitalDashboard(
                         fontWeight = FontWeight.W600,
                         modifier = Modifier.padding(horizontal = 16.dp),
                     )
-                    Row(
+                    //View all option for categories
+                    /*Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.End,
                         modifier = Modifier.clickable {
@@ -403,19 +408,22 @@ private fun ShowRetailerAndHospitalDashboard(
                                 .padding(horizontal = 3.dp)
                                 .padding(end = 16.dp),
                         )
-                    }
+                    }*/
 
                 }
                 Space(dp = 16.dp)
-                val itemSize: Dp = (LocalConfiguration.current.screenWidthDp.dp / 2) - 8.dp
-
+                val itemSize: Dp = (LocalConfiguration.current.screenWidthDp.dp / 3) - 8.dp
                 FlowRow(
+                    modifier = Modifier.padding(start = 12.dp),
                     mainAxisSize = SizeMode.Expand,
-                    mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
+                    mainAxisAlignment = FlowMainAxisAlignment.Start
                 ) {
-                    categories.value?.let {
-                        it.forEachIndexed { index, _ ->
-                            CategoriesItem(it[index], scope, modifier = Modifier.width(itemSize))
+                    scope.categories.let {
+                        it.forEachIndexed { index, item ->
+                            CategoriesItems(scope.categories[index], Modifier.width(itemSize)) {
+                                scope.startBrandSearch(item.title, "category")
+                            }
+                            //CategoriesItem(it[index], scope, modifier = Modifier.width(itemSize))
                         }
                     }
                 }
