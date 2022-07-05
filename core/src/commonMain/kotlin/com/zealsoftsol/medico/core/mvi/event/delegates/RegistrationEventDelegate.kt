@@ -179,9 +179,9 @@ internal class RegistrationEventDelegate(
                     is Event.Action.Registration.UploadDocument -> {
                         userRepo.upoladDocument(
                             LicenseDocumentData(
-                                event.registrationStep1.email,
-                                event.registrationStep1.phoneNumber,
-                                ProfileImageUpload(
+                                mobileNumber = event.registrationStep1.phoneNumber,
+                                email = event.registrationStep1.email,
+                                userProfileDocumentRequest = ProfileImageUpload(
                                     documentType = type,
                                     size = event.size,
                                     documentData = event.asBase64,
