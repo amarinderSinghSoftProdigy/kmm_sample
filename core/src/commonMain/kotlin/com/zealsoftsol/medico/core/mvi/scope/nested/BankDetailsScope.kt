@@ -20,6 +20,10 @@ open class BankDetailsScope(private val titleId: String) : Scope.Child.TabBar(),
         val bankDetails = DataSource(AddBankDetails("", "", "", ""))
         val reEnterAccountNumber = DataSource("")
         val canSubmitDetails = DataSource(false)
+        val accountNumberErrorText = DataSource(true)
+        val ifscErrorText = DataSource(true)
+        val mobileErrorText = DataSource(true)
+        val reenterAccountNumberErrorText = DataSource(true)
 
         fun updateName(name: String) {
             bankDetails.value = bankDetails.value.copy(name = name)
@@ -28,21 +32,25 @@ open class BankDetailsScope(private val titleId: String) : Scope.Child.TabBar(),
 
         fun updateAccountNumber(accNumber: String) {
             bankDetails.value = bankDetails.value.copy(accountNumber = accNumber)
+            accountNumberErrorText.value = isValidBankAccountNumber(accNumber)
             canSubmitData()
         }
 
         fun updateIfscCode(ifscCode: String) {
             bankDetails.value = bankDetails.value.copy(ifscCode = ifscCode)
+            ifscErrorText.value = isIfscCodeValid(ifscCode)
             canSubmitData()
         }
 
         fun updateMobile(mobNumber: String) {
             bankDetails.value = bankDetails.value.copy(mobileNumber = mobNumber)
+            mobileErrorText.value = isValidPhone(mobNumber)
             canSubmitData()
         }
 
         fun updateReEnterAccountNumber(accNumber: String) {
             reEnterAccountNumber.value = accNumber
+            reenterAccountNumberErrorText.value = accNumber == bankDetails.value.accountNumber
             canSubmitData()
         }
 
@@ -63,6 +71,7 @@ open class BankDetailsScope(private val titleId: String) : Scope.Child.TabBar(),
         val name = DataSource("")
         val upiAddress = DataSource("")
         val canSubmitDetails = DataSource(false)
+        val upiErrorText = DataSource(true)
 
         fun updateName(name: String) {
             this.name.value = name
@@ -71,6 +80,7 @@ open class BankDetailsScope(private val titleId: String) : Scope.Child.TabBar(),
 
         fun updateUpiAddress(upiAddress: String) {
             this.upiAddress.value = upiAddress
+            upiErrorText.value = upiAddress.isNotEmpty()
             canSubmitData()
         }
 

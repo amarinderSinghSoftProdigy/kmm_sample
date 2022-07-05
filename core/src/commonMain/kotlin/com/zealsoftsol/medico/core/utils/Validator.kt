@@ -112,6 +112,6 @@ object Validator {
         return isvalid
     }
 
-    fun isValidBankAccountNumber(accountNumber: String): Boolean = accountNumber.length in 9..18
+    fun isValidBankAccountNumber(accountNumber: String): Boolean = accountNumber.length in 8..19
 
 }

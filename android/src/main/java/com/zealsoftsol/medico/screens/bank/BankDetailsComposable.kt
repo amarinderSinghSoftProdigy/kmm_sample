@@ -13,6 +13,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -32,11 +33,16 @@ import com.zealsoftsol.medico.screens.common.scrollOnFocus
 fun BankDetailsScreen(scope: BankDetailsScope.AccountDetails) {
 
     val keyboardController = LocalSoftwareKeyboardController.current
+    val context = LocalContext.current
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
     val accountDetails = scope.bankDetails.flow.collectAsState()
     val reEnterAccountNumber = scope.reEnterAccountNumber.flow.collectAsState()
     val canSubmitDetails = scope.canSubmitDetails.flow.collectAsState()
+    val accountNumberErrorText = scope.accountNumberErrorText.flow.collectAsState()
+    val ifscErrorText = scope.ifscErrorText.flow.collectAsState()
+    val mobErrorText = scope.mobileErrorText.flow.collectAsState()
+    val reenterAccountErrorText = scope.reenterAccountNumberErrorText.flow.collectAsState()
 
     Column(
         modifier = Modifier
@@ -44,7 +50,7 @@ fun BankDetailsScreen(scope: BankDetailsScope.AccountDetails) {
             .background(Color.White)
             .padding(16.dp)
     ) {
-        InputWithError(errorText = "") {
+        InputWithError(errorText = null) {
             InputField(
                 modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                 hint = stringResource(id = R.string.name),
@@ -61,7 +67,7 @@ fun BankDetailsScreen(scope: BankDetailsScope.AccountDetails) {
             )
         }
         Space(dp = 12.dp)
-        InputWithError(errorText = "") {
+        InputWithError(errorText = if (!accountNumberErrorText.value) context.resources.getString(R.string.acc_num_warning) else null) {
             InputField(
                 modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                 hint = stringResource(id = R.string.account_number),
@@ -82,7 +88,7 @@ fun BankDetailsScreen(scope: BankDetailsScope.AccountDetails) {
             )
         }
         Space(dp = 12.dp)
-        InputWithError(errorText = "") {
+        InputWithError(errorText = if (!reenterAccountErrorText.value) context.resources.getString(R.string.reenter_acc_warning) else null) {
             InputField(
                 modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                 hint = stringResource(id = R.string.re_account_number),
@@ -103,7 +109,7 @@ fun BankDetailsScreen(scope: BankDetailsScope.AccountDetails) {
             )
         }
         Space(dp = 12.dp)
-        InputWithError(errorText = "") {
+        InputWithError(errorText = if (!ifscErrorText.value) context.resources.getString(R.string.ifsc_warning) else null) {
             InputField(
                 modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                 hint = stringResource(id = R.string.ifsc_code),
@@ -120,7 +126,7 @@ fun BankDetailsScreen(scope: BankDetailsScope.AccountDetails) {
             )
         }
         Space(dp = 12.dp)
-        InputWithError(errorText = "") {
+        InputWithError(errorText = if(!mobErrorText.value) context.resources.getString(R.string.phone_validation) else null) {
             InputField(
                 modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                 hint = stringResource(id = R.string.phone_number),
@@ -159,6 +165,8 @@ fun UpiDetailsScreen(scope: BankDetailsScope.UpiDetails) {
     val canSubmitDetails = scope.canSubmitDetails.flow.collectAsState()
     val name = scope.name.flow.collectAsState()
     val upiAddress = scope.upiAddress.flow.collectAsState()
+    val upiErrorText = scope.upiErrorText.flow.collectAsState()
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -183,7 +191,7 @@ fun UpiDetailsScreen(scope: BankDetailsScope.UpiDetails) {
             )
         }
         Space(dp = 12.dp)
-        InputWithError(errorText = "") {
+        InputWithError(errorText = if(!upiErrorText.value) context.resources.getString(R.string.valid_upi) else null) {
             InputField(
                 modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                 hint = stringResource(id = R.string.upi_hint),

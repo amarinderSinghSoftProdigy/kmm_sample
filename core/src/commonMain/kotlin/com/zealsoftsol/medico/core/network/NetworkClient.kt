@@ -180,7 +180,8 @@ class NetworkClient(
     NetworkScope.DealsStore,
     NetworkScope.DemoData,
     NetworkScope.ManufacturerStore,
-    NetworkScope.RewardsStore {
+    NetworkScope.RewardsStore,
+    NetworkScope.BankDetailsStore {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -883,7 +884,7 @@ class NetworkClient(
         search: String,
         page: Int,
         manufacturers: String,
-        ): BodyResponse<PaginatedData<InStoreProduct>> = simpleRequest {
+    ): BodyResponse<PaginatedData<InStoreProduct>> = simpleRequest {
         client.get("${baseUrl.url}/instore/search") {
             withMainToken()
             url {

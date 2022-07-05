@@ -536,8 +536,13 @@
     <string name="ifsc_code">IFSC Code</string>
     <string name="upi_hint">UPI@address</string>
     <string name="acc_num_warning">Account number must be between 8 to 19 characters</string>
-    <string name="acc_num_warning">Account number must be between 8 to 19 characters</string>
-
+    <string name="ifsc_warning">Enter a valid IFSC code</string>
+    <string name="reenter_acc_warning">Account number does not match</string>
+    <string name="valid_upi">Enter a valid UPI ID</string>
+    <string name="demo">Demos</string>
+    <string name="sub_stockist_message">Do you want to place an order to nearest Stockist/ Sub-Stockist ?</string>
+    <string name="only_cod_message">(*Only COD orders can be placed)</string>
+    <string name="select_stockist_message">Please select a stockist</string>
 
     <!-- Termrs and Cond -->
 
@@ -690,9 +695,7 @@
     <string name="E0056">Document/Image Not found</string>
     <string name="E0057">Please enter a valid Food License</string>
     <string name="E0058">Food License already registered. Please try again.</string>
-    <string name="demo">Demos</string>
-    <string name="sub_stockist_message">Do you want to place an order to nearest Stockist/ Sub-Stockist ?</string>
-    <string name="only_cod_message">(*Only COD orders can be placed)</string>
-    <string name="select_stockist_message">Please select a stockist</string>
+    <string name="E0059">Invalid UPI account, please check again and enter details</string>
+    <string name="E0060">Invalid Bank Account Details, please check again and enter valid details</string>
 
 </resources>
