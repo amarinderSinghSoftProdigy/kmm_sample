@@ -79,7 +79,7 @@ interface TraderDetailsComponent : Scopable {
             tradeName.isNotEmpty() &&
                     (Validator.TraderDetails.isGstinValid(gstin) || Validator.TraderDetails.isPanValid(
                         panNumber
-                    ))
+                    ) || Validator.Aadhaar.isValid(aadharNumber ?: ""))
                     && drugLicenseNo1.isNotEmpty() && drugLicenseNo2.isNotEmpty()
                     && Validator.TraderDetails.isFoodLicenseValid(hasFoodLicense, foodLicenseNo)
         }
@@ -124,6 +124,15 @@ interface TraderDetailsComponent : Scopable {
         if (drugLicenseNo.length <= 30) {
             trimInput(drugLicenseNo, registration.value.drugLicenseNo2) {
                 registration.value = registration.value.copy(drugLicenseNo2 = it)
+                checkData()
+            }
+        }
+    }
+
+    fun changeAadharNumber(aadharNumber: String) {
+        if (aadharNumber.length <= 12) {
+            trimInput(aadharNumber, registration.value.aadharNumber) {
+                registration.value = registration.value.copy(aadharNumber = it)
                 checkData()
             }
         }

@@ -95,6 +95,8 @@ data class UserRegistration3(
 
     @Required
     var state: String = "",
+
+    var aadharNumber: String = ""
 ) : UserRegistration() {
 
     companion object {
@@ -119,6 +121,7 @@ data class UserValidation3(
     val drugLicenseNo2: String? = null,
     val foodLicense: Boolean = false,
     val foodLicenseNumber: String? = null,
+    val aadharNumber: String? = null
 ) : UserValidation()
 
 @Serializable

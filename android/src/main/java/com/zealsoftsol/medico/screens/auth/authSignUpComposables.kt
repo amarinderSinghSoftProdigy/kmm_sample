@@ -32,13 +32,18 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Divider
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.RadioButton
 import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -523,11 +528,21 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
     val registrationGlobal = scope.storedRegistration.flow.value.userReg3
+    val choosing = remember { mutableStateOf(false) }
+    val mSelectedDocs =
+        remember { mutableStateOf(SignUpScope.Details.Fields.PAN_GST.name.replace("_", "/")) }
+
     if (registration.value.tradeName.isEmpty() && registrationGlobal != null) {
         registration.value.tradeName = registrationGlobal.tradeName
-        registration.value.panNumber = registrationGlobal.panNumber
         registration.value.hasFoodLicense = registrationGlobal.hasFoodLicense
+        registration.value.panNumber = registrationGlobal.panNumber
         registration.value.gstin = registrationGlobal.gstin
+        registration.value.aadharNumber = registrationGlobal.aadharNumber
+        if (registration.value.panNumber.isNotEmpty() || registration.value.gstin.isNotEmpty()) {
+            mSelectedDocs.value = SignUpScope.Details.Fields.PAN_GST.name.replace("_", "/")
+        } else if ((registration.value.aadharNumber).isNotEmpty()) {
+            mSelectedDocs.value = SignUpScope.Details.Fields.ADDHAR.name
+        }
         registration.value.foodLicenseNo = registrationGlobal.foodLicenseNo
         registration.value.drugLicenseNo1 = registrationGlobal.drugLicenseNo1
         registration.value.drugLicenseNo2 = registrationGlobal.drugLicenseNo2
@@ -560,73 +575,154 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                     }
                     Space(dp = 12.dp)
                 }
-                if (it == SignUpScope.Details.Fields.PAN) {
-                    InputWithError(errorText = validation.value?.panNumber) {
-                        InputField(
-                            modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
-                            hint = stringResource(id = R.string.pan_number),
-                            text = registration.value.panNumber,
-                            isValid = Validator.TraderDetails.isPanValid(registration.value.panNumber) || registration.value.panNumber.isEmpty(),
-                            keyboardOptions = KeyboardOptions.Default
-                                .copy(
-                                    capitalization = KeyboardCapitalization.Characters,
-                                    imeAction = ImeAction.Done
-                                ),
-                            onValueChange = { value -> scope.changePan(value) },
-                            trailingIcon = {
-                                Text(
-                                    text = registration.value.panNumber.length.toString() + "/" + scope.panLimit,
-                                    color = ConstColors.gray,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 14.sp,
-                                )
+                if (it == SignUpScope.Details.Fields.DROP_DOWN) {
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(color = Color.White)
+                                .clickable(onClick = {
+                                    if (scope.docsData.isNotEmpty()) {
+                                        choosing.value = true
+                                    }
+                                })
+                                .padding(start = 16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            Text(
+                                modifier = Modifier.align(Alignment.CenterVertically),
+                                text = mSelectedDocs.value.replace("_", "/").ifEmpty {
+                                    stringResource(id = R.string.choose_option)
+                                },
+                                color = Color.Black,
+                                fontSize = 14.sp,
+                            )
+                            Icon(
+                                modifier = Modifier.align(Alignment.CenterVertically),
+                                imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = null,
+                                tint = ConstColors.gray,
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = choosing.value,
+                            onDismissRequest = { choosing.value = false },
+                            content = {
+                                scope.docsData.forEach {
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            choosing.value = false
+                                            mSelectedDocs.value = it.name.replace("_", "/")
+                                        },
+                                        content = { Text(it.name.replace("_", "/")) },
+                                    )
+                                }
                             },
-                            keyboardActions = KeyboardActions(onDone = {
-                                keyboardController?.hide()
-                            })
                         )
                     }
                     Space(dp = 12.dp)
-                }
-                if (it == SignUpScope.Details.Fields.GSTIN) {
-
-                    InputWithError(errorText = validation.value?.gstin) {
-                        InputField(
-                            modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
-                            hint = stringResource(id = R.string.gstin),
-                            text = registration.value.gstin,
-                            isValid = Validator.TraderDetails.isGstinValid(registration.value.gstin) || registration.value.gstin.isEmpty(),
-                            keyboardOptions = KeyboardOptions.Default
-                                .copy(
-                                    capitalization = KeyboardCapitalization.Characters,
-                                    imeAction = ImeAction.Done
-                                ),
-                            onValueChange = { value -> scope.changeGstin(value) },
-                            trailingIcon = {
-                                Text(
-                                    text = registration.value.gstin.length.toString() + "/" + scope.gstinLimit,
-                                    color = ConstColors.gray,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 14.sp,
-                                )
-                            },
-                            keyboardActions = KeyboardActions(onDone = {
-                                keyboardController?.hide()
-                            })
+                    Divider(thickness = 2.dp)
+                    Space(dp = 12.dp)
+                    if (mSelectedDocs.value == SignUpScope.Details.Fields.PAN_GST.name.replace(
+                            "_",
+                            "/"
                         )
+                    ) {
+                        InputWithError(errorText = validation.value?.panNumber) {
+                            InputField(
+                                modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
+                                hint = stringResource(id = R.string.pan_number),
+                                text = registration.value.panNumber,
+                                isValid = Validator.TraderDetails.isPanValid(registration.value.panNumber) || registration.value.panNumber.isEmpty(),
+                                keyboardOptions = KeyboardOptions.Default
+                                    .copy(
+                                        capitalization = KeyboardCapitalization.Characters,
+                                        imeAction = ImeAction.Done
+                                    ),
+                                onValueChange = { value -> scope.changePan(value) },
+                                trailingIcon = {
+                                    Text(
+                                        text = registration.value.panNumber.length.toString() + "/" + scope.panLimit,
+                                        color = ConstColors.gray,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 14.sp,
+                                    )
+                                },
+                                keyboardActions = KeyboardActions(onDone = {
+                                    keyboardController?.hide()
+                                })
+                            )
+                        }
+                        Space(dp = 12.dp)
+                        InputWithError(errorText = validation.value?.gstin) {
+                            InputField(
+                                modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
+                                hint = stringResource(id = R.string.gstin),
+                                text = registration.value.gstin,
+                                isValid = Validator.TraderDetails.isGstinValid(registration.value.gstin) || registration.value.gstin.isEmpty(),
+                                keyboardOptions = KeyboardOptions.Default
+                                    .copy(
+                                        capitalization = KeyboardCapitalization.Characters,
+                                        imeAction = ImeAction.Done
+                                    ),
+                                onValueChange = { value -> scope.changeGstin(value) },
+                                trailingIcon = {
+                                    Text(
+                                        text = registration.value.gstin.length.toString() + "/" + scope.gstinLimit,
+                                        color = ConstColors.gray,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 14.sp,
+                                    )
+                                },
+                                keyboardActions = KeyboardActions(onDone = {
+                                    keyboardController?.hide()
+                                })
+                            )
+                        }
+                        Space(dp = 8.dp)
+                        Text(
+                            text = stringResource(id = R.string.gstin_pan_required),
+                            color = ConstColors.red,
+                            fontWeight = FontWeight.W500,
+                            fontSize = 12.sp,
+                            modifier = Modifier
+                                .align(Alignment.Start)
+                                .padding(start = 4.dp),
+                        )
+                        Space(dp = 8.dp)
+                    } else if (mSelectedDocs.value == SignUpScope.Details.Fields.ADDHAR.name) {
+                        InputWithError(errorText = validation.value?.aadharNumber) {
+                            InputField(
+                                modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
+                                hint = stringResource(id = R.string.aadhaar_card),
+                                text = registration.value.aadharNumber,
+                                isValid = Validator.Aadhaar.isValid(
+                                    registration.value.aadharNumber
+                                ) || registration.value.aadharNumber.isEmpty(),
+                                keyboardOptions = KeyboardOptions.Default
+                                    .copy(
+                                        capitalization = KeyboardCapitalization.Characters,
+                                        imeAction = ImeAction.Done,
+                                        keyboardType = KeyboardType.Number
+                                    ),
+                                onValueChange = { value -> scope.changeAadharNumber(value) },
+                                trailingIcon = {
+                                    Text(
+                                        text = registration.value.aadharNumber.length.toString() + "/" + scope.aadharLimit,
+                                        color = ConstColors.gray,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 14.sp,
+                                    )
+                                },
+                                keyboardActions = KeyboardActions(onDone = {
+                                    keyboardController?.hide()
+                                })
+                            )
+                        }
                     }
-                    Space(dp = 8.dp)
-                    Text(
-                        text = stringResource(id = R.string.gstin_pan_required),
-                        color = ConstColors.red,
-                        fontWeight = FontWeight.W500,
-                        fontSize = 12.sp,
-                        modifier = Modifier
-                            .align(Alignment.Start)
-                            .padding(start = 4.dp),
-                    )
-                    Space(dp = 8.dp)
                 }
+                //if (scope.registrationStep1.userType == com.zealsoftsol.medico.data.UserType.RETAILER.serverValue) {
+                //}
                 if (it == SignUpScope.Details.Fields.LICENSE1) {
                     InputWithError(errorText = validation.value?.drugLicenseNo1) {
                         //InputWithPrefix(UserRegistration3.DRUG_LICENSE_1_PREFIX) {
@@ -978,6 +1074,7 @@ fun AuthPreview(scope: SignUpScope.PreviewDetails) {
                 }
                 TextLabel(scope.registrationStep3.gstin, labelShow = 1)
                 TextLabel(scope.registrationStep3.panNumber, labelShow = 2)
+                TextLabel(scope.registrationStep3.aadharNumber ?: "")
                 TextLabel(scope.registrationStep3.drugLicenseNo1)
                 TextLabel(scope.registrationStep3.drugLicenseNo2)
                 if (scope.registrationStep4.drugLicense != null) {
