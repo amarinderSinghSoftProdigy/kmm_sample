@@ -13,6 +13,7 @@ enum class UserType(
     val serverValueSimple: String,
 ) {
     STOCKIST("STOCKIST", "stockist"),
+    SUB_STOCKIST("STOCKIST", "stockist"),
     RETAILER("RETAILER", "retailer"),
     SEASON_BOY("SEASON_BOY", "seasonboy"),
     HOSPITAL("HOSPITAL", "hospital"),

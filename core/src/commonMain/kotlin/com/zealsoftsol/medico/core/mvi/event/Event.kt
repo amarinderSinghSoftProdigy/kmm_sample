@@ -845,5 +845,6 @@ sealed class Event {
         object OnlineOrders : Transition()
         object AccountDetails : Transition()
         object UpiDetails : Transition()
+        object Categories : Transition()
     }
 }

@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.nested.BankDetailsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.CategoriesScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.EmployeeScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreAddUserScope
@@ -147,6 +148,7 @@ internal class TransitionEventDelegate(
                         UserType.PARTNER -> EmployeeScope.SelectUserType.get()
                         UserType.STOCKIST_EMPLOYEE -> EmployeeScope.SelectUserType.get()
                         UserType.RETAILER_EMPLOYEE -> EmployeeScope.SelectUserType.get()
+                        UserType.SUB_STOCKIST -> ManagementScope.User.Stockist(search = event.search)
                     }
                 )
                 is Event.Transition.RequestCreateRetailer -> setScope(
@@ -297,6 +299,7 @@ internal class TransitionEventDelegate(
                 )
                 is Event.Transition.AccountDetails -> setScope(BankDetailsScope.AccountDetails())
                 is Event.Transition.UpiDetails -> setScope(BankDetailsScope.UpiDetails())
+                is Event.Transition.Categories -> setScope(CategoriesScope())
             }
         }
     }
