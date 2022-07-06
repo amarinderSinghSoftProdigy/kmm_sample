@@ -8,6 +8,7 @@ import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
+import com.zealsoftsol.medico.core.utils.Validator.isValidPhoneEmpty
 import com.zealsoftsol.medico.data.BuyerDetailsData
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.FormattedData
@@ -194,13 +195,6 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
             validate()
         }
 
-        fun validPhone(phone: String): Boolean {
-            if (phone.isEmpty()) {
-                return true
-            }
-            return phone.length == 10
-        }
-
         fun updateTotalAmount(data: String) {
             if (data == "0" || data == "0.0") {
                 totalAmount.value = ""
@@ -227,7 +221,7 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
             enableButton.value = totalAmount.value.isNotEmpty()
                     && totalAmount.value.toDouble() <= outStand
                     && lineManName.value.isNotEmpty()
-                    && validPhone(mobileNumber.value)
+                    && isValidPhoneEmpty(mobileNumber.value)
                     && mobileNumber.value.isNotEmpty()
         }
 

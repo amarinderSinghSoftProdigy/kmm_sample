@@ -2,12 +2,10 @@ package com.zealsoftsol.medico.core.mvi
 
 import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.interop.DataSource
-import com.zealsoftsol.medico.core.mvi.event.Event
-import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.StartScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.DemoScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.DemoScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.Response

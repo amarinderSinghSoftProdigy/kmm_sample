@@ -39,15 +39,6 @@ sealed class PasswordScope(
     ) : PasswordScope("new_password"),
         CommonScope.WithNotifications {
 
-        fun isValidPassword(str: String): Boolean {
-            if (str.isEmpty()) {
-                return true
-            }
-            val regex = ("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$")
-            val p = regex.toRegex()
-            return p.matches(str) && str.length >= 8
-        }
-
         fun changeConfirmPassword(password: String) {
             confirmPassword.value = password
         }

@@ -198,6 +198,20 @@ private fun ShowRetailerAndHospitalDashboard(
                     }
                     Space(16.dp)
                     QuickActionItem(
+                        title = stringResource(id = R.string.bank_details),
+                        icon = R.drawable.ic_menu_invoice
+                    ) {
+                        scope.sendEvent(Event.Transition.AccountDetails)
+                    }
+                    Space(16.dp)
+                    QuickActionItem(
+                        title = stringResource(id = R.string.upi_account),
+                        icon = R.drawable.ic_menu_invoice
+                    ) {
+                        scope.sendEvent(Event.Transition.UpiDetails)
+                    }
+                    Space(16.dp)
+                    QuickActionItem(
                         title = stringResource(id = R.string.stores),
                         icon = R.drawable.ic_menu_stores
                     ) {
@@ -897,6 +911,20 @@ private fun ShowStockistDashBoard(
                     icon = R.drawable.ic_menu_retailers
                 ) {
                     scope.sendEvent(Event.Transition.Management(UserType.RETAILER))
+                }
+                Space(16.dp)
+                QuickActionItem(
+                    title = stringResource(id = R.string.bank_details),
+                    icon = R.drawable.ic_menu_invoice
+                ) {
+                    scope.sendEvent(Event.Transition.AccountDetails)
+                }
+                Space(16.dp)
+                QuickActionItem(
+                    title = stringResource(id = R.string.upi_account),
+                    icon = R.drawable.ic_menu_invoice
+                ) {
+                    scope.sendEvent(Event.Transition.UpiDetails)
                 }
                 Space(16.dp)
                 QuickActionItem(

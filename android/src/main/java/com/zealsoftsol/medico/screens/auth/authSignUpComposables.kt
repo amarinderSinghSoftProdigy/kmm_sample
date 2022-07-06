@@ -85,6 +85,8 @@ import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.utils.Validator
+import com.zealsoftsol.medico.core.utils.Validator.isValidPassword
+import com.zealsoftsol.medico.core.utils.Validator.validEmail
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.screens.common.Dropdown
 import com.zealsoftsol.medico.screens.common.ImageLabel
@@ -177,9 +179,9 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
     val coroutineScope = rememberCoroutineScope()
     val isFirstNameError = registration.value.firstName.any { !it.isLetter() }
     val isLastNameError = registration.value.lastName.any { !it.isLetter() }
-    val validEmail = scope.validEmail(registration.value.email)
+    val validEmail = validEmail(registration.value.email)
     val validPhone = scope.validPhone(registration.value.phoneNumber)
-    val password = scope.isValidPassword(registration.value.password)
+    val password = isValidPassword(registration.value.password)
     val keyboardController = LocalSoftwareKeyboardController.current
     val context = LocalContext.current
     val isTermsAccepted = scope.isTermsAccepted.flow.collectAsState()

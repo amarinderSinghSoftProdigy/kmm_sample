@@ -46,14 +46,4 @@ class LogInScope(
         EventCollector.sendEvent(Event.Transition.SignUp)
     }
 
-    fun isValidPhone(phone: String): Boolean {
-        return phone.length == 10
-    }
-
-    fun isValidPassword(str: String): Boolean {
-        val regex = ("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$")
-        val p = regex.toRegex()
-        return p.matches(str) && str.length >= 8
-    }
-
 }

@@ -62,6 +62,8 @@ import androidx.core.text.isDigitsOnly
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
+import com.zealsoftsol.medico.core.utils.Validator.isValidPassword
+import com.zealsoftsol.medico.core.utils.Validator.isValidPhoneEmpty
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.OutlinedInputField
 import com.zealsoftsol.medico.screens.common.ShowToastGlobal
@@ -190,8 +192,8 @@ private fun AuthTab(scope: LogInScope, showLoginView: MutableState<Boolean>) {
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
-    val isValidPhone = scope.isValidPhone(credentialsState.value.phoneNumberOrEmail)
-    val isValidPassword = scope.isValidPassword(credentialsState.value.password)
+    val isValidPhone = isValidPhoneEmpty(credentialsState.value.phoneNumberOrEmail)
+    val isValidPassword = isValidPassword(credentialsState.value.password)
     val showCredentialError = scope.showCredentialError.flow.collectAsState()
     val showMobileError = remember { mutableStateOf(false) }
     val showPassError = remember { mutableStateOf(false) }

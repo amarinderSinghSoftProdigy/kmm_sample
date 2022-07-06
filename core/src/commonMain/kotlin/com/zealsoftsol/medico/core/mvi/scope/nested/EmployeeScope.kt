@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataComponent
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.core.utils.StringResource
+import com.zealsoftsol.medico.core.utils.Validator.isValidPassword
 import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.EmployeeData
@@ -159,22 +160,6 @@ open class EmployeeScope(private val titleId: String) : Scope.Child.TabBar(),
             }
             val pattern = Patterns.EMAIL_ADDRESS
             return pattern.matcher(email).matches()
-        }
-
-        fun validPhone(phone: String): Boolean {
-            if (phone.isEmpty()) {
-                return true
-            }
-            return phone.length == 10
-        }
-
-        fun isValidPassword(str: String): Boolean {
-            if (str.isEmpty()) {
-                return true
-            }
-            val regex = ("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$")
-            val p = regex.toRegex()
-            return p.matches(str) && str.length >= 8
         }
 
         /**

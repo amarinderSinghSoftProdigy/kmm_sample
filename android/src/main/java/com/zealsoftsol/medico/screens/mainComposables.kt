@@ -65,6 +65,7 @@ import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataComponent
+import com.zealsoftsol.medico.core.mvi.scope.nested.BankDetailsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.BuyProductScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartOrderCompletedScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartPreviewScope
@@ -104,7 +105,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.BannersScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.BatchesScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.DealsScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.DemoScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.DemoScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.ManufacturerScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.OcrScope
@@ -129,6 +130,8 @@ import com.zealsoftsol.medico.screens.auth.AuthPreview
 import com.zealsoftsol.medico.screens.auth.AuthUserType
 import com.zealsoftsol.medico.screens.auth.WelcomeOption
 import com.zealsoftsol.medico.screens.auth.WelcomeScreen
+import com.zealsoftsol.medico.screens.bank.BankDetailsScreen
+import com.zealsoftsol.medico.screens.bank.UpiDetailsScreen
 import com.zealsoftsol.medico.screens.batches.ViewBatchesScreen
 import com.zealsoftsol.medico.screens.cart.CartOrderCompletedScreen
 import com.zealsoftsol.medico.screens.cart.CartPreviewScreen
@@ -502,6 +505,8 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     is RequestedQuotesScope -> {
                         RequestedQuotesComposable(scope = it)
                     }
+                    is BankDetailsScope.AccountDetails -> BankDetailsScreen(it)
+                    is BankDetailsScope.UpiDetails -> UpiDetailsScreen(it)
                     is CategoriesScope -> CategoriesComposable(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()

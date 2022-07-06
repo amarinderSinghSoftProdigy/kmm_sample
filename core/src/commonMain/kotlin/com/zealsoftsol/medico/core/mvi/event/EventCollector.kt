@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.interop.Time
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.delegates.AddEmployeeEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.AuthEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.BankDetailsEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.BannersEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.BatchesEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.CartEventDelegate
@@ -39,7 +40,6 @@ import com.zealsoftsol.medico.core.mvi.event.delegates.TransitionEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.WhatsappEventDelegate
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreSellerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
 import com.zealsoftsol.medico.core.network.NetworkScope
@@ -99,6 +99,7 @@ class EventCollector(
     manufacturerScope: NetworkScope.ManufacturerStore,
     demo: NetworkScope.DemoData,
     rewardsNetworkScope: NetworkScope.RewardsStore,
+    bankDetailsScope: NetworkScope.BankDetailsStore,
     private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
     private val cartRepo: CartRepo,
@@ -252,6 +253,11 @@ class EventCollector(
             navigator,
             userRepo,
             rewardsNetworkScope
+        ),
+        Event.Action.BankData::class to BankDetailsEventDelegate(
+            navigator,
+            userRepo,
+            bankDetailsScope
         )
     )
 

@@ -50,6 +50,8 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.mvi.scope.nested.EmployeeScope
+import com.zealsoftsol.medico.core.utils.Validator.isValidPassword
+import com.zealsoftsol.medico.core.utils.Validator.isValidPhoneEmpty
 import com.zealsoftsol.medico.screens.auth.ProgressItem
 import com.zealsoftsol.medico.screens.common.InputField
 import com.zealsoftsol.medico.screens.common.InputWithError
@@ -71,8 +73,8 @@ fun AddEmployeeStepOneScreen(scope: EmployeeScope.PersonalData) {
     val isFirstNameError = registration.value.firstName.any { !it.isLetter() }
     val isLastNameError = registration.value.lastName.any { !it.isLetter() }
     val validEmail = scope.validEmail(registration.value.email)
-    val validPhone = scope.validPhone(registration.value.phoneNumber)
-    val password = scope.isValidPassword(registration.value.password)
+    val validPhone = isValidPhoneEmpty(registration.value.phoneNumber)
+    val password = isValidPassword(registration.value.password)
     val keyboardController = LocalSoftwareKeyboardController.current
 
     BasicAuthSignUpScreenWithButton(

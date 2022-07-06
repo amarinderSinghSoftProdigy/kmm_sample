@@ -83,7 +83,6 @@ fun MenuScreen(scope: MenuScope) {
                 stringResourceId = R.string.notifications,
                 scope = scope
             )
-
             //display rest of the user menu based on user type
             if (userType == UserType.STOCKIST) {
                 StockistMenu(scope)

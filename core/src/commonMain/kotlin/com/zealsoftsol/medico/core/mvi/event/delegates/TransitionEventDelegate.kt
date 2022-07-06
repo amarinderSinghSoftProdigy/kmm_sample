@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.scope.nested.BankDetailsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CategoriesScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
@@ -29,7 +30,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.BannersScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.BatchesScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.DealsScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.DemoScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.DemoScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.ManufacturerScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.OcrScope
@@ -296,6 +297,8 @@ internal class TransitionEventDelegate(
                         cartRepo.getEntriesCountDataSource()
                     )
                 )
+                is Event.Transition.AccountDetails -> setScope(BankDetailsScope.AccountDetails())
+                is Event.Transition.UpiDetails -> setScope(BankDetailsScope.UpiDetails())
                 is Event.Transition.Categories -> setScope(CategoriesScope())
             }
         }
