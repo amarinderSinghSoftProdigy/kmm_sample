@@ -168,6 +168,7 @@ fun InputField(
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     mandatory: Boolean = false,
+    enabled: Boolean = true
 ) {
     TextField(
         value = text,//TextFieldValue(text, TextRange(text.length)),
@@ -198,7 +199,8 @@ fun InputField(
         modifier = modifier.fillMaxWidth(),
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
-        keyboardActions = keyboardActions
+        keyboardActions = keyboardActions,
+        enabled = enabled
     )
 }
 

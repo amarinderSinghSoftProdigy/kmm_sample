@@ -11,6 +11,7 @@ import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoApprove
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.BankDetails
 import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
 import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.BatchesData
@@ -77,8 +78,8 @@ import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.ProductBuyResponse
-import com.zealsoftsol.medico.data.ProductResponse
 import com.zealsoftsol.medico.data.ProductRequestResponse
+import com.zealsoftsol.medico.data.ProductResponse
 import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
 import com.zealsoftsol.medico.data.ProfileImageData
 import com.zealsoftsol.medico.data.ProfileImageUpload
@@ -103,6 +104,7 @@ import com.zealsoftsol.medico.data.SubscribeRequest
 import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.UnreadNotifications
 import com.zealsoftsol.medico.data.UpdateInvoiceRequest
+import com.zealsoftsol.medico.data.UpiDetails
 import com.zealsoftsol.medico.data.UploadResponseData
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -635,6 +637,9 @@ interface NetworkScope {
     }
 
     interface BankDetailsStore : NetworkScope {
-
+        suspend fun getBankDetails(): BodyResponse<BankDetails>
+        suspend fun addBankDetails(details: BankDetails): BodyResponse<String>
+        suspend fun getUpiDetails(): BodyResponse<UpiDetails>
+        suspend fun addUpiDetails(name: String, upiAddress: String): BodyResponse<String>
     }
 }

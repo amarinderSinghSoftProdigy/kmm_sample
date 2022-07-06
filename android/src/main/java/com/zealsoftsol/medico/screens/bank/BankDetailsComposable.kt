@@ -25,6 +25,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.BankDetailsScope
 import com.zealsoftsol.medico.screens.common.InputField
 import com.zealsoftsol.medico.screens.common.InputWithError
 import com.zealsoftsol.medico.screens.common.MedicoButton
+import com.zealsoftsol.medico.screens.common.ShowToastGlobal
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.scrollOnFocus
 
@@ -43,6 +44,8 @@ fun BankDetailsScreen(scope: BankDetailsScope.AccountDetails) {
     val ifscErrorText = scope.ifscErrorText.flow.collectAsState()
     val mobErrorText = scope.mobileErrorText.flow.collectAsState()
     val reenterAccountErrorText = scope.reenterAccountNumberErrorText.flow.collectAsState()
+    val canEditDetails = scope.canEditData.flow.collectAsState()
+    val showToast = scope.showToast.flow.collectAsState()
 
     Column(
         modifier = Modifier
@@ -63,7 +66,8 @@ fun BankDetailsScreen(scope: BankDetailsScope.AccountDetails) {
                 mandatory = true,
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
-                })
+                }),
+                enabled = canEditDetails.value
             )
         }
         Space(dp = 12.dp)
@@ -84,7 +88,8 @@ fun BankDetailsScreen(scope: BankDetailsScope.AccountDetails) {
                 mandatory = true,
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
-                })
+                }),
+                enabled = canEditDetails.value
             )
         }
         Space(dp = 12.dp)
@@ -105,7 +110,8 @@ fun BankDetailsScreen(scope: BankDetailsScope.AccountDetails) {
                 mandatory = true,
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
-                })
+                }),
+                enabled = canEditDetails.value
             )
         }
         Space(dp = 12.dp)
@@ -122,11 +128,12 @@ fun BankDetailsScreen(scope: BankDetailsScope.AccountDetails) {
                 mandatory = true,
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
-                })
+                }),
+                enabled = canEditDetails.value
             )
         }
         Space(dp = 12.dp)
-        InputWithError(errorText = if(!mobErrorText.value) context.resources.getString(R.string.phone_validation) else null) {
+        InputWithError(errorText = if (!mobErrorText.value) context.resources.getString(R.string.phone_validation) else null) {
             InputField(
                 modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                 hint = stringResource(id = R.string.phone_number),
@@ -143,16 +150,24 @@ fun BankDetailsScreen(scope: BankDetailsScope.AccountDetails) {
                 mandatory = true,
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
-                })
+                }),
+                enabled = canEditDetails.value
             )
         }
         Space(dp = 12.dp)
-        MedicoButton(
-            text = stringResource(id = R.string.submit),
-            isEnabled = canSubmitDetails.value
-        ) {
-            scope.submitAccountDetails()
+        if(canEditDetails.value) {
+            MedicoButton(
+                text = stringResource(id = R.string.submit),
+                isEnabled = canSubmitDetails.value
+            ) {
+                scope.submitAccountDetails()
+            }
         }
+    }
+
+    if (showToast.value) {
+        ShowToastGlobal(msg = stringResource(id = R.string.success))
+        scope.hideToast()
     }
 }
 
@@ -167,6 +182,8 @@ fun UpiDetailsScreen(scope: BankDetailsScope.UpiDetails) {
     val upiAddress = scope.upiAddress.flow.collectAsState()
     val upiErrorText = scope.upiErrorText.flow.collectAsState()
     val context = LocalContext.current
+    val canEditDetails = scope.canEditData.flow.collectAsState()
+    val showToast = scope.showToast.flow.collectAsState()
 
     Column(
         modifier = Modifier
@@ -187,11 +204,12 @@ fun UpiDetailsScreen(scope: BankDetailsScope.UpiDetails) {
                 mandatory = true,
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
-                })
+                }),
+                enabled = canEditDetails.value
             )
         }
         Space(dp = 12.dp)
-        InputWithError(errorText = if(!upiErrorText.value) context.resources.getString(R.string.valid_upi) else null) {
+        InputWithError(errorText = if (!upiErrorText.value) context.resources.getString(R.string.valid_upi) else null) {
             InputField(
                 modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                 hint = stringResource(id = R.string.upi_hint),
@@ -204,15 +222,23 @@ fun UpiDetailsScreen(scope: BankDetailsScope.UpiDetails) {
                 mandatory = true,
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
-                })
+                }),
+                enabled = canEditDetails.value
             )
         }
         Space(dp = 12.dp)
-        MedicoButton(
-            text = stringResource(id = R.string.submit),
-            isEnabled = canSubmitDetails.value
-        ) {
-            scope.submitUpiDetails()
+        if(canEditDetails.value) {
+            MedicoButton(
+                text = stringResource(id = R.string.submit),
+                isEnabled = canSubmitDetails.value
+            ) {
+                scope.submitUpiDetails()
+            }
         }
+    }
+
+    if (showToast.value) {
+        ShowToastGlobal(msg = stringResource(id = R.string.success))
+        scope.hideToast()
     }
 }

@@ -1,13 +1,15 @@
 package com.zealsoftsol.medico.core.mvi.scope.nested
 
 import com.zealsoftsol.medico.core.interop.DataSource
+import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.utils.Validator.isIfscCodeValid
 import com.zealsoftsol.medico.core.utils.Validator.isValidBankAccountNumber
 import com.zealsoftsol.medico.core.utils.Validator.isValidPhone
-import com.zealsoftsol.medico.data.AddBankDetails
+import com.zealsoftsol.medico.data.BankDetails
 
 open class BankDetailsScope(private val titleId: String) : Scope.Child.TabBar(),
     CommonScope.CanGoBack {
@@ -17,13 +19,23 @@ open class BankDetailsScope(private val titleId: String) : Scope.Child.TabBar(),
 
     class AccountDetails : BankDetailsScope("bank_details") {
 
-        val bankDetails = DataSource(AddBankDetails("", "", "", ""))
+        val bankDetails = DataSource(BankDetails("", "", "", ""))
         val reEnterAccountNumber = DataSource("")
         val canSubmitDetails = DataSource(false)
         val accountNumberErrorText = DataSource(true)
         val ifscErrorText = DataSource(true)
         val mobileErrorText = DataSource(true)
         val reenterAccountNumberErrorText = DataSource(true)
+        val canEditData = DataSource(true)
+        val showToast= DataSource(false)
+
+        init {
+            EventCollector.sendEvent(Event.Action.BankData.GetAccountData)
+        }
+
+        fun hideToast(){
+            showToast.value = false
+        }
 
         fun updateName(name: String) {
             bankDetails.value = bankDetails.value.copy(name = name)
@@ -56,14 +68,16 @@ open class BankDetailsScope(private val titleId: String) : Scope.Child.TabBar(),
 
         private fun canSubmitData() {
             val details = bankDetails.value
-            canSubmitDetails.value = details.name.isNotEmpty() && isValidBankAccountNumber(details.accountNumber)
-                    && details.accountNumber == reEnterAccountNumber.value && isIfscCodeValid(details.ifscCode)
-                    && isValidPhone(details.mobileNumber)
+            canSubmitDetails.value =
+                details.name.isNotEmpty() && isValidBankAccountNumber(details.accountNumber)
+                        && details.accountNumber == reEnterAccountNumber.value && isIfscCodeValid(
+                    details.ifscCode
+                )
+                        && isValidPhone(details.mobileNumber)
         }
 
-        fun submitAccountDetails() {
-            //TODO call API to submit details
-        }
+        fun submitAccountDetails() =
+            EventCollector.sendEvent(Event.Action.BankData.SubmitAccountData(bankDetails.value))
     }
 
     class UpiDetails : BankDetailsScope("upi_account") {
@@ -72,6 +86,16 @@ open class BankDetailsScope(private val titleId: String) : Scope.Child.TabBar(),
         val upiAddress = DataSource("")
         val canSubmitDetails = DataSource(false)
         val upiErrorText = DataSource(true)
+        val canEditData = DataSource(true)
+        val showToast= DataSource(false)
+
+        init {
+            EventCollector.sendEvent(Event.Action.BankData.GetUpiData)
+        }
+
+        fun hideToast(){
+            showToast.value = false
+        }
 
         fun updateName(name: String) {
             this.name.value = name
@@ -88,8 +112,11 @@ open class BankDetailsScope(private val titleId: String) : Scope.Child.TabBar(),
             canSubmitDetails.value = name.value.isNotEmpty() && upiAddress.value.isNotEmpty()
         }
 
-        fun submitUpiDetails() {
-            //TODO call API to submit details
-        }
+        fun submitUpiDetails() = EventCollector.sendEvent(
+            Event.Action.BankData.SubmitUpiData(
+                name.value,
+                upiAddress.value
+            )
+        )
     }
 }

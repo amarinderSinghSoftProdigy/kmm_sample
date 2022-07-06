@@ -10,10 +10,10 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
 import com.zealsoftsol.medico.data.AadhaarData
-import com.zealsoftsol.medico.data.AddBankDetails
 import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.BankDetails
 import com.zealsoftsol.medico.data.Batch
 import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
 import com.zealsoftsol.medico.data.BatchUpdateRequest
@@ -259,8 +259,9 @@ sealed class Event {
             data class ApplyManufacturersFilter(val filters: List<Value>) : Stores()
             data class ShowAltProds(val productCode: String, val sellerName: String? = null) :
                 Stores()
+
             data class ShowStockistFilter(val data: List<StockistListItem>) : Stores()
-            data class ApplyStockistFilter(val stockist: StockistListItem): Stores()
+            data class ApplyStockistFilter(val stockist: StockistListItem) : Stores()
         }
 
         sealed class Cart : Action() {
@@ -762,11 +763,13 @@ sealed class Event {
             data class GetRewards(val page: Int) : Rewards()
         }
 
-        sealed class BankDetails : Action(){
-            override val typeClazz: KClass<*> = BankDetails::class
+        sealed class BankData : Action() {
+            override val typeClazz: KClass<*> = BankData::class
 
-            data class SubmitAccountDetails(val accountData: AddBankDetails) : BankDetails()
-            data class SubmitUpiDetails(val name: String, val upiAddress: String) : BankDetails()
+            data class SubmitAccountData(val accountData: BankDetails) : BankData()
+            data class SubmitUpiData(val name: String, val upiAddress: String) : BankData()
+            object GetAccountData : BankData()
+            object GetUpiData : BankData()
         }
     }
 
@@ -840,7 +843,7 @@ sealed class Event {
         object Demo : Transition()
         object Rewards : Transition()
         object OnlineOrders : Transition()
-        object AccountDetails: Transition()
-        object UpiDetails: Transition()
+        object AccountDetails : Transition()
+        object UpiDetails : Transition()
     }
 }

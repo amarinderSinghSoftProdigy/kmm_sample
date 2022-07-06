@@ -40,7 +40,6 @@ import com.zealsoftsol.medico.core.mvi.event.delegates.TransitionEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.WhatsappEventDelegate
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreSellerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
 import com.zealsoftsol.medico.core.network.NetworkScope
@@ -255,7 +254,7 @@ class EventCollector(
             userRepo,
             rewardsNetworkScope
         ),
-        Event.Action.BankDetails::class to BankDetailsEventDelegate(
+        Event.Action.BankData::class to BankDetailsEventDelegate(
             navigator,
             userRepo,
             bankDetailsScope

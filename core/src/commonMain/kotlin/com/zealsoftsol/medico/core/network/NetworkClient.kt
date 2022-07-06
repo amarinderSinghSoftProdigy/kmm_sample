@@ -20,6 +20,7 @@ import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoApprove
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.BankDetails
 import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
 import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.BatchesData
@@ -119,6 +120,7 @@ import com.zealsoftsol.medico.data.SubscribeRequest
 import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.UnreadNotifications
 import com.zealsoftsol.medico.data.UpdateInvoiceRequest
+import com.zealsoftsol.medico.data.UpiDetails
 import com.zealsoftsol.medico.data.UploadResponseData
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -1611,6 +1613,41 @@ class NetworkClient(
     override suspend fun getAlternateProducts(productCode: String): BodyResponse<List<AlternateProductData>> =
         simpleRequest {
             client.get("${baseUrl.url}/search/product/alternate/${productCode}") {
+                withMainToken()
+            }
+        }
+
+    override suspend fun addBankDetails(details: BankDetails): BodyResponse<String> =
+        simpleRequest {
+            client.post("${baseUrl.url}/payments/add/bank-account") {
+                withMainToken()
+                jsonBody(
+                    mapOf(
+                        "accountNumber" to details.accountNumber, "ifsc" to details.ifscCode,
+                        "phone" to details.mobileNumber, "name" to details.name
+                    )
+                )
+            }
+        }
+
+    override suspend fun getBankDetails(): BodyResponse<BankDetails> =
+        simpleRequest {
+            client.get("${baseUrl.url}/payments/bank-details") {
+                withMainToken()
+            }
+        }
+
+    override suspend fun addUpiDetails(name: String, upiAddress: String): BodyResponse<String> =
+        simpleRequest {
+            client.post("${baseUrl.url}/payments/add/upi-account") {
+                withMainToken()
+                jsonBody(mapOf("name" to name, "vpa" to upiAddress))
+            }
+        }
+
+    override suspend fun getUpiDetails(): BodyResponse<UpiDetails> =
+        simpleRequest {
+            client.get("${baseUrl.url}/payments/upi") {
                 withMainToken()
             }
         }
