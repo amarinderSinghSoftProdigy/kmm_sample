@@ -114,4 +114,13 @@ object Validator {
 
     fun isValidBankAccountNumber(accountNumber: String): Boolean = accountNumber.length in 8..19
 
+    fun isValidUpi(upi: String): Boolean {
+        val regex = "[a-zA-Z0-9.\\-_]{2,256}@[a-zA-Z]{2,64}".toRegex()
+        var isvalid = false
+        if (upi.isNotEmpty()) {
+            isvalid = upi.matches(regex)
+        }
+        return isvalid
+    }
+
 }

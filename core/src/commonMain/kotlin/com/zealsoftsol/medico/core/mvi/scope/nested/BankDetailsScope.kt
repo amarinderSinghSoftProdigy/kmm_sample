@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.utils.Validator.isIfscCodeValid
 import com.zealsoftsol.medico.core.utils.Validator.isValidBankAccountNumber
 import com.zealsoftsol.medico.core.utils.Validator.isValidPhone
+import com.zealsoftsol.medico.core.utils.Validator.isValidUpi
 import com.zealsoftsol.medico.data.BankDetails
 
 open class BankDetailsScope(private val titleId: String) : Scope.Child.TabBar(),
@@ -104,12 +105,12 @@ open class BankDetailsScope(private val titleId: String) : Scope.Child.TabBar(),
 
         fun updateUpiAddress(upiAddress: String) {
             this.upiAddress.value = upiAddress
-            upiErrorText.value = upiAddress.isNotEmpty()
+            upiErrorText.value = isValidUpi(upiAddress)
             canSubmitData()
         }
 
         private fun canSubmitData() {
-            canSubmitDetails.value = name.value.isNotEmpty() && upiAddress.value.isNotEmpty()
+            canSubmitDetails.value = name.value.isNotEmpty() && isValidUpi(upiAddress.value)
         }
 
         fun submitUpiDetails() = EventCollector.sendEvent(

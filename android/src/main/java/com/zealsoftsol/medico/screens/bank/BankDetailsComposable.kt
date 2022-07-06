@@ -63,7 +63,7 @@ fun BankDetailsScreen(scope: BankDetailsScope.AccountDetails) {
                     imeAction = ImeAction.Done
                 ),
                 onValueChange = { scope.updateName(it) },
-                mandatory = true,
+                mandatory = canEditDetails.value,
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
                 }),
@@ -85,7 +85,7 @@ fun BankDetailsScreen(scope: BankDetailsScope.AccountDetails) {
                         scope.updateAccountNumber(it)
                     }
                 },
-                mandatory = true,
+                mandatory = canEditDetails.value,
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
                 }),
@@ -107,7 +107,7 @@ fun BankDetailsScreen(scope: BankDetailsScope.AccountDetails) {
                         scope.updateReEnterAccountNumber(it)
                     }
                 },
-                mandatory = true,
+                mandatory = canEditDetails.value,
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
                 }),
@@ -125,7 +125,7 @@ fun BankDetailsScreen(scope: BankDetailsScope.AccountDetails) {
                     imeAction = ImeAction.Done
                 ),
                 onValueChange = { scope.updateIfscCode(it) },
-                mandatory = true,
+                mandatory = canEditDetails.value,
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
                 }),
@@ -147,7 +147,7 @@ fun BankDetailsScreen(scope: BankDetailsScope.AccountDetails) {
                         scope.updateMobile(it)
                     }
                 },
-                mandatory = true,
+                mandatory = canEditDetails.value,
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
                 }),
@@ -201,7 +201,7 @@ fun UpiDetailsScreen(scope: BankDetailsScope.UpiDetails) {
                     imeAction = ImeAction.Done
                 ),
                 onValueChange = { scope.updateName(it) },
-                mandatory = true,
+                mandatory = canEditDetails.value,
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
                 }),
@@ -219,7 +219,7 @@ fun UpiDetailsScreen(scope: BankDetailsScope.UpiDetails) {
                     imeAction = ImeAction.Done
                 ),
                 onValueChange = { scope.updateUpiAddress(it) },
-                mandatory = true,
+                mandatory = canEditDetails.value,
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
                 }),
