@@ -217,7 +217,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
         mUserType = navigation.value?.user?.flow?.value?.type
     }
     if (childScope.value is SignUpScope || childScope.value is EmployeeScope) {
-        activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+        activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
     } else {
         activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     }
@@ -228,7 +228,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
         activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }*/
     Scaffold(
-        backgroundColor = if (childScope.value is SignUpScope || childScope.value is CartScope || childScope.value is IocSellerScope) Color.White else MaterialTheme.colors.primary,
+        backgroundColor = if (childScope.value is CartScope || childScope.value is IocSellerScope) Color.White else MaterialTheme.colors.primary,
         scaffoldState = scaffoldState,
         drawerGesturesEnabled = navigation.value != null,
         topBar = {

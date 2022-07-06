@@ -358,7 +358,7 @@
     <string name="edit_discount">Edit Discount</string>
     <string name="inr_symbol">₹</string>
     <string name="note_net_payable">NOTE: Net payable subject to change with Original Invoice provided by Stockist/Sub-Stockist.</string>
-
+    <string name="sub_stoc">Sub-Stockist</string>
     <string name="deal_offer">Deal/Offers</string>
     <string name="manufacturers">Manufacturers</string>
     <string name="create_offer">Create Offer</string>
@@ -559,7 +559,8 @@
     <string name="piles_care">Piles Care</string>
     <string name="personal_care">Personal Care</string>
     <string name="health_devices">Health Devices</string>
-
+    <string name="choose_option">GSTIN/PAN</string>
+    <string name="aadhaar_num">AADHAAR NO.</string>
 
     <!-- Termrs and Cond -->
 
@@ -712,5 +713,5 @@
     <string name="E0056">Document/Image Not found</string>
     <string name="E0057">Please enter a valid Food License</string>
     <string name="E0058">Food License already registered. Please try again.</string>
-    
+
 </resources>

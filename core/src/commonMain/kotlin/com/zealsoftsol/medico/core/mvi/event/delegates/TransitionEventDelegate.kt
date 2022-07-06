@@ -147,6 +147,7 @@ internal class TransitionEventDelegate(
                         UserType.PARTNER -> EmployeeScope.SelectUserType.get()
                         UserType.STOCKIST_EMPLOYEE -> EmployeeScope.SelectUserType.get()
                         UserType.RETAILER_EMPLOYEE -> EmployeeScope.SelectUserType.get()
+                        UserType.SUB_STOCKIST -> ManagementScope.User.Stockist(search = event.search)
                     }
                 )
                 is Event.Transition.RequestCreateRetailer -> setScope(

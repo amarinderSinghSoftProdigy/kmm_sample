@@ -791,6 +791,9 @@ fun TextLabel(
                     2 -> {
                         stringResource(id = R.string.pan)
                     }
+                    3 -> {
+                        stringResource(id = R.string.aadhaar_num)
+                    }
                     else -> {
                         ""
                     }
