@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scopable
+import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.utils.Validator
 import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.LocationData
@@ -79,7 +80,7 @@ interface TraderDetailsComponent : Scopable {
             tradeName.isNotEmpty() &&
                     (Validator.TraderDetails.isGstinValid(gstin) || Validator.TraderDetails.isPanValid(
                         panNumber
-                    ) || Validator.Aadhaar.isValid(aadharNumber ?: ""))
+                    ) || Validator.Aadhaar.isValid(aadhaarCardNo))
                     && drugLicenseNo1.isNotEmpty() && drugLicenseNo2.isNotEmpty()
                     && Validator.TraderDetails.isFoodLicenseValid(hasFoodLicense, foodLicenseNo)
         }
@@ -96,7 +97,7 @@ interface TraderDetailsComponent : Scopable {
     fun changeGstin(gstin: String) {
         if (gstin.length <= 15) {
             trimInput(gstin, registration.value.gstin) {
-                registration.value = registration.value.copy(gstin = it)
+                registration.value = registration.value.copy(gstin = it, aadhaarCardNo = "")
                 checkData()
             }
         }
@@ -105,7 +106,7 @@ interface TraderDetailsComponent : Scopable {
     fun changePan(panNumber: String) {
         if (panNumber.length <= 10) {
             trimInput(panNumber, registration.value.panNumber) {
-                registration.value = registration.value.copy(panNumber = it)
+                registration.value = registration.value.copy(panNumber = it, aadhaarCardNo = "")
                 checkData()
             }
         }
@@ -131,8 +132,9 @@ interface TraderDetailsComponent : Scopable {
 
     fun changeAadharNumber(aadharNumber: String) {
         if (aadharNumber.length <= 12) {
-            trimInput(aadharNumber, registration.value.aadharNumber) {
-                registration.value = registration.value.copy(aadharNumber = it)
+            trimInput(aadharNumber, registration.value.aadhaarCardNo) {
+                registration.value =
+                    registration.value.copy(aadhaarCardNo = it, gstin = "", panNumber = "")
                 checkData()
             }
         }

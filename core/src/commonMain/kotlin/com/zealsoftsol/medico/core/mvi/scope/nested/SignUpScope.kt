@@ -219,6 +219,7 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
     ) : SignUpScope(titleId) {
 
         abstract val inputFields: List<Fields>
+        val selection: DataSource<String> = DataSource("")
 
         class TraderData(
             registrationStep1: UserRegistration1,
@@ -232,7 +233,7 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
             val panLimit = 10
             val aadharLimit = 12
             val foodLicenseLimit = 14
-            val docsData: List<Fields> = listOf(Fields.PAN_GST, Fields.ADDHAR)
+            val docsData: List<Fields> = listOf(Fields.GSTIN_PAN, Fields.AADHAAR)
 
             override val inputFields: List<Fields> = listOfNotNull(
                 Fields.TRADE_NAME,
@@ -285,7 +286,7 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
         }
 
         enum class Fields {
-            TRADE_NAME, DROP_DOWN, ADDHAR, GSTIN, PAN, PAN_GST, LICENSE1, LICENSE2, AADHAAR_CARD, SHARE_CODE, FOOD_LICENSE, FOOD_LICENSE_NUMBER;
+            TRADE_NAME, DROP_DOWN, AADHAAR, GSTIN, PAN, GSTIN_PAN, LICENSE1, LICENSE2, AADHAAR_CARD, SHARE_CODE, FOOD_LICENSE, FOOD_LICENSE_NUMBER;
         }
     }
 

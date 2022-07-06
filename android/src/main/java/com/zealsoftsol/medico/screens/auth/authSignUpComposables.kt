@@ -8,6 +8,9 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,6 +48,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +57,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.boundsInParent
@@ -92,6 +100,7 @@ import com.zealsoftsol.medico.screens.common.TextLabel
 import com.zealsoftsol.medico.screens.common.scrollOnFocus
 import com.zealsoftsol.medico.utils.PermissionCheckUIForSignUp
 import com.zealsoftsol.medico.utils.PermissionViewModel
+import kotlinx.coroutines.CoroutineScope
 import com.zealsoftsol.medico.data.UserType as DataUserType
 
 
@@ -113,15 +122,33 @@ fun AuthUserType(scope: SignUpScope.SelectUserType) {
                 color = ConstColors.darkBlue,
             )
             Space(32.dp)
-            Row {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
                 UserType(
                     iconRes = R.drawable.ic_menu_stockist,
-                    textRes = R.string.stockist_sub,
+                    textRes = R.string.stockist,
                     isSelected = selectedType.value == DataUserType.STOCKIST,
                     onClick = { scope.chooseUserType(DataUserType.STOCKIST) },
                     filter = ColorFilter.tint(color = ConstColors.darkBlue)
                 )
                 Space(18.dp)
+                UserType(
+                    iconRes = R.drawable.ic_menu_stockist,
+                    textRes = R.string.sub_stoc,
+                    isSelected = selectedType.value == DataUserType.SUB_STOCKIST,
+                    onClick = { scope.chooseUserType(DataUserType.SUB_STOCKIST) },
+                    filter = ColorFilter.tint(color = ConstColors.darkBlue)
+                )
+            }
+            Space(18.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
                 UserType(
                     iconRes = R.drawable.ic_menu_retailers,
                     textRes = R.string.retailer,
@@ -129,9 +156,7 @@ fun AuthUserType(scope: SignUpScope.SelectUserType) {
                     onClick = { scope.chooseUserType(DataUserType.RETAILER) },
                     filter = ColorFilter.tint(color = ConstColors.darkBlue)
                 )
-            }
-            Space(18.dp)
-            Row {
+                Space(18.dp)
                 UserType(
                     iconRes = R.drawable.ic_menu_hospitals,
                     textRes = R.string.hospital,
@@ -139,14 +164,6 @@ fun AuthUserType(scope: SignUpScope.SelectUserType) {
                     onClick = { scope.chooseUserType(DataUserType.HOSPITAL) },
                     filter = ColorFilter.tint(color = ConstColors.darkBlue)
                 )
-                /*Space(18.dp)
-                UserType(
-                    iconRes = R.drawable.ic_season_boy,
-                    textRes = R.string.season_boy,
-                    isSelected = selectedType.value == DataUserType.SEASON_BOY,
-                    onClick = { scope.chooseUserType(DataUserType.SEASON_BOY) },
-                    filter = ColorFilter.tint(color = ConstColors.darkBlue),
-                )*/
             }
         }
     )
@@ -158,7 +175,6 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
     val registration = scope.registration.flow.collectAsState()
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
-
     val isFirstNameError = registration.value.firstName.any { !it.isLetter() }
     val isLastNameError = registration.value.lastName.any { !it.isLetter() }
     val validEmail = scope.validEmail(registration.value.email)
@@ -333,7 +349,8 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
             ) {
                 val rectHolder = RectHolder()
                 PasswordFormatInputField(
-                    modifier = Modifier.scrollOnFocus(rectHolder, scrollState, coroutineScope),
+                    modifier = Modifier
+                        .scrollOnFocus(rectHolder, scrollState, coroutineScope),
                     hint = stringResource(id = R.string.repeat_password),
                     text = registration.value.verifyPassword,
                     isValid = isValid,
@@ -530,23 +547,23 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
     val registrationGlobal = scope.storedRegistration.flow.value.userReg3
     val choosing = remember { mutableStateOf(false) }
     val mSelectedDocs =
-        remember { mutableStateOf(SignUpScope.Details.Fields.PAN_GST.name.replace("_", "/")) }
+        remember { mutableStateOf(SignUpScope.Details.Fields.GSTIN_PAN.name.replace("_", "/")) }
 
     if (registration.value.tradeName.isEmpty() && registrationGlobal != null) {
         registration.value.tradeName = registrationGlobal.tradeName
         registration.value.hasFoodLicense = registrationGlobal.hasFoodLicense
         registration.value.panNumber = registrationGlobal.panNumber
         registration.value.gstin = registrationGlobal.gstin
-        registration.value.aadharNumber = registrationGlobal.aadharNumber
-        if (registration.value.panNumber.isNotEmpty() || registration.value.gstin.isNotEmpty()) {
-            mSelectedDocs.value = SignUpScope.Details.Fields.PAN_GST.name.replace("_", "/")
-        } else if ((registration.value.aadharNumber).isNotEmpty()) {
-            mSelectedDocs.value = SignUpScope.Details.Fields.ADDHAR.name
-        }
+        registration.value.aadhaarCardNo = registrationGlobal.aadhaarCardNo
         registration.value.foodLicenseNo = registrationGlobal.foodLicenseNo
         registration.value.drugLicenseNo1 = registrationGlobal.drugLicenseNo1
         registration.value.drugLicenseNo2 = registrationGlobal.drugLicenseNo2
         scope.checkData()
+    }
+    if (registration.value.panNumber.isNotEmpty() || registration.value.gstin.isNotEmpty()) {
+        mSelectedDocs.value = SignUpScope.Details.Fields.GSTIN_PAN.name.replace("_", "/")
+    } else if (registration.value.aadhaarCardNo.isNotEmpty()) {
+        mSelectedDocs.value = SignUpScope.Details.Fields.AADHAAR.name
     }
     BasicAuthSignUpScreenWithButton(
         userType = scope.registrationStep1.userType,
@@ -580,13 +597,13 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(color = Color.White)
+                                .background(color = Color.White, shape = RoundedCornerShape(5.dp))
                                 .clickable(onClick = {
                                     if (scope.docsData.isNotEmpty()) {
                                         choosing.value = true
                                     }
                                 })
-                                .padding(start = 16.dp),
+                                .padding(start = 16.dp, top = 16.dp, bottom = 16.dp, end = 12.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
                             Text(
@@ -620,40 +637,13 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                             },
                         )
                     }
-                    Space(dp = 12.dp)
                     Divider(thickness = 2.dp)
                     Space(dp = 12.dp)
-                    if (mSelectedDocs.value == SignUpScope.Details.Fields.PAN_GST.name.replace(
+                    if (mSelectedDocs.value == SignUpScope.Details.Fields.GSTIN_PAN.name.replace(
                             "_",
                             "/"
                         )
                     ) {
-                        InputWithError(errorText = validation.value?.panNumber) {
-                            InputField(
-                                modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
-                                hint = stringResource(id = R.string.pan_number),
-                                text = registration.value.panNumber,
-                                isValid = Validator.TraderDetails.isPanValid(registration.value.panNumber) || registration.value.panNumber.isEmpty(),
-                                keyboardOptions = KeyboardOptions.Default
-                                    .copy(
-                                        capitalization = KeyboardCapitalization.Characters,
-                                        imeAction = ImeAction.Done
-                                    ),
-                                onValueChange = { value -> scope.changePan(value) },
-                                trailingIcon = {
-                                    Text(
-                                        text = registration.value.panNumber.length.toString() + "/" + scope.panLimit,
-                                        color = ConstColors.gray,
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 14.sp,
-                                    )
-                                },
-                                keyboardActions = KeyboardActions(onDone = {
-                                    keyboardController?.hide()
-                                })
-                            )
-                        }
-                        Space(dp = 12.dp)
                         InputWithError(errorText = validation.value?.gstin) {
                             InputField(
                                 modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
@@ -679,6 +669,32 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                                 })
                             )
                         }
+                        Space(dp = 12.dp)
+                        InputWithError(errorText = validation.value?.panNumber) {
+                            InputField(
+                                modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
+                                hint = stringResource(id = R.string.pan_number),
+                                text = registration.value.panNumber,
+                                isValid = Validator.TraderDetails.isPanValid(registration.value.panNumber) || registration.value.panNumber.isEmpty(),
+                                keyboardOptions = KeyboardOptions.Default
+                                    .copy(
+                                        capitalization = KeyboardCapitalization.Characters,
+                                        imeAction = ImeAction.Done
+                                    ),
+                                onValueChange = { value -> scope.changePan(value) },
+                                trailingIcon = {
+                                    Text(
+                                        text = registration.value.panNumber.length.toString() + "/" + scope.panLimit,
+                                        color = ConstColors.gray,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 14.sp,
+                                    )
+                                },
+                                keyboardActions = KeyboardActions(onDone = {
+                                    keyboardController?.hide()
+                                })
+                            )
+                        }
                         Space(dp = 8.dp)
                         Text(
                             text = stringResource(id = R.string.gstin_pan_required),
@@ -690,15 +706,15 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                                 .padding(start = 4.dp),
                         )
                         Space(dp = 8.dp)
-                    } else if (mSelectedDocs.value == SignUpScope.Details.Fields.ADDHAR.name) {
-                        InputWithError(errorText = validation.value?.aadharNumber) {
+                    } else if (mSelectedDocs.value == SignUpScope.Details.Fields.AADHAAR.name) {
+                        InputWithError(errorText = validation.value?.aadhaarCardNo) {
                             InputField(
                                 modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                                 hint = stringResource(id = R.string.aadhaar_card),
-                                text = registration.value.aadharNumber,
+                                text = registration.value.aadhaarCardNo,
                                 isValid = Validator.Aadhaar.isValid(
-                                    registration.value.aadharNumber
-                                ) || registration.value.aadharNumber.isEmpty(),
+                                    registration.value.aadhaarCardNo
+                                ) || registration.value.aadhaarCardNo.isEmpty(),
                                 keyboardOptions = KeyboardOptions.Default
                                     .copy(
                                         capitalization = KeyboardCapitalization.Characters,
@@ -708,7 +724,7 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                                 onValueChange = { value -> scope.changeAadharNumber(value) },
                                 trailingIcon = {
                                     Text(
-                                        text = registration.value.aadharNumber.length.toString() + "/" + scope.aadharLimit,
+                                        text = registration.value.aadhaarCardNo.length.toString() + "/" + scope.aadharLimit,
                                         color = ConstColors.gray,
                                         fontWeight = FontWeight.Normal,
                                         fontSize = 14.sp,
@@ -1074,7 +1090,7 @@ fun AuthPreview(scope: SignUpScope.PreviewDetails) {
                 }
                 TextLabel(scope.registrationStep3.gstin, labelShow = 1)
                 TextLabel(scope.registrationStep3.panNumber, labelShow = 2)
-                TextLabel(scope.registrationStep3.aadharNumber ?: "")
+                TextLabel(scope.registrationStep3.aadhaarCardNo, labelShow = 3)
                 TextLabel(scope.registrationStep3.drugLicenseNo1)
                 TextLabel(scope.registrationStep3.drugLicenseNo2)
                 if (scope.registrationStep4.drugLicense != null) {
@@ -1205,13 +1221,21 @@ private fun BasicAuthSignUpScreenWithButton(
         modifier = Modifier
             .fillMaxHeight()
             .fillMaxWidth()
-            .background(Color.White)
+            .background(ConstColors.paleBlue)
+        //.scrollable(scrollState, Orientation.Vertical)
     ) {
+        Image(
+            contentDescription = "",
+            painter = painterResource(id = R.drawable.ic_small_logo),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .size(150.dp)
+                .alpha(0.2f)
+        )
         val isEnabled = baseScope.canGoNext.flow.collectAsState()
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .background(Color.White)
         ) {
             Box(
                 modifier = Modifier.padding(end = 16.dp, start = 16.dp, top = 16.dp)
@@ -1257,7 +1281,7 @@ private fun BasicAuthSignUpScreenWithButton(
                                 top = padding,
                                 start = padding,
                                 end = padding,
-                                bottom = padding + 60.dp
+                                bottom = padding + 300.dp
                             )
                         ),
                     verticalArrangement = verticalArrangement,
