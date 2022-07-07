@@ -175,7 +175,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                 modifier = Modifier
                     .align(Alignment.Center)
                     .size(150.dp)
-                    .alpha(0.2f)
+                    .alpha(0.1f)
             )
 
             val options = Option.StringValue(

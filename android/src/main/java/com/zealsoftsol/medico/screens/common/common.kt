@@ -729,93 +729,103 @@ fun TextLabel(
     labelShow: Int = 0
 ) {
     if (value.isNotEmpty())
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+        Column {
+
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = White, shape = RoundedCornerShape(10.dp))
             ) {
-                if (src != 0) {
-                    Image(
-                        painter = painterResource(src),
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Space(dp = 8.dp)
-                }
-
-                val isPasswordHidden = remember { mutableStateOf(true) }
-
-                val textValue = if (src == R.drawable.ic_verify_password) {
-                    if (!isPasswordHidden.value) {
-                        value
-                    } else {
-                        var check = ""
-                        repeat(value.length) {
-                            check = "$check*"
-                        }
-                        check
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 8.dp, end = 8.dp, top = 12.dp, bottom = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    if (src != 0) {
+                        Image(
+                            painter = painterResource(src),
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Space(dp = 8.dp)
                     }
-                } else {
-                    value
-                }
 
+                    val isPasswordHidden = remember { mutableStateOf(true) }
 
-
-                Text(
-                    text = textValue,
-                    fontSize = 14.sp,
-                    color = ConstColors.gray,
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier.weight(0.7f)
-                )
-
-                if (src == R.drawable.ic_verify_password) {
-                    Icon(
-                        imageVector = Icons.Default.RemoveRedEye,
-                        contentDescription = null,
-                        tint = if (isPasswordHidden.value) ConstColors.gray else ConstColors.lightBlue,
-                        modifier = Modifier
-                            .size(42.dp)
-                            .clickable(indication = rememberRipple(radius = 15.dp)) {
-                                isPasswordHidden.value = !isPasswordHidden.value
+                    val textValue = if (src == R.drawable.ic_verify_password) {
+                        if (!isPasswordHidden.value) {
+                            value
+                        } else {
+                            var check = ""
+                            repeat(value.length) {
+                                check = "$check*"
                             }
-                            .padding(12.dp),
-                    )
-                }
+                            check
+                        }
+                    } else {
+                        value
+                    }
 
-                val label: String = when (labelShow) {
-                    1 -> {
-                        stringResource(id = R.string.gstin)
-                    }
-                    2 -> {
-                        stringResource(id = R.string.pan)
-                    }
-                    3 -> {
-                        stringResource(id = R.string.aadhaar_num)
-                    }
-                    else -> {
-                        ""
-                    }
-                }
-                if (value.isNotEmpty()) {
+
+
                     Text(
-                        text = label,
+                        text = textValue,
                         fontSize = 14.sp,
                         color = ConstColors.gray,
                         textAlign = TextAlign.Start,
+                        modifier = Modifier.weight(0.7f)
                     )
-                    Space(dp = 4.dp)
-                }
 
-                Image(
-                    painter = painterResource(id = R.drawable.ic_verified),
-                    contentDescription = null,
-                    modifier = Modifier.size(15.dp)
-                )
-            }
-            Space(4.dp)
+                    if (src == R.drawable.ic_verify_password) {
+                        Icon(
+                            imageVector = Icons.Default.RemoveRedEye,
+                            contentDescription = null,
+                            tint = if (isPasswordHidden.value) ConstColors.gray else ConstColors.lightBlue,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clickable(indication = rememberRipple(radius = 15.dp)) {
+                                    isPasswordHidden.value = !isPasswordHidden.value
+                                }
+                        )
+                    }
+
+                    val label: String = when (labelShow) {
+                        1 -> {
+                            stringResource(id = R.string.gstin)
+                        }
+                        2 -> {
+                            stringResource(id = R.string.pan)
+                        }
+                        3 -> {
+                            stringResource(id = R.string.aadhaar_num)
+                        }
+                        else -> {
+                            ""
+                        }
+                    }
+                    if (value.isNotEmpty()) {
+                        Text(
+                            text = label,
+                            fontSize = 14.sp,
+                            color = ConstColors.gray,
+                            textAlign = TextAlign.Start,
+                        )
+                        Space(dp = 4.dp)
+                    }
+
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_verified),
+                        contentDescription = null,
+                        modifier = Modifier.size(15.dp)
+                    )
+                }
+                /*Space(4.dp)
             Divider(thickness = 0.5.dp)
+            Space(16.dp)*/
+            }
             Space(16.dp)
         }
 }
