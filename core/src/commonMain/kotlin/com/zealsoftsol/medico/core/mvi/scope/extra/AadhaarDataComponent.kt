@@ -3,10 +3,9 @@ package com.zealsoftsol.medico.core.mvi.scope.extra
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.utils.Validator
 import com.zealsoftsol.medico.core.utils.trimInput
-import com.zealsoftsol.medico.data.AadhaarData
 
 interface AadhaarDataComponent {
-    val aadhaarData: DataSource<AadhaarData>
+    /*val aadhaarData: DataSource<String>
     val isVerified: DataSource<Boolean>
 
     fun changeCard(card: String) {
@@ -31,5 +30,5 @@ interface AadhaarDataComponent {
         isVerified.value = aadhaarData.value.run {
             cardNumber.length == 12 && Validator.Aadhaar.isValid(cardNumber) && shareCode.length == 4
         }
-    }
+    }*/
 }

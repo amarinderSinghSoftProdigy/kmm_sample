@@ -1,6 +1,6 @@
 package com.zealsoftsol.medico.core.utils
 
-import com.zealsoftsol.medico.data.TapMode
+import com.zealsoftsol.medico.core.data.TapMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

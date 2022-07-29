@@ -5,10 +5,9 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.StartScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.DemoScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
-import com.zealsoftsol.medico.data.ErrorCode
-import com.zealsoftsol.medico.data.Response
+import com.zealsoftsol.medico.core.data.ErrorCode
+import com.zealsoftsol.medico.core.data.Response
 import kotlin.reflect.KClass
 
 class Navigator(private val safeCastEnabled: Boolean) : UiNavigator {
@@ -45,11 +44,6 @@ class Navigator(private val safeCastEnabled: Boolean) : UiNavigator {
             hostScope.value.dismissAlertError()
         }
         val queue = getQueue(activeQueue)
-        if (queue.first() is DemoScope.DemoPlayer) {
-            if (!(queue.first() as DemoScope.DemoPlayer).releasePlayer.value) {
-                (queue.first() as DemoScope.DemoPlayer).releasePlayer.value = true
-            }
-        }
         return when (strategy) {
             is DropStrategy.First -> {
                 val old = queue.removeFirst()

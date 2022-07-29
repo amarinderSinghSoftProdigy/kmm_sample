@@ -90,19 +90,13 @@ private fun UploadDocuments(option: WelcomeOption.Upload) {
     )
     val isEnabled = if (option is WelcomeOption.Upload.Aadhaar) {
         Space(50.dp)
-        AadhaarInputFields(
-            aadhaarData = option.dataComponent.aadhaarData,
-            onCardChange = { option.dataComponent.changeCard(it) },
-            onCodeChange = { option.dataComponent.changeShareCode(it) },
-        )
-        option.dataComponent.isVerified.flow.collectAsState()
     } else {
         remember { mutableStateOf(true) }
     }
     Space(50.dp)
     MedicoButton(
         text = stringResource(id = option.buttonStringResource),
-        isEnabled = isEnabled.value,
+        isEnabled = true,
         onClick = option.onUpload
     )
 }

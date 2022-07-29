@@ -4,10 +4,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
-import com.zealsoftsol.medico.data.FileType
-import com.zealsoftsol.medico.data.User
-import com.zealsoftsol.medico.data.UserRegistration1
-import com.zealsoftsol.medico.data.UserV2
+import com.zealsoftsol.medico.core.data.FileType
 
 interface CommonScope : Scopable {
     interface PhoneVerificationEntryPoint : CommonScope
@@ -16,16 +13,6 @@ interface CommonScope : Scopable {
         val isSeasonBoy: Boolean
             get() = false
 
-        fun showBottomSheet() =
-            EventCollector.sendEvent(Event.Action.Registration.ShowUploadBottomSheet)
-
-        fun showBottomSheet(type: String, registrationStep1: UserRegistration1) =
-            EventCollector.sendEvent(
-                Event.Action.Registration.ShowUploadBottomSheets(
-                    type,
-                    registrationStep1
-                )
-            )
     }
 
     interface CanGoBack : CommonScope {
@@ -45,14 +32,6 @@ interface CommonScope : Scopable {
                 notifications.value = null
             }
         }
-    }
-
-    interface WithUserV2 : CommonScope {
-        val userV2: ReadOnlyDataSource<UserV2>
-    }
-
-    interface WithUser : CommonScope {
-        val user: ReadOnlyDataSource<User>
     }
 }
 

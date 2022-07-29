@@ -1,7 +1,7 @@
 package com.zealsoftsol.medico.core.storage
 
 import com.russhwolf.settings.Settings
-import com.zealsoftsol.medico.data.TokenInfo
+import com.zealsoftsol.medico.core.data.TokenInfo
 import kotlinx.serialization.json.Json
 
 class TokenStorage(private val settings: Settings) {

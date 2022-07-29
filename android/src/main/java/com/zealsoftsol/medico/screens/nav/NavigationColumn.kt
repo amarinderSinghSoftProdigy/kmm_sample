@@ -29,7 +29,6 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.NavigationOption
 import com.zealsoftsol.medico.core.mvi.NavigationSection
-import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.NavigationCell
 import com.zealsoftsol.medico.screens.common.Separator
@@ -41,7 +40,6 @@ import com.zealsoftsol.medico.screens.common.stringResourceByName
 fun NavigationColumn(
     fullName: String,
     trialString: String?,
-    userType: UserType,
     navigationSection: NavigationSection,
     onSectionSelected: () -> Unit,
 ) {
@@ -71,7 +69,7 @@ fun NavigationColumn(
                 )
                 Space(4.dp)
                 Text(
-                    text = stringResourceByName(userType.stringId),
+                    text = "",
                     color = Color.White,
                     fontSize = 14.sp,
                 )
@@ -97,7 +95,7 @@ fun NavigationColumn(
                     NavigationCell(
                         icon = icon,
                         text = text,
-                        label = if (it == NavigationOption.PoOrdersAndHistory) {
+                        label =
                             {
 //                                Space(12.dp)
 //                                Text(
@@ -109,8 +107,7 @@ fun NavigationColumn(
 //                                        .background(Color.Red, RoundedCornerShape(percent = 50))
 //                                        .padding(vertical = 4.dp, horizontal = 8.dp),
 //                                )
-                            }
-                        } else null,
+                            },
                         onClick = {
                             onSectionSelected()
                             it.select()
@@ -152,20 +149,6 @@ fun NavigationColumn(
 @Composable
 fun NavigationOption.iconAndText(): Pair<Painter, String> = when (this) {
     NavigationOption.Dashboard -> painterResource(id = R.drawable.ic_dashboard)
-    NavigationOption.Orders -> painterResource(id = R.drawable.ic_cart_filled)
-    NavigationOption.PoOrdersAndHistory -> painterResource(id = R.drawable.ic_cart_arrow)
-    NavigationOption.Stores -> painterResource(id = R.drawable.ic_stores)
-    NavigationOption.InStore -> painterResource(id = R.drawable.ic_stores)
-    NavigationOption.Stockists -> painterResource(id = R.drawable.ic_stockist)
-    NavigationOption.Retailers -> painterResource(id = R.drawable.ic_retailer)
-    NavigationOption.Hospitals -> painterResource(id = R.drawable.ic_hospital)
-//    NavigationOption.SeasonBoys -> painterResource(id = R.drawable.ic_season_boy)
-    NavigationOption.Offers -> painterResource(id = R.drawable.ic_invoice)
-    NavigationOption.MyInvoices -> painterResource(id = R.drawable.ic_invoice)
-    NavigationOption.PoInvoices -> painterResource(id = R.drawable.ic_invoice)
-    NavigationOption.Help -> rememberVectorPainter(Icons.Filled.Help)
-    NavigationOption.Settings -> rememberVectorPainter(Icons.Filled.Settings)
     NavigationOption.LogOut -> painterResource(id = R.drawable.ic_exit)
-    NavigationOption.Inventory -> painterResource(id = R.drawable.ic_stores)
-
+   
 } to stringResourceByName(stringId)

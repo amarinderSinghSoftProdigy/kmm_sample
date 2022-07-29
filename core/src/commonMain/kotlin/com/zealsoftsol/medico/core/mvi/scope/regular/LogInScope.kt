@@ -4,9 +4,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
-import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
-import com.zealsoftsol.medico.data.AuthCredentials
-import com.zealsoftsol.medico.data.RegisterGlobal
+import com.zealsoftsol.medico.core.data.AuthCredentials
 
 class LogInScope(
     val credentials: DataSource<AuthCredentials>,
@@ -36,14 +34,13 @@ class LogInScope(
     /**
      * Transition to [OtpScope.PhoneNumberInput]
      */
-    fun goToForgetPassword() = EventCollector.sendEvent(Event.Transition.Otp)
+    fun goToForgetPassword() = EventCollector.sendEvent(Event.Transition.Dashboard)
 
     /**
      * Transition to [SignUpScope.SelectUserType]
      */
     fun goToSignUp() {
-        SignUpScope.registerGlobal.value = RegisterGlobal()
-        EventCollector.sendEvent(Event.Transition.SignUp)
+        EventCollector.sendEvent(Event.Transition.Dashboard)
     }
 
 }

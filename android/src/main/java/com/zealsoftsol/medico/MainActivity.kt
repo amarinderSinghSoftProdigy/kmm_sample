@@ -38,12 +38,11 @@ import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.zealsoftsol.medico.core.UiLink
+import com.zealsoftsol.medico.core.data.FileType
 import com.zealsoftsol.medico.core.mvi.UiNavigator
 import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.OcrScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.WelcomeScope
-import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.screens.TabBarScreen
 import com.zealsoftsol.medico.screens.auth.AuthScreen
 import com.zealsoftsol.medico.screens.auth.WelcomeOption
@@ -327,12 +326,12 @@ class MainActivity : ComponentActivity(), DIAware {
     /**
      * start process of recognising image from text
      */
-    fun startOcr(value: String, scope: OcrScope) {
+    fun startOcr(value: String) {
         val image = InputImage.fromFilePath(this, Uri.fromFile(File(value)))
         val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
         recognizer.process(image)
             .addOnSuccessListener { texts ->
-                scope.updateRecognisedList(processText(texts))
+                //scope.updateRecognisedList(processText(texts))
             }
             .addOnFailureListener { e -> // Task failed with an exception
                 e.printStackTrace()
